@@ -1587,7 +1587,7 @@ done:
         }
 
         if (event.jbutton.button < N_JOYBUTTONS) {
-          int key = jbutton_map[event.jbutton.button];
+          int const key = jbutton_map[event.jbutton.button];
 
           if (key >= 0)
             trs_xlate_keysym(0x10000 | key);
@@ -1616,7 +1616,7 @@ done:
         }
 
         if (event.jbutton.button < N_JOYBUTTONS) {
-          int key = jbutton_map[event.jbutton.button];
+          int const key = jbutton_map[event.jbutton.button];
 
           if (key >= 0)
             trs_xlate_keysym(key);
@@ -1636,7 +1636,7 @@ done:
           if (motion.xrel != 0) {
             if (jaxis_mapped) {
               if (abs(motion.xrel) > 2) {
-                int key = motion.xrel < 0 ? 0x114 : 0x113;
+                int const key = motion.xrel < 0 ? 0x114 : 0x113;
                 int i;
 
                 for (i = abs(motion.xrel); i--;)
@@ -1651,7 +1651,7 @@ done:
           if (motion.yrel != 0) {
             if (jaxis_mapped) {
               if (abs(motion.yrel) > 2) {
-                int key = motion.yrel < 0 ? 0x111 : 0x112;
+                int const key = motion.yrel < 0 ? 0x111 : 0x112;
                 int i;
 
                 for (i = abs(motion.yrel); i--;)
