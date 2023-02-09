@@ -2030,18 +2030,23 @@ void trs_gui_display_settings(void)
         break;
       case 12:
         value = trs_gui_display_popup("Scanlines", yes_no, 2, scanlines);
-#ifdef OLD_SCANLINES
-        if (value != scanlines)
-#else
-        if (value) {
+        if (value != scanlines) {
+          scanlines = value;
+          resize = 0;
+        }
+#ifndef OLD_SCANLINES
+        if (scanlines) {
           snprintf(input, 4, "%d", scanshade);
           if (trs_gui_input_string("Enter brightness (0 = dark - 255 = light)",
-              input, input, 3, 0) == 0)
-            scanshade = atoi(input) & 255;
+              input, input, 3, 0) == 0) {
+            value = atoi(input) & 255;
+            if (value != scanshade) {
+              scanshade = value;
+              resize = 0;
+            }
+          }
         }
 #endif
-          resize = 0;
-        scanlines = value;
         break;
       case -1:
         return;
