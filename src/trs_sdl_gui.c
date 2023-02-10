@@ -132,9 +132,6 @@ static int const key_syms_shifted[] = {
 int jbutton_map[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int jaxis_mapped;
 
-extern int  scanlines;
-extern int  scanshade;
-extern int  turbo_paste;
 static void trs_gui_write_text(const char *text, int x, int y, int invert);
 static void trs_gui_center_text(const char *text, int y, int invert);
 static void trs_gui_frame(int x1, int y1, int x2, int y2);

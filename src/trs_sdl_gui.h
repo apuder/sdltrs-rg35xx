@@ -56,6 +56,9 @@
 
 extern int jbutton_map[N_JOYBUTTONS];
 extern int jaxis_mapped;
+extern int scanlines;
+extern int scanshade;
+extern int turbo_paste;
 
 void call_function(int function);
 void trs_gui_display_pause(void);
