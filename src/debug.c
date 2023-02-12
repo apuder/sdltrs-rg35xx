@@ -231,10 +231,10 @@ static void clear_all_traps(void)
 
 static void print_traps(void)
 {
-    int i;
-
     if(num_traps)
     {
+	int i;
+
 	for(i = 0; i < MAX_TRAPS; ++i)
 	{
 	    if(trap_table[i].valid)
@@ -252,15 +252,14 @@ static void print_traps(void)
 
 static void set_trap(int address, int flag)
 {
-    int i;
-
     if(num_traps == MAX_TRAPS)
     {
 	printf("Cannot set more than %d traps.\n", MAX_TRAPS);
     }
     else
     {
-	i = 0;
+	int i = 0;
+
 	while(trap_table[i].valid) ++i;
 
 	trap_table[i].valid = 1;
@@ -364,12 +363,11 @@ void debug_init(void)
 
 static void print_memory(Uint16 address, int num_bytes)
 {
-    int bytes_to_print, i;
-    int byte;
-
     while(num_bytes > 0)
     {
-	bytes_to_print = 16;
+	int i;
+	int bytes_to_print = 16;
+
 	if(bytes_to_print > num_bytes) bytes_to_print = num_bytes;
 
 	printf("%.4x:\t", address);
@@ -384,7 +382,8 @@ static void print_memory(Uint16 address, int num_bytes)
 	printf("    ");
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    byte = mem_read(address + i);
+	    int byte = mem_read(address + i);
+
 	    if(isprint(byte))
 	    {
 		putchar(byte);
@@ -436,7 +435,6 @@ static void debug_run(void)
     Uint8 t;
     Uint8 byte;
     int continuous;
-    int i;
     int watch_triggered = 0;
 
     stop_signaled = 0;
@@ -486,6 +484,8 @@ static void debug_run(void)
 	 */
 	if (num_watchpoints)
 	{
+	    int i;
+
 	    for (i = 0; i < MAX_TRAPS; ++i)
 	    {
 		if (trap_table[i].valid &&

@@ -572,7 +572,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   char text[64];
   struct stat st = { 0 };
   const char *new_dir;
-  int i, j, key;
+  int i;
   int selection;
   int first_row;
   int drawcount;
@@ -619,6 +619,9 @@ read_directory:
   redraw = 1;
 
   while (1) {
+    int key;
+    int sel;
+
     if (redraw) {
       trs_gui_clear_rect(2, 2, 60, 13);
       for (i = 0; i < drawcount; i++)
@@ -628,11 +631,11 @@ read_directory:
     key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
     if (key >= '0' && key <= 'z') {
       key = tolower(key);
-      i = j = first_row + selection;
+      sel = i = first_row + selection;
       do {
         if (++i > filenamecount - 1)
           i = 0;
-      } while (i != j && (tolower((int)*filenamelist[i]) != key));
+      } while (i != sel && (tolower((int)*filenamelist[i]) != key));
       if (i < 13) {
         first_row = 0;
         selection = i;
@@ -764,9 +767,8 @@ done:
 int trs_gui_input_string(const char *title, const char* input, char* output,
                          int limit, int file)
 {
-  int key;
   int insert = 1;
-  int i, pos;
+  int pos;
   int len;
   int first_disp;
 
@@ -787,6 +789,9 @@ redraw:
     trs_gui_center_text(" TAB:Select Directory ", 8, 1);
 
   while (1) {
+    int key;
+    int i;
+
     for (i = 0; i < 60; i++) {
       int const cur_pos = first_disp + i;
 
@@ -892,7 +897,7 @@ redraw:
 
 int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
 {
-  int num = 0, i, key;
+  int num = 0;
 
   trs_gui_frame(0, 0, 63, 15);
   trs_gui_write_text(title, 2, 0, 0);
@@ -908,7 +913,9 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
   num--;
 
   while (1) {
-    key = trs_gui_select(entry[selection].text, 2, selection + 2);
+    int key = trs_gui_select(entry[selection].text, 2, selection + 2);
+    int sel;
+
     if (key >= '0' && key <= '9') {
       key -= '0';
       if (key <= num && entry[key].type != MENU_TITLE)
@@ -916,11 +923,11 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
     } else
     if (key >= 'A' && key <= 'z') {
       key = toupper(key);
-      i = selection;
+      sel = selection;
       do {
         if (++selection > num)
           selection = 0;
-      } while (selection != i && (int)*entry[selection].text != key);
+      } while (selection != sel && (int)*entry[selection].text != key);
       while (entry[selection].type == MENU_TITLE) {
         if (selection < num)
           selection++;
@@ -1030,7 +1037,7 @@ int trs_gui_display_popup(const char *title, const char **entry,
   int const saved_selection = selection;
   int const x = (64 - len) / 2;
   int const y = (16 - num) / 2;
-  int i, key;
+  int i;
 
   trs_gui_frame(x - 1, y - 1, x + len, y + num);
   trs_gui_center_text(title, y - 1, 0);
@@ -1040,7 +1047,8 @@ int trs_gui_display_popup(const char *title, const char **entry,
   num--;
 
   while (1) {
-    key = trs_gui_select(entry[selection], x, selection + y);
+    int key = trs_gui_select(entry[selection], x, selection + y);
+
     if (key >= '0' && key <= 'z') {
       key = toupper(key);
       if (num == 1) {
@@ -1287,9 +1295,10 @@ void trs_gui_disk_steps(void)
    {"", 0}};
   const char *steps[] = {"Single", "Double"};
   int selection = 0;
-  int i;
 
   while (1) {
+    int i;
+
     for (i = 0; i < 8; i++) {
       snprintf(menu[i].text, 63,
           " %d: Drive Step                                        %s",
@@ -1326,9 +1335,10 @@ void trs_gui_disk_options(void)
   const char *doubler[]   = {"     None", "   Percom", " Tandy/RS", "     Both"};
   const char *disk_size[] = {"5 Inch", "8 Inch"};
   int selection = 0;
-  int i;
 
   while (1) {
+    int i;
+
     for (i = 0; i < 8; i++) {
       snprintf(menu[i].text, 63,
           " %d: Drive Size                                        %s",
@@ -1404,9 +1414,10 @@ void trs_gui_disk_management(void)
    {"Disk Drive Options", MENU_NORMAL},
    {"", 0}};
   int selection = 0;
-  int i;
 
   while (1) {
+    int i;
+
     for (i = 0; i < 8; i++) {
       trs_gui_limit_string(trs_disk_getfilename(i), &menu[i].text[4], 56);
       menu[i].text[0] = trs_disk_getwriteprotect(i) ? '*' : ' ';
@@ -1455,11 +1466,13 @@ void trs_gui_hard_management(void)
   static int granularity = 8;
   static int dir_sector = 1;
   static int drive;
-  char input[4];
   int selection = 0;
-  int i, value;
 
   while (1) {
+    char input[4];
+    int  i;
+    int  value;
+
     for (i = 0; i < 4; i++) {
       trs_gui_limit_string(trs_hard_getfilename(i), &menu[i].text[4], 56);
       menu[i].text[0] = trs_hard_getwriteprotect(i) ? '*' : ' ';
@@ -1586,9 +1599,10 @@ void trs_gui_stringy_management(void)
    {"", 0}};
   static int drive;
   int selection = 0;
-  int i;
 
   while (1) {
+    int i;
+
     for (i = 0; i < 8; i++) {
       trs_gui_limit_string(stringy_get_name(i), &menu[i].text[4], 56);
       menu[i].text[0] = stringy_get_writeprotect(i) ? '*' : ' ';
@@ -1642,11 +1656,12 @@ void trs_gui_cassette_management(void)
   const char *cass_type[] = {"   CAS", "   CPT", "   WAV"};
   static int type;
   static int insert = 1;
-  char input[12];
   int selection = 0;
-  int value;
 
   while (1) {
+    char input[12];
+    int  value;
+
     trs_gui_limit_string(trs_cassette_getfilename(), &menu[0].text[8], 52);
     menu[0].text[0] = trs_cass_getwriteprotect() ? '*' : ' ';
 
@@ -1746,10 +1761,9 @@ void trs_gui_emulator_settings(void)
                          "          LNW80",
                          "TCS SpeedMaster",
                          "    CT-80 Aster"};
-  float clock_mhz[4];
-  char input[8];
   int selection = 0;
   int model_selection = trs_model == 1 ? 0 : trs_model - 2;
+  float clock_mhz[4];
 
   clock_mhz[0] = clock_mhz_1;
   clock_mhz[1] = clock_mhz_3;
@@ -1757,6 +1771,8 @@ void trs_gui_emulator_settings(void)
   clock_mhz[3] = clock_mhz_4;
 
   while (1) {
+    char input[8];
+
     snprintf(&menu[0].text[44], 17, "%s", model[model_selection]);
     snprintf(&menu[1].text[50], 11, "%6.2f MHz", clock_mhz[model_selection]);
     snprintf(&menu[2].text[45], 16, "%s", speed[speedup]);
@@ -1889,13 +1905,14 @@ void trs_gui_display_settings(void)
                           "International",
                           "         Bold"};
   const char *scales[] = {" None", "  2 x", "  3 x", "  4 x"};
-  char input[8];
-  int resize = -1;
   int selection = 0;
-  int value = 0;
   int gui_charset1 = trs_charset1 >= 10 ? trs_charset1 - 6 : trs_charset1;
 
   while (1) {
+    char input[8];
+    int  resize = -1;
+    int  value = 0;
+
     snprintf(&menu[0].text[52], 9, "0x%06X", background);
     snprintf(&menu[1].text[52], 9, "0x%06X", foreground);
     snprintf(&menu[2].text[52], 9, "0x%06X", gui_background);
@@ -2049,10 +2066,8 @@ void trs_gui_display_settings(void)
         return;
     }
 
-    if (resize >= 0) {
+    if (resize >= 0)
       trs_screen_init(resize);
-      resize = -1;
-    }
   }
 }
 
@@ -2074,10 +2089,11 @@ void trs_gui_misc_settings(void)
    {"Turbo Paste                                             ", MENU_NORMAL},
    {"", 0}};
   const char *printer[] = {"     None", "     Text"};
-  char input[12];
   int selection = 0;
 
   while (1) {
+    char input[12];
+
     snprintf(&menu[2].text[50], 11, "%s", yes_no[trs_emtsafe]);
     snprintf(&menu[3].text[50], 11, "%10d", stretch_amount);
     snprintf(&menu[4].text[51], 10, "%s", printer[trs_printer]);

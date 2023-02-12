@@ -76,11 +76,6 @@ static int hex_byte(const char *string)
 static int load_hex(FILE *file)
 {
     char buffer[BUFFER_SIZE];
-    char *b;
-    int num_bytes;
-    int address;
-    int check;
-    int value;
     int high = 0;
 
     while(fgets(buffer, BUFFER_SIZE, file))
@@ -88,11 +83,14 @@ static int load_hex(FILE *file)
 	if(buffer[0] == ':')
 	{
 	    /* colon */
-	    b = buffer + 1;
+	    const char *b = buffer + 1;
 
 	    /* number of bytes on the line */
-	    num_bytes = hex_byte(b);  b += 2;
-	    check = num_bytes;
+	    int num_bytes = hex_byte(b);
+	    int check = num_bytes;
+	    int address;
+
+	    b += 2;
 
 	    /* the starting address */
 	    address = hex_byte(b) << 8;  b += 2;
@@ -105,9 +103,13 @@ static int load_hex(FILE *file)
 	    /* the data */
 	    if(num_bytes)
 	    {
+		int value;
+
 		while(num_bytes--)
 		{
-		    value = hex_byte(b);  b += 2;
+		    value = hex_byte(b);
+
+		    b += 2;
 		    rom_write(address++, value);
 		    check += value;
 		}
