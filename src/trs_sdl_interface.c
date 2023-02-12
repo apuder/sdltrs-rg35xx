@@ -992,6 +992,7 @@ int trs_load_config_file(void)
   trs_charset1 = 3;
   trs_charset3 = 4;
   trs_charset4 = 8;
+  trs_disk_controller = TRUE;
   trs_disk_doubler = TRSDISK_BOTH;
   trs_disk_truedam = 0;
   trs_emtsafe = 1;
