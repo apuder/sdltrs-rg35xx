@@ -72,7 +72,7 @@
 #define MEGAMEM_START      (1 * 1024 * 1024) + 65536
 
 /* Interrupt latch register in EI (Model 1) */
-#define TRS_INTLATCH(addr) (((addr)&~3) == 0x37e0)
+#define TRS_INTLATCH(addr) (((addr)&~3) == 0x37E0)
 
 /* Check address in video memory */
 #define VIDEO_ADDR(vaddr)  (Uint16)vaddr < MAX_VIDEO_SIZE
@@ -298,8 +298,9 @@ void megamem_out(int mem_slot, Uint8 value)
 		megamem_base = 0;
 	} else {
 		megamem_addr = (value & 0xC0) * 256;
-		megamem_base = (((value - (value & 0xC0)) * 16) +
-				(mem_slot * 1024)) * 1024 + MEGAMEM_START;
+		megamem_base = (((value - (value & 0xC0)) * 16)
+			     + (mem_slot * 1024)) * 1024
+			     + MEGAMEM_START;
 	}
 }
 
@@ -640,7 +641,7 @@ static int trs80_model1_mmio(int address)
   /* With a selector 768 bytes poke through the hole */
   if (address >= 0x3900 && selector) return trs80_model1_ram(address);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
-  return 0xff;
+  return 0xFF;
 }
 
 int trs80_model3_mem_read(int address)
@@ -659,7 +660,7 @@ int trs80_model3_mem_read(int address)
 
 int mem_read(int address)
 {
-    address &= 0xffff; /* allow callers to be sloppy */
+    address &= 0xFFFF; /* allow callers to be sloppy */
 
     /* There are some adapters that sit above the system and
        either intercept before the hardware proper, or adjust
@@ -882,10 +883,10 @@ int mem_read(int address)
       case 0x42: /* Model 4 map 2 */
       case 0x52: /* Model 4P map 2, boot ROM out */
       case 0x56: /* Model 4P map 2, boot ROM in */
-	if (address < 0xf400) {
+	if (address < 0xF400) {
 	    return memory[address + bank_offset[address >> 15]];
 	}
-	if (address >= 0xf800) return video[address-0xf800];
+	if (address >= 0xF800) return video[address - 0xF800];
 	return trs_kb_mem_read(address);
 
       case 0x43: /* Model 4 map 3 */
@@ -895,7 +896,7 @@ int mem_read(int address)
 
     }
 
-    return 0xff;
+    return 0xFF;
 }
 
 static void trs80_screen_write_char(int vaddr, int value)
@@ -939,8 +940,8 @@ static void trs80_model1_write_mmio(int address, int value)
        * Video write.  Hack here to make up for the missing bit 6
        * video ram, emulating the gate in Z30.
        */
-      if (value & 0xa0)
-        value &= 0xbf;
+      if (value & 0xA0)
+        value &= 0xBF;
       else
         value |= 0x40;
     }
@@ -982,7 +983,7 @@ void trs80_model3_mem_write(int address, int value)
 
 void mem_write(int address, int value)
 {
-    address &= 0xffff;
+    address &= 0xFFFF;
 
     /* Anitek MegaMem */
     if (megamem_addr) {
@@ -1249,10 +1250,10 @@ void mem_write(int address, int value)
       case 0x42: /* Model 4 map 2 */
       case 0x52: /* Model 4P map 2, boot ROM out */
       case 0x56: /* Model 4P map 2, boot ROM in */
-	if (address < 0xf400) {
+	if (address < 0xF400) {
 	    memory[address + bank_offset[address >> 15]] = value;
-	} else if (address >= 0xf800) {
-	    trs80_screen_write_char(address - 0xf800, value);
+	} else if (address >= 0xF800) {
+	    trs80_screen_write_char(address - 0xF800, value);
 	}
 	break;
 
@@ -1272,13 +1273,13 @@ int mem_read_word(int address)
     int rval;
 
     rval = mem_read(address++);
-    rval |= mem_read(address & 0xffff) << 8;
+    rval |= mem_read(address & 0xFFFF) << 8;
     return rval;
 }
 
 void mem_write_word(int address, int value)
 {
-    mem_write(address++, value & 0xff);
+    mem_write(address++, value & 0xFF);
     mem_write(address, value >> 8);
 }
 
@@ -1333,7 +1334,7 @@ Uint8 *trs80_model3_mem_addr(int address, int writing)
  */
 Uint8 *mem_pointer(int address, int writing)
 {
-    address &= 0xffff;
+    address &= 0xFFFF;
 
     /* Anitek MegaMem */
     if (megamem_addr) {
@@ -1524,7 +1525,7 @@ Uint8 *mem_pointer(int address, int writing)
 
       case 0x48: /* Model 4 map 0 writing */
       case 0x58: /* Model 4P map 0, boot ROM out, writing */
-      case 0x5c: /* Model 4P map 0, boot ROM in, writing */
+      case 0x5C: /* Model 4P map 0, boot ROM in, writing */
 	if (address >= RAM_START) {
 	    return &memory[address + bank_offset[address >> 15]];
 	}
@@ -1540,7 +1541,7 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x50: /* Model 4P map 0, boot ROM out, reading */
       case 0x51: /* Model 4P map 1, boot ROM out, reading */
       case 0x59: /* Model 4P map 1, boot ROM out, writing */
-      case 0x5d: /* Model 4P map 1, boot ROM in, writing */
+      case 0x5D: /* Model 4P map 1, boot ROM in, writing */
 	if (address >= RAM_START || address < KEYBOARD_START) {
 	    return &memory[address + bank_offset[address >> 15]];
 	}
@@ -1548,23 +1549,23 @@ Uint8 *mem_pointer(int address, int writing)
 	break;
 
       case 0x42: /* Model 4 map 1, reading */
-      case 0x4a: /* Model 4 map 1, writing */
+      case 0x4A: /* Model 4 map 1, writing */
       case 0x52: /* Model 4P map 2, boot ROM out, reading */
-      case 0x5a: /* Model 4P map 2, boot ROM out, writing */
+      case 0x5A: /* Model 4P map 2, boot ROM out, writing */
       case 0x56: /* Model 4P map 2, boot ROM in, reading */
-      case 0x5e: /* Model 4P map 2, boot ROM in, writing */
-	if (address < 0xf400) {
+      case 0x5E: /* Model 4P map 2, boot ROM in, writing */
+	if (address < 0xF400) {
 	    return &memory[address + bank_offset[address >> 15]];
 	}
-	if (address >= 0xf800) return &video[address-0xf800];
+	if (address >= 0xF800) return &video[address - 0xF800];
 	break;
 
       case 0x43: /* Model 4 map 3, reading */
-      case 0x4b: /* Model 4 map 3, writing */
+      case 0x4B: /* Model 4 map 3, writing */
       case 0x53: /* Model 4P map 3, boot ROM out, reading */
-      case 0x5b: /* Model 4P map 3, boot ROM out, writing */
+      case 0x5B: /* Model 4P map 3, boot ROM out, writing */
       case 0x57: /* Model 4P map 3, boot ROM in, reading */
-      case 0x5f: /* Model 4P map 3, boot ROM in, writing */
+      case 0x5F: /* Model 4P map 3, boot ROM in, writing */
 	return &memory[address + bank_offset[address >> 15]];
     }
 

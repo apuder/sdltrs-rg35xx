@@ -26,28 +26,28 @@
  * Emulate Model-I or Model-III disk controller
  */
 
-extern void trs_disk_init(int reset_button);
-extern void trs_disk_select_write(Uint8 data);
+extern void  trs_disk_init(int reset_button);
+extern void  trs_disk_select_write(Uint8 data);
 extern Uint8 trs_disk_track_read(void);
-extern void trs_disk_track_write(Uint8 data);
+extern void  trs_disk_track_write(Uint8 data);
 extern Uint8 trs_disk_sector_read(void);
-extern void trs_disk_sector_write(Uint8 data);
+extern void  trs_disk_sector_write(Uint8 data);
 extern Uint8 trs_disk_data_read(void);
-extern void trs_disk_data_write(Uint8 data);
+extern void  trs_disk_data_write(Uint8 data);
 extern Uint8 trs_disk_status_read(void);
-extern void trs_disk_command_write(Uint8 cmd);
+extern void  trs_disk_command_write(Uint8 cmd);
 extern Uint8 trs_disk_interrupt_read(void); /* M3 only */
-extern void trs_disk_interrupt_write(Uint8 mask); /* M3 only */
+extern void  trs_disk_interrupt_write(Uint8 mask); /* M3 only */
 
 #ifdef __linux
 extern void trs_disk_setstep(int unit, int value);
-extern int trs_disk_getstep(int unit);
+extern int  trs_disk_getstep(int unit);
 #endif
-extern void trs_disk_setsize(int unit, int value);
-extern int trs_disk_getsize(int unit);
+extern void  trs_disk_setsize(int unit, int value);
+extern int   trs_disk_getsize(int unit);
 extern char* trs_disk_getfilename(int unit);
-extern int trs_disk_getwriteprotect(int unit);
-extern int trs_disk_getdisktype(int unit);
+extern int   trs_disk_getwriteprotect(int unit);
+extern int   trs_disk_getdisktype(int unit);
 
 extern void trs_disk_insert(int drive, const char *diskname);
 extern void trs_disk_remove(int drive);

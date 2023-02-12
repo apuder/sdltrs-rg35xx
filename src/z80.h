@@ -244,23 +244,23 @@ struct z80_state_struct
 #define SUBTRACT_FLAG		(Z80_F & SUBTRACT_MASK)
 #define CARRY_FLAG		(Z80_F & CARRY_MASK)
 
-extern struct z80_state_struct z80_state;
-extern unsigned int cycles_per_timer;
+extern struct		z80_state_struct z80_state;
+extern unsigned int	cycles_per_timer;
 
-extern void z80_reset(void);
-extern int z80_run(int continuous);
-extern int mem_read(int address);
-extern void mem_write(int address, int value);
-extern void rom_write(int address, int value);
-extern int mem_read_word(int address);
-extern void mem_write_word(int address, int value);
-extern Uint8 *mem_pointer(int address, int writing);
-extern void z80_out(int port, int value);
-extern int z80_in(int port);
+extern void	 z80_reset(void);
+extern int	 z80_run(int continuous);
+extern void	 z80_out(int port, int value);
+extern int	 z80_in(int port);
+extern int	 mem_read(int address);
+extern void	 mem_write(int address, int value);
+extern void	 rom_write(int address, int value);
+extern int	 mem_read_word(int address);
+extern void	 mem_write_word(int address, int value);
+extern Uint8	*mem_pointer(int address, int writing);
 
 #ifdef ZBX
-extern int disassemble(Uint16 pc);
-extern void debug_init(void);
-extern void debug_shell(void);
+extern int	 disassemble(Uint16 pc);
+extern void	 debug_init(void);
+extern void	 debug_shell(void);
 #endif /* ZBX */
 #endif

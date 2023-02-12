@@ -28,9 +28,9 @@
 
 void trs_write_protect(int type, int drive);
 
-int trs_create_blank_jv1(const char *fname);
-int trs_create_blank_jv3(const char *fname);
-int trs_create_blank_dmk(const char *fname, int sides, int density,
-                         int eight, int ignden);
-int trs_create_blank_hard(const char *fname, int cyl, int sec,
-                          int gran, int dir);
+int  trs_create_blank_jv1(const char *fname);
+int  trs_create_blank_jv3(const char *fname);
+int  trs_create_blank_dmk(const char *fname, int sides, int density,
+                          int eight, int ignden);
+int  trs_create_blank_hard(const char *fname, int cyl, int sec,
+                           int gran, int dir);

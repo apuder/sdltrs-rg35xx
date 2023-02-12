@@ -83,9 +83,9 @@ extern int trs_io_debug_flags;
 extern int trs_emtsafe;
 
 extern void trs_parse_command_line(int argc, char **argv, int *debug);
-extern int trs_write_config_file(const char *filename);
-extern int trs_load_cmd(const char *filename);
-extern int trs_load_config_file(void);
+extern int  trs_write_config_file(const char *filename);
+extern int  trs_load_cmd(const char *filename);
+extern int  trs_load_config_file(void);
 
 extern void trs_screen_init(int resize);
 extern void trs_screen_reset(void);
@@ -109,12 +109,12 @@ extern void trs_sdl_cleanup(void);
 
 extern void trs_kb_reset(void);
 extern void trs_kb_bracket(int shifted);
-extern int trs_kb_mem_read(int address);
+extern int  trs_kb_mem_read(int address);
 extern void trs_kb_heartbeat(void);
 extern void trs_xlate_keysym(int keysym);
 extern void clear_key_queue(void);
-extern int stretch_amount;
-extern int trs_kb_bracket_state;
+extern int  stretch_amount;
+extern int  trs_kb_bracket_state;
 
 extern int scale;
 extern int resize3;
@@ -135,27 +135,26 @@ extern int trs_sound;
 extern void trs_get_event(int wait);
 
 extern void trs_printer_write(int value);
-extern int trs_printer_read(void);
-extern int trs_printer_reset(void);
+extern int  trs_printer_read(void);
+extern int  trs_printer_reset(void);
 
 extern void trs_cassette_motor(int value);
 extern void trs_cassette_out(int value);
-extern int trs_cassette_in(void);
+extern int  trs_cassette_in(void);
 extern void trs_sound_out(int value);
+extern int  trs_joystick_in(void);
 
-extern int trs_joystick_in(void);
+extern int  trs_rom_size;
 
-extern int trs_rom_size;
-
-extern void trs_interrupt_latch_clear(void);
+extern void  trs_interrupt_latch_clear(void);
 extern Uint8 trs_interrupt_latch_read(void);
 extern Uint8 trs_nmi_latch_read(void);
-extern void trs_interrupt_mask_write(Uint8);
-extern void trs_nmi_mask_write(Uint8);
-extern void trs_reset_button_interrupt(int state);
-extern void trs_disk_intrq_interrupt(int state);
-extern void trs_disk_drq_interrupt(int state);
-extern void trs_disk_motoroff_interrupt(int state);
+extern void  trs_interrupt_mask_write(Uint8);
+extern void  trs_nmi_mask_write(Uint8);
+extern void  trs_reset_button_interrupt(int state);
+extern void  trs_disk_intrq_interrupt(int state);
+extern void  trs_disk_drq_interrupt(int state);
+extern void  trs_disk_motoroff_interrupt(int state);
 /* extern void trs_uart_err_interrupt(int state); */
 extern void trs_uart_rcv_interrupt(int state);
 extern void trs_uart_snd_interrupt(int state);
@@ -169,9 +168,9 @@ extern void trs_timer_sync_with_host(void);
 extern void trs_cassette_rise_interrupt(int dummy);
 extern void trs_cassette_fall_interrupt(int dummy);
 extern void trs_cassette_clear_interrupts(void);
-extern int trs_cassette_interrupts_enabled(void);
+extern int  trs_cassette_interrupts_enabled(void);
 extern void trs_cassette_update(int dummy);
-extern int cassette_default_sample_rate;
+extern int  cassette_default_sample_rate;
 extern void trs_orch90_out(int chan, int value);
 extern void trs_cassette_reset(void);
 extern void assert_state_void(int dummy);
@@ -185,7 +184,7 @@ extern void trs_uart_set_avail(int dummy);
 extern void trs_uart_set_empty(int dummy);
 
 extern void trs_disk_debug(void);
-extern int trs_disk_motoroff(void);
+extern int  trs_disk_motoroff(void);
 
 extern int huffman;
 extern int hypermem;
@@ -197,19 +196,19 @@ extern int lowercase;
 extern int lubomir;
 extern int stringy;
 
-extern void eg3200_init_out(int value);
-extern void genie3s_bank_out(int value);
-extern void genie3s_init_out(int value);
-extern void genie3s_sys_out(int value);
-extern void genie3s_char(int char_index, int scanline, int byte);
-extern void genie3s_hrg(int value);
-extern void genie3s_hrg_write(int position, int byte);
+extern void  eg3200_init_out(int value);
+extern void  genie3s_bank_out(int value);
+extern void  genie3s_init_out(int value);
+extern void  genie3s_sys_out(int value);
+extern void  genie3s_char(int char_index, int scanline, int byte);
+extern void  genie3s_hrg(int value);
+extern void  genie3s_hrg_write(int position, int byte);
 extern Uint8 genie3s_hrg_read(int position);
-extern void m6845_crtc_reset(void);
-extern void m6845_cursor(int position, int start, int end, int visible);
-extern void m6845_screen(int chars, int lines, int raster, int factor);
+extern void  m6845_crtc_reset(void);
+extern void  m6845_cursor(int position, int start, int end, int visible);
+extern void  m6845_screen(int chars, int lines, int raster, int factor);
 
-extern void trs_debug(void);
+extern void  trs_debug(void);
 
 typedef void (*trs_event_func)(int arg);
 void trs_schedule_event(trs_event_func f, int arg, int tstates);
@@ -218,31 +217,31 @@ void trs_do_event(void);
 void trs_cancel_event(void);
 trs_event_func trs_event_scheduled(void);
 
-void grafyx_write_x(int value);
-void grafyx_write_y(int value);
-void grafyx_write_data(int value);
-int grafyx_read_data(void);
-void grafyx_write_mode(int value);
-int grafyx_read_mode(void);
-void grafyx_write_xoffset(int value);
-void grafyx_write_yoffset(int value);
-void grafyx_write_overlay(int value);
-void grafyx_set_microlabs(int on_off);
-int grafyx_get_microlabs(void);
-void grafyx_m3_reset(void);
-void grafyx_m3_write_mode(int value);
+void  grafyx_write_x(int value);
+void  grafyx_write_y(int value);
+void  grafyx_write_data(int value);
+int   grafyx_read_data(void);
+void  grafyx_write_mode(int value);
+int   grafyx_read_mode(void);
+void  grafyx_write_xoffset(int value);
+void  grafyx_write_yoffset(int value);
+void  grafyx_write_overlay(int value);
+void  grafyx_set_microlabs(int on_off);
+int   grafyx_get_microlabs(void);
+void  grafyx_m3_reset(void);
+void  grafyx_m3_write_mode(int value);
 Uint8 grafyx_m3_read_byte(int position);
-int grafyx_m3_write_byte(int position, int value);
-void hrg_onoff(int enable);
-void hrg_write_addr(int addr, int mask);
-void hrg_write_data(int data);
-int hrg_read_data(void);
+int   grafyx_m3_write_byte(int position, int value);
+void  hrg_onoff(int enable);
+void  hrg_write_addr(int addr, int mask);
+void  hrg_write_data(int data);
+int   hrg_read_data(void);
 extern int lowe_le18;
-void lowe_le18_write_x(int);
-void lowe_le18_write_y(int);
-int lowe_le18_read(void);
-void lowe_le18_write_data(int);
-void lowe_le18_write_control(int);
+void  lowe_le18_write_x(int);
+void  lowe_le18_write_y(int);
+int   lowe_le18_read(void);
+void  lowe_le18_write_data(int);
+void  lowe_le18_write_control(int);
 
 void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons);
 void trs_set_mouse_pos(int x, int y);

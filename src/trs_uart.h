@@ -26,17 +26,17 @@
  * Emulation of the Radio Shack TRS-80 Model I/III/4/4P serial port.
  */
 extern void trs_uart_init(int reset_button);
-extern int trs_uart_check_avail(void);
-extern int trs_uart_modem_in(void);
+extern int  trs_uart_check_avail(void);
+extern int  trs_uart_modem_in(void);
 extern void trs_uart_reset_out(int value);
-extern int trs_uart_switches_in(void);
+extern int  trs_uart_switches_in(void);
 extern void trs_uart_baud_out(int value);
-extern int trs_uart_status_in(void);
+extern int  trs_uart_status_in(void);
 extern void trs_uart_control_out(int value);
-extern int trs_uart_data_in(void);
+extern int  trs_uart_data_in(void);
 extern void trs_uart_data_out(int value);
 extern char trs_uart_name[FILENAME_MAX];
-extern int trs_uart_switches;
+extern int  trs_uart_switches;
 
 #define TRS_UART_MODEM    0xE8 /* in */
 #define TRS_UART_RESET    0xE8 /* out */
@@ -54,8 +54,8 @@ extern int trs_uart_switches;
 #define TRS_UART_RCVIN    0x02
 
 /* Bits in TRS_UART_BAUD port */
-#define TRS_UART_SNDBAUD(v) (((v)&0xf0)>>4)
-#define TRS_UART_RCVBAUD(v) (((v)&0x0f)>>0)
+#define TRS_UART_SNDBAUD(v) (((v) & 0xF0) >> 4)
+#define TRS_UART_RCVBAUD(v) (((v) & 0x0F) >> 0)
 #define TRS_UART_50       0x00
 #define TRS_UART_75       0x01
 #define TRS_UART_110      0x02
@@ -90,7 +90,7 @@ extern int trs_uart_switches;
 #define TRS_UART_WORD6    0x40
 #define TRS_UART_WORD7    0x20
 #define TRS_UART_WORD8    0x60
-#define TRS_UART_WORDBITS(v) (((v)&TRS_UART_WORDMASK)>>5)
+#define TRS_UART_WORDBITS(v) (((v) & TRS_UART_WORDMASK) >> 5)
 #define TRS_UART_WORDBITS_TABLE { 5, 7, 6, 8 }
 #define TRS_UART_STOP2    0x10
 #define TRS_UART_NOPAR    0x08

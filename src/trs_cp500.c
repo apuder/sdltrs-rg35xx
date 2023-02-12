@@ -22,6 +22,7 @@
  */
 
 /*#define DEBUG_CP500 1*/
+
 #include "error.h"
 #include "trs.h"
 #include "trs_clones.h"
@@ -43,7 +44,6 @@ void cp500_reset_mode()
  */
 Uint8 cp500_switch_mode(int mode)
 {
-
   /*
    * In the original CP-500, mode switching is documented in the
    * technical manual. It looks like just reading the port is enough to
@@ -126,8 +126,8 @@ Uint8 cp500_switch_mode(int mode)
        * CP-500 M80 and later (CP/M compatibility):
        */
 
-    case 0x1d: /* 64K RAM */
-    case 0x1c: /* TODO: it is still unknown how this differs from 1D */
+    case 0x1D: /* 64K RAM */
+    case 0x1C: /* TODO: it is still unknown how this differs from 1D */
       mem_map(2);
       trs_clones_model(CP500_M80);
       break;

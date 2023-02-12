@@ -385,10 +385,10 @@ void z80_out(int port, int value)
       hrg_onoff(port);
       break;
     case 0x02: /* HRG write address low byte */
-      hrg_write_addr(value, 0xff);
+      hrg_write_addr(value, 0xFF);
       break;
     case 0x03: /* HRG write address high byte */
-      hrg_write_addr(value << 8, 0x3f00);
+      hrg_write_addr(value << 8, 0x3F00);
       break;
     case 0x05: /* HRG write data byte */
       hrg_write_data(value);
@@ -554,13 +554,13 @@ void z80_out(int port, int value)
 	ctrlimage = value;
       }
       break;
-    case 0x8c:
+    case 0x8C:
       if (trs_model >= 4) grafyx_write_xoffset(value);
       break;
-    case 0x8d:
+    case 0x8D:
       if (trs_model >= 4) grafyx_write_yoffset(value);
       break;
-    case 0x8e:
+    case 0x8E:
       if (trs_model >= 4) grafyx_write_overlay(value);
       break;
     case 0x90:
@@ -669,7 +669,7 @@ void z80_out(int port, int value)
 
 int z80_in(int port)
 {
-  int value = 0xff; /* value returned for nonexistent ports */
+  int value = 0xFF; /* value returned for nonexistent ports */
 
   /* EG 3200 Genie III */
   if (eg3200) {
@@ -948,7 +948,7 @@ int z80_in(int port)
         value = sys_byte_in();
       goto done;
     case 0xFF:
-      value = (!modesel ? 0x7f : 0x3f) | trs_cassette_in();
+      value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
       goto done;
     }
 
@@ -1016,7 +1016,7 @@ int z80_in(int port)
     case 0xFC:
     case 0xFD:
     case 0xFF:
-      value = (modeimage & 0x7e) | trs_cassette_in();
+      value = (modeimage & 0x7E) | trs_cassette_in();
       goto done;
     }
   }
