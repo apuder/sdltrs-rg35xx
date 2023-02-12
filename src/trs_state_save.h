@@ -22,6 +22,9 @@
  * SUCH DAMAGE.
 */
 
+#ifndef _TRS_STATE_SAVE_H
+#define _TRS_STATE_SAVE_H
+
 #include <SDL_types.h>
 
 int  trs_state_save(const char *filename);
@@ -73,3 +76,5 @@ void trs_mem_load(FILE *file);
 void trs_stringy_load(FILE *file);
 void trs_uart_load(FILE *file);
 void trs_z80_load(FILE *file);
+
+#endif /* _TRS_STATE_SAVE_H */

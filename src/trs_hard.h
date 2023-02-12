@@ -31,6 +31,8 @@
  * found in odd corners.  Anyone have a real WD10xx data sheet?
  */
 
+#ifndef _TRS_HARD_H
+#define _TRS_HARD_H
 extern void  trs_hard_init(int poweron);
 extern void  trs_hard_attach(int drive, const char *diskname);
 extern void  trs_hard_remove(int drive);
@@ -226,3 +228,5 @@ extern int   trs_hard_getwriteprotect(int unit);
  *  rrrr = step rate; 0000=35us, else rrrr*0.5ms
  */
 #define TRS_HARD_SEEK 0x70
+
+#endif /* _TRS_HARD_H */

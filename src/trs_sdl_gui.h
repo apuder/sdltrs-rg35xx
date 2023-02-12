@@ -27,6 +27,9 @@
    Last modified on Wed May 07 09:12:00 MST 2006 by markgrebe
 */
 
+#ifndef _TRS_SDL_GUI_H
+#define _TRS_SDL_GUI_H
+
 #ifdef _WIN32
 #undef  INTERFACE
 #endif
@@ -68,3 +71,5 @@ int  trs_gui_file_browse(const char* path, char* filename, const char* mask,
 void trs_gui_clear_rect(int x, int y, int w, int h);
 void trs_gui_write_char(int col, int row, Uint8 char_index, int invert);
 int  trs_sdl_savebmp(const char *name);
+
+#endif /* _TRS_SDL_GUI_H */

@@ -37,6 +37,9 @@
  * SOFTWARE.
  */
 
+#ifndef _TRS_CASSETTE_H
+#define _TRS_CASSETTE_H
+
 #define MAX_SAMPLE_RATE 44100  /* samples/sec to use for .wav files */
 
 int create_wav_header(FILE *f);
@@ -50,3 +53,5 @@ void trs_set_cassette_position(int pos);
 void trs_cassette_kickoff(int dummy);
 void orch90_flush(int dummy);
 void trs_cassette_update(int dummy);
+
+#endif /* _TRS_CASSETTE_H */

@@ -22,6 +22,9 @@
  * SOFTWARE.
  */
 
+#ifndef _TRS_IMP_EXP_H
+#define _TRS_IMP_EXP_H
+
 /*
  * trs_imp_exp.h
  *
@@ -291,3 +294,4 @@ extern void do_emt_resetdisk(void);
 extern void trs_impexp_xtrshard_attach(int drive);
 extern void trs_impexp_xtrshard_remove(int drive);
 
+#endif /* _TRS_IMP_EXP_H */

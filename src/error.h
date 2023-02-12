@@ -13,6 +13,11 @@
  * must retain this notice.
  */
 
+#ifndef _ERROR_H
+#define _ERROR_H
+
 void debug(const char *fmt, ...);
 void error(const char *fmt, ...);
 void fatal(const char *fmt, ...);
+
+#endif /* _ERROR_H */

@@ -26,6 +26,8 @@
  * Emulate Model-I or Model-III disk controller
  */
 
+#ifndef _TRS_DISK_H
+#define _TRS_DISK_H
 extern void  trs_disk_init(int reset_button);
 extern void  trs_disk_select_write(Uint8 data);
 extern Uint8 trs_disk_track_read(void);
@@ -244,3 +246,4 @@ extern int trs_disk_truedam;
 /*      TRSDISK_WRITEPRT 0x40*/
 /*      TRSDISK_NOTRDY   0x80*/
 
+#endif /* _TRS_DISK_H */

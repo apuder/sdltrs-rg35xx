@@ -26,6 +26,9 @@
    Last modified on Wed May 07 09:12:00 MST 2006 by markgrebe
 */
 
+#ifndef _TRS_MKDISK_H
+#define _TRS_MKDISK_H
+
 void trs_write_protect(int type, int drive);
 
 int  trs_create_blank_jv1(const char *fname);
@@ -34,3 +37,5 @@ int  trs_create_blank_dmk(const char *fname, int sides, int density,
                           int eight, int ignden);
 int  trs_create_blank_hard(const char *fname, int cyl, int sec,
                            int gran, int dir);
+
+#endif /* _TRS_MKDISK_H */

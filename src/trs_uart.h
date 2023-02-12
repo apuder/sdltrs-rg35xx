@@ -25,6 +25,10 @@
 /*
  * Emulation of the Radio Shack TRS-80 Model I/III/4/4P serial port.
  */
+
+#ifndef _TRS_UART_H
+#define _TRS_UART_H
+
 extern void trs_uart_init(int reset_button);
 extern int  trs_uart_check_avail(void);
 extern int  trs_uart_modem_in(void);
@@ -97,3 +101,5 @@ extern int  trs_uart_switches;
 #define TRS_UART_NOTBREAK 0x04
 #define TRS_UART_DTR      0x02 /* mislabelled as RTS in Model I manual */
 #define TRS_UART_RTS      0x01 /* mislabelled as DTR in Model I manual */
+
+#endif /* _TRS_UART_H */

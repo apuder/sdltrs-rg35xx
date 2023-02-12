@@ -27,6 +27,9 @@
    Last modified on Wed May 07 09:12:00 MST 2006 by markgrebe
 */
 
+#ifndef _TRS_SDL_KEYBOARD_H
+#define _TRS_SDL_KEYBOARD_H
+
 #define JOY_BOUNCE      (20000)
 #define KEY_QUEUE_SIZE  (32)
 #define STRETCH_AMOUNT  (4000)
@@ -39,3 +42,5 @@ void trs_open_joystick(void);
 void trs_joy_axis(Uint8 axis, short value, int bounce);
 void trs_keyboard_save(FILE *file);
 void trs_keyboard_load(FILE *file);
+
+#endif /* _TRS_SDL_KEYBOARD_H */
