@@ -42,7 +42,6 @@ extern char* trs_hard_getfilename(int unit);
 extern int   trs_hard_getwriteprotect(int unit);
 
 /* RSHARD assumes 32 sectors/track */
-/* Other sizes currently not emulated */
 #define TRS_HARD_SEC_PER_TRK 32
 
 /*

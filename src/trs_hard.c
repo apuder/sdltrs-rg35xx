@@ -356,10 +356,6 @@ static void hard_format(int cmd)
   debug("hard_format drive %d cyl %d hd %d\n",
 	state.drive, state.cyl, state.head);
 #endif
-  if (state.seccnt != TRS_HARD_SEC_PER_TRK) {
-    error("trs_hard: can only do %d sectors/track, not %d",
-	  TRS_HARD_SEC_PER_TRK, state.seccnt);
-  }
   /* !!should probably set up to read skew table here */
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
 }

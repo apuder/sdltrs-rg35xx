@@ -270,8 +270,7 @@ int trs_create_blank_dmk(const char *fname, int sides, int density,
   return 0;
 }
 
-int trs_create_blank_hard(const char *fname, int cyl, int sec,
-                          int gran, int dir)
+int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
 {
   /* Unformatted hard disk */
   /* We don't care about most of this header, but we generate
@@ -307,11 +306,12 @@ int trs_create_blank_hard(const char *fname, int cyl, int sec,
   rhh.mm = lt->tm_mon + 1;
   rhh.dd = lt->tm_mday;
   rhh.yy = lt->tm_year;
-  rhh.dparm = 0;
-  rhh.cyl = cyl;
-  rhh.sec = sec;
-  rhh.gran = gran;
-  rhh.dcyl = dir;
+  rhh.heads = heads;
+  rhh.dparm = cyls >> 8; /* MSB of cylinders */
+  rhh.cyl = cyls & 0xff; /* LSB of cylinders */
+  rhh.sec = secs;
+  rhh.gran = 8; /* deprecated */
+  rhh.dcyl = 1; /* deprecated, should be 1 */
   snprintf(rhh.label, 9, "%s", "xtrshard");
 
   for (i = 0; i <= 31; i++) {
