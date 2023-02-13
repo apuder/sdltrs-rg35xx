@@ -27,15 +27,16 @@ typedef struct {
   Uint8 mm;        /* 12: Creation month: mm */
   Uint8 dd;        /* 13: Creation day: dd */
   Uint8 yy;        /* 14: Creation year: yy (offset from 1900) */
-  Uint8 res1[12];  /* 15 - 26: reserved */
-  Uint8 dparm;     /* 27: Disk parameters: (unused with hard drives)
+  Uint8 res1[11];  /* 15 - 25: reserved */
+  Uint8 heads;     /* 26: Heads */
+  Uint8 dparm;     /* 27: Disk parameters; cyl MSB (hard)
 		      bit 7: Density: 0 = double, 1 = single
 		      bit 6: Sides: 0 = one side, 1 = 2 sides
 		      bit 5: First sector: 0 if sector 0, 1 if sector 1
 		      bit 4: DAM convention: 0 if normal (LDOS),
 		      1 if reversed (TRSDOS 1.3)
 		      bit 3 - 0: reserved */
-  Uint8 cyl;       /* 28: Number of cylinders per disk */
+  Uint8 cyl;       /* 28: Number of cylinders per disk; cyl LSB (hard) */
   Uint8 sec;       /* 29: Number of sectors per track (floppy); cyl (hard) */
   Uint8 gran;      /* 30: Number of granules per track (floppy); cyl (hard)*/
   Uint8 dcyl;      /* 31: Directory cylinder [mkdisk sets to 1; xtrs ignores]*/

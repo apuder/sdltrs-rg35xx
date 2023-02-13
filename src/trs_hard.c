@@ -402,6 +402,7 @@ static int open_drive(int drive)
   ReedHardHeader rhh;
   size_t res;
   int err = 0;
+  int secs;
 
   if (d->file != NULL) {
     fclose(d->file);
@@ -438,14 +439,22 @@ static int open_drive(int drive)
   if (rhh.flag1 & 0x80) d->writeprot = 1;
 
   /* Use the number of cylinders specified in the header */
-  d->cyls = rhh.cyl ? rhh.cyl : 256;
+  d->cyls  = ((Uint8)(rhh.dparm & 0x3)) << 8;
+  d->cyls += rhh.cyl;
 
-  /* Use the number of secs/track that RSHARD requires */
-  d->secs = TRS_HARD_SEC_PER_TRK;
+  secs = rhh.sec ? rhh.sec : 256;
+  if (rhh.heads == 0) {
+    /* header gives only secs/cyl. Compute number of heads from
+       this and the assumed number of secs/track */
 
-  /* Header gives only secs/cyl.  Compute number of heads from
-     this and the assumed number of secs/track. */
-  d->heads = (rhh.sec ? rhh.sec : 256) / d->secs;
+    /* use the number of secs/track that RSHARD requires */
+    d->secs  = TRS_HARD_SEC_PER_TRK;
+    d->heads = secs / d->secs;
+  } else {
+    /* header includes head count */
+    d->heads = rhh.heads;
+    d->secs  = secs / d->heads;
+  }
 
   if ((rhh.sec % d->secs) != 0 ||
       d->heads <= 0 || d->heads > TRS_HARD_MAXHEADS) {
