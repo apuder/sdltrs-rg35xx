@@ -251,7 +251,7 @@ void trs_hard_out(int port, int value)
     state.cyl = (state.cyl & 0x00ff) | ((value << 8) & 0xff00);
     break;
   case TRS_HARD_SDH:
-    state.secsize = 256 << (value & TRS_HARD_SIZEMASK);
+    state.secsize = 256 << ((value & TRS_HARD_SIZEMASK) >> TRS_HARD_SIZESHIFT);
     if (state.secsize > 1024) state.secsize = 128;
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
     state.head = (value & TRS_HARD_HEADMASK) >> TRS_HARD_HEADSHIFT;
