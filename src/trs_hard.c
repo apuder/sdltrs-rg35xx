@@ -67,6 +67,7 @@ typedef struct {
   Uint8 error;
   Uint8 seccnt;
   Uint8 secnum;
+  Uint16 secsize;
   Uint16 cyl;
   Uint8 drive;
   Uint8 head;
@@ -105,6 +106,7 @@ void trs_hard_init(int poweron)
   state.error = 0;
   state.seccnt = 0;
   state.secnum = 0;
+  state.secsize = 0;
   state.cyl = 0;
   state.drive = 0;
   state.head = 0;
@@ -249,10 +251,8 @@ void trs_hard_out(int port, int value)
     state.cyl = (state.cyl & 0x00ff) | ((value << 8) & 0xff00);
     break;
   case TRS_HARD_SDH:
-    if (value & TRS_HARD_SIZEMASK) {
-      error("trs_hard: size bits set to nonzero value (0x%02x)",
-	    value & TRS_HARD_SIZEMASK);
-    }
+    state.secsize = 256 << (value & TRS_HARD_SIZEMASK);
+    if (state.secsize > 1024) state.secsize = 128;
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
     state.head = (value & TRS_HARD_HEADMASK) >> TRS_HARD_HEADSHIFT;
 #if 0
@@ -359,10 +359,6 @@ static void hard_format(int cmd)
   if (state.seccnt != TRS_HARD_SEC_PER_TRK) {
     error("trs_hard: can only do %d sectors/track, not %d",
 	  TRS_HARD_SEC_PER_TRK, state.seccnt);
-  }
-  if (state.secnum != TRS_HARD_SECSIZE_CODE) {
-    error("trs_hard: can only do %d bytes/sectors (code %d), not code %d",
-	  TRS_HARD_SECSIZE, TRS_HARD_SECSIZE_CODE, state.secnum);
   }
   /* !!should probably set up to read skew table here */
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
@@ -491,9 +487,9 @@ static int find_sector(int newstatus)
   }
   fseek(d->file,
 	sizeof(ReedHardHeader) +
-	TRS_HARD_SECSIZE * (state.cyl * d->heads * d->secs +
-			    state.head * d->secs +
-			    (state.secnum % d->secs)),
+	state.secsize * (state.cyl * d->heads * d->secs +
+			 state.head * d->secs +
+			(state.secnum % d->secs)),
 	0);
   state.status = newstatus;
   return 1;
@@ -506,7 +502,7 @@ static int hard_data_in(void)
     trs_hard_led(state.drive, 1);
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
-    if (state.bytesdone < TRS_HARD_SECSIZE) {
+    if (state.bytesdone < state.secsize) {
       state.data = getc(d->file);
       state.bytesdone++;
     }
@@ -525,14 +521,14 @@ static void hard_data_out(int value)
   state.data = value;
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
       (state.status & TRS_HARD_ERR) == 0) {
-    if (state.bytesdone < TRS_HARD_SECSIZE) {
+    if (state.bytesdone < state.secsize) {
       if (state.cyl == 0 && state.head == 0 &&
 	  state.secnum == 0 && state.bytesdone == 2) {
 	set_dir_cyl(value);
       }
       res = putc(state.data, d->file);
       state.bytesdone++;
-      if (res != EOF && state.bytesdone == TRS_HARD_SECSIZE) {
+      if (res != EOF && state.bytesdone == state.secsize) {
 	res = fflush(d->file);
       }
     }
@@ -596,6 +592,7 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
+  trs_save_uint16(file, &state.secsize, 1);
   trs_save_uint16(file, &state.cyl, 1);
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.head, 1);
@@ -620,6 +617,7 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
+  trs_load_uint16(file, &state.secsize, 1);
   trs_load_uint16(file, &state.cyl, 1);
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.head, 1);

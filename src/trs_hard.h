@@ -41,11 +41,6 @@ extern void  trs_hard_out(int port, int value);
 extern char* trs_hard_getfilename(int unit);
 extern int   trs_hard_getwriteprotect(int unit);
 
-/* Sector size is always 256 for TRSDOS/LDOS/etc. */
-/* Other sizes currently not emulated */
-#define TRS_HARD_SECSIZE 256
-#define TRS_HARD_SECSIZE_CODE 0x0f /* size code for 256 byte sectors?!! */
-
 /* RSHARD assumes 32 sectors/track */
 /* Other sizes currently not emulated */
 #define TRS_HARD_SEC_PER_TRK 32
