@@ -1494,7 +1494,7 @@ void trs_gui_hard_management(void)
         snprintf(input, 4, "%d", cylinders);
         if (trs_gui_input_string("Enter Cylinder Count", input, input, 4, 0) == 0) {
           value = atoi(input);
-          if (value >= 3 && value <= 2048) {
+          if (value != cylinders && value >= 3 && value <= 2048) {
             cylinders = value;
             if (cylinders > 203)
               trs_gui_display_message("Warning",
@@ -1508,7 +1508,7 @@ void trs_gui_hard_management(void)
         snprintf(input, 2, "%d", heads);
         if (trs_gui_input_string("Enter Head Count", input, input, 1, 0) == 0) {
           value = atoi(input);
-          if (value >= 0 && value <= 8) {
+          if (value != heads && value >= 0 && value <= 8) {
             heads = value;
             if (heads)
               sectors = heads * 32;
@@ -1521,7 +1521,7 @@ void trs_gui_hard_management(void)
         snprintf(input, 4, "%d", sectors);
         if (trs_gui_input_string("Enter Sector Count", input, input, 3, 0) == 0) {
           value = atoi(input);
-          if (value >= 4 && value <= 256) {
+          if (value != sectors && value >= 4 && value <= 256) {
             sectors = value;
             if ((sectors % 32) != 0) {
               trs_gui_display_message("Warning",
@@ -1654,7 +1654,8 @@ void trs_gui_cassette_management(void)
         snprintf(input, 11, "%d", trs_get_cassette_position());
         if (trs_gui_input_string("Enter Cassette Position in Bytes", input, input, 10, 0) == 0) {
           value = atoi(input);
-          if (value >= 0 && value <= trs_get_cassette_length())
+          if (value != trs_get_cassette_position() &&
+              value >= 0 && value <= trs_get_cassette_length())
             trs_set_cassette_position(value);
         }
         break;
@@ -1662,7 +1663,8 @@ void trs_gui_cassette_management(void)
         snprintf(input, 11, "%d", cassette_default_sample_rate);
         if (trs_gui_input_string("Enter Cassette Default Sample Rate", input, input, 10, 0) == 0) {
           value = atoi(input);
-          if (value >= 0 && value <= MAX_SAMPLE_RATE)
+          if (value != cassette_default_sample_rate &&
+              value >= 0 && value <= MAX_SAMPLE_RATE)
             cassette_default_sample_rate = value;
         }
         break;
