@@ -1508,9 +1508,11 @@ void trs_gui_hard_management(void)
         snprintf(input, 2, "%d", heads);
         if (trs_gui_input_string("Enter Head Count", input, input, 1, 0) == 0) {
           value = atoi(input);
-          if (value >= 0 && value <= 8)
+          if (value >= 0 && value <= 8) {
             heads = value;
-          else
+            if (heads)
+              sectors = heads * 32;
+          } else
             trs_gui_display_message("ERROR",
                 "Head Count must be between 0 and 8");
         }
