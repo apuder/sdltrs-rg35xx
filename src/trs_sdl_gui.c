@@ -1494,14 +1494,14 @@ void trs_gui_hard_management(void)
         snprintf(input, 5, "%d", cylinders);
         if (trs_gui_input_string("Enter Cylinder Count", input, input, 4, 0) == 0) {
           value = atoi(input);
-          if (value >= 3 && value <= 1024) {
+          if (value >= 3 && value <= 2048) {
             cylinders = value;
             if (cylinders > 203)
               trs_gui_display_message("Warning",
                   "Cylinder Count > 203 is incompatible with XTRSHARD/DCT");
           } else
             trs_gui_display_message("ERROR",
-                "Cylinder Count must be between 3 and 1024");
+                "Cylinder Count must be between 3 and 2048");
         }
         break;
       case 9:
