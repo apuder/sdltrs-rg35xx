@@ -281,9 +281,6 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   time_t tt = time(0);
   struct tm *lt = localtime(&tt);
   ReedHardHeader rhh;
-  Uint8 *rhhp = (Uint8 *) &rhh;
-  int cksum = 0;
-  int i;
   FILE *f = fopen(fname, "wb");
 
   if (f == NULL) {
@@ -295,7 +292,7 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   rhh.id1 = 0x56;
   rhh.id2 = 0xcb;
   rhh.ver = 0x10;
-  rhh.cksum = 0;  /* init for cksum computation */
+  rhh.cksum = 0;  /* Checksum (not used) */
   rhh.blks = 1;
   rhh.mb4 = 4;
   rhh.media = 0;
@@ -313,11 +310,6 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   rhh.gran = 8; /* deprecated */
   rhh.dcyl = 1; /* deprecated, should be 1 */
   snprintf(rhh.label, 9, "%s", "xtrshard");
-
-  for (i = 0; i <= 31; i++) {
-    cksum += *rhhp++;
-  }
-  rhh.cksum = ((Uint8) cksum) ^ 0x4c;
 
   fwrite(&rhh, sizeof(rhh), 1, f);
   fclose(f);
