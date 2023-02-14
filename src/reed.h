@@ -6,40 +6,37 @@ typedef struct {
   Uint8 id1;       /* 0: Identifier #1: 56H */
   Uint8 id2;       /* 1: Identifier #2: CBH */
   Uint8 ver;       /* 2: Version of format: 10H = version 1.0 */
-  Uint8 cksum;     /* 3: Simple checksum:
-		      To calculate, add together bytes 0 to 31 of header
-		      (excepting byte 3), then XOR result with 4CH */
-  Uint8 blks;      /* 4: Number of 256 byte blocks in header: should be 1 */
-  Uint8 mb4;       /* 5: Not used, but HDFORMAT sets to 4 */
-  Uint8 media;     /* 6: Media type: 0 for hard disk */
-  Uint8 flag1;     /* 7: Flags #1:
-		      bit 7: Write protected: 0 for no, 1 for yes
-                             [xtrshard/dct ignores for now]
-		      bit 6: Must be 0
-		      bit 5 - 0: reserved */
-  Uint8 flag2;     /* 8: Flags #2: reserved */
-  Uint8 flag3;     /* 9: Flags #3: reserved */
+  Uint8 cksum;     /* 3: checksum (not used) */
+  Uint8 blks;      /* 4: Number of 256 byte blocks in header: must be 1 */
+  Uint8 mb4;       /* 5: Must be 4 */
+  Uint8 media;     /* 6: Media type (must be 0 for hard disk) */
+  Uint8 flag1;     /* 7: Write protection: 0x80 if write protected, 0x00 if not */
+  Uint8 flag2;     /* 8: Flags: bit 7-1: reserved, bit 0: set if auto-boot */
+  Uint8 flag3;     /* 9: Reserved */
   Uint8 crtr;      /* 10: Created by:
 		      14H = HDFORMAT
 		      42H = xtrs mkdisk
                       80H = Cervasio xtrshard port to Vavasour M4 emulator */
-  Uint8 dfmt;      /* 11: Disk format: 0 = LDOS/LS-DOS */
+  Uint8 dfmt;      /* 11: DOS type (only needed for auto-boot):
+		      0 = Model 4 LS-DOS
+		      1 = Model I/III LDOS
+		      2 = CP/M
+		      3 = NEWDOS */
   Uint8 mm;        /* 12: Creation month: mm */
   Uint8 dd;        /* 13: Creation day: dd */
   Uint8 yy;        /* 14: Creation year: yy (offset from 1900) */
   Uint8 res1[11];  /* 15 - 25: reserved */
-  Uint8 heads;     /* 26: Heads */
-  Uint8 dparm;     /* 27: Disk parameters; cyl MSB (hard)
-		      bit 7: Density: 0 = double, 1 = single
-		      bit 6: Sides: 0 = one side, 1 = 2 sides
-		      bit 5: First sector: 0 if sector 0, 1 if sector 1
-		      bit 4: DAM convention: 0 if normal (LDOS),
-		      1 if reversed (TRSDOS 1.3)
-		      bit 3 - 0: reserved */
-  Uint8 cyl;       /* 28: Number of cylinders per disk; cyl LSB (hard) */
-  Uint8 sec;       /* 29: Number of sectors per track (floppy); cyl (hard) */
-  Uint8 gran;      /* 30: Number of granules per track (floppy); cyl (hard)*/
-  Uint8 dcyl;      /* 31: Directory cylinder [mkdisk sets to 1; xtrs ignores]*/
+  Uint8 heads;     /* 26: If non-zero, number of heads per cylinder.
+			  If zero, number of heads per cylinder is calculated as
+			  number of sectors per cylinder (byte 29) divided by 32. */
+  Uint8 dparm;     /* 27: Number of cylinders per disk (high 3 bits) */
+  Uint8 cyl;       /* 28: Number of cylinders per disk (lower 8 bits)
+			  This is the number of cylinders on the drive. which shouldn’t
+			  be higher than 1024. To preserve backwards compatibility,
+			  values of 0 in both bytes 27 and 28 means 256.*/
+  Uint8 sec;       /* 29: Number of sectors per cylinder */
+  Uint8 gran;      /* 30: Number of granules per track (deprecated) */
+  Uint8 dcyl;      /* 31: Directory cylinder (deprecated, should be 1) */
   char label[32];  /* 32: Volume label: 31 bytes terminated by 0 */
   Uint8 res2[192]; /* 64 - 255: reserved */
 } ReedHardHeader;
