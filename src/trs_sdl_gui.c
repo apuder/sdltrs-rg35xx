@@ -1496,45 +1496,54 @@ void trs_gui_hard_management(void)
         snprintf(input, 5, "%d", cylinders);
         if (trs_gui_input_string("Enter Cylinder Count", input, input, 4, 0) == 0) {
           value = atoi(input);
-          if (value != cylinders && value >= 3 && value <= 2048) {
-            cylinders = value;
-            if (cylinders > 203)
-              trs_gui_display_message("Warning",
-                  "Cylinder Count > 203 is incompatible with XTRSHARD/DCT");
-          } else
-            trs_gui_display_message("ERROR",
-                "Cylinder Count must be between 3 and 2048");
+          if (value != cylinders) {
+            if (value >= 3 && value <= 2048) {
+              cylinders = value;
+              if (cylinders > 203)
+                trs_gui_display_message("Warning",
+                    "Cylinder Count > 203 is incompatible with XTRSHARD/DCT");
+            } else {
+              trs_gui_display_message("ERROR",
+                  "Cylinder Count must be between 3 and 2048");
+            }
+          }
         }
         break;
       case 9:
         snprintf(input, 2, "%d", heads);
         if (trs_gui_input_string("Enter Head Count", input, input, 1, 0) == 0) {
           value = atoi(input);
-          if (value != heads && value >= 0 && value <= 8) {
-            heads = value;
-            if (heads)
-              sectors = heads * 32;
-          } else
-            trs_gui_display_message("ERROR",
-                "Head Count must be between 0 and 8");
+          if (value != heads) {
+            if (value >= 0 && value <= 8) {
+              heads = value;
+              if (heads)
+                sectors = heads * 32;
+            } else {
+              trs_gui_display_message("ERROR",
+                  "Head Count must be between 0 and 8");
+            }
+          }
         }
         break;
       case 10:
         snprintf(input, 4, "%d", sectors);
         if (trs_gui_input_string("Enter Sector Count", input, input, 3, 0) == 0) {
           value = atoi(input);
-          if (value != sectors && value >= 4 && value <= 256) {
-            sectors = value;
-            if ((sectors % 32) != 0) {
-              trs_gui_display_message("Warning",
-                  "Sector not a mult of 32 is incompatible with WD1000/1010");
-              if (sectors > 32)
+          if (value != sectors) {
+            if (value >= 4 && value <= 256) {
+              sectors = value;
+              if ((sectors % 32) != 0) {
                 trs_gui_display_message("Warning",
-                    "Sector is incompatible with Matthew Reed's emulators");
+                    "Sector not a mult of 32 is incompatible with WD1000/1010");
+                if (sectors > 32)
+                  trs_gui_display_message("Warning",
+                      "Sector is incompatible with Matthew Reed's emulators");
+              }
+            } else {
+              trs_gui_display_message("ERROR",
+                  "Sector Count must be between 4 and 256");
             }
-          } else
-            trs_gui_display_message("ERROR",
-                "Sector Count must be between 4 and 256");
+          }
         }
         break;
       case 11:
