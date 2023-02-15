@@ -1470,7 +1470,7 @@ void trs_gui_hard_management(void)
   int selection = 0;
 
   while (1) {
-    char input[4];
+    char input[5];
     int  i;
     int  value;
 
@@ -1493,7 +1493,7 @@ void trs_gui_hard_management(void)
         trs_gui_diskset_load();
         break;
       case 8:
-        snprintf(input, 4, "%d", cylinders);
+        snprintf(input, 5, "%d", cylinders);
         if (trs_gui_input_string("Enter Cylinder Count", input, input, 4, 0) == 0) {
           value = atoi(input);
           if (value != cylinders && value >= 3 && value <= 2048) {
