@@ -561,8 +561,10 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
     }
 #endif
     return 0;
+  } else {
+    error("failed to open directory '%s': %s", path, strerror(errno));
+    return -1;
   }
-  return -1;
 }
 
 int trs_gui_file_browse(const char *path, char *name, const char *mask,
