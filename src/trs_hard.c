@@ -484,7 +484,7 @@ static int find_sector(int newstatus)
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
-    error("trs_hard: requested cyl %d hd %d sec %d; max cyl %d hd %d sec %d\n",
+    error("trs_hard: requested cyl %d hd %d sec %d; max cyl %d hd %d sec %d",
 	  state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_NFERR;
