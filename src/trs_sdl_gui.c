@@ -1516,8 +1516,6 @@ void trs_gui_hard_management(void)
           if (value != heads) {
             if (value >= 0 && value <= 8) {
               heads = value;
-              if (heads)
-                sectors = heads * 32;
             } else {
               trs_gui_display_message("ERROR",
                   "Head Count must be between 0 and 8");
