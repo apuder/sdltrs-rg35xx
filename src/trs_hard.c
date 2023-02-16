@@ -481,7 +481,7 @@ static int find_sector(int newstatus)
 {
   Drive *d = &state.d[state.drive];
 
-  if (open_drive(state.drive) < 0) return 0;
+  if (d->cyls == 0 && open_drive(state.drive) < 0) return 0;
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
