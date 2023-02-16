@@ -1500,8 +1500,7 @@ void trs_gui_hard_management(void)
             if (value >= 3 && value <= 2048) {
               cylinders = value;
               if (cylinders > 203)
-                trs_gui_display_message("Warning",
-                    "Cylinder Count > 203 is incompatible with XTRSHARD/DCT");
+                debug("Cylinder Count > 203 is incompatible with XTRSHARD/DCT\n");
             } else {
               trs_gui_display_message("ERROR",
                   "Cylinder Count must be between 3 and 2048");
@@ -1531,11 +1530,9 @@ void trs_gui_hard_management(void)
             if (value >= 4 && value <= 256) {
               sectors = value;
               if ((sectors % 32) != 0) {
-                trs_gui_display_message("Warning",
-                    "Sector not a mult of 32 is incompatible with WD1000/1010");
+                debug("Sector not a mult of 32 is incompatible with WD1000/1010\n");
                 if (sectors > 32)
-                  trs_gui_display_message("Warning",
-                      "Sector is incompatible with Matthew Reed's emulators");
+                  debug("Sector is incompatible with Matthew Reed's emulators\n");
               }
             } else {
               trs_gui_display_message("ERROR",
