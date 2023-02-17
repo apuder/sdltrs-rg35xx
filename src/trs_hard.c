@@ -435,8 +435,8 @@ static int open_drive(int drive)
   if (rhh.flag1 & 0x80) d->writeprot = 1;
 
   /* Use the number of cylinders specified in the header */
-  d->cyls  = ((Uint8)(rhh.dparm & 0x3)) << 8;
-  d->cyls += rhh.cyl;
+  d->cyls  = rhh.dparm << 8; /* MSB */
+  d->cyls += rhh.cyl & 0xFF; /* LSB */
 
   secs = rhh.sec ? rhh.sec : 256;
   if (rhh.heads == 0) {
