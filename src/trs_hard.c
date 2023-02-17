@@ -452,6 +452,11 @@ static int open_drive(int drive)
     d->secs  = secs / d->heads;
   }
 
+#if HARDDEBUG2
+  debug("open_drive %d cyls %d heads %d secs %d\n",
+	drive, d->cyls, d->heads, d->secs);
+#endif
+
   if ((rhh.sec % d->secs) != 0 ||
       d->heads <= 0 || d->heads > TRS_HARD_MAXHEADS) {
     error("trs_hard: unusable geometry (%d heads/%d secs) in image '%s'",
