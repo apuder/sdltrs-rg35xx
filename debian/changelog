@@ -1,3 +1,9 @@
+sdl2trs (1.2.26-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Jens Guenther <Jenz.Guenther@T-Online.de>  Sat, 18 Feb 2023 11:05:26 +0100
+
 sdl2trs (1.2.25-1) unstable; urgency=medium
 
   * New upstream release

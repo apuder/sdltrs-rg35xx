@@ -1,3 +1,12 @@
+## Version 1.2.26 Release 02-18-2023:
+
+ * Added Sector Size Support for WD1000/1010.
+ * Added Hard Disks (WD) for EACA EG 3200 Genie III and TCS Genie IIIs.
+ * Added Floppy Disk controller (Expansion Interface) option.
+ * Added debug command to modify the ROM.
+ * Fixed Aster CT-80 charset in TRS-80 mode.
+ * Fixed TRS-80 Model 4/4P Video Page.
+
 ## Version 1.2.25 Release 12-18-2022:
 
  * Added Prologica CP-500/M80 support by Leonardo Brondani Schenkel.
