@@ -2,7 +2,7 @@ Source: sdl2trs
 Section: contrib/otherosfs
 Priority: optional
 Maintainer: Jens Guenther <Jenz.Guenther@T-Online.de>
-Build-Depends: debhelper(>= 5), libreadline-dev, libsdl2.0-dev
+Build-Depends: debhelper(>= 7), libreadline-dev, libsdl2.0-dev
 Standards-Version: 3.9.6
 Homepage: https://gitlab.com/jengun/sdltrs/
 
