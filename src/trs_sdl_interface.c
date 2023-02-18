@@ -117,6 +117,7 @@ char trs_state_file[FILENAME_MAX];
 static Uint8 trs_screen[SCREEN_SIZE];
 static Uint8 char_ram[MAX_CHARS][MAX_CHAR_HEIGHT];
 static char scale_quality = '1';
+static int aspect_ratio = TRUE;
 static int cpu_panel;
 static int debugger;
 static int screen_chars = 1024;
@@ -272,6 +273,7 @@ static const struct {
   int intArg;
   void *strArg;
 } options[] = {
+  { "aspectratio",     trs_opt_value,         0, 1, &aspect_ratio        },
   { "background",      trs_opt_color,         1, 0, &background          },
   { "bg",              trs_opt_color,         1, 0, &background          },
   { "borderwidth",     trs_opt_borderwidth,   1, 0, NULL                 },
@@ -343,6 +345,7 @@ static const struct {
   { "megamem",         trs_opt_value,         0, 1, &megamem             },
   { "model",           trs_opt_model,         1, 0, NULL                 },
   { "mousepointer",    trs_opt_value,         0, 1, &mousepointer        },
+  { "noaspectratio",   trs_opt_value,         0, 0, &aspect_ratio        },
   { "noemtsafe",       trs_opt_value,         0, 0, &trs_emtsafe         },
   { "nofdc",           trs_opt_value,         0, 0, &trs_disk_controller },
   { "nofullscreen",    trs_opt_value,         0, 0, &fullscreen          },
@@ -1117,6 +1120,7 @@ int trs_write_config_file(const char *filename)
     return -1;
   }
 
+  fprintf(config_file, "%saspectratio\n", aspect_ratio ? "" : "no");
   fprintf(config_file, "background=0x%x\n", background);
   fprintf(config_file, "borderwidth=%d\n", window_border_width);
   fprintf(config_file, "cassdir=%s\n", trs_cass_dir);
@@ -1399,7 +1403,9 @@ void trs_screen_init(int resize)
   if (texture == NULL)
     fatal("failed to create texture: %s", SDL_GetError());
 
-  SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
+  if (aspect_ratio)
+    SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
+
   if (resize) {
     SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
     SDL_SetWindowPosition(window, window_x, window_y);
