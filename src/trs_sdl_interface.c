@@ -3407,7 +3407,7 @@ void m6845_screen(int chars, int lines, int raster, int factor)
 
   if (changed) {
     if (screen_chars < SCREEN_SIZE)
-      memset(&trs_screen[screen_chars], ' ', SCREEN_SIZE - screen_chars + 1);
+      memset(&trs_screen[screen_chars], ' ', SCREEN_SIZE - screen_chars - 1);
 
     screen_chars = row_chars * col_chars;
     if (screen_chars > SCREEN_SIZE)
