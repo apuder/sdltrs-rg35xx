@@ -2155,6 +2155,11 @@ void trs_get_event(int wait)
             keysym.sym = 0x8d;
             goto done;
           }
+          /* Del for Clear */
+          if (keysym.sym == SDLK_DELETE) {
+            keysym.sym = 0x116;
+            goto done;
+          }
           if (keysym.sym == SDLK_LCTRL) {
             keysym.sym = 0x12f;
             goto done;
