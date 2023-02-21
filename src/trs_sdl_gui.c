@@ -2074,7 +2074,6 @@ void trs_gui_misc_settings(void)
    {"Turbo Paste                                             ", MENU_NORMAL},
    {"", 0}};
   const char *printer[] = {"     None", "     Text"};
-  int gui_bracket = trs_kb_bracket_state ? 1 : 0;
   int selection = 0;
 
   while (1) {
@@ -2085,7 +2084,7 @@ void trs_gui_misc_settings(void)
     snprintf(&menu[4].text[51], 10, "%s", printer[trs_printer]);
     trs_gui_limit_string(trs_uart_name, &menu[6].text[2], 58);
     snprintf(&menu[7].text[56], 5, "0x%02X", trs_uart_switches);
-    snprintf(&menu[8].text[50], 11, "%s", yes_no[gui_bracket]);
+    snprintf(&menu[8].text[50], 11, "%s", yes_no[trs_kb_bracket_state]);
     snprintf(&menu[9].text[50], 11, "%s", yes_no[trs_sound]);
     snprintf(&menu[10].text[50], 11, "%s", yes_no[timer_overclock]);
     snprintf(&menu[11].text[50], 11, "%10d", timer_overclock_rate);
@@ -2130,8 +2129,8 @@ void trs_gui_misc_settings(void)
         }
         break;
       case 8:
-        gui_bracket = trs_gui_display_popup("Bracket", yes_no, 2, gui_bracket);
-        trs_kb_bracket(gui_bracket);
+        trs_kb_bracket_state = trs_gui_display_popup("Bracket", yes_no, 2, trs_kb_bracket_state);
+        trs_kb_bracket(trs_kb_bracket_state);
         break;
       case 9:
         trs_sound = trs_gui_display_popup("Sound", yes_no, 2, trs_sound);
