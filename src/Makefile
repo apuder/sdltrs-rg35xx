@@ -66,10 +66,12 @@ win64:	SDL_INC	?= -I${MINGW64}\include\SDL2
 win64:	SDL_LIB	?= -L${MINGW64}\lib -lmingw32 -lSDL2main -lSDL2
 win64:	${PROG}
 
+MSYS		:=$(if $(findstring Msys, $(shell uname -o)), Msys)
+SSPLIB		:=$(if ${MSYS},-lssp,)
 READLINELIBS	 =$(if ${READLINE},-lreadline,)
 ZBX		?= -DZBX
 CFLAGS		?= -g -O2 -Wall
 CFLAGS		+= ${SDL_INC} ${ENDIAN} ${MACROS} ${READLINE} ${ZBX}
 
 ${PROG}: ${OBJS}
-	${CC} -o ${PROG} ${OBJS} ${SDL_LIB} ${LDFLAGS} ${READLINELIBS}
+	${CC} -o ${PROG} ${OBJS} ${SDL_LIB} ${LDFLAGS} ${READLINELIBS} ${SSPLIB}
