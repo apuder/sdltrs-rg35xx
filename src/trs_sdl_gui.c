@@ -1529,11 +1529,6 @@ void trs_gui_hard_management(void)
           if (value != sectors) {
             if (value >= 4 && value <= 256) {
               sectors = value;
-              if ((sectors % 32) != 0) {
-                debug("Sector not a mult of 32 is incompatible with WD1000/1010\n");
-                if (sectors > 32)
-                  debug("Sector is incompatible with Matthew Reed's emulators\n");
-              }
             } else {
               trs_gui_display_message("ERROR",
                   "Sector Count must be between 4 and 256");
