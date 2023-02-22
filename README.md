@@ -40,6 +40,9 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support Genieplus Memory Card for EACA EG 3200 Genie III
   * Support Prologica CP-500/M80 by Leonardo Brondani Schenkel
   * Partial emulation of Aster CT-80
+  * Support 128/256/512/1024 bytes Sector Size for WD1000/1010
+  * Support up to 8192 Hard Disk Cylinders
+  * Modify addresses in ROM with debugger
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
