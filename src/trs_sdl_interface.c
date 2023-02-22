@@ -2145,28 +2145,21 @@ void trs_get_event(int wait)
           keysym.sym = SDLK_LSHIFT;
 
         if (trs_clones.model & (EG3200 | GENIE3S)) {
+          if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
+            keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
+            goto done;
+          }
           /* 1-5 on numeric keypad for P1-P5 / 6 for ESC */
           if (keysym.sym >= SDLK_KP_1 && keysym.sym <= SDLK_KP_6) {
             keysym.sym = (keysym.sym - SDLK_KP_1) + 0x88;
             goto done;
           }
-          /* End for Escape */
-          if (keysym.sym == SDLK_END) {
-            keysym.sym = 0x8d;
-            goto done;
-          }
-          /* Del for Clear */
-          if (keysym.sym == SDLK_DELETE) {
-            keysym.sym = 0x116;
-            goto done;
-          }
-          if (keysym.sym == SDLK_LCTRL) {
-            keysym.sym = 0x12f;
-            goto done;
-          }
-          if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
-            keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
-            goto done;
+          switch (keysym.sym) {
+            case SDLK_DELETE:  keysym.sym = 0x116; goto done; /* Clear */
+            case SDLK_END:     keysym.sym = 0x08d; goto done; /* ESC   */
+            case SDLK_LCTRL:   keysym.sym = 0x12f; goto done; /* Ctrl  */
+            default:
+              break;
           }
         } else {
           if (trs_model == 1) {
