@@ -160,7 +160,7 @@ trs_hard_getwriteprotect(int unit)
 /* Read from an I/O port mapped to the controller */
 int trs_hard_in(int port)
 {
-  int v;
+  int v = 0xff;
 
   if (state.present) {
     switch (port) {
@@ -203,11 +203,8 @@ int trs_hard_in(int port)
       v = state.status;
       break;
     default:
-      v = 0xff;
       break;
     }
-  } else {
-    v = 0xff;
   }
 #if HARDDEBUG1
   debug("%02x -> %02x\n", port, v);
@@ -445,7 +442,7 @@ static int open_drive(int drive)
 
     /* use the number of secs/track that RSHARD requires */
     d->secs  = TRS_HARD_SEC_PER_TRK;
-    d->heads = secs / d->secs;
+    d->heads = secs / TRS_HARD_SEC_PER_TRK;
   } else {
     /* header includes head count */
     d->heads = rhh.heads;
