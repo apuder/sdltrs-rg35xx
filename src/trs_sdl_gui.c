@@ -1029,6 +1029,8 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
           return -1;
       }
     }
+    if (entry[selection].type == MENU_HARD)
+      return selection;
   }
 }
 
@@ -1463,10 +1465,10 @@ void trs_gui_hard_management(void)
    {"Insert Created Hard Disk Image Into Drive                ", MENU_NORMAL},
    {"Create Hard Disk Image with Above Parameters", MENU_NORMAL},
    {"", 0}};
-  static int cylinders = 202;
-  static int heads = 0;
-  static int sectors = 256;
   static int drive;
+  int cylinders = trs_hard_getcyls(0) ? trs_hard_getcyls(0) : 202;
+  int heads     = trs_hard_getheads(0) ? trs_hard_getheads(0) : 0;
+  int sectors   = trs_hard_getsecs(0) ? trs_hard_getsecs(0) : 256;
   int selection = 0;
 
   while (1) {
@@ -1486,6 +1488,16 @@ void trs_gui_hard_management(void)
 
     selection = trs_gui_display_menu("Hard Disk Management", menu, selection);
     switch (selection) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+        if (trs_hard_getfilename(selection)[0]) {
+          cylinders = trs_hard_getcyls(selection);
+          heads     = trs_hard_getheads(selection);
+          sectors   = trs_hard_getsecs(selection);
+        }
+        break;
       case 5:
         trs_gui_diskset_save();
         break;

@@ -157,6 +157,24 @@ trs_hard_getwriteprotect(int unit)
   return state.d[unit].writeprot;
 }
 
+int
+trs_hard_getcyls(int unit)
+{
+  return state.d[unit].cyls;
+}
+
+int
+trs_hard_getheads(int unit)
+{
+  return state.d[unit].heads;
+}
+
+int
+trs_hard_getsecs(int unit)
+{
+  return state.d[unit].secs;
+}
+
 /* Read from an I/O port mapped to the controller */
 int trs_hard_in(int port)
 {

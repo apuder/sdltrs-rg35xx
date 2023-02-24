@@ -40,6 +40,9 @@ extern int   trs_hard_in(int port);
 extern void  trs_hard_out(int port, int value);
 extern char* trs_hard_getfilename(int unit);
 extern int   trs_hard_getwriteprotect(int unit);
+extern int   trs_hard_getcyls(int unit);
+extern int   trs_hard_getheads(int unit);
+extern int   trs_hard_getsecs(int unit);
 
 /* RSHARD assumes 32 sectors/track */
 #define TRS_HARD_SEC_PER_TRK 32
