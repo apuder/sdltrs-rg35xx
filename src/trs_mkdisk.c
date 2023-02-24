@@ -33,7 +33,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <time.h>
 #include <SDL_types.h>
 
 #include "error.h"
@@ -278,8 +277,6 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
      Matthew Reed's emulator or with Pete Cervasio's port of
      xtrshard/dct to Jeff Vavasour's Model III/4 emulator.
   */
-  time_t tt = time(0);
-  struct tm *lt = localtime(&tt);
   ReedHardHeader rhh;
   FILE *f = fopen(fname, "wb");
 
@@ -300,9 +297,6 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   rhh.flag2 = rhh.flag3 = 0;
   rhh.crtr = 0x42;
   rhh.dfmt = 0;
-  rhh.mm = lt->tm_mon + 1;
-  rhh.dd = lt->tm_mday;
-  rhh.yy = lt->tm_year;
   rhh.heads = heads;
   rhh.dparm = cyls >> 8; /* MSB of cylinders */
   rhh.cyl = cyls & 0xff; /* LSB of cylinders */

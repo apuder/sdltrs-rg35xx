@@ -22,10 +22,7 @@ typedef struct {
 		      1 = Model I/III LDOS
 		      2 = CP/M
 		      3 = NEWDOS */
-  Uint8 mm;        /* 12: Creation month: mm */
-  Uint8 dd;        /* 13: Creation day: dd */
-  Uint8 yy;        /* 14: Creation year: yy (offset from 1900) */
-  Uint8 res1[11];  /* 15 - 25: reserved */
+  Uint8 res1[14];  /* 12 - 25: reserved */
   Uint8 heads;     /* 26: If non-zero, number of heads per cylinder.
 			  If zero, number of heads per cylinder is calculated as
 			  number of sectors per cylinder (byte 29) divided by 32. */
