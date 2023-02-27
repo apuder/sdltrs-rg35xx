@@ -486,6 +486,7 @@ static int open_drive(int drive)
  fail:
   if (d->file) fclose(d->file);
   d->file = NULL;
+  d->filename[0] = 0;
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
   state.error = TRS_HARD_NFERR;
   return err;
