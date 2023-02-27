@@ -624,7 +624,7 @@ trs_event_scheduled(void)
 
 void trs_interrupt_save(FILE *file)
 {
-  int event;
+  int event = 0;
 
   trs_save_uint8(file, &interrupt_latch, 1);
   trs_save_uint8(file, &interrupt_mask, 1);
@@ -659,8 +659,6 @@ void trs_interrupt_save(FILE *file)
     event = 12;
   else if (event_func == trs_uart_set_empty)
     event = 13;
-  else
-    event = 0;
 
   trs_save_int(file, &event, 1);
   trs_save_int(file, &event_arg, 1);

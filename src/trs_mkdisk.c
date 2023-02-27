@@ -277,7 +277,7 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
      Matthew Reed's emulator or with Pete Cervasio's port of
      xtrshard/dct to Jeff Vavasour's Model III/4 emulator.
   */
-  ReedHardHeader rhh;
+  ReedHardHeader rhh = { 0 };
   FILE *f = fopen(fname, "wb");
 
   if (f == NULL) {
@@ -285,7 +285,6 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
     return -1;
   }
 
-  memset(&rhh, 0, sizeof(rhh));
   rhh.id1 = 0x56;
   rhh.id2 = 0xcb;
   rhh.ver = 0x10;

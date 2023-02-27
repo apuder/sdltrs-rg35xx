@@ -2581,7 +2581,7 @@ static void
 bitmap_init(int ram)
 {
   int const gui = trs_charset <= 2 ? 2 : 7;
-  int height;
+  int height    = cur_char_height;
   int i;
 
   for (i = 0; i < MAX_CHARS; i++) {
@@ -2599,8 +2599,6 @@ bitmap_init(int ram)
   /* Adjust block graphics for CP-500/M80 80x24 video mode */
   if (trs_clones.model == CP500_M80)
     height = MAX_CHAR_HEIGHT * 2;
-  else
-    height = cur_char_height;
 
   boxes_init(foreground, background, cur_char_width, height, 0);
   boxes_init(foreground, background, cur_char_width * 2, height, 1);

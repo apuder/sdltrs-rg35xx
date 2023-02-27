@@ -496,7 +496,7 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
 
   if (directory) {
     char   pathname[FILENAME_MAX];
-    char  *name;
+    char  *name = NULL;
     struct dirent *dir_entry;
     struct stat st = { 0 };
 
