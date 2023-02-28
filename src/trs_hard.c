@@ -71,6 +71,7 @@ typedef struct {
   Uint16 cyl;
   Uint8 drive;
   Uint8 head;
+  Uint8 sdh;
   Uint8 status;
   Uint8 command;
 
@@ -110,6 +111,7 @@ void trs_hard_init(int poweron)
   state.cyl = 0;
   state.drive = 0;
   state.head = 0;
+  state.sdh = 0;
   state.status = 0;
   state.command = 0;
 
@@ -217,7 +219,7 @@ int trs_hard_in(int port)
       v = (state.cyl >> 8) & 0xff;
       break;
     case TRS_HARD_SDH:
-      v = (state.drive << 3) | state.head;
+      v = state.sdh;
       break;
     case TRS_HARD_STATUS:
       v = state.status;
@@ -268,6 +270,7 @@ void trs_hard_out(int port, int value)
     state.cyl = (state.cyl & 0x00ff) | ((value << 8) & 0xff00);
     break;
   case TRS_HARD_SDH:
+    state.sdh = value;
     state.secsize = 256 << ((value & TRS_HARD_SIZEMASK) >> TRS_HARD_SIZESHIFT);
     if (state.secsize > 1024) state.secsize = 128;
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
@@ -630,6 +633,7 @@ void trs_hard_save(FILE *file)
   trs_save_uint16(file, &state.cyl, 1);
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.head, 1);
+  trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.status, 1);
   trs_save_uint8(file, &state.command, 1);
   trs_save_int(file, &state.bytesdone, 1);
@@ -657,6 +661,7 @@ void trs_hard_load(FILE *file)
   trs_load_uint16(file, &state.cyl, 1);
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.head, 1);
+  trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.status, 1);
   trs_load_uint8(file, &state.command, 1);
   trs_load_int(file, &state.bytesdone, 1);
