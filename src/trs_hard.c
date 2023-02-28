@@ -117,6 +117,7 @@ void trs_hard_init(int poweron)
     int i;
 
     state.present = 0;
+
     for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
       state.d[i].writeprot = 0;
       state.d[i].cyls = 0;
@@ -140,6 +141,7 @@ void trs_hard_remove(int drive)
 {
   if (state.d[drive].file != NULL)
     fclose(state.d[drive].file);
+
   trs_impexp_xtrshard_remove(drive);
   state.d[drive].filename[0] = 0;
   state.d[drive].file = NULL;
@@ -447,6 +449,7 @@ static int open_drive(int drive)
     err = -1;
     goto fail;
   }
+
   if (rhh.flag1 & 0x80) d->writeprot = 1;
 
   /* Use the number of cylinders specified in the header */
@@ -503,6 +506,7 @@ static int find_sector(int newstatus)
   Drive *d = &state.d[state.drive];
 
   if (d->cyls == 0 && open_drive(state.drive) < 0) return 0;
+
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
@@ -527,6 +531,7 @@ static int hard_data_in(void)
   Drive *d = &state.d[state.drive];
   if (trs_show_led)
     trs_hard_led(state.drive, 1);
+
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
@@ -598,10 +603,12 @@ static void trs_load_harddrive(FILE *file, Drive *d)
   int file_not_null;
 
   trs_load_int(file, &file_not_null, 1);
+
   if (file_not_null)
     d->file = (FILE *) 1;
   else
     d->file = NULL;
+
   trs_load_filename(file, d->filename);
   trs_load_int(file, &d->writeprot, 1);
   trs_load_int(file, &d->cyls, 1);
@@ -626,6 +633,7 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.status, 1);
   trs_save_uint8(file, &state.command, 1);
   trs_save_int(file, &state.bytesdone, 1);
+
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
     trs_save_harddrive(file, &state.d[i]);
 }
@@ -638,6 +646,7 @@ void trs_hard_load(FILE *file)
     if (state.d[i].file != NULL)
       fclose(state.d[i].file);
   }
+
   trs_load_int(file, &state.present, 1);
   trs_load_uint8(file, &state.control, 1);
   trs_load_uint8(file, &state.data, 1);
@@ -651,6 +660,7 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.status, 1);
   trs_load_uint8(file, &state.command, 1);
   trs_load_int(file, &state.bytesdone, 1);
+
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     trs_load_harddrive(file, &state.d[i]);
     if (state.d[i].file != NULL) {

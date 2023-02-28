@@ -38,9 +38,8 @@ static unsigned stateVersionNumber = 5;
 
 int trs_state_save(const char *filename)
 {
-  FILE *file;
+  FILE *file = fopen(filename, "wb");
 
-  file = fopen(filename, "wb");
   if (file) {
     trs_save_uint8(file, (Uint8 *)stateFileBanner, stateFileBannerLen);
     trs_save_uint32(file, &stateVersionNumber, 1);
@@ -58,33 +57,39 @@ int trs_state_save(const char *filename)
     trs_uart_save(file);
     trs_z80_save(file);
     trs_imp_exp_save(file);
+
     fclose(file);
     return 0;
   }
+
   error("failed to save State '%s': %s", filename, strerror(errno));
   return -1;
 }
 
 int trs_state_load(const char *filename)
 {
-  FILE *file;
-  char banner[80];
-  unsigned version;
+  FILE *file = fopen(filename, "rb");
 
-  file = fopen(filename, "rb");
   if (file) {
+    char banner[80];
+    unsigned version;
+
     trs_load_uint8(file, (Uint8 *)banner, stateFileBannerLen);
+
     if (strncmp(banner, stateFileBanner, stateFileBannerLen)) {
       error("failed to get State Banner from '%s'", filename);
       fclose(file);
       return -1;
     }
+
     trs_load_uint32(file, &version, 1);
+
     if (version != stateVersionNumber) {
       error("unsupported version %d of State file", version);
       fclose(file);
       return -1;
     }
+
     trs_main_load(file);
     trs_cassette_load(file);
     trs_clone_load(file);
@@ -99,9 +104,11 @@ int trs_state_load(const char *filename)
     trs_uart_load(file);
     trs_z80_load(file);
     trs_imp_exp_load(file);
+
     fclose(file);
     return 0;
   }
+
   error("failed to load State '%s': %s", filename, strerror(errno));
   return -1;
 }
@@ -153,12 +160,15 @@ void trs_save_uint32(FILE *file, const Uint32 *buffer, int count)
     temp = *buffer++;
     byte = temp & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     temp >>= 8;
     byte = temp & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     temp >>= 8;
     byte = temp & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     temp >>= 8;
     byte = temp & 0xFF;
     fwrite(&byte, 1, 1, file);
@@ -204,6 +214,7 @@ void trs_load_uint64(FILE *file, Uint64 *buffer, int count)
   for (i = 0; i < count; i++) {
     for (j = 0; j < 8; j++)
       fread(&byte[j], 1, 1, file);
+
     temp = 0;
     for (j = 7; j >= 0; j--) {
       temp |= byte[j];
@@ -232,9 +243,9 @@ void trs_save_short(FILE *file, const short *buffer, int count)
     }
 
     unum = num;
-
     byte = unum & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     unum = unum >> 8;
     byte = (unum & 0x7F) | sign;
     fwrite(&byte, 1, 1, file);
@@ -278,15 +289,17 @@ void trs_save_int(FILE *file, const int *buffer, int count)
     }
 
     unum = num;
+    byte = unum & 0xFF;
+    fwrite(&byte, 1, 1, file);
 
-    byte = unum & 0xFF;
-    fwrite(&byte, 1, 1, file);
     unum = unum >> 8;
     byte = unum & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     unum = unum >> 8;
     byte = unum & 0xFF;
     fwrite(&byte, 1, 1, file);
+
     unum = unum >> 8;
     byte = (unum & 0x7F) | sign;
     fwrite(&byte, 1, 1, file);
@@ -310,6 +323,7 @@ void trs_load_int(FILE *file, int *buffer, int count)
     temp = (byte3 << 24) | (byte2 << 16) | (byte1 << 8) | byte0;
     if (sign)
       temp = -temp;
+
     *buffer++ = temp;
   }
 }

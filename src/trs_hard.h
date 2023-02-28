@@ -33,6 +33,7 @@
 
 #ifndef _TRS_HARD_H
 #define _TRS_HARD_H
+
 extern void  trs_hard_init(int poweron);
 extern void  trs_hard_attach(int drive, const char *diskname);
 extern void  trs_hard_remove(int drive);

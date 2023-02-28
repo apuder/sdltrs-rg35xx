@@ -3727,10 +3727,13 @@ static void trs_save_jv3state(FILE *file, JV3State *jv3)
   trs_save_int(file, &jv3->last_used_id, 1);
   trs_save_int(file, &jv3->nblocks, 1);
   trs_save_int(file, &jv3->sorted_valid, 1);
+
   for (i = 0; i < JV3_SECSMAX + 1; i++)
     trs_save_sectorid(file, &jv3->id[i]);
+
   trs_save_int(file, jv3->offset, JV3_SECSMAX + 1);
   trs_save_short(file, jv3->sorted_id, JV3_SECSMAX + 1);
+
   for (i = 0; i < MAXTRACKS; i++)
     trs_save_short(file, jv3->track_start[i], JV3_SIDES);
 }
@@ -3743,10 +3746,13 @@ static void trs_load_jv3state(FILE *file, JV3State *jv3)
   trs_load_int(file, &jv3->last_used_id, 1);
   trs_load_int(file, &jv3->nblocks, 1);
   trs_load_int(file, &jv3->sorted_valid, 1);
+
   for (i = 0; i < JV3_SECSMAX + 1; i++)
     trs_load_sectorid(file, &jv3->id[i]);
+
   trs_load_int(file, jv3->offset, JV3_SECSMAX + 1);
   trs_load_short(file, jv3->sorted_id, JV3_SECSMAX + 1);
+
   for (i = 0; i < MAXTRACKS; i++)
     trs_load_short(file, jv3->track_start[i], JV3_SIDES);
 }
@@ -3811,6 +3817,7 @@ static void trs_save_diskstate(FILE *file, DiskState *d)
   trs_save_int(file, &d->real_step, 1);
   trs_save_int(file, &file_not_null, 1);
   trs_save_filename(file, d->filename);
+
   if (d->emutype == JV3)
     trs_save_jv3state(file, &d->u.jv3);
   else if (d->emutype == REAL)
@@ -3828,11 +3835,14 @@ static void trs_load_diskstate(FILE *file, DiskState *d)
   trs_load_int(file, &d->emutype, 1);
   trs_load_int(file, &d->real_step, 1);
   trs_load_int(file, &file_not_null, 1);
+
   if (file_not_null)
     d->file = (FILE *) 1;
   else
     d->file = NULL;
+
   trs_load_filename(file, d->filename);
+
   if (d->emutype == JV3)
     trs_load_jv3state(file, &d->u.jv3);
   else if (d->emutype == REAL)
@@ -3849,9 +3859,9 @@ void trs_disk_save(FILE *file)
   trs_save_int(file, &trs_disk_doubler, 1);
   trs_save_int(file, &trs_disk_truedam, 1);
   trs_save_int(file, &trs_disk_debug_flags, 1);
-
   trs_fdc_save(file, &state);
   trs_fdc_save(file, &other_state);
+
   for (i = 0; i < NDRIVES; i++) {
     trs_save_diskstate(file, &disk[i]);
   }
@@ -3865,12 +3875,14 @@ void trs_disk_load(FILE *file)
     if (disk[i].file != NULL)
       fclose(disk[i].file);
   }
+
   trs_load_int(file, &trs_disk_controller, 1);
   trs_load_int(file, &trs_disk_doubler, 1);
   trs_load_int(file, &trs_disk_truedam, 1);
   trs_load_int(file, &trs_disk_debug_flags, 1);
   trs_fdc_load(file, &state);
   trs_fdc_load(file, &other_state);
+
   for (i = 0; i < NDRIVES; i++) {
     trs_load_diskstate(file, &disk[i]);
      if (disk[i].file != NULL) {

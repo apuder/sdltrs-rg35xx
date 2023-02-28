@@ -478,10 +478,12 @@ static void mem_init(void)
       memory[i++] = 0xFF;
       memory[i++] = 0x00;
     }
+
     for (i = 0; i < MAX_SUPERMEM_SIZE;) {
       supermem_ram[i++] = 0xFF;
       supermem_ram[i++] = 0x00;
     }
+
     memset(&rom, 0, MAX_ROM_SIZE);
 
     mem_map(0);
@@ -523,10 +525,12 @@ void trs_reset(int poweron)
 	m6845_crtc_reset();
 	trs_screen_reset();
 	trs_screen_init(1);
+
 	if (trs_show_led) {
 	  trs_disk_led(-1, -1);
 	  trs_hard_led(-1, -1);
 	}
+
 	trs_rom_init();
 	trs_timer_init();
         /* Reset processor */
@@ -537,10 +541,12 @@ void trs_reset(int poweron)
 	trs_schedule_event(trs_reset_button_interrupt, 0, 2000);
 	trs_screen_refresh();
     }
+
     if (trs_model == 5) {
         /* Switch in boot ROM */
 	z80_out(0x9C, 1);
     }
+
     if (trs_model >= 4) {
         /* Turn off various memory map and video mode bits */
 	z80_out(0x84, 0);
@@ -549,15 +555,18 @@ void trs_reset(int poweron)
         if (hypermem)
                 z80_out(0x90, 0);
     }
+
     if (trs_model >= 3) {
 	grafyx_write_mode(0);
 	trs_interrupt_mask_write(0);
 	trs_nmi_mask_write(0);
     }
+
     if (trs_model == 3) {
         grafyx_m3_reset();
         cp500_reset_mode();
     }
+
     if (trs_model == 1) {
 	hrg_onoff(0);		/* Switch off HRG1B hi-res graphics. */
 	bank_base = 0;
@@ -581,6 +590,7 @@ void trs_reset(int poweron)
 			break;
 	}
     }
+
     trs_kb_reset();  /* Part of keyboard stretch kludge */
     clear_key_queue(); /* init the key queue */
 }

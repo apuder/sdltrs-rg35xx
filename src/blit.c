@@ -40,16 +40,18 @@ static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7)
         *dst = map[1];
       else
         *dst = map[0];
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -63,16 +65,18 @@ static void CopyBlitImageTo2Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7)
         *dst = map[1];
       else
         *dst = map[0];
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -86,22 +90,23 @@ static void CopyBlitImageTo3Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7) {
         dst[0] = map[3];
         dst[1] = map[4];
         dst[2] = map[5];
-      }
-      else {
+      } else {
         dst[0] = map[0];
         dst[1] = map[1];
         dst[2] = map[2];
       }
+
       byte <<= 1;
       dst += 3;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -115,16 +120,18 @@ static void CopyBlitImageTo4Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7)
         *dst = map[1];
       else
         *dst = map[0];
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -138,18 +145,20 @@ static void XorBlitImageTo1Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7) {
         if (*dst == map[0])
           *dst = map[1];
         else
           *dst = map[0];
       }
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -163,18 +172,20 @@ static void XorBlitImageTo2Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7) {
         if (*dst == map[0])
           *dst = map[1];
         else
           *dst = map[0];
       }
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -188,24 +199,25 @@ static void XorBlitImageTo3Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7) {
         if ((dst[0] == map[0]) && (dst[1] == map[1]) && (dst[2] == map[2])) {
           dst[0] = map[3];
           dst[1] = map[4];
           dst[2] = map[5];
-        }
-        else {
+        } else {
           dst[0] = map[0];
           dst[1] = map[1];
           dst[2] = map[2];
         }
       }
+
       byte <<= 1;
       dst += 3;
     }
+
     src += srcskip;
     dst += dstskip;
   }
@@ -219,18 +231,20 @@ static void XorBlitImageTo4Byte(int width, int height, const Uint8 *src,
     int c;
 
     for (c = 0; c < width; ++c) {
-      if ((c & 7) == 0) {
+      if ((c & 7) == 0)
         byte = *src++;
-      }
+
       if ((byte & 0x80) >> 7) {
         if (*dst == map[0])
           *dst = map[1];
         else
           *dst = map[0];
       }
+
       byte <<= 1;
       dst++;
     }
+
     src += srcskip;
     dst += dstskip;
   }

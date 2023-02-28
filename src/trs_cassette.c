@@ -1414,11 +1414,13 @@ trs_cassette_load(FILE *file)
   trs_load_int(file, &cassette_speed, 1);
   trs_load_int(file, &orch90_left, 1);
   trs_load_int(file, &orch90_right, 1);
+
   SDL_LockAudio();
   sound_ring_read_ptr = sound_ring;
   sound_ring_write_ptr = sound_ring;
   sound_ring_count = 0;
   SDL_UnlockAudio();
+
   trs_load_int(file, &soundDeviceOpen, 1);
   if (currentOpened != soundDeviceOpen) {
     if (soundDeviceOpen) {

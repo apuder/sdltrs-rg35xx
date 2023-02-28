@@ -28,6 +28,7 @@
 
 #ifndef _TRS_DISK_H
 #define _TRS_DISK_H
+
 extern void  trs_disk_init(int reset_button);
 extern void  trs_disk_select_write(Uint8 data);
 extern Uint8 trs_disk_track_read(void);

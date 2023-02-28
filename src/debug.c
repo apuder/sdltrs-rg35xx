@@ -217,6 +217,7 @@ static void show_zbxinfo(void)
 static void clear_all_traps(void)
 {
     int i;
+
     for(i = 0; i < MAX_TRAPS; ++i)
     {
 	if(trap_table[i].valid)
@@ -301,6 +302,7 @@ static void clear_trap(int i)
 static void clear_trap_address(int address, int flag)
 {
     int i;
+
     for(i = 0; i < MAX_TRAPS; ++i)
     {
 	if(trap_table[i].valid && (trap_table[i].address == address)
@@ -440,6 +442,7 @@ static void debug_run(void)
     stop_signaled = 0;
 
     t = traps[Z80_PC];
+
     while(!stop_signaled)
     {
 	if(t)
@@ -673,6 +676,7 @@ void debug_shell(void)
 		    !strcmp(command, "n") || !strcmp(command, "ni"))
 	    {
 		int is_call = 0, is_rst = 0, is_rep = 0;
+
 		switch(mem_read(Z80_PC)) {
 		  case 0xCD:	/* call address */
 		    is_call = 1;

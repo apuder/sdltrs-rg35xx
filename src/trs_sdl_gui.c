@@ -202,8 +202,10 @@ void trs_gui_write_text(const char *text, int x, int y, int invert)
 
     for (i = 0; i < len_1st_part; i++)
       trs_gui_write_char(x++, y, text[i], invert);
+
     for (; i < len_1st_part + 3; i++)
       trs_gui_write_char(x++, y, '.', invert);
+
     for (; i < end; i++)
       trs_gui_write_char(x++, y, text[pos_2nd_part++], invert);
   } else {
@@ -225,10 +227,12 @@ void trs_gui_frame(int x1, int y1, int x2, int y2)
     trs_gui_write_char(i, y1, 131, 0);
     trs_gui_write_char(i, y2, 176, 0);
   }
+
   for (i = y1 + 1; i < y2; i++) {
     trs_gui_write_char(x1, i, 149, 0);
     trs_gui_write_char(x2, i, 170, 0);
   }
+
   trs_gui_write_char(x1, y1, 151, 0);
   trs_gui_write_char(x2, y1, 171, 0);
   trs_gui_write_char(x1, y2, 181, 0);
@@ -440,6 +444,7 @@ void trs_gui_create_filename_list(void)
   if (filenamelist == NULL) {
     if ((filenamelist = (char **)malloc(256 * sizeof(char *))) == NULL)
       fatal("failed to allocate filenamelist");
+
     filenamelistsize = 256;
   }
 }
@@ -455,6 +460,7 @@ void trs_gui_add_to_filename_list(char *name)
       free(filenamelist);
       fatal("failed to reallocate filenamelist");
     }
+
     filenamelist = filenamelist_new;
     filenamelistsize *= 2;
   }
@@ -487,6 +493,7 @@ void trs_gui_delete_filename_list(void)
 
   for (i = 0; i < filenamecount; i++)
     free(filenamelist[i]);
+
   filenamecount = 0;
 }
 
@@ -588,6 +595,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
       break;
     }
   }
+
   stat(current_dir, &st);
   if (S_ISDIR(st.st_mode) == 0 || current_dir[1] == DIR_SLASH) {
     if (getcwd(current_dir, FILENAME_MAX) == NULL)
@@ -599,6 +607,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
 
 read_directory:
   trs_gui_delete_filename_list();
+
   if (trs_gui_readdirectory(current_dir, mask, browse_dir) != 0)
     return -1;
 
@@ -614,6 +623,7 @@ read_directory:
     snprintf(text, 63, "Select %s File To Load", type);
     trs_gui_center_text(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 15, 1);
   }
+
   trs_gui_write_text(text, 2, 0, 0);
 
   drawcount = filenamecount < 13 ? filenamecount : 13;
@@ -626,26 +636,32 @@ read_directory:
 
     if (redraw) {
       trs_gui_clear_rect(2, 2, 60, 13);
+
       for (i = 0; i < drawcount; i++)
         trs_gui_write_text(filenamelist[first_row + i], 2, i + 2, 0);
+
       redraw = 0;
     }
     key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
     if (key >= '0' && key <= 'z') {
       key = tolower(key);
       sel = i = first_row + selection;
+
       do {
         if (++i > filenamecount - 1)
           i = 0;
       } while (i != sel && (tolower((int)*filenamelist[i]) != key));
+
       if (i < 13) {
         first_row = 0;
         selection = i;
       } else if (i + 13 > filenamecount) {
         first_row = filenamecount - 13;
         selection = i - first_row;
-      } else
+      } else {
         first_row = i - selection;
+      }
+
       redraw = 1;
     } else {
       switch (key) {
@@ -762,6 +778,7 @@ done:
       snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
           "%s", filenamelist[selection]);
   }
+
   trs_gui_delete_filename_list();
   return selection;
 }
@@ -787,6 +804,7 @@ redraw:
 
   trs_gui_frame(1, 6, 62, 8);
   trs_gui_center_text(title, 6, 0);
+
   if (file)
     trs_gui_center_text(" TAB:Select Directory ", 8, 1);
 
@@ -801,8 +819,10 @@ redraw:
           (cur_pos >= len) ? ' ' : output[cur_pos],
           (cur_pos == pos));
     }
+
     trs_gui_write_text((insert ? " INS " : " OVR "), 56, 8, 1);
     trs_screen_update();
+
     key = trs_gui_get_key();
     switch (key) {
       case SDLK_LEFT:
@@ -903,6 +923,7 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
 
   trs_gui_frame(0, 0, 63, 15);
   trs_gui_write_text(title, 2, 0, 0);
+
   if (strstr(title, "Man"))
     trs_gui_center_text(" ENTER/INS/TAB:Insert  DEL:Remove  SPACE:Write-Protect ", 15, 1);
   else
@@ -926,10 +947,12 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
     if (key >= 'A' && key <= 'z') {
       key = toupper(key);
       sel = selection;
+
       do {
         if (++selection > num)
           selection = 0;
       } while (selection != sel && (int)*entry[selection].text != key);
+
       while (entry[selection].type == MENU_TITLE) {
         if (selection < num)
           selection++;
@@ -985,10 +1008,12 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
               trs_cassette_remove();
               break;
           }
+
           if (entry[selection].type != MENU_NORMAL) {
             entry[selection].text[0] = ' ';
             return selection;
           }
+
           break;
         case SDLK_INSERT:
         case SDLK_RETURN:
@@ -1029,6 +1054,7 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
           return -1;
       }
     }
+
     if (entry[selection].type == MENU_HARD)
       return selection;
   }
@@ -1061,11 +1087,13 @@ int trs_gui_display_popup(const char *title, const char **entry,
         if (key == 'Y')
           return 1;
       }
+
       i = selection;
       do {
         if (selection++ >= num)
           selection = 0;
       } while (selection != i && strchr(entry[selection], key) == NULL);
+
     } else {
       switch (key) {
         case SDLK_DOWN:
@@ -1115,6 +1143,7 @@ int trs_gui_display_popup_matrix(const char* title, const char **entry,
   trs_gui_frame(x - 1, y - 1, x + width, y + rows);
   trs_gui_clear_rect(x, y, width, rows);
   trs_gui_center_text(title, y - 1, 0);
+
   for (row = 0; row < rows; row++)
     for (col = 0; col < cols; col++)
       trs_gui_write_text(entry[row * cols + col], x + col * len, y + row, 0);
@@ -1525,12 +1554,11 @@ void trs_gui_hard_management(void)
         if (trs_gui_input_string("Enter Head Count", input, input, 1, 0) == 0) {
           value = atoi(input);
           if (value != heads) {
-            if (value >= 0 && value <= 8) {
+            if (value >= 0 && value <= 8)
               heads = value;
-            } else {
+            else
               trs_gui_display_message("ERROR",
                   "Head Count must be between 0 and 8");
-            }
           }
         }
         break;
@@ -1539,12 +1567,11 @@ void trs_gui_hard_management(void)
         if (trs_gui_input_string("Enter Sector Count", input, input, 3, 0) == 0) {
           value = atoi(input);
           if (value != sectors) {
-            if (value >= 4 && value <= 256) {
+            if (value >= 4 && value <= 256)
               sectors = value;
-            } else {
+            else
               trs_gui_display_message("ERROR",
                   "Sector Count must be between 4 and 256");
-            }
           }
         }
         break;
@@ -1655,7 +1682,8 @@ void trs_gui_cassette_management(void)
     trs_gui_limit_string(trs_cassette_getfilename(), &menu[0].text[8], 52);
     menu[0].text[0] = trs_cass_getwriteprotect() ? '*' : ' ';
 
-    snprintf(&menu[2].text[36], 25, "%10d of %10d", trs_get_cassette_position(), trs_get_cassette_length());
+    snprintf(&menu[2].text[36], 25, "%10d of %10d", trs_get_cassette_position(),
+             trs_get_cassette_length());
     snprintf(&menu[3].text[50], 11, "%10d", cassette_default_sample_rate);
     snprintf(&menu[5].text[54], 7, "%s", cass_type[type]);
     snprintf(&menu[6].text[50], 11, "%s", yes_no[insert]);
@@ -1665,7 +1693,8 @@ void trs_gui_cassette_management(void)
     switch (selection) {
       case 2:
         snprintf(input, 11, "%d", trs_get_cassette_position());
-        if (trs_gui_input_string("Enter Cassette Position in Bytes", input, input, 10, 0) == 0) {
+        if (trs_gui_input_string("Enter Cassette Position in Bytes",
+            input, input, 10, 0) == 0) {
           value = atoi(input);
           if (value != trs_get_cassette_position() &&
               value >= 0 && value <= trs_get_cassette_length())
@@ -1674,7 +1703,8 @@ void trs_gui_cassette_management(void)
         break;
       case 3:
         snprintf(input, 11, "%d", cassette_default_sample_rate);
-        if (trs_gui_input_string("Enter Cassette Default Sample Rate", input, input, 10, 0) == 0) {
+        if (trs_gui_input_string("Enter Cassette Default Sample Rate",
+            input, input, 10, 0) == 0) {
           value = atoi(input);
           if (value != cassette_default_sample_rate &&
               value >= 0 && value <= MAX_SAMPLE_RATE)
@@ -2111,7 +2141,8 @@ void trs_gui_misc_settings(void)
         break;
       case 3:
         snprintf(input, 11, "%d", stretch_amount);
-        if (trs_gui_input_string("Enter Keystretch in Cycles", input, input, 10, 0) == 0) {
+        if (trs_gui_input_string("Enter Keystretch in Cycles",
+            input, input, 10, 0) == 0) {
           stretch_amount = atoi(input);
           if (stretch_amount < 0)
             stretch_amount = STRETCH_AMOUNT;
@@ -2130,13 +2161,15 @@ void trs_gui_misc_settings(void)
         break;
       case 7:
         snprintf(input, 3, "%2X", trs_uart_switches);
-        if (trs_gui_input_string("Enter Serial Switches (Hex, XX)", input, input, 2, 0) == 0) {
+        if (trs_gui_input_string("Enter Serial Switches (Hex, XX)",
+            input, input, 2, 0) == 0) {
           trs_uart_switches = strtol(input, NULL, 16);
           trs_uart_init(0);
         }
         break;
       case 8:
-        trs_kb_bracket_state = trs_gui_display_popup("Bracket", yes_no, 2, trs_kb_bracket_state);
+        trs_kb_bracket_state = trs_gui_display_popup("Bracket",
+            yes_no, 2, trs_kb_bracket_state);
         trs_kb_bracket(trs_kb_bracket_state);
         break;
       case 9:
@@ -2149,7 +2182,8 @@ void trs_gui_misc_settings(void)
         break;
       case 11:
         snprintf(input, 11, "%d", timer_overclock_rate);
-        if (trs_gui_input_string("Enter Turbo Rate Multiplier", input, input, 10, 0) == 0) {
+        if (trs_gui_input_string("Enter Turbo Rate Multiplier",
+            input, input, 10, 0) == 0) {
           timer_overclock_rate = atoi(input);
           if (timer_overclock_rate <= 0)
             timer_overclock_rate = 1;
@@ -2439,7 +2473,8 @@ void trs_gui_joystick_settings(void)
     selection = trs_gui_display_menu("Joystick Settings", menu, selection);
     switch (selection) {
       case 0:
-        trs_keypad_joystick = trs_gui_display_popup("Keypad", yes_no, 2, trs_keypad_joystick);
+        trs_keypad_joystick = trs_gui_display_popup("Keypad",
+            yes_no, 2, trs_keypad_joystick);
         trs_set_keypad_joystick();
         break;
       case 1:
@@ -2455,6 +2490,7 @@ void trs_gui_joystick_settings(void)
           joy_index = 0;
         else
           joy_index = trs_joystick_num + 1;
+
         joy_index = trs_gui_display_popup("Joystick", (const char**)joystick,
             num_joysticks + 1, joy_index);
         trs_joystick_num = joy_index - 1;
@@ -2470,8 +2506,8 @@ void trs_gui_joystick_settings(void)
         }
         break;
       case 4:
-        if ((key = trs_gui_display_popup_matrix("Select Function", function_menu,
-            4, 2, 0)) != -1) {
+        if ((key = trs_gui_display_popup_matrix("Select Function",
+            function_menu, 4, 2, 0)) != -1) {
           if ((button = trs_gui_joystick_get_button()) != -1)
             jbutton_map[button] = function_codes[key];
         }
@@ -2755,6 +2791,7 @@ void trs_gui(void)
 void call_function(int function)
 {
   SDL_PauseAudio(1);
+
   switch (function) {
     case PAUSE:
       trs_paused = !trs_paused;
@@ -2817,6 +2854,7 @@ void call_function(int function)
       trs_gui_save_bmp();
       break;
   }
+
   trs_screen_refresh();
   SDL_PauseAudio(0);
 }
