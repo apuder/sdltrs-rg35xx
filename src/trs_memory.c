@@ -258,6 +258,25 @@ void mem_bank_base(int card, int bits)
 				  * 1024 + 65536;
 			mem_command = bits;
 			break;
+		case SELECTOR:
+			/* Not all bits are necessarily really present but hey what
+			   you can't read back you can't tell */
+			selector_reg = bits;
+			/* Always Model 1 */
+			memory_map = 0x10 + (selector_reg & 7);
+			/* 0x10 is already the default tandy map we add 11-17 in the style
+			   of the model 4 approach */
+			if (selector_reg & 0x8) {
+				/* External RAM enabled */
+				/* Effectively the selector bits << 15 */
+				/* Low 64K is the base memory */
+				bank_base = 32768 + ((selector_reg & 0x30) << 11);
+				/* Now are we mapping it high or low */
+				if (selector_reg & 1) /* Low */
+					bank_base += 32768;
+			} else
+				bank_base = 0;
+			break;
 		case SUPERMEM:
 			/* Emulate a 512Kb system. A standard model 1 SuperMEM
 			   is 256K or 512K with double stacked chips */
@@ -389,27 +408,6 @@ void lsb_bank_out(int value)
 {
 	system_byte = value;
 	memory_map = 0x22;
-}
-
-void selector_out(Uint8 value)
-{
-	/* Not all bits are necessarily really present but hey what
-	   you can't read back you can't tell */
-	selector_reg = value;
-	/* Always Model 1 */
-	memory_map = 0x10 + (selector_reg & 7);
-	/* 0x10 is already the default tandy map we add 11-17 in the style
-	   of the model 4 approach */
-	if (selector_reg & 0x8) {
-		/* External RAM enabled */
-		/* Effectively the selector bits << 15 */
-		/* Low 64K is the base memory */
-		bank_base = 32768 + ((selector_reg & 0x30) << 11);
-		/* Now are we mapping it high or low */
-		if (selector_reg & 1) /* Low */
-			bank_base += 32768;
-	} else
-		bank_base = 0;
 }
 
 void sys_byte_out(int value)

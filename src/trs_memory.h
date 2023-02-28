@@ -12,7 +12,8 @@
 #define HUFFMAN         (2) /* Dave Huffman (and other) 2 MB (4/4P) */
 #define HYPERMEM        (3) /* Anitek HyperMem 1 MB (4/4P) */
 #define RAM192B         (4) /* TCS Genie IIs/SpeedMaster 768 KB */
-#define SUPERMEM        (5) /* AlphaTech SuperMem 512 KB (I/III) */
+#define SELECTOR        (5) /* Selector Card for TRS-80 Model I */
+#define SUPERMEM        (6) /* AlphaTech SuperMem 512 KB (I/III) */
 
 int    trs80_model3_mem_read(int address);
 void   trs80_model3_mem_write(int address, int value);
@@ -32,7 +33,6 @@ extern int  mem_read_bank_base(int card);
 extern void mem_romin(int state);
 
 extern void megamem_out(int mem_slot, Uint8 value);
-extern void selector_out(Uint8);
 
 extern void eg64_mba_out(int value);
 extern void lsb_bank_out(int value);

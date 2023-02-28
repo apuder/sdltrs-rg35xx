@@ -397,7 +397,7 @@ void z80_out(int port, int value)
     case 0x1F:
     case 0x3F:
       if (selector)
-        selector_out(value);
+        mem_bank_base(SELECTOR, value);
       break;
     case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
       if (speedup == 6)
