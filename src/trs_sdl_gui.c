@@ -1021,6 +1021,8 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
         case SDLK_RETURN:
         case SDLK_TAB:
           switch (entry[selection].type) {
+            case MENU_NORMAL:
+              return selection;
             case MENU_DISK:
               if (trs_gui_file_browse(trs_disk_getfilename(selection)[0] == 0 ?
                   trs_disk_dir : trs_disk_getfilename(selection), filename, NULL,
