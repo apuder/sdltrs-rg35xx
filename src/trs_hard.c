@@ -85,7 +85,7 @@ typedef struct {
 static State state;
 
 /* Forward */
-static int hard_data_in(void);
+static int  hard_data_in(void);
 static void hard_data_out(int value);
 static void hard_restore(int cmd);
 static void hard_read(int cmd);
@@ -94,9 +94,9 @@ static void hard_verify(int cmd);
 static void hard_format(int cmd);
 static void hard_init(int cmd);
 static void hard_seek(int cmd);
-static int open_drive(int drive);
-static int find_sector(int newstatus);
-static int open_drive(int n);
+static int  open_drive(int drive);
+static int  find_sector(int newstatus);
+static int  open_drive(int n);
 static void set_dir_cyl(int cyl);
 
 /* Powerup or reset button */
@@ -125,6 +125,7 @@ void trs_hard_init(int poweron)
       state.d[i].cyls = 0;
       state.d[i].heads = 0;
       state.d[i].secs = 0;
+
       if (open_drive(i) == 0) state.present = 1;
     }
   }
@@ -133,9 +134,10 @@ void trs_hard_init(int poweron)
 void trs_hard_attach(int drive, const char *diskname)
 {
   snprintf(state.d[drive].filename, FILENAME_MAX, "%s", diskname);
-  if (open_drive(drive) < 0) {
+
+  if (open_drive(drive) < 0)
     trs_hard_remove(drive);
-  }
+
   trs_impexp_xtrshard_attach(drive);
 }
 
@@ -145,6 +147,7 @@ void trs_hard_remove(int drive)
     fclose(state.d[drive].file);
 
   trs_impexp_xtrshard_remove(drive);
+
   state.d[drive].filename[0] = 0;
   state.d[drive].file = NULL;
 }
@@ -519,12 +522,14 @@ static int find_sector(int newstatus)
     state.error = TRS_HARD_NFERR;
     return 0;
   }
+
   fseek(d->file,
 	sizeof(ReedHardHeader) +
 	state.secsize * (state.cyl * d->heads * d->secs +
 			 state.head * d->secs +
 			(state.secnum % d->secs)),
 	0);
+
   state.status = newstatus;
   return 1;
 }
@@ -532,6 +537,7 @@ static int find_sector(int newstatus)
 static int hard_data_in(void)
 {
   Drive *d = &state.d[state.drive];
+
   if (trs_show_led)
     trs_hard_led(state.drive, 1);
 
@@ -554,6 +560,7 @@ static void hard_data_out(int value)
     trs_hard_led(state.drive, 1);
 
   state.data = value;
+
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
@@ -568,6 +575,7 @@ static void hard_data_out(int value)
       }
     }
   }
+
   if (res == EOF) {
     error("trs_hard: errno %d while writing drive %d", errno, state.drive);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;

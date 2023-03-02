@@ -219,6 +219,7 @@ int trs_create_blank_jv3(const char *fname)
   }
   for (i = 0; i < (256 * 34); i++)
     putc(0xff, f);
+
   fclose(f);
   return 0;
 }
@@ -265,6 +266,7 @@ int trs_create_blank_dmk(const char *fname, int sides, int density,
   putc(0, f);           /* d: MBZ */
   putc(0, f);           /* e: MBZ */
   putc(0, f);           /* f: MBZ */
+
   fclose(f);
   return 0;
 }
@@ -305,6 +307,7 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   snprintf(rhh.label, 9, "%s", "xtrshard");
 
   fwrite(&rhh, sizeof(rhh), 1, f);
+
   fclose(f);
   return 0;
 }

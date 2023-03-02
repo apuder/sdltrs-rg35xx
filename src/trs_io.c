@@ -510,7 +510,7 @@ void z80_out(int port, int value)
       break;
     case 0x5f: /* Sprinter III */
       if (trs_model == 3)
-          trs_timer_speed(value);
+        trs_timer_speed(value);
       break;
     case 0x75: /* Orchestra-90 right channel */
       trs_orch90_out(2, value);

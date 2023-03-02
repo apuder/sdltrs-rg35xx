@@ -340,6 +340,7 @@ trs_disk_debug(void)
 	 state.format_gap[0], state.format_gap[1], state.format_gap[2],
 	 state.format_gap[3], state.format_gap[4]);
   printf("  debug flags: %#x\n", trs_disk_debug_flags);
+
   for (i = 0; i < NDRIVES; i++) {
     DiskState *d = &disk[i];
 
@@ -452,6 +453,7 @@ trs_disk_init(int poweron)
   state.controller = (trs_model == 1) ? TRSDISK_P1771 : TRSDISK_P1791;
   state.last_readadr = -1;
   state.motor_timeout = 0;
+
   if (poweron) {
     for (i = 0; i < NDRIVES; i++) {
       disk[i].phytrack = 0;
@@ -461,6 +463,7 @@ trs_disk_init(int poweron)
       }
     }
   }
+
   trs_hard_init(poweron);
   stringy_init();
   trs_cancel_event();
@@ -989,6 +992,7 @@ static int
 search(int sector, int side)
 {
   DiskState *d = &disk[state.curdrive];
+
   if (d->file == NULL) {
     state.status |= TRSDISK_NOTFOUND;
     return -1;
@@ -1122,6 +1126,7 @@ static int
 search_adr(void)
 {
   DiskState *d = &disk[state.curdrive];
+
   if (d->file == NULL) {
     return -1;
   }
@@ -1147,6 +1152,7 @@ verify(void)
 {
   /* Verify that head is on the expected track */
   DiskState *d = &disk[state.curdrive];
+
   if (d->emutype == REAL) {
     real_verify();
   } else if (d->emutype == JV1) {
@@ -1355,7 +1361,9 @@ trs_disk_set_controller(int controller)
 {
   /* Support for more accurate Doubler emulation */
   FDCState tmp_state;
+
   if (state.controller == controller) return;
+
   tmp_state.status = state.status;
   tmp_state.track = state.track;
   tmp_state.sector = state.sector;

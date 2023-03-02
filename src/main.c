@@ -190,10 +190,12 @@ static int trs_load_rom(const char *filename)
 
   /* Assume raw binary */
   trs_rom_size = 0;
+
   while (c != EOF) {
     rom_write(trs_rom_size++, c);
     c = getc(program);
   }
+
   return 0;
 }
 
@@ -207,6 +209,7 @@ int trs_load_cmd(const char *filename)
     error("failed to load CMD file '%s': %s", filename, strerror(errno));
     return -1;
   }
+
   if (load_cmd(program, memory, NULL, 0, NULL, -1, NULL, &entry, 1) == LOAD_CMD_OK) {
     debug("entry point of '%s': 0x%x (%d) ...\n", filename, entry, entry);
     if (entry >= 0)
@@ -216,6 +219,7 @@ int trs_load_cmd(const char *filename)
     fclose(program);
     return -1;
   }
+
   fclose(program);
   return 0;
 }
@@ -226,11 +230,14 @@ void trs_rom_init(void)
     case 1:
       if (trs_load_rom(romfile) != 0)
         trs_load_compiled_rom(0, sizeof(trs_fakerom), trs_fakerom);
+
       if (stringy)
         trs_load_compiled_rom(0x3000, sizeof(trs_romesf), trs_romesf);
+
       /* Do not overwrite memory mapped disk I/O */
       if (trs_rom_size > 0x37E0 && trs_disk_controller)
           trs_rom_size = 0x37E0;
+
       if (trs_hd_boot)
         trs_boot_hd();
       break;
@@ -287,6 +294,7 @@ int main(int argc, char *argv[])
     trs_state_load(trs_state_file);
     trs_screen_init(1);
   }
+
   if (trs_cmd_file[0])
     trs_load_cmd(trs_cmd_file);
 

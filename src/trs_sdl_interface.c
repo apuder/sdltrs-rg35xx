@@ -1493,8 +1493,8 @@ static void DrawRectangle(int orig_x, int orig_y, int copy_x, int copy_y)
   if (copy_x > orig_x) {
     for (y = orig_y + pitch; y < copy_y; y += pitch) {
       pixel = pixels + y + copy_x;
-        for (x = 0; x < bpp; x++)
-          *pixel++ ^= 0xFF;
+      for (x = 0; x < bpp; x++)
+        *pixel++ ^= 0xFF;
     }
   }
 

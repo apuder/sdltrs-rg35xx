@@ -266,12 +266,14 @@ static void set_trap(int address, int flag)
 	trap_table[i].valid = 1;
 	trap_table[i].address = address;
 	trap_table[i].flag = flag;
+
 	if (trap_table[i].flag == WATCHPOINT_FLAG) {
 	    /* Initialize the byte field to current memory contents. */
 	    trap_table[i].byte = mem_read(address);
 	    /* Increment number of set watchpoints. */
 	    num_watchpoints++;
 	}
+
 	traps[address] |= flag;
 	num_traps++;
 
@@ -289,10 +291,12 @@ static void clear_trap(int i)
     {
 	traps[trap_table[i].address] &= ~(trap_table[i].flag);
 	trap_table[i].valid = 0;
+
 	if (trap_table[i].flag == WATCHPOINT_FLAG) {
 	    /* Decrement number of set watchpoints. */
 	    num_watchpoints--;
 	}
+
 	num_traps--;
 	printf("Cleared %s [%d] at %.4x\n",
 	       trap_name(trap_table[i].flag), i, trap_table[i].address);
@@ -373,15 +377,18 @@ static void print_memory(Uint16 address, int num_bytes)
 	if(bytes_to_print > num_bytes) bytes_to_print = num_bytes;
 
 	printf("%.4x:\t", address);
+
 	for(i = 0; i < bytes_to_print; ++i)
 	{
 	    printf("%.2x ", mem_read(address + i));
 	}
+
 	for(i = bytes_to_print; i < 16; ++i)
 	{
 	    printf("   ");
 	}
 	printf("    ");
+
 	for(i = 0; i < bytes_to_print; ++i)
 	{
 	    int byte = mem_read(address + i);
@@ -395,6 +402,7 @@ static void print_memory(Uint16 address, int num_bytes)
 		putchar('.');
 	    }
 	}
+
 	putchar('\n');
 	num_bytes -= bytes_to_print;
 	address += bytes_to_print;
@@ -471,10 +479,12 @@ static void debug_run(void)
 	}
 
 	t = traps[Z80_PC];
+
 	if(t & BREAKPOINT_FLAG)
 	{
 	    stop_signaled = 1;
 	}
+
 	if(t & BREAK_ONCE_FLAG)
 	{
 	    stop_signaled = 1;

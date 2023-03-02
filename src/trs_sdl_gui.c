@@ -1337,6 +1337,7 @@ void trs_gui_disk_steps(void)
           " %d: Drive Step                                        %s",
           i, steps[trs_disk_getstep(i) == 1 ? 0 : 1]);
     }
+
     trs_gui_clear_screen();
     if ((selection = trs_gui_display_menu("Floppy Disk Step", menu, selection)) == -1)
       return;
@@ -1377,6 +1378,7 @@ void trs_gui_disk_options(void)
           " %d: Drive Size                                        %s",
           i, disk_size[trs_disk_getsize(i) == 5 ? 0 : 1]);
     }
+
     snprintf(&menu[9].text[50], 11, "%s", yes_no[trs_disk_controller]);
     snprintf(&menu[10].text[51], 10, "%s", doubler[trs_disk_doubler]);
     snprintf(&menu[11].text[50], 11, "%s", yes_no[trs_disk_truedam]);
@@ -1455,6 +1457,7 @@ void trs_gui_disk_management(void)
       trs_gui_limit_string(trs_disk_getfilename(i), &menu[i].text[4], 56);
       menu[i].text[0] = trs_disk_getwriteprotect(i) ? '*' : ' ';
     }
+
     trs_gui_clear_screen();
 
     selection = trs_gui_display_menu("Floppy Disk Management", menu, selection);
@@ -1509,6 +1512,7 @@ void trs_gui_hard_management(void)
       trs_gui_limit_string(trs_hard_getfilename(i), &menu[i].text[4], 56);
       menu[i].text[0] = trs_hard_getwriteprotect(i) ? '*' : ' ';
     }
+
     snprintf(&menu[8].text[55], 6, "%5d", cylinders);
     snprintf(&menu[9].text[57], 4, "%3d", heads);
     snprintf(&menu[10].text[57], 4, "%3d", sectors);
@@ -1624,6 +1628,7 @@ void trs_gui_stringy_management(void)
       trs_gui_limit_string(stringy_get_name(i), &menu[i].text[4], 56);
       menu[i].text[0] = stringy_get_writeprotect(i) ? '*' : ' ';
     }
+
     snprintf(&menu[11].text[55], 6, "%5s", drives[drive]);
     trs_gui_clear_screen();
 
@@ -2319,8 +2324,10 @@ int trs_gui_virtual_keyboard(void)
     if ((key_index = trs_gui_display_popup_matrix("Select Key",
         !shifted ? key_names : key_names_shifted, 4, 13, saved_selection)) == -1)
       return -1;
+
     if (key_index == SHIFT)
       shifted = !shifted;
+
     saved_selection = key_index;
   }
   return !shifted ? key_syms[key_index] : key_syms_shifted[key_index];
@@ -2481,11 +2488,14 @@ void trs_gui_joystick_settings(void)
         num_joysticks = SDL_NumJoysticks();
         if (num_joysticks > MAX_JOYSTICKS)
           num_joysticks = MAX_JOYSTICKS;
+
         snprintf(joystick[0], 61, "%60s", "None");
+
         for (i = 0; i < num_joysticks; i++) {
           snprintf(joystick[i + 1], 61, "Joystick %1d - %47s", i,
               SDL_JoystickName(SDL_JoystickOpen(i)));
         }
+
         if ((trs_joystick_num == -1) || (trs_joystick_num >= num_joysticks))
           joy_index = 0;
         else

@@ -146,6 +146,7 @@ void trs_load_uint16(FILE *file, Uint16 *buffer, int count)
   for (i = 0; i < count; i++) {
     fread(&byte0, 1, 1, file);
     fread(&byte1, 1, 1, file);
+
     *buffer++ = (byte1 << 8) | byte0;
   }
 }
@@ -185,6 +186,7 @@ void trs_load_uint32(FILE *file, Uint32 *buffer, int count)
     fread(&byte1, 1, 1, file);
     fread(&byte2, 1, 1, file);
     fread(&byte3, 1, 1, file);
+
     *buffer++ = (byte3 << 24) | (byte2 << 16) | (byte1 << 8) | byte0;
   }
 }
@@ -221,6 +223,7 @@ void trs_load_uint64(FILE *file, Uint64 *buffer, int count)
       if (j)
         temp = temp << 8;
     }
+
     *buffer++ = temp;
   }
 }
@@ -261,12 +264,14 @@ void trs_load_short(FILE *file, short *buffer, int count)
   for (i = 0; i < count; i++) {
     fread(&byte0, 1, 1, file);
     fread(&byte1, 1, 1, file);
+
     sign = byte1 & 0x80;
     byte1 &= 0x7f;
 
     temp = (byte1 << 8) | byte0;
     if (sign)
       temp = -temp;
+
     *buffer++ = temp;
   }
 }
@@ -317,6 +322,7 @@ void trs_load_int(FILE *file, int *buffer, int count)
     fread(&byte1, 1, 1, file);
     fread(&byte2, 1, 1, file);
     fread(&byte3, 1, 1, file);
+
     sign = byte3 & 0x80;
     byte3 &= 0x7f;
 
@@ -333,8 +339,7 @@ void trs_save_float(FILE *file, const float *buffer, int count)
   int i;
   char float_buff[21];
 
-  for (i = 0; i < count; i++)
-  {
+  for (i = 0; i < count; i++) {
     snprintf(float_buff, 21, "%20f", *buffer++);
     trs_save_uint8(file, (Uint8 *)float_buff, 20);
   }
@@ -345,8 +350,7 @@ void trs_load_float(FILE *file, float *buffer, int count)
   int i;
   char float_buff[21];
 
-  for (i = 0; i < count; i++)
-  {
+  for (i = 0; i < count; i++) {
     trs_load_uint8(file, (Uint8 *)float_buff, 20);
     sscanf(float_buff, "%f", buffer++);
   }
