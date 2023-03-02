@@ -57,6 +57,8 @@
 #define MENU_HARD     4
 #define MENU_WAFER    5
 #define MENU_CASS     6
+#define MENU_SAVE_SET 7
+#define MENU_LOAD_SET 8
 
 #define MAX_JOYSTICKS 8
 
@@ -1043,6 +1045,12 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
                   0, "Cassette Image") >= 0)
                 trs_cassette_insert(filename);
               break;
+            case MENU_SAVE_SET:
+              trs_gui_diskset_save();
+              break;
+            case MENU_LOAD_SET:
+              trs_gui_diskset_load();
+              break;
           }
           return selection;
         case SDLK_SPACE:
@@ -1443,8 +1451,8 @@ void trs_gui_disk_management(void)
    {" 6: ", MENU_DISK},
    {" 7: ", MENU_DISK},
    {"", MENU_TITLE},
-   {"Save Disk Set", MENU_NORMAL},
-   {"Load Disk Set", MENU_NORMAL},
+   {"Save Disk Set", MENU_SAVE_SET},
+   {"Load Disk Set", MENU_LOAD_SET},
    {"Create Blank Floppy Disk", MENU_NORMAL},
    {"Disk Drive Options", MENU_NORMAL},
    {"", 0}};
@@ -1462,12 +1470,6 @@ void trs_gui_disk_management(void)
 
     selection = trs_gui_display_menu("Floppy Disk Management", menu, selection);
     switch (selection) {
-      case 9:
-        trs_gui_diskset_save();
-        break;
-      case 10:
-        trs_gui_diskset_load();
-        break;
       case 11:
         trs_gui_disk_creation();
         break;
@@ -1488,8 +1490,8 @@ void trs_gui_hard_management(void)
    {" 2: ", MENU_HARD},
    {" 3: ", MENU_HARD},
    {"", MENU_TITLE},
-   {"Save Disk Set", MENU_NORMAL},
-   {"Load Disk Set", MENU_NORMAL},
+   {"Save Disk Set", MENU_SAVE_SET},
+   {"Load Disk Set", MENU_LOAD_SET},
    {"", MENU_TITLE},
    {"Cylinder Count                                           ", MENU_NORMAL},
    {"Head Count                                               ", MENU_NORMAL},
@@ -1530,12 +1532,6 @@ void trs_gui_hard_management(void)
           heads     = trs_hard_getheads(selection);
           sectors   = trs_hard_getsecs(selection);
         }
-        break;
-      case 5:
-        trs_gui_diskset_save();
-        break;
-      case 6:
-        trs_gui_diskset_load();
         break;
       case 8:
         snprintf(input, 5, "%d", cylinders);
@@ -1613,8 +1609,8 @@ void trs_gui_stringy_management(void)
    {" 6: ", MENU_WAFER},
    {" 7: ", MENU_WAFER},
    {"", MENU_TITLE},
-   {"Save Disk Set", MENU_NORMAL},
-   {"Load Disk Set", MENU_NORMAL},
+   {"Save Disk Set", MENU_SAVE_SET},
+   {"Load Disk Set", MENU_LOAD_SET},
    {"Insert Created Wafer Image Into Stringy Drive          ", MENU_NORMAL},
    {"Create Blank Floppy Wafer", MENU_NORMAL},
    {"", 0}};
@@ -1634,12 +1630,6 @@ void trs_gui_stringy_management(void)
 
     selection = trs_gui_display_menu("Stringy Wafer Management", menu, selection);
     switch (selection) {
-      case 9:
-        trs_gui_diskset_save();
-        break;
-      case 10:
-        trs_gui_diskset_load();
-        break;
       case 11:
         drive = trs_gui_display_popup("Drive", drives, 9, drive);
         break;
