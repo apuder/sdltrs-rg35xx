@@ -865,9 +865,9 @@ redraw:
         break;
       case SDLK_DELETE:
         if (pos < len) {
-          for (i = pos; i < len - 1; i++)
-            output[i] = output[i + 1];
           len--;
+          for (i = pos; i < len; i++)
+            output[i] = output[i + 1];
         }
         break;
       case SDLK_INSERT:
