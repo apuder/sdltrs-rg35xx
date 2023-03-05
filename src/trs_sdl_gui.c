@@ -1024,27 +1024,27 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
             case MENU_NORMAL:
               return selection;
             case MENU_DISK:
-              if (trs_gui_file_browse(trs_disk_getfilename(selection)[0] == 0 ?
-                  trs_disk_dir : trs_disk_getfilename(selection), filename, NULL,
-                  0, "Floppy Disk Image") >= 0)
+              if (trs_gui_file_browse(trs_disk_getfilename(selection)[0] ?
+                  trs_disk_getfilename(selection) : trs_disk_dir,
+                  filename, NULL, 0, "Floppy Disk Image") >= 0)
                 trs_disk_insert(selection, filename);
               break;
             case MENU_HARD:
-              if (trs_gui_file_browse(trs_hard_getfilename(selection)[0] == 0 ?
-                  trs_hard_dir : trs_hard_getfilename(selection), filename, NULL,
-                  0, "Hard Disk Image") >= 0)
+              if (trs_gui_file_browse(trs_hard_getfilename(selection)[0] ?
+                  trs_hard_getfilename(selection) : trs_hard_dir,
+                  filename, NULL, 0, "Hard Disk Image") >= 0)
                 trs_hard_attach(selection, filename);
               break;
             case MENU_WAFER:
-              if (trs_gui_file_browse(stringy_get_name(selection)[0] == 0 ?
-                  trs_cass_dir : stringy_get_name(selection), filename, NULL,
-                  0, "Wafer Image") >= 0)
+              if (trs_gui_file_browse(stringy_get_name(selection)[0] ?
+                  stringy_get_name(selection) : trs_cass_dir,
+                  filename, NULL, 0, "Wafer Image") >= 0)
                 stringy_insert(selection, filename);
               break;
             case MENU_CASS:
-              if (trs_gui_file_browse(trs_cassette_getfilename()[0] == 0 ?
-                  trs_cass_dir : trs_cassette_getfilename(), filename, NULL,
-                  0, "Cassette Image") >= 0)
+              if (trs_gui_file_browse(trs_cassette_getfilename()[0] ?
+                  trs_cassette_getfilename() : trs_cass_dir,
+                  filename, NULL, 0, "Cassette Image") >= 0)
                 trs_cassette_insert(filename);
               break;
             case MENU_SAVE_SET:
