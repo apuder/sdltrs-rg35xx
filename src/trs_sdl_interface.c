@@ -311,6 +311,7 @@ static const struct {
 #endif
   { "emtsafe",         trs_opt_value,         0, 1, &trs_emtsafe         },
   { "fdc",             trs_opt_value,         0, 1, &trs_disk_controller },
+  { "floppy",          trs_opt_value,         0, 1, &trs_disk_controller },
   { "fg",              trs_opt_color,         1, 0, &foreground          },
   { "foreground",      trs_opt_color,         1, 0, &foreground          },
   { "fullscreen",      trs_opt_value,         0, 1, &fullscreen          },
@@ -348,6 +349,7 @@ static const struct {
   { "noaspectratio",   trs_opt_value,         0, 0, &aspect_ratio        },
   { "noemtsafe",       trs_opt_value,         0, 0, &trs_emtsafe         },
   { "nofdc",           trs_opt_value,         0, 0, &trs_disk_controller },
+  { "nofloppy",        trs_opt_value,         0, 0, &trs_disk_controller },
   { "nofullscreen",    trs_opt_value,         0, 0, &fullscreen          },
   { "nofs",            trs_opt_value,         0, 0, &fullscreen          },
   { "nohdboot",        trs_opt_value,         0, 0, &trs_hd_boot         },
