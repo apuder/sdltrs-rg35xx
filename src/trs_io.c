@@ -196,29 +196,15 @@ void z80_out(int port, int value)
       case 0x28: /* Genieplus Memory Card */
         mem_bank_base(GENIEPLUS, value);
         break;
-      case 0x48:
-        trs_hard_out(TRS_HARD_DATA, value);
-        break;
-      case 0x49:
-        trs_hard_out(TRS_HARD_PRECOMP, value);
-        break;
-      case 0x4A:
-        trs_hard_out(TRS_HARD_SECCNT, value);
-        break;
-      case 0x4B:
-        trs_hard_out(TRS_HARD_SECNUM, value);
-        break;
-      case 0x4C:
-        trs_hard_out(TRS_HARD_CYLLO, value);
-        break;
-      case 0x4D:
-        trs_hard_out(TRS_HARD_CYLHI, value);
-        break;
-      case 0x4E:
-        trs_hard_out(TRS_HARD_SDH, value);
-        break;
-      case 0x4F:
-        trs_hard_out(TRS_HARD_COMMAND, value);
+      case 0x48: /* TRS_HARD_DATA */
+      case 0x49: /* TRS_HARD_PRECOMP */
+      case 0x4A: /* TRS_HARD_SECCNT */
+      case 0x4B: /* TRS_HARD_SECNUM */
+      case 0x4C: /* TRS_HARD_CYLLO */
+      case 0x4D: /* TRS_HARD_CYLHI */
+      case 0x4E: /* TRS_HARD_SDH */
+      case 0x4F: /* TRS_HARD_COMMAND */
+        trs_hard_out(port + 0x80, value); /* 0xC8 - 0xCF */
         break;
       case 0x80: /* Genie III VideoExtension HRG */
         grafyx_write_x(value);
@@ -259,29 +245,15 @@ void z80_out(int port, int value)
   /* TCS Genie IIIs */
   if (genie3s) {
     switch (port) {
-      case 0x50:
-        trs_hard_out(TRS_HARD_DATA, value);
-        break;
-      case 0x51:
-        trs_hard_out(TRS_HARD_PRECOMP, value);
-        break;
-      case 0x52:
-        trs_hard_out(TRS_HARD_SECCNT, value);
-        break;
-      case 0x53:
-        trs_hard_out(TRS_HARD_SECNUM, value);
-        break;
-      case 0x54:
-        trs_hard_out(TRS_HARD_CYLLO, value);
-        break;
-      case 0x55:
-        trs_hard_out(TRS_HARD_CYLHI, value);
-        break;
-      case 0x56:
-        trs_hard_out(TRS_HARD_SDH, value);
-        break;
-      case 0x57:
-        trs_hard_out(TRS_HARD_COMMAND, value);
+      case 0x50: /* TRS_HARD_DATA */
+      case 0x51: /* TRS_HARD_PRECOMP */
+      case 0x52: /* TRS_HARD_SECCNT */
+      case 0x53: /* TRS_HARD_SECNUM */
+      case 0x54: /* TRS_HARD_CYLLO */
+      case 0x55: /* TRS_HARD_CYLHI */
+      case 0x56: /* TRS_HARD_SDH */
+      case 0x57: /* TRS_HARD_COMMAND */
+        trs_hard_out(port + 0x78, value); /* 0xC8 - 0xCF */
         break;
       case 0x5B:
         rtc_reg = value >> 4;
@@ -674,29 +646,15 @@ int z80_in(int port)
   /* EG 3200 Genie III */
   if (eg3200) {
     switch (port) {
-      case 0x48:
-        value = trs_hard_in(TRS_HARD_DATA);
-        break;
-      case 0x49:
-        value = trs_hard_in(TRS_HARD_ERROR);
-        break;
-      case 0x4A:
-        value = trs_hard_in(TRS_HARD_SECCNT);
-        break;
-      case 0x4B:
-        value = trs_hard_in(TRS_HARD_SECNUM);
-        break;
-      case 0x4C:
-        value = trs_hard_in(TRS_HARD_CYLLO);
-        break;
-      case 0x4D:
-        value = trs_hard_in(TRS_HARD_CYLHI);
-        break;
-      case 0x4E:
-        value = trs_hard_in(TRS_HARD_SDH);
-        break;
-      case 0x4F:
-        value = trs_hard_in(TRS_HARD_STATUS);
+      case 0x48: /* TRS_HARD_DATA */
+      case 0x49: /* TRS_HARD_ERROR */
+      case 0x4A: /* TRS_HARD_SECCNT */
+      case 0x4B: /* TRS_HARD_SECNUM */
+      case 0x4C: /* TRS_HARD_CYLLO */
+      case 0x4D: /* TRS_HARD_CYLHI */
+      case 0x4E: /* TRS_HARD_SDH */
+      case 0x4F: /* TRS_HARD_STATUS */
+        value = trs_hard_in(port + 0x80); /* 0xC8 - 0xCF */
         break;
       case 0x82: /* Genie III VideoExtension HRG */
         value = grafyx_read_data();
@@ -729,29 +687,15 @@ int z80_in(int port)
   /* TCS Genie IIIs */
   if (genie3s) {
     switch (port) {
-      case 0x50:
-        value = trs_hard_in(TRS_HARD_DATA);
-        break;
-      case 0x51:
-        value = trs_hard_in(TRS_HARD_ERROR);
-        break;
-      case 0x52:
-        value = trs_hard_in(TRS_HARD_SECCNT);
-        break;
-      case 0x53:
-        value = trs_hard_in(TRS_HARD_SECNUM);
-        break;
-      case 0x54:
-        value = trs_hard_in(TRS_HARD_CYLLO);
-        break;
-      case 0x55:
-        value = trs_hard_in(TRS_HARD_CYLHI);
-        break;
-      case 0x56:
-        value = trs_hard_in(TRS_HARD_SDH);
-        break;
-      case 0x57:
-        value = trs_hard_in(TRS_HARD_STATUS);
+      case 0x50: /* TRS_HARD_DATA */
+      case 0x51: /* TRS_HARD_ERROR */
+      case 0x52: /* TRS_HARD_SECCNT */
+      case 0x53: /* TRS_HARD_SECNUM */
+      case 0x54: /* TRS_HARD_CYLLO */
+      case 0x55: /* TRS_HARD_CYLHI */
+      case 0x56: /* TRS_HARD_SDH */
+      case 0x57: /* TRS_HARD_STATUS */
+        value = trs_hard_in(port + 0x78); /* 0xC8 - 0xCF */
         break;
       case 0x5A:
         value = rtc_read(rtc_reg);
