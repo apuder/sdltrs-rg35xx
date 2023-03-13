@@ -322,13 +322,13 @@ void z80_out(int port, int value)
     /* Fall through */
   case TRS_HARD_CONTROL:  /* 0xC1 */
   case TRS_HARD_DATA:     /* 0xC8 */
-  case TRS_HARD_ERROR:    /* 0xC9 */ /*=TRS_HARD_PRECOMP*/
+  case TRS_HARD_PRECOMP:  /* 0xC9 */
   case TRS_HARD_SECCNT:   /* 0xCA */
   case TRS_HARD_SECNUM:   /* 0xCB */
   case TRS_HARD_CYLLO:    /* 0xCC */
   case TRS_HARD_CYLHI:    /* 0xCD */
   case TRS_HARD_SDH:      /* 0xCE */
-  case TRS_HARD_STATUS:   /* 0xCF */ /*=TRS_HARD_COMMAND*/
+  case TRS_HARD_COMMAND:  /* 0xCF */
     trs_hard_out(port, value);
     break;
   case TRS_UART_RESET:    /* 0xE8 */
@@ -765,13 +765,13 @@ int z80_in(int port)
   case TRS_HARD_WP:       /* 0xC0 */
   case TRS_HARD_CONTROL:  /* 0xC1 */
   case TRS_HARD_DATA:     /* 0xC8 */
-  case TRS_HARD_ERROR:    /* 0xC9 */ /*=TRS_HARD_PRECOMP*/
+  case TRS_HARD_ERROR:    /* 0xC9 */
   case TRS_HARD_SECCNT:   /* 0xCA */
   case TRS_HARD_SECNUM:   /* 0xCB */
   case TRS_HARD_CYLLO:    /* 0xCC */
   case TRS_HARD_CYLHI:    /* 0xCD */
   case TRS_HARD_SDH:      /* 0xCE */
-  case TRS_HARD_STATUS:   /* 0xCF */ /*=TRS_HARD_COMMAND*/
+  case TRS_HARD_STATUS:   /* 0xCF */
     value = trs_hard_in(port);
     goto done;
   case TRS_UART_MODEM:    /* 0xE8 */
