@@ -228,54 +228,6 @@ void trs_load_uint64(FILE *file, Uint64 *buffer, int count)
   }
 }
 
-void trs_save_short(FILE *file, const short *buffer, int count)
-{
-  int i;
-  short num;
-  Uint16 unum;
-  Uint8 sign;
-  Uint8 byte;
-
-  for (i = 0; i < count; i++) {
-    num = *buffer++;
-    if (num < 0) {
-      sign = 0x80;
-      num = -num;
-    } else {
-      sign = 0;
-    }
-
-    unum = num;
-    byte = unum & 0xFF;
-    fwrite(&byte, 1, 1, file);
-
-    unum = unum >> 8;
-    byte = (unum & 0x7F) | sign;
-    fwrite(&byte, 1, 1, file);
-  }
-}
-
-void trs_load_short(FILE *file, short *buffer, int count)
-{
-  int i;
-  short temp;
-  Uint8 byte0, byte1, sign;
-
-  for (i = 0; i < count; i++) {
-    fread(&byte0, 1, 1, file);
-    fread(&byte1, 1, 1, file);
-
-    sign = byte1 & 0x80;
-    byte1 &= 0x7f;
-
-    temp = (byte1 << 8) | byte0;
-    if (sign)
-      temp = -temp;
-
-    *buffer++ = temp;
-  }
-}
-
 void trs_save_int(FILE *file, const int *buffer, int count)
 {
   int i;

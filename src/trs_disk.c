@@ -230,8 +230,8 @@ typedef struct {
   int sorted_valid;               /* sorted_id array valid */
   SectorId id[JV3_SECSMAX + 1];   /* extra one is a loop sentinel */
   int offset[JV3_SECSMAX + 1];    /* offset into file for each id */
-  short sorted_id[JV3_SECSMAX + 1];
-  short track_start[MAXTRACKS][JV3_SIDES];
+  int sorted_id[JV3_SECSMAX + 1];
+  int track_start[MAXTRACKS][JV3_SIDES];
 } JV3State;
 
 typedef struct {
@@ -523,8 +523,8 @@ static int
 jv3_id_compare(const void* p1, const void* p2)
 {
   DiskState *d = &disk[state.curdrive];
-  int const i1 = *(short*)p1;
-  int const i2 = *(short*)p2;
+  int const i1 = *(int*)p1;
+  int const i2 = *(int*)p2;
   int r = d->u.jv3.id[i1].track - d->u.jv3.id[i2].track;
 
   if (r != 0) return r;
@@ -545,7 +545,7 @@ jv3_sort_ids(int drive)
     d->u.jv3.sorted_id[i] = i;
   }
   state.curdrive = drive;
-  qsort((void*) d->u.jv3.sorted_id, JV3_SECSMAX, sizeof(short),
+  qsort((void*) d->u.jv3.sorted_id, JV3_SECSMAX, sizeof(int),
 	jv3_id_compare);
   state.curdrive = olddrive;
 
@@ -3740,10 +3740,10 @@ static void trs_save_jv3state(FILE *file, JV3State *jv3)
     trs_save_sectorid(file, &jv3->id[i]);
 
   trs_save_int(file, jv3->offset, JV3_SECSMAX + 1);
-  trs_save_short(file, jv3->sorted_id, JV3_SECSMAX + 1);
+  trs_save_int(file, jv3->sorted_id, JV3_SECSMAX + 1);
 
   for (i = 0; i < MAXTRACKS; i++)
-    trs_save_short(file, jv3->track_start[i], JV3_SIDES);
+    trs_save_int(file, jv3->track_start[i], JV3_SIDES);
 }
 
 static void trs_load_jv3state(FILE *file, JV3State *jv3)
@@ -3759,10 +3759,10 @@ static void trs_load_jv3state(FILE *file, JV3State *jv3)
     trs_load_sectorid(file, &jv3->id[i]);
 
   trs_load_int(file, jv3->offset, JV3_SECSMAX + 1);
-  trs_load_short(file, jv3->sorted_id, JV3_SECSMAX + 1);
+  trs_load_int(file, jv3->sorted_id, JV3_SECSMAX + 1);
 
   for (i = 0; i < MAXTRACKS; i++)
-    trs_load_short(file, jv3->track_start[i], JV3_SIDES);
+    trs_load_int(file, jv3->track_start[i], JV3_SIDES);
 }
 
 static void trs_save_dmkstate(FILE *file, DMKState *dmk)
