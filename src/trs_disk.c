@@ -91,7 +91,7 @@ typedef struct {
   int format_gapcnt;            /* measure requested gaps */
   int format_gap[5];
   Uint16 crc;
-  unsigned curdrive;
+  int curdrive;
   int curside;
   int density;			/* sden=0, dden=1 */
   Uint8 controller;		/* TRSDISK_P1771 or TRSDISK_P1791 */
@@ -3682,7 +3682,7 @@ static void trs_fdc_save(FILE *file, FDCState *fdc)
   trs_save_int(file, &fdc->format_gapcnt, 1);
   trs_save_int(file, fdc->format_gap, 5);
   trs_save_uint16(file, &fdc->crc, 1);
-  trs_save_uint32(file, &fdc->curdrive, 1);
+  trs_save_int(file, &fdc->curdrive, 1);
   trs_save_int(file, &fdc->curside, 1);
   trs_save_int(file, &fdc->density, 1);
   trs_save_uint8(file, &fdc->controller, 1);
@@ -3705,7 +3705,7 @@ static void trs_fdc_load(FILE *file, FDCState *fdc)
   trs_load_int(file, &fdc->format_gapcnt, 1);
   trs_load_int(file, fdc->format_gap, 5);
   trs_load_uint16(file, &fdc->crc, 1);
-  trs_load_uint32(file, &fdc->curdrive, 1);
+  trs_load_int(file, &fdc->curdrive, 1);
   trs_load_int(file, &fdc->curside, 1);
   trs_load_int(file, &fdc->density, 1);
   trs_load_uint8(file, &fdc->controller, 1);
