@@ -150,6 +150,10 @@ void trs_hard_remove(int drive)
 
   state.d[drive].filename[0] = 0;
   state.d[drive].file = NULL;
+  state.d[drive].writeprot = 0;
+  state.d[drive].cyls = 0;
+  state.d[drive].heads = 0;
+  state.d[drive].secs = 0;
 }
 
 char*
