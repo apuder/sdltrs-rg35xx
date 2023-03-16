@@ -2157,9 +2157,8 @@ void trs_get_event(int wait)
             goto done;
           }
           switch (keysym.sym) {
-            case SDLK_DELETE:  keysym.sym = 0x116; goto done; /* Clear */
-            case SDLK_END:     keysym.sym = 0x08d; goto done; /* ESC   */
-            case SDLK_LCTRL:   keysym.sym = 0x12f; goto done; /* Ctrl  */
+            case SDLK_END:     keysym.sym = 0x08d; goto done; /* ESC  */
+            case SDLK_LCTRL:   keysym.sym = 0x12f; goto done; /* Ctrl */
             default:
               break;
           }

@@ -2675,7 +2675,7 @@ void trs_gui_keys_sdltrs(void)
   trs_gui_write_text("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2, 9, 0);
   trs_gui_write_text("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 0);
   trs_gui_write_text("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 0);
-  trs_gui_write_text("Home/Clear: TRS-80 Clear Key    Alt-P/Pause: Pause Emulator ", 2, 12, 0);
+  trs_gui_write_text("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 0);
   trs_gui_write_text("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 0);
   trs_gui_write_text("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 0);
   trs_gui_center_text(" Press Any Key To Return ", 15, 1);
