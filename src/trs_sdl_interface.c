@@ -2195,6 +2195,7 @@ void trs_get_event(int wait)
         /* Convert arrow/control/function/shift keys */
         switch (keysym.sym) {
           case SDLK_KP_0:       keysym.sym = 0x100; goto done;
+          case SDLK_KP_PERIOD:  keysym.sym = 0x10a; goto done;
           case SDLK_UP:         keysym.sym = 0x111; goto done;
           case SDLK_DOWN:       keysym.sym = 0x112; goto done;
           case SDLK_RIGHT:      keysym.sym = 0x113; goto done;
