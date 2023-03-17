@@ -1288,25 +1288,33 @@ void trs_screen_caption(void)
 
 void trs_screen_init(int resize)
 {
-  int led_height;
+  int const led_height = trs_show_led ? 8 : 0;
   SDL_Color colors[2];
 #if SDLDEBUG
   SDL_RendererInfo renderinfo = { 0 };
 #endif
+
+  border_width    = fullscreen ? 0 : window_border_width;
+  cur_char_width  = TRS_CHAR_WIDTH;
+  cur_char_height = TRS_CHAR_HEIGHT * 2;
 
   switch (trs_model) {
     case 1:
       if (eg3200) {
         /* Use alternate font for Holte-ROM */
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
+      } else if (genie3s) {
+        cur_char_height = m6845_raster * scale_factor;
       } else {
-        trs_charset = trs_charset1;
         currentmode = NORMAL;
+        trs_charset = trs_charset1;
+        if (trs_charset < 3)
+          cur_char_width = 6;
       }
       break;
     case 3:
-      trs_charset = trs_charset3;
       currentmode = NORMAL;
+      trs_charset = trs_charset3;
        trs_resize = resize3;
       break;
     default:
@@ -1314,27 +1322,8 @@ void trs_screen_init(int resize)
        trs_resize = resize4;
   }
 
-  if (trs_model == 1) {
-    if (trs_charset < 3 && genie3s == 0)
-      cur_char_width = 6;
-    else
-      cur_char_width = 8;
-
-    if (genie3s)
-      cur_char_height = m6845_raster * scale_factor;
-    else
-      cur_char_height = TRS_CHAR_HEIGHT * 2;
-  } else {
-    cur_char_width = TRS_CHAR_WIDTH;
-
-    if (screen640x240 || text80x24)
-      cur_char_height = TRS_CHAR_HEIGHT4 * 2;
-    else
-      cur_char_height = TRS_CHAR_HEIGHT * 2;
-  }
-
-  border_width = fullscreen ? 0 : window_border_width;
-  led_height = trs_show_led ? 8 : 0;
+  if (trs_model >= 3 && (screen640x240 || text80x24))
+    cur_char_height = TRS_CHAR_HEIGHT4 * 2;
 
   if (trs_model >= 3 && !trs_resize) {
     OrigWidth = cur_char_width * 80 + 2 * border_width;
