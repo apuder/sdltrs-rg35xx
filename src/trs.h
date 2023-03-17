@@ -82,7 +82,7 @@ extern int trs_disk_debug_flags;
 extern int trs_io_debug_flags;
 extern int trs_emtsafe;
 
-extern void trs_parse_command_line(int argc, char **argv, int *debug);
+extern int  trs_parse_command_line(int argc, char **argv);
 extern int  trs_write_config_file(const char *filename);
 extern int  trs_load_cmd(const char *filename);
 extern int  trs_load_config_file(void);

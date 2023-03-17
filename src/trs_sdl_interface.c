@@ -1055,7 +1055,7 @@ int trs_load_config_file(void)
   return 0;
 }
 
-void trs_parse_command_line(int argc, char **argv, int *debug)
+int trs_parse_command_line(int argc, char **argv)
 {
   int i, j, len;
 
@@ -1105,11 +1105,11 @@ void trs_parse_command_line(int argc, char **argv, int *debug)
       error("unrecognized option '%s'", argv[i]);
   }
 
-  *debug = debugger;
   trs_disk_setsizes();
 #ifdef __linux
   trs_disk_setsteps();
 #endif
+  return debugger;
 }
 
 int trs_write_config_file(const char *filename)

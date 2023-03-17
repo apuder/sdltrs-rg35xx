@@ -258,7 +258,7 @@ void trs_rom_init(void)
 
 int main(int argc, char *argv[])
 {
-  int debug = FALSE;
+  int zbx = FALSE;
   wordregister x;
 
   /* program_name must be set first because the error
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
   if (atexit(trs_sdl_cleanup))
     fatal("failed to register SDL cleanup");
 
-  trs_parse_command_line(argc, argv, &debug);
+  zbx = trs_parse_command_line(argc, argv);
   trs_set_keypad_joystick();
   trs_open_joystick();
   trs_reset(1);
@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
   if (trs_cmd_file[0])
     trs_load_cmd(trs_cmd_file);
 
-  if (!debug || fullscreen) {
+  if (!zbx || fullscreen) {
     /* Run continuously until exit or request to enter debugger */
     z80_run(TRUE);
   }
