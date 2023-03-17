@@ -554,6 +554,13 @@ trs_cassette_insert(const char *filename)
 {
    int const len = strlen(filename);
    const char *extension;
+   struct stat st = { 0 };
+
+   if (stat(filename, &st) == -1) {
+     error("failed to open cassette '%s': %s",
+           filename, strerror(errno));
+     return;
+   }
 
    snprintf(cassette_filename, FILENAME_MAX, "%s", filename);
    cassette_position = 0;
