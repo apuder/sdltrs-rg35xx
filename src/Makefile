@@ -66,7 +66,7 @@ win64:	SDL_INC	?= -I${MINGW64}\include\SDL2
 win64:	SDL_LIB	?= -L${MINGW64}\lib -lmingw32 -lSDL2main -lSDL2
 win64:	${PROG}
 
-MSYS		:=$(if $(findstring Msys, $(shell uname -o)), Msys)
+MSYS		:=$(if $(findstring Msys, $(shell uname -a)), Msys)
 SSPLIB		:=$(if ${MSYS},-lssp,)
 READLINELIBS	 =$(if ${READLINE},-lreadline,)
 ZBX		?= -DZBX
