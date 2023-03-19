@@ -9,11 +9,11 @@ static const struct trs_clones clones[] = {
    * Clone       Name of clone
    */
   { 0,           NULL,                    },
-  { CP500,       "CP-500"                 },
-  { CP500_M80,   "CP-500 M80"             },
+  { CP500,       "Prologica CP-500"       },
+  { CP500_M80,   "Prologica CP-500 M80"   },
   { EG3200,      "EACA EG 3200 Genie III" },
   { GENIE3S,     "TCS Genie IIIs"         },
-  { LNW80,       "LNW80"                  },
+  { LNW80,       "LNW Research LNW80"     },
   { SPEEDMASTER, "TCS SpeedMaster"        },
   { CT80,        "Aster CT-80"            },
 };
