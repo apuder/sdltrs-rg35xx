@@ -136,9 +136,9 @@ static int currentmode;
 static int OrigHeight, OrigWidth;
 static int cur_char_width = TRS_CHAR_WIDTH;
 static int cur_char_height = TRS_CHAR_HEIGHT * 2;
-static int disksizes[8] = { 5, 5, 5, 5, 8, 8, 8, 8 };
+static int disksizes[8];
 #ifdef __linux
-static int disksteps[8] = { 1, 1, 1, 1, 1, 1, 1, 1 };
+static int disksteps[8];
 #endif
 static int mousepointer = 1;
 static int mouse_x_size = 640, mouse_y_size = 240;
