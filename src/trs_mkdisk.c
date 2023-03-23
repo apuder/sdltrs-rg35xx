@@ -28,9 +28,7 @@
  * or write protect/unprotect an existing one.
  */
 
-#include <errno.h>
 #include <stdio.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <SDL_types.h>
@@ -100,7 +98,7 @@ void trs_write_protect(int type, int drive)
     return;
 
   if (chmod(prot_filename, st.st_mode | (S_IWUSR|S_IWGRP|S_IWOTH)) < 0)
-    error("failed to chmod '%s': %s", prot_filename, strerror(errno));
+    file_error("chmod '%s'", prot_filename);
 #endif
   switch (type) {
     case DISK:
@@ -174,7 +172,7 @@ void trs_write_protect(int type, int drive)
       (( (st.st_mode & (S_IRUSR|S_IRGRP|S_IROTH)) >> 1 ) & ~oumask);
   }
   if (chmod(prot_filename, newmode) < 0)
-    error("failed to chmod '%s': %s", prot_filename, strerror(errno));
+    file_error("chmod '%s'", prot_filename);
 #endif
   switch (type) {
     case DISK:
@@ -200,7 +198,7 @@ int trs_create_blank_jv1(const char *fname)
 
   /* Unformatted JV1 disk - just an empty file! */
   if (f == NULL) {
-    error("failed to create JV1 disk '%s': %s", fname, strerror(errno));
+    file_error("create JV1 disk '%s'", fname);
     return -1;
   }
   fclose(f);
@@ -214,7 +212,7 @@ int trs_create_blank_jv3(const char *fname)
 
   /* Unformatted JV3 disk. */
   if (f == NULL) {
-    error("failed to create JV3 disk '%s': %s", fname, strerror(errno));
+    file_error("create JV3 disk '%s'", fname);
     return -1;
   }
   for (i = 0; i < (256 * 34); i++)
@@ -232,7 +230,7 @@ int trs_create_blank_dmk(const char *fname, int sides, int density,
 
   /* Unformatted DMK disk */
   if (f == NULL) {
-    error("failed to create DMK disk '%s': %s", fname, strerror(errno));
+    file_error("create DMK disk '%s'", fname);
     return -1;
   }
   putc(0, f);           /* 0: not write protected */
@@ -283,7 +281,7 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   FILE *f = fopen(fname, "wb");
 
   if (f == NULL) {
-    error("failed to create hard disk '%s': %s", fname, strerror(errno));
+    file_error("create hard disk '%s'", fname);
     return -1;
   }
 

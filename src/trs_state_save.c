@@ -26,9 +26,7 @@
  * SUCH DAMAGE.
  */
 
-#include <errno.h>
 #include <stdio.h>
-#include <string.h>
 #include "error.h"
 #include "trs_state_save.h"
 
@@ -62,7 +60,7 @@ int trs_state_save(const char *filename)
     return 0;
   }
 
-  error("failed to save State '%s': %s", filename, strerror(errno));
+  file_error("save State '%s'", filename);
   return -1;
 }
 
@@ -109,7 +107,7 @@ int trs_state_load(const char *filename)
     return 0;
   }
 
-  error("failed to load State '%s': %s", filename, strerror(errno));
+  file_error("load State '%s'", filename);
   return -1;
 }
 

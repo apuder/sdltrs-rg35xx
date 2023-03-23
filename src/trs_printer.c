@@ -37,8 +37,6 @@
  * SOFTWARE.
  */
 
-#include <errno.h>
-#include <string.h>
 #include <sys/stat.h>
 #include "error.h"
 #include "trs.h"
@@ -73,8 +71,7 @@ static void trs_printer_open(void)
         printer_open = TRUE;
         printer = fopen(printer_filename,"w");
         if (printer == NULL) {
-          error("failed to open printer output file '%s': %s", printer_filename,
-              strerror(errno));
+          file_error("open printer output file '%s'", printer_filename);
           printer_open = FALSE;
         }
         return;

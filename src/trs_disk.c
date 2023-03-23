@@ -43,7 +43,6 @@
 #define DMK_MARK_IAM 0    /* Mark IAMs in track header; poor idea */
 #define NDRIVES 8
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -791,8 +790,8 @@ trs_disk_insert(int drive, const char *diskname)
     d->file = NULL;
     d->filename[0] = 0;
     d->writeprot = 0;
-    error("failed to open disk drive %d image '%s': %s",
-        drive, diskname, strerror(errno));
+    file_error("open disk drive %d image '%s'",
+        drive, diskname);
     return;
   }
   #if __linux
@@ -804,7 +803,7 @@ trs_disk_insert(int drive, const char *diskname)
 
     fd = open(diskname, O_ACCMODE|O_NDELAY);
     if (fd == -1) {
-      error("'%s': %s", diskname, strerror(errno));
+      file_error("open real '%s'", diskname);
       d->file = NULL;
       d->filename[0] = 0;
       d->emutype = JV3;
@@ -812,7 +811,7 @@ trs_disk_insert(int drive, const char *diskname)
     }
     d->file = fdopen(fd, "r+");
     if (d->file == NULL) {
-      error("'%s': %s", diskname, strerror(errno));
+      file_error("open real '%s'", diskname);
       d->filename[0] = 0;
       d->emutype = JV3;
       return;
@@ -3152,7 +3151,7 @@ real_error(DiskState *d, unsigned int flags, const char *msg)
     d->u.real.empty = 1;
   }
   if (trs_disk_debug_flags & DISKDEBUG_REALERR) {
-    debug("error on real_%s: %s\n", msg, strerror(errno));
+    file_error("real_%s", msg);
   }
 }
 
@@ -3608,7 +3607,7 @@ int trs_diskset_save(const char *filename)
   FILE *f = fopen(filename, "w");
 
   if (f == NULL) {
-    error("failed to save Disk Set '%s': %s", filename, strerror(errno));
+    file_error("save Disk Set '%s'", filename);
     return -1;
   }
 
@@ -3632,7 +3631,7 @@ int trs_diskset_load(const char *filename)
   FILE *f = fopen(filename, "r");
 
   if (f == NULL) {
-    error("failed to load Disk Set '%s': %s", filename, strerror(errno));
+    file_error("load Disk Set '%s'", filename);
     return -1;
   }
 
@@ -3898,8 +3897,7 @@ void trs_disk_load(FILE *file)
       if (disk[i].file == NULL) {
         disk[i].file = fopen(disk[i].filename, "rb");
         if (disk[i].file == NULL) {
-          error("failed to load disk%d: '%s': %s", i, disk[i].filename,
-              strerror(errno));
+          file_error("load disk%d: '%s'", i, disk[i].filename);
           disk[i].emutype = NONE;
           disk[i].writeprot = 0;
           disk[i].filename[0] = 0;

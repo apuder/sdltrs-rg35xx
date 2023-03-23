@@ -38,10 +38,8 @@
  */
 
 #ifdef ZBX
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #ifdef READLINE
 #include <readline/readline.h>
@@ -420,7 +418,7 @@ static void load_memory(Uint16 address, const char *filename)
 	    mem_write(address++, c);
 	fclose(file);
     } else {
-	error("failed to load: '%s': %s", filename, strerror(errno));
+	file_error("load memory '%s'", filename);
     }
 }
 
@@ -436,7 +434,7 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 
 	fclose(file);
     } else {
-	error("failed to save: '%s': %s", filename, strerror(errno));
+	file_error("save memory '%s'", filename);
     }
 }
 

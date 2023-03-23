@@ -50,7 +50,6 @@
 #define CASSDEBUG4 0
 
 #include <errno.h>
-#include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
@@ -557,8 +556,7 @@ trs_cassette_insert(const char *filename)
    struct stat st = { 0 };
 
    if (stat(filename, &st) == -1) {
-     error("failed to open cassette '%s': %s",
-           filename, strerror(errno));
+     file_error("open cassette '%s'", filename);
      return;
    }
 
@@ -677,7 +675,7 @@ static int assert_state(int state)
     }
     cassette_file = fopen(cassette_filename, "rb");
     if (cassette_file == NULL) {
-      error("couldn't read '%s': %s", cassette_filename, strerror(errno));
+      file_error("read cassette '%s'", cassette_filename);
       cassette_state = FAILED;
       return -1;
     }
@@ -732,7 +730,7 @@ static int assert_state(int state)
         fseek(cassette_file, cassette_position, 0);
       }
       if (cassette_file == NULL) {
-        error("couldn't write '%s': %s", cassette_filename, strerror(errno));
+        file_error("write cassette '%s'", cassette_filename);
         cassette_state = FAILED;
         return -1;
         }

@@ -35,7 +35,6 @@
  * SDL interface for TRS-80 Emulator
  */
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1025,7 +1024,7 @@ int trs_load_config_file(void)
     }
   } else {
     if ((config_file = fopen(trs_config_file, "r")) == NULL) {
-      error("failed to load '%s': %s", trs_config_file, strerror(errno));
+      file_error("read configuration '%s'", trs_config_file);
       return -1;
     }
   }
@@ -1118,7 +1117,7 @@ int trs_write_config_file(const char *filename)
   int i;
 
   if ((config_file = fopen(filename, "w")) == NULL) {
-    error("failed to write '%s': %s", filename, strerror(errno));
+    file_error("write configuration '%s'", filename);
     return -1;
   }
 
@@ -3635,7 +3634,7 @@ int trs_sdl_savebmp(const char *filename)
       SDL_FreeSurface(buffer);
       return 0;
     }
-    error("failed to save Screenshot '%s': %s", filename, strerror(errno));
+    file_error("save Screenshot '%s'", filename);
     SDL_FreeSurface(buffer);
   }
   return -1;

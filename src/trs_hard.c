@@ -28,7 +28,6 @@
  * mapped at ports 0xc8-0xcf, plus control registers at 0xc0-0xc1.
  */
 
-#include <string.h>
 #include <errno.h>
 #include "error.h"
 #include "trs.h"
@@ -442,8 +441,8 @@ static int open_drive(int drive)
       d->file = fopen(d->filename, "rb");
     }
     if (d->file == NULL) {
-      error("trs_hard: could not open hard drive %d image '%s': %s",
-	    drive, d->filename, strerror(errno));
+      file_error("open hard drive %d image '%s'",
+	    drive, d->filename);
       err = errno;
       goto fail;
     }
@@ -685,8 +684,7 @@ void trs_hard_load(FILE *file)
       if (state.d[i].file == NULL) {
         state.d[i].file = fopen(state.d[i].filename, "rb");
         if (state.d[i].file == NULL) {
-          error("failed to load hard%d: '%s': %s", i, state.d[i].filename,
-              strerror(errno));
+          file_error("load hard%d: '%s'", i, state.d[i].filename);
           state.d[i].filename[0] = 0;
           state.d[i].writeprot = 0;
           continue;

@@ -147,7 +147,7 @@ stringy_create_with(const char *name,
 
   f = fopen(name, "w");
   if (f == NULL) {
-    error("failed to create Wafer Image '%s': %s", name, strerror(errno));
+    file_error("create Wafer Image '%s'", name);
     return errno;
   }
 
@@ -396,7 +396,7 @@ stringy_byte_flush(stringy_info_t *s)
   mask = 0xff << s->esf_bitpos;
   s->esf_bytebuf = (ires & mask) | (s->esf_bytebuf & ~mask);
   if (fputc(s->esf_bytebuf, s->file) == EOF)
-    error("stringy byte flush: %s", strerror(errno));
+    file_error("stringy byte flush");
   fseek(s->file, -1, SEEK_CUR);
 }
 
@@ -408,7 +408,7 @@ stringy_bit_write(stringy_info_t *s, int flux)
   s->esf_bitpos++;
   if (s->esf_bitpos == 8) {
     if (fputc(s->esf_bytebuf, s->file) == EOF)
-      error("stringy bit write: %s", strerror(errno));
+      file_error("stringy bit write");
     if (++s->esf_bytepos >= s->esf_bytelen) {
       fseek(s->file, stringy_esf_header_length, SEEK_SET);
       s->esf_bytepos = 0;
@@ -472,7 +472,7 @@ stringy_bit_read(stringy_info_t *s, int *bit)
     }
     if ((ires = fgetc(s->file)) == EOF)
       if (ferror(s->file) != 0) {
-        error("stringy bit read: %s", strerror(errno));
+        file_error("stringy bit read");
         clearerr(s->file);
         return FALSE;
     }
@@ -741,8 +741,7 @@ void trs_stringy_load(FILE *file)
       if (stringy_info[i].file == NULL) {
         stringy_info[i].file = fopen(stringy_info[i].name, "rb");
         if (stringy_info[i].file == NULL) {
-          error("failed to load wafer%d: '%s': %s", i, stringy_info[i].name,
-              strerror(errno));
+          file_error("load wafer%d: '%s'", i, stringy_info[i].name);
           stringy_info[i].name[0] = 0;
           stringy_info[i].in_port = 0;
           continue;

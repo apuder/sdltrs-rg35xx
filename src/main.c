@@ -37,10 +37,8 @@
  * SOFTWARE.
  */
 
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <SDL.h>
 #include "error.h"
 #include "load_cmd.h"
@@ -146,7 +144,7 @@ static int trs_load_rom(const char *filename)
     return -1;
 
   if ((program = fopen(filename, "rb")) == NULL) {
-    error("failed to load ROM file '%s': %s", filename, strerror(errno));
+    file_error("load ROM file '%s'", filename);
     return -1;
   }
   c = getc(program);
@@ -206,7 +204,7 @@ int trs_load_cmd(const char *filename)
   int entry;
 
   if ((program = fopen(filename,"rb")) == NULL) {
-    error("failed to load CMD file '%s': %s", filename, strerror(errno));
+    file_error("load CMD file '%s'", filename);
     return -1;
   }
 
