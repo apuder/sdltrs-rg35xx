@@ -1348,11 +1348,11 @@ void trs_screen_init(int resize)
                               800, 600,
                               SDL_WINDOW_HIDDEN|SDL_WINDOW_RESIZABLE);
     if (window == NULL)
-      fatal("failed to create window: %s", SDL_GetError());
+      fatal("SDL_CreateWindow failed: %s", SDL_GetError());
 
     render = SDL_CreateRenderer(window, -1, 0);
     if (render == NULL)
-      fatal("failed to create renderer: %s", SDL_GetError());
+      fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, &scale_quality);
 
@@ -1363,7 +1363,7 @@ void trs_screen_init(int resize)
 #endif
     screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
     if (screen == NULL)
-      fatal("failed to create surface: %s", SDL_GetError());
+      fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
 
 #if defined(big_endian) && !defined(__linux)
     light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
@@ -1379,7 +1379,7 @@ void trs_screen_init(int resize)
     image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2, 1,
                                      G_XSIZE, 1, 1, 1, 0);
     if (image == NULL)
-      fatal("failed to create surface: %s", SDL_GetError());
+      fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
   }
 
   if (texture)
@@ -1389,7 +1389,7 @@ void trs_screen_init(int resize)
                               SDL_TEXTUREACCESS_STREAMING,
                               OrigWidth, OrigHeight);
   if (texture == NULL)
-    fatal("failed to create texture: %s", SDL_GetError());
+    fatal("SDL_CreateTexture failed: %s", SDL_GetError());
 
   if (aspect_ratio)
     SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);

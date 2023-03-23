@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
 #endif
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
-    fatal("failed to initialize SDL: %s", SDL_GetError());
+    fatal("SDL_Init failed: %s", SDL_GetError());
 
   if (atexit(trs_sdl_cleanup))
     fatal("failed to register SDL cleanup");
