@@ -101,13 +101,13 @@ static int memory_map;
 static int bank_offset[2];
 static int video_memory = VIDEO_START;
 static int video_offset;
-static unsigned int bank_base = 0x10000;
+static Uint32 bank_base = 0x10000;
 static int megamem_addr;
-static unsigned int megamem_base;
+static Uint32 megamem_base;
 static Uint8 mem_command;
 static int romin; /* Model 4p */
 static int supermem_base;
-static unsigned int supermem_hi;
+static Uint32 supermem_hi;
 static int selector_reg;
 static int system_byte;
 
