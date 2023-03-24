@@ -2970,15 +2970,17 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
     int const position = (y * scale_factor) * G_XSIZE + x;
     SDL_Rect srcRect, dstRect;
 
-    if (grafyx_enable && grafyx_overlay && on_screen) {
-      /* Erase old byte, preserving text */
+    if (grafyx_enable && on_screen) {
       srcRect.x = x * cur_char_width;
       srcRect.y = y * scale_factor;
       srcRect.w = cur_char_width;
       srcRect.h = scale_factor;
       dstRect.x = left_margin + screen_x * cur_char_width;
       dstRect.y = top_margin + screen_y * scale_factor;
-      TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
+
+      /* Erase old byte, preserving text */
+      if (grafyx_overlay)
+        TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
     }
 
     /* Save new byte in local memory */
@@ -2989,12 +2991,6 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
 
     if (grafyx_enable && on_screen) {
       /* Draw new byte */
-      srcRect.x = x * cur_char_width;
-      srcRect.y = y * scale_factor;
-      srcRect.w = cur_char_width;
-      srcRect.h = scale_factor;
-      dstRect.x = left_margin + screen_x * cur_char_width;
-      dstRect.y = top_margin + screen_y * scale_factor;
       TrsSoftBlit(image, &srcRect, screen, &dstRect, grafyx_overlay);
       drawnRectCount = MAX_RECTS;
     }
