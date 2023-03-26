@@ -59,7 +59,7 @@ static void win_set_readonly(const char *filename, int readonly)
 }
 #endif
 
-void trs_write_protect(int type, int drive)
+int trs_write_protect(int type, int drive)
 {
   char prot_filename[FILENAME_MAX];
   const char *filename = NULL;
@@ -85,21 +85,23 @@ void trs_write_protect(int type, int drive)
       filename = trs_cassette_getfilename();
       break;
     default:
-      return;
+      return 0;
   }
   if (filename[0] == 0)
-    return;
+    return 0;
 
   snprintf(prot_filename, FILENAME_MAX, "%s", filename);
 #ifdef _WIN32
   win_set_readonly(prot_filename, 0);
 #else
-  if (stat(prot_filename, &st) < 0)
-    return;
+  if (stat(prot_filename, &st) < 0) {
+    file_error("'%s'", prot_filename);
+    return -1;
+  }
 
   if (chmod(prot_filename, st.st_mode | (S_IWUSR|S_IWGRP|S_IWOTH)) < 0) {
     file_error("chmod '%s'", prot_filename);
-    return;
+    return -1;
   }
 #endif
   switch (type) {
@@ -175,7 +177,7 @@ void trs_write_protect(int type, int drive)
   }
   if (chmod(prot_filename, newmode) < 0) {
     file_error("chmod '%s'", prot_filename);
-    return;
+    return -1;
   }
 #endif
   switch (type) {
@@ -194,6 +196,7 @@ void trs_write_protect(int type, int drive)
     default:
       break;
   }
+  return 0;
 }
 
 int trs_create_blank_jv1(const char *fname)
