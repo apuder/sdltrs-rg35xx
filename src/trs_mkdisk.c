@@ -97,8 +97,10 @@ void trs_write_protect(int type, int drive)
   if (stat(prot_filename, &st) < 0)
     return;
 
-  if (chmod(prot_filename, st.st_mode | (S_IWUSR|S_IWGRP|S_IWOTH)) < 0)
+  if (chmod(prot_filename, st.st_mode | (S_IWUSR|S_IWGRP|S_IWOTH)) < 0) {
     file_error("chmod '%s'", prot_filename);
+    return;
+  }
 #endif
   switch (type) {
     case DISK:
@@ -171,8 +173,10 @@ void trs_write_protect(int type, int drive)
     newmode = st.st_mode |
       (( (st.st_mode & (S_IRUSR|S_IRGRP|S_IROTH)) >> 1 ) & ~oumask);
   }
-  if (chmod(prot_filename, newmode) < 0)
+  if (chmod(prot_filename, newmode) < 0) {
     file_error("chmod '%s'", prot_filename);
+    return;
+  }
 #endif
   switch (type) {
     case DISK:
