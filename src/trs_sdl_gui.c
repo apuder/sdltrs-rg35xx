@@ -646,7 +646,7 @@ read_directory:
       redraw = 0;
     }
     key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
-    if (key >= '0' && key <= 'z') {
+    if (key >= ' ' && key <= 'z') {
       key = tolower(key);
       sel = i = first_row + selection;
 
