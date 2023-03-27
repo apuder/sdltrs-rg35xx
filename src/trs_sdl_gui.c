@@ -536,9 +536,10 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
           if (strcasecmp(&dir_entry->d_name[len - 4], mask) != 0)
             continue;
         }
-        name = (char *)strdup(dir_entry->d_name);
+        if ( (name = (char *)malloc(len + 2)) )
+          snprintf(name, len + 2, " %s", dir_entry->d_name);
       }
-      if (!name) {
+      if (name == NULL) {
         closedir(directory);
         return -1;
       }
@@ -652,7 +653,7 @@ read_directory:
       do {
         if (++i > filenamecount - 1)
           i = 0;
-      } while (i != sel && (tolower((int)*filenamelist[i]) != key));
+      } while (i != sel && (tolower((int)filenamelist[i][1]) != key));
 
       if (i < 13) {
         first_row = 0;
@@ -778,7 +779,7 @@ done:
     }
     else
       snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
-          "%s", filenamelist[selection]);
+          "%s", &filenamelist[selection][1]);
   }
 
   trs_gui_delete_filename_list();
