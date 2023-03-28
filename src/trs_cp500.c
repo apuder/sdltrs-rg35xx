@@ -155,7 +155,7 @@ Uint8 cp500_switch_mode(int mode)
   return 0; /* TODO: unknown what the hardware actually returns */
 }
 
-Uint8 cp500_mem_read(int address, int mem_map, Uint8 *rom, Uint8 *ram)
+Uint8 cp500_mem_read(int address, int mem_map, const Uint8 *rom, const Uint8 *ram)
 {
   switch (mem_map) {
     case 0x31: /* 3000-37FF = extra 2K in EPROM 4 */
