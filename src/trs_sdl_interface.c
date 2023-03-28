@@ -2841,10 +2841,13 @@ void trs_screen_write_char(int position, Uint8 char_index)
 
   srcRect.x = 0;
   srcRect.y = 0;
-  srcRect.w = expanded ? cur_char_width * 2 : cur_char_width;
+  srcRect.w = cur_char_width;
   srcRect.h = cur_char_height;
-  dstRect.x = col * cur_char_width + left_margin;
-  dstRect.y = row * cur_char_height + top_margin;
+  dstRect.x = srcRect.w * col + left_margin;
+  dstRect.y = srcRect.h * row + top_margin;
+
+  if (expanded)
+    srcRect.w *= 2;
 
   if (genie3s) {
     SDL_BlitSurface(trs_char[expanded][char_index], &srcRect, screen, &dstRect);
@@ -2947,8 +2950,8 @@ void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
   srcRect.y = 0;
   srcRect.w = cur_char_width;
   srcRect.h = cur_char_height;
-  dstRect.x = col * cur_char_width + left_margin;
-  dstRect.y = row * cur_char_height + top_margin;
+  dstRect.x = srcRect.w * col + left_margin;
+  dstRect.y = srcRect.h * row + top_margin;
 
   if (char_index >= 0x80 && char_index <= 0xbf)
     /* Use graphics character bitmap instead of font */
@@ -2971,12 +2974,12 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
     SDL_Rect srcRect, dstRect;
 
     if (grafyx_enable && on_screen) {
-      srcRect.x = x * cur_char_width;
-      srcRect.y = y * scale_factor;
       srcRect.w = cur_char_width;
       srcRect.h = scale_factor;
-      dstRect.x = left_margin + screen_x * cur_char_width;
-      dstRect.y = top_margin + screen_y * scale_factor;
+      srcRect.x = srcRect.w * x;
+      srcRect.y = srcRect.h * y;
+      dstRect.x = srcRect.w * screen_x + left_margin;
+      dstRect.y = srcRect.h * screen_y + top_margin;
 
       /* Erase old byte, preserving text */
       if (grafyx_overlay)
@@ -3360,10 +3363,13 @@ void m6845_cursor(int position, int start, int end, int visible)
 
   srcRect.x = 0;
   srcRect.y = start * scale_factor;
-  srcRect.w = expanded ? cur_char_width * 2 : cur_char_width;
+  srcRect.w = cur_char_width;
   srcRect.h = (end - start) * scale_factor + scale_factor;
-  dstRect.x = col * cur_char_width + left_margin;
-  dstRect.y = row * cur_char_height + top_margin + srcRect.y;
+  dstRect.x = srcRect.w * col + left_margin;
+  dstRect.y = srcRect.y + row * cur_char_height + top_margin;
+
+  if (expanded)
+    srcRect.w *= 2;
 
   SDL_BlitSurface(trs_char[inverted + expanded][cur_char], &srcRect, screen, &dstRect);
   drawnRectCount = MAX_RECTS;
