@@ -792,7 +792,7 @@ int trs_gui_input_string(const char *title, const char* input, char* output,
   int insert = 1;
   int pos;
   int len;
-  int first_disp;
+  int col;
 
   if (input != output)
     snprintf(output, limit, "%s", input);
@@ -800,10 +800,7 @@ int trs_gui_input_string(const char *title, const char* input, char* output,
   pos = len = strlen(output);
 
 redraw:
-  if (pos > 60)
-    first_disp = pos - 59;
-  else
-    first_disp = 0;
+  col = pos > 60 ? pos - 59 : 0;
 
   trs_gui_frame(1, 6, 62, 8);
   trs_gui_center_text(title, 6, 0);
@@ -816,11 +813,11 @@ redraw:
     int i;
 
     for (i = 0; i < 60; i++) {
-      int const cur_pos = first_disp + i;
+      int const cur = col + i;
 
       trs_gui_write_char(i + 2, 7,
-          (cur_pos >= len) ? ' ' : output[cur_pos],
-          (cur_pos == pos));
+          (cur >= len) ? ' ' : output[cur],
+          (cur == pos));
     }
 
     trs_gui_write_text((insert ? " INS " : " OVR "), 56, 8, 1);
@@ -830,37 +827,34 @@ redraw:
     switch (key) {
       case SDLK_LEFT:
         if (pos > 0) {
-          if (pos == first_disp)
-            first_disp--;
+          if (pos == col)
+            col--;
           pos--;
         }
         break;
       case SDLK_RIGHT:
         if (pos < len) {
-          if (pos == first_disp + 59)
-            first_disp++;
+          if (pos == col + 59)
+            col++;
           pos++;
         }
         break;
       case SDLK_HOME:
       case SDLK_PAGEUP:
-        first_disp = pos = 0;
+        col = pos = 0;
         break;
       case SDLK_END:
       case SDLK_PAGEDOWN:
         pos = len;
-        if (pos > 60)
-          first_disp = pos - 59;
-        else
-          first_disp = 0;
+        col = pos > 60 ? pos - 59 : 0;
         break;
       case SDLK_BACKSPACE:
         if (pos > 0) {
           for (i = pos; i < len; i++)
             output[i - 1] = output[i];
           len--;
-          if (pos == first_disp)
-            first_disp--;
+          if (pos == col)
+            col--;
           pos--;
         }
         break;
@@ -894,7 +888,7 @@ redraw:
         }
         break;
       case SDLK_F9:
-        first_disp = len = pos = 0;
+        col = len = pos = 0;
         output[0] = 0;
         break;
       case SDLK_F10:
@@ -909,8 +903,8 @@ redraw:
             len++;
           }
           output[pos] = (char) key;
-          if (pos == first_disp + 59)
-            first_disp++;
+          if (pos == col + 59)
+            col++;
           pos++;
           if (pos > len)
             len++;
