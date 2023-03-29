@@ -295,14 +295,9 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   rhh.id1 = 0x56;
   rhh.id2 = 0xcb;
   rhh.ver = 0x10;
-  rhh.cksum = 0;  /* Checksum (not used) */
   rhh.blks = 1;
   rhh.mb4 = 4;
-  rhh.media = 0;
-  rhh.flag1 = 0;
-  rhh.flag2 = rhh.flag3 = 0;
   rhh.crtr = 0x42;
-  rhh.dfmt = 0;
   rhh.heads = heads;
   rhh.dparm = cyls >> 8; /* MSB of cylinders */
   rhh.cyl = cyls & 0xff; /* LSB of cylinders */
