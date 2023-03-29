@@ -2817,14 +2817,14 @@ void trs_turbo_led(void)
 void trs_screen_write_char(int position, Uint8 char_index)
 {
   unsigned int row, col;
-  int expanded;
+  int expanded = (currentmode & EXPANDED) != 0;
   SDL_Rect srcRect, dstRect;
 
   if (position >= screen_chars)
     return;
 
   trs_screen[position] = char_index;
-  if ((currentmode & EXPANDED) && (position & 1))
+  if (expanded && (position & 1))
     return;
   if (grafyx_enable && !grafyx_overlay)
     return;
@@ -2837,7 +2837,6 @@ void trs_screen_write_char(int position, Uint8 char_index)
     col = position - (row * 80);
   }
 
-  expanded = (currentmode & EXPANDED) != 0;
 
   srcRect.x = 0;
   srcRect.y = 0;
@@ -3334,9 +3333,9 @@ hrg_read_data(void)
 
 void m6845_cursor(int position, int start, int end, int visible)
 {
+  int const expanded = (currentmode & EXPANDED) != 0;
   int row, col;
   int cur_char;
-  int expanded;
   int inverted;
   SDL_Rect srcRect, dstRect;
 
@@ -3349,9 +3348,6 @@ void m6845_cursor(int position, int start, int end, int visible)
     trs_screen_write_char(position, cur_char);
     return;
   }
-
-  expanded = (currentmode & EXPANDED) != 0;
-  inverted = (currentmode & INVERSE) && (cur_char & 0x80) ? 0 : 2;
 
   if (row_chars == 64) {
     row = position / 64;
@@ -3370,6 +3366,8 @@ void m6845_cursor(int position, int start, int end, int visible)
 
   if (expanded)
     srcRect.w *= 2;
+
+  inverted = (currentmode & INVERSE) && (cur_char & 0x80) ? 0 : 2;
 
   SDL_BlitSurface(trs_char[inverted + expanded][cur_char], &srcRect, screen, &dstRect);
   drawnRectCount = MAX_RECTS;
