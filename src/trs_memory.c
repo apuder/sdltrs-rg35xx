@@ -561,8 +561,9 @@ void trs_reset(int poweron)
     }
 
     if (trs_model == 3) {
-        grafyx_m3_reset();
-        cp500_reset_mode();
+	grafyx_m3_reset();
+	mem_map(0);
+	trs_clones_model(0);
     }
 
     if (trs_model == 1) {

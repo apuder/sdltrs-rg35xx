@@ -32,12 +32,6 @@
 
 static int cp500_m80_video_first_row;
 
-void cp500_reset_mode()
-{
-  mem_map(0);
-  trs_clones_model(0);
-}
-
 /*
  * Switches CP-500 to a new mode. Mode switching in CP-500 is done by
  * reading (!) port F4, which is unused (when reading) in Model III.
