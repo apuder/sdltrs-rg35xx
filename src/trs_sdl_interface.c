@@ -1100,6 +1100,7 @@ int trs_parse_command_line(int argc, char **argv)
         }
       }
     }
+
     if (j == num_options && argv[i][0] == '-')
       error("unrecognized option '%s'", argv[i]);
   }
@@ -1261,6 +1262,7 @@ void trs_screen_reset(void)
   memset(grafyx, 0, G_MSIZE);
   memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
   memset(hrg_screen, 0, HRG_MEMSIZE);
+
   SDL_FillRect(image, NULL, background);
 }
 
@@ -1282,6 +1284,7 @@ void trs_screen_caption(void)
              trs_paused ? "PAUSED " : "",
              trs_sound ? "" : "(Mute)");
   }
+
   SDL_SetWindowTitle(window, title);
 }
 
@@ -1318,6 +1321,7 @@ void trs_screen_init(int resize)
       trs_charset = trs_charset4;
        trs_resize = resize4;
     }
+
     if (screen640x240 || text80x24)
       cur_char_height = TRS_CHAR_HEIGHT4 * 2;
   }
@@ -1334,13 +1338,13 @@ void trs_screen_init(int resize)
     OrigHeight = cur_char_height * col_chars + 2 * border_width + led_height;
     top_margin = border_width;
   }
+
   screen_height = OrigHeight - led_height;
-#if defined(SDL2) || !defined(NOX)
+
   paste_state = 0;
   paste_lastkey = 0;
   copyStatus = 0;
   selectAll = 0;
-#endif
 
   if (window == NULL) {
     window = SDL_CreateWindow(NULL,
@@ -1361,6 +1365,7 @@ void trs_screen_init(int resize)
     debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
     debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
 #endif
+
     screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
     if (screen == NULL)
       fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
@@ -1376,6 +1381,7 @@ void trs_screen_init(int resize)
     light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x00);
     bright_orange = SDL_MapRGB(screen->format, 0xff, 0xa0, 0x00);
 #endif
+
     image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2, 1,
                                      G_XSIZE, 1, 1, 1, 0);
     if (image == NULL)
@@ -1402,6 +1408,7 @@ void trs_screen_init(int resize)
     else
       SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
   }
+
   SDL_ShowWindow(window);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
 
@@ -1420,11 +1427,13 @@ void trs_screen_init(int resize)
   colors[1].g = (foreground >> 8) & 0xFF;
   colors[1].b = (foreground) & 0xFF;
 #endif
+
   back_color  = SDL_MapRGB(screen->format, colors[0].r, colors[0].g, colors[0].b);
 
   SDL_SetRenderDrawColor(render, colors[0].r, colors[0].g, colors[0].b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(render, NULL);
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
+
   TrsBlitMap(image->format->palette, screen->format);
 
   bitmap_init(genie3s);
@@ -1651,6 +1660,7 @@ static char *GetSelection(void)
       else
         *curr_data++ = ' ';
     }
+
     if (row != end_row) {
 #ifdef _WIN32
       *curr_data++ = 0xd;
@@ -1658,6 +1668,7 @@ static char *GetSelection(void)
       *curr_data++ = 0xa;
     }
   }
+
   *curr_data = 0;
   return copy_data;
 }
@@ -1673,6 +1684,7 @@ static void trs_screen_flush(void)
       selectAll = FALSE;
     }
   }
+
   if (drawnRectCount == 0)
     return;
 
@@ -1726,6 +1738,7 @@ void trs_exit(int confirm)
     SDL_Surface *buffer = SDL_ConvertSurface(screen, screen->format, 0);
 
     recursion = 1;
+
     if (!trs_gui_exit_sdltrs() && buffer) {
       SDL_BlitSurface(buffer, NULL, screen, NULL);
       SDL_FreeSurface(buffer);
@@ -1734,6 +1747,7 @@ void trs_exit(int confirm)
       return;
     }
   }
+
   exit(EXIT_SUCCESS);
 }
 
@@ -2115,6 +2129,7 @@ void trs_get_event(int wait)
           }
           continue;
         }
+
         if (last_key[keysym.scancode])
         /*
          * We think this hardware key is already pressed.
@@ -2129,6 +2144,7 @@ void trs_get_event(int wait)
             == (KMOD_CAPS | KMOD_RSHIFT)))
             && keysym.sym >= 'A' && keysym.sym <= 'Z')
           keysym.sym = (int) keysym.sym + 0x20;
+
         if (keysym.sym == SDLK_RSHIFT && trs_model == 1)
           keysym.sym = SDLK_LSHIFT;
 
@@ -2143,18 +2159,18 @@ void trs_get_event(int wait)
             goto done;
           }
           switch (keysym.sym) {
-            case SDLK_END:     keysym.sym = 0x08d; goto done; /* ESC  */
-            case SDLK_LCTRL:   keysym.sym = 0x12f; goto done; /* Ctrl */
+            case SDLK_END:   keysym.sym = 0x08d; goto done; /* ESC  */
+            case SDLK_LCTRL: keysym.sym = 0x12f; goto done; /* Ctrl */
             default:
               break;
           }
         } else {
           if (trs_model == 1) {
             switch (keysym.sym) {
-              case SDLK_F1:    keysym.sym = 0x115; goto done; /* _ */
-              case SDLK_F2:    keysym.sym = 0x120; goto done; /* \ */
-              case SDLK_F3:    keysym.sym = 0x121; goto done; /* ] */
-              case SDLK_F4:    keysym.sym = 0x122; goto done; /* ^ */
+              case SDLK_F1:  keysym.sym = 0x115; goto done; /* _ */
+              case SDLK_F2:  keysym.sym = 0x120; goto done; /* \ */
+              case SDLK_F3:  keysym.sym = 0x121; goto done; /* ] */
+              case SDLK_F4:  keysym.sym = 0x122; goto done; /* ^ */
               case SDLK_LCTRL: /* P1 on SpeedMaster or Control */
                 keysym.sym = (speedup == 6) ? 0x11c : 0x11a;
                 goto done;
@@ -2177,6 +2193,7 @@ void trs_get_event(int wait)
           keysym.sym = (keysym.sym - SDLK_KP_1) + 0x101;
           goto done;
         }
+
         /* Convert arrow/control/function/shift keys */
         switch (keysym.sym) {
           case SDLK_KP_0:       keysym.sym = 0x100; goto done;
@@ -2204,6 +2221,7 @@ void trs_get_event(int wait)
           default:
             break;
         }
+
         /* Convert uppercase and special chars */
         if (SDL_GetModState() & (KMOD_SHIFT | KMOD_RALT)) {
           if ((keysym.sym >= 0x21 && keysym.sym <= 0x7F) || keysym.sym == 0xDF) {
@@ -2273,6 +2291,7 @@ done:
             else
               trs_xlate_keysym(0x10000 | ver_key);
           }
+
           if (trigger_keydown) {
             if (event.jaxis.axis == 0) {
               hor_key = (value == -1 ? 0x114 : 0x113); /* Left/Right */
@@ -2304,6 +2323,7 @@ done:
           else
             event.jbutton.button = event.button.button;
         }
+
         if (event.jbutton.button < N_JOYBUTTONS) {
           int key = jbutton_map[event.jbutton.button];
 
@@ -2332,6 +2352,7 @@ done:
           else
             event.jbutton.button = event.button.button;
         }
+
         if (event.jbutton.button < N_JOYBUTTONS) {
           int key = jbutton_map[event.jbutton.button];
 
@@ -2531,6 +2552,7 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
   mydata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
       scale_x * scale_factor * sizeof(int));
   mypixels = (Uint8 *)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT * 8);
+
   if (mydata == NULL || mypixels == NULL)
     fatal("CreateSurfaceFromDataScale: failed to allocate memory");
 
@@ -2653,6 +2675,7 @@ void trs_screen_refresh(void)
     dstRect.x = left_margin;
     dstRect.y = top_margin;
     SDL_BlitSurface(image, &srcRect, screen, &dstRect);
+
     /* Draw wrapped portions if any */
     if (dunx < width) {
       srcRect.x = 0;
@@ -2663,6 +2686,7 @@ void trs_screen_refresh(void)
       dstRect.y = top_margin;
       SDL_BlitSurface(image, &srcRect, screen, &dstRect);
     }
+
     if (duny < height) {
       srcRect.x = srcx;
       srcRect.y = 0;
@@ -2671,6 +2695,7 @@ void trs_screen_refresh(void)
       dstRect.x = left_margin;
       dstRect.y = top_margin + duny;
       SDL_BlitSurface(image, &srcRect, screen, &dstRect);
+
       if (dunx < width) {
         srcRect.x = 0;
         srcRect.y = 0;
@@ -2692,10 +2717,12 @@ void trs_screen_refresh(void)
       memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
 
       grafyx_overlay = 0;
+
       for (i = 0; i <= 0x3FFF; i++) {
         hrg_write_addr(i, 0x3FFF);
         hrg_write_data(hrg_screen[i]);
       }
+
       grafyx_overlay = 1;
     }
   }
@@ -2824,8 +2851,10 @@ void trs_screen_write_char(int position, Uint8 char_index)
     return;
 
   trs_screen[position] = char_index;
+
   if (expanded && (position & 1))
     return;
+
   if (grafyx_enable && !grafyx_overlay)
     return;
 
@@ -2836,7 +2865,6 @@ void trs_screen_write_char(int position, Uint8 char_index)
     row = position / 80;
     col = position - (row * 80);
   }
-
 
   srcRect.x = 0;
   srcRect.y = 0;
@@ -2884,6 +2912,7 @@ void trs_screen_write_char(int position, Uint8 char_index)
     srcRect.x = srcx;
     srcRect.y = srcy;
     TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
+
     /* Draw wrapped portion if any */
     if (duny < cur_char_height) {
       srcRect.y = 0;
@@ -2988,6 +3017,7 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
     /* Save new byte in local memory */
     grafyx_unscaled[y][x] = byte;
     grafyx[position] = byte;
+
     if (scale_factor == 2)
       grafyx[position + G_XSIZE] = byte;
 
@@ -3016,12 +3046,14 @@ void grafyx_write_y(int value)
 void grafyx_write_data(int value)
 {
   grafyx_write_byte(grafyx_x % G_XSIZE, grafyx_y, value);
+
   if (!(grafyx_mode & G_XNOCLKW)) {
     if (grafyx_mode & G_XDEC)
       grafyx_x--;
     else
       grafyx_x++;
   }
+
   if (!(grafyx_mode & G_YNOCLKW)) {
     if (grafyx_mode & G_YDEC)
       grafyx_y--;
@@ -3040,12 +3072,14 @@ int grafyx_read_data(void)
     else
       grafyx_x++;
   }
+
   if (!(grafyx_mode & G_YNOCLKR)) {
     if (grafyx_mode & G_YDEC)
       grafyx_y--;
     else
       grafyx_y++;
   }
+
   return value;
 }
 
@@ -3081,6 +3115,7 @@ void grafyx_write_xoffset(int value)
   int const old_xoffset = grafyx_xoffset;
 
   grafyx_xoffset = value % G_XSIZE;
+
   if (grafyx_enable && old_xoffset != grafyx_xoffset)
     trs_screen_refresh();
 }
@@ -3090,6 +3125,7 @@ void grafyx_write_yoffset(int value)
   int const old_yoffset = grafyx_yoffset;
 
   grafyx_yoffset = value;
+
   if (grafyx_enable && old_yoffset != grafyx_yoffset)
     trs_screen_refresh();
 }
@@ -3099,6 +3135,7 @@ void grafyx_write_overlay(int value)
   int const old_overlay = grafyx_overlay;
 
   grafyx_overlay = value & 1;
+
   if (grafyx_enable && old_overlay != grafyx_overlay) {
     trs_screen_640x240((grafyx_enable && !grafyx_overlay) || text80x24);
     trs_screen_refresh();
@@ -3130,6 +3167,7 @@ void grafyx_m3_write_mode(int value)
   grafyx_overlay = enable;
   grafyx_mode = value;
   grafyx_y = G3_YLOW(value);
+
   if (changed) trs_screen_refresh();
 }
 
@@ -3194,9 +3232,12 @@ static Uint8 expand6to8(Uint8 c)
 
   if (r & 0x04)
     r |= 0x08;
+
   r |= (c << 1) & 0x70;
+
   if (r & 0x40)
     r |= 0x80;
+
   return r;
 }
 
@@ -3204,6 +3245,7 @@ int lowe_le18_read(void)
 {
   if (!lowe_le18)
     return 0xFF;
+
   return pack8to6(grafyx_unscaled[le18_y][le18_x]) | 0x80
       | ((le18_on) ? 0x40 : 0x00);
 }
@@ -3302,6 +3344,7 @@ void
 hrg_write_data(int data)
 {
   if (hrg_addr >= HRG_MEMSIZE) return; /* nonexistent address */
+
   hrg_screen[hrg_addr] = data;
 
   if (!hrg_enable) return;
@@ -3328,6 +3371,7 @@ int
 hrg_read_data(void)
 {
   if (hrg_addr >= HRG_MEMSIZE) return 0xff; /* nonexistent address */
+
   return hrg_screen[hrg_addr];
 }
 
@@ -3418,6 +3462,7 @@ void genie3s_hrg(int value)
 
   grafyx_enable = value;
   grafyx_overlay = value;
+
   if (changed) trs_screen_refresh();
 }
 
@@ -3486,6 +3531,7 @@ void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)
     if (mask & SDL_BUTTON(SDL_BUTTON_MIDDLE)) mouse_last_buttons &= ~2;
     if (mask & SDL_BUTTON(SDL_BUTTON_RIGHT))  mouse_last_buttons &= ~1;
   }
+
   *x = mouse_last_x;
   *y = mouse_last_y;
   *buttons = mouse_last_buttons;
@@ -3529,6 +3575,7 @@ void trs_set_mouse_max(int x, int y, unsigned int sens)
        the values are even, new style if not. */
     mouse_old_style = 1;
   }
+
   mouse_x_size = x + (mouse_old_style ? 0 : 1);
   mouse_y_size = y + (mouse_old_style ? 0 : 1);
   mouse_sens = sens;
@@ -3629,10 +3676,12 @@ int trs_sdl_savebmp(const char *filename)
   if (buffer) {
     trs_screen_refresh();
     SDL_BlitSurface(screen, NULL, buffer, NULL);
+
     if (SDL_SaveBMP(buffer, filename) == 0) {
       SDL_FreeSurface(buffer);
       return 0;
     }
+
     file_error("save Screenshot '%s'", filename);
     SDL_FreeSurface(buffer);
   }

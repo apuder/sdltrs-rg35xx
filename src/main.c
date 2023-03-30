@@ -148,6 +148,7 @@ static int trs_load_rom(const char *filename)
     file_error("load ROM file '%s'", filename);
     return -1;
   }
+
   c = getc(program);
   if (c == ':') {
     /* Assume Intel hex format */
@@ -173,6 +174,7 @@ static int trs_load_rom(const char *filename)
         }
       }
       fclose(program);
+
       if (trs_rom_size > 0x3800) {
         error("ROM file '%s' size %d exceeds 14 kB", filename, trs_rom_size);
         return -1;
@@ -263,11 +265,10 @@ int main(int argc, char *argv[])
   /* program_name must be set first because the error
    * printing routines use it. */
   program_name = strrchr(argv[0], DIR_SLASH);
-  if (program_name == NULL) {
+  if (program_name == NULL)
     program_name = argv[0];
-  } else {
+  else
     program_name++;
-  }
 
   x.byte.low = 1;
   x.byte.high = 0;
@@ -297,10 +298,9 @@ int main(int argc, char *argv[])
   if (trs_cmd_file[0])
     trs_load_cmd(trs_cmd_file);
 
-  if (!zbx || fullscreen) {
+  if (!zbx || fullscreen)
     /* Run continuously until exit or request to enter debugger */
     z80_run(TRUE);
-  }
 
 #ifdef ZBX
   puts("Entering debugger.");

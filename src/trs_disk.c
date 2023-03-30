@@ -3611,15 +3611,15 @@ int trs_diskset_save(const char *filename)
     return -1;
   }
 
-  for (i = 0; i < NDRIVES; i++) {
+  for (i = 0; i < NDRIVES; i++)
     fprintf(f, "%s\n", trs_disk_getfilename(i));
-  }
-  for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
+
+  for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
     fprintf(f, "%s\n", trs_hard_getfilename(i));
-  }
-  for (i = 0; i < NDRIVES; i++) {
+
+  for (i = 0; i < NDRIVES; i++)
     fprintf(f, "%s\n", stringy_get_name(i));
-  }
+
   fclose(f);
   return 0;
 }
@@ -3644,6 +3644,7 @@ int trs_diskset_load(const char *filename)
         trs_disk_insert(i, diskname);
     }
   }
+
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     if (fgets(diskname, FILENAME_MAX, f) == NULL)
       continue;
@@ -3653,6 +3654,7 @@ int trs_diskset_load(const char *filename)
         trs_hard_attach(i, diskname);
     }
   }
+
   for (i = 0; i < NDRIVES; i++) {
     if (fgets(diskname, FILENAME_MAX, f) == NULL)
       continue;
@@ -3662,6 +3664,7 @@ int trs_diskset_load(const char *filename)
         stringy_insert(i, diskname);
     }
   }
+
   fclose(f);
   return 0;
 }
@@ -3823,6 +3826,7 @@ static void trs_save_diskstate(FILE *file, DiskState *d)
   trs_save_int(file, &d->emutype, 1);
   trs_save_int(file, &d->real_step, 1);
   trs_save_int(file, &file_not_null, 1);
+
   trs_save_filename(file, d->filename);
 
   if (d->emutype == JV3)
@@ -3869,9 +3873,8 @@ void trs_disk_save(FILE *file)
   trs_fdc_save(file, &state);
   trs_fdc_save(file, &other_state);
 
-  for (i = 0; i < NDRIVES; i++) {
+  for (i = 0; i < NDRIVES; i++)
     trs_save_diskstate(file, &disk[i]);
-  }
 }
 
 void trs_disk_load(FILE *file)
@@ -3892,7 +3895,8 @@ void trs_disk_load(FILE *file)
 
   for (i = 0; i < NDRIVES; i++) {
     trs_load_diskstate(file, &disk[i]);
-     if (disk[i].file != NULL) {
+
+    if (disk[i].file != NULL) {
       disk[i].file = fopen(disk[i].filename, "rb+");
       if (disk[i].file == NULL) {
         disk[i].file = fopen(disk[i].filename, "rb");

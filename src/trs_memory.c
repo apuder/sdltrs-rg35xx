@@ -634,6 +634,7 @@ static int trs80_model1_ram(int address)
     if ((addr & 0x8000) == bank)
       address += bank_base;
   }
+
   return memory[address];
 }
 
@@ -681,23 +682,27 @@ int mem_read(int address)
       if (address >= megamem_addr && address <= megamem_addr + 0x3FFF)
         return memory[megamem_base + (address & 0x3FFF)];
     }
+
     /* The SuperMem sits between the system and the Z80 */
     if (supermem) {
       if (!((address ^ supermem_hi) & 0x8000))
         return supermem_ram[supermem_base + (address & 0x7FFF)];
       /* Otherwise the request comes from the system */
     }
+
     switch (memory_map) {
       case 0x10: /* Model I */
         if (address < RAM_START)
 	  return trs80_model1_mmio(address);
 	else
 	  return trs80_model1_ram(address);
+
       case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
         if (address >= 0xF7E0 && address <= 0xF7FF)
 	  return trs80_model1_mmio(address & 0x3FFF);
 	else
 	  return trs80_model1_ram(address);
+
       case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
         if (address < 0x37E0)
           return trs80_model1_ram(address);
@@ -705,26 +710,32 @@ int mem_read(int address)
 	  return trs80_model1_mmio(address);
 	else
 	  return trs80_model1_ram(address);
+
       case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
         if (address >= 0xF7E0)
           return trs80_model1_mmio(address & 0x3FFF);
 	/* Fall through */
+
       case 0x14: /* Model 1: All RAM banking high */
       case 0x15: /* Model 1: All RAM banking low */
 	return trs80_model1_ram(address);
+
       case 0x16: /* Model 1: Low 16K in top 16K */
 	if (address < RAM_START)
 	  return trs80_model1_mmio(address);
 	else
 	  return trs80_model1_ram(address);
+
       case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
         break;	/* Not clear what really happens */
+
       case 0x20: /* LNW80: HRG in low 16K */
 	if (address < RAM_START) {
 	  hrg_write_addr(address, 0x3FFF);
 	  return hrg_read_data();
 	}
 	return trs80_model1_ram(address);
+
       case 0x21: /* EG-64 Memory-Banking-Adaptor */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 0)) && address <= 0x2FFF) ||
@@ -737,6 +748,7 @@ int mem_read(int address)
 	  return trs80_model1_mmio(address);
 	}
 	return memory[address];
+
       case 0x22: /* Lubomir Soft Banker */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 6)) && address <= 0x37DF) ||
@@ -749,6 +761,7 @@ int mem_read(int address)
 	  return memory[address + 0x8000];
 	else
 	  return memory[address];
+
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
 	/* Bit 0 - Bank 1: ROM/EPROM */
 	if ((eg3200 & (1 << 0)) == 0 && address < trs_rom_size)
@@ -775,6 +788,7 @@ int mem_read(int address)
 	  return memory[address + bank_base];
 	else
 	  return memory[address];
+
       case 0x24: /* TCS Genie IIIs */
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
@@ -803,6 +817,7 @@ int mem_read(int address)
 	  return memory[address];
 	else
 	  return memory[address + bank_base];
+
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
 	  if (address >= video_memory && address <= video_memory + 0xFFF)
@@ -812,6 +827,7 @@ int mem_read(int address)
 	  return memory[address];
 	else
 	  return trs80_model1_mmio(address);
+
       case 0x26: /* TCS Genie IIs/SpeedMaster */
 	/* Expansions bit (RAM 192 B) */
 	if ((system_byte & (1 << 7)) && address <= 0xBFFF)
@@ -829,6 +845,7 @@ int mem_read(int address)
 	    return trs80_model1_mmio(address);
 	}
 	return memory[address];
+
       case 0x27: /* Aster CT-80 */
 	if ((system_byte & (1 << 5)) == 0) { /* device bank */
 	  /* Boot-ROM */
@@ -860,6 +877,7 @@ int mem_read(int address)
 
       case 0x30: /* Model III */
         return trs80_model3_mem_read(address);
+
       case 0x31: /* CP-500 */
       case 0x32: /* CP-500 64K RAM */
       case 0x33: /* CP-500 80x24 video */
@@ -910,9 +928,8 @@ int mem_read(int address)
 
 static void trs80_screen_write_char(int vaddr, int value)
 {
-  if (mem_video_write(vaddr, value)) {
-      trs_screen_write_char(vaddr, value);
-  }
+  if (mem_video_write(vaddr, value))
+    trs_screen_write_char(vaddr, value);
 }
 
 static void trs80_model1_write_mem(int address, int value)
@@ -938,6 +955,7 @@ static void trs80_model1_write_mem(int address, int value)
     if ((addr & 0x8000) == bank)
       address += bank_base;
   }
+
   memory[address] = value;
 }
 
@@ -1001,6 +1019,7 @@ void mem_write(int address, int value)
         return;
       }
     }
+
     /* The SuperMem sits between the system and the Z80 */
     if (supermem) {
       if (!((address ^ supermem_hi) & 0x8000)) {
@@ -1017,12 +1036,14 @@ void mem_write(int address, int value)
 	else
 	  trs80_model1_write_mmio(address, value);
 	break;
+
       case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
         if (address >= 0xF7E0 && address <= 0xF7FF)
           trs80_model1_write_mmio(address & 0x3FFF, value);
 	else
 	  trs80_model1_write_mem(address, value);
 	break;
+
       case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
         if (address < 0x37E0)
           trs80_model1_write_mem(address, value);
@@ -1031,23 +1052,28 @@ void mem_write(int address, int value)
 	else
 	  trs80_model1_write_mem(address, value);
 	break;
+
       case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
         if (address >= 0xF7E0)
           trs80_model1_write_mmio(address & 0x3FFF, value);
 	else
 	/* Fall through */
+
       case 0x14: /* Model 1: All RAM banking high */
       case 0x15: /* Model 1: All RAM banking low */
 	trs80_model1_write_mem(address, value);
 	break;
+
       case 0x16: /* Model 1: Low 16K in top 16K */
 	if (address < RAM_START)
 	  trs80_model1_write_mmio(address, value);
 	else
 	  trs80_model1_write_mem(address, value);
 	break;
+
       case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
         break;	/* Not clear what really happens */
+
       case 0x20: /* LNW80: HRG in low 16K */
 	if (address < RAM_START) {
 	  hrg_write_addr(address, 0x3FFF);
@@ -1056,6 +1082,7 @@ void mem_write(int address, int value)
 	  trs80_model1_write_mem(address, value);
 	}
 	break;
+
       case 0x21: /* EG-64 Memory-Banking-Adaptor */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 1)) && address <= 0x2FFF) ||
@@ -1071,6 +1098,7 @@ void mem_write(int address, int value)
 	}
 	memory[address] = value;
 	break;
+
       case 0x22: /* Lubomir Soft Banker */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 7)) && address <= 0x37DF) ||
@@ -1087,6 +1115,7 @@ void mem_write(int address, int value)
 	else
 	  memory[address] = value;
 	break;
+
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
 	if ((eg3200 & (1 << 1)) == 0) {
@@ -1121,6 +1150,7 @@ void mem_write(int address, int value)
 	else
 	  memory[address] = value;
 	break;
+
       case 0x24: /* TCS Genie IIIs */
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
@@ -1162,6 +1192,7 @@ void mem_write(int address, int value)
 	else
 	  memory[address + bank_base] = value;
 	break;
+
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
 	  if (address >= video_memory && address <= video_memory + 0xFFF) {
@@ -1174,6 +1205,7 @@ void mem_write(int address, int value)
 	else
 	  trs80_model1_write_mmio(address, value);
 	break;
+
       case 0x26: /* TCS Genie IIs/SpeedMaster */
 	/* Expansions bit (RAM 192 B) */
 	if ((system_byte & (1 << 7)) && address <= 0xBFFF) {
@@ -1198,6 +1230,7 @@ void mem_write(int address, int value)
 	}
 	memory[address] = value;
 	break;
+
       case 0x27: /* Aster CT-80 */
 	if ((system_byte & (1 << 5)) == 0) { /* device bank */
 	  if ((system_byte & (1 << 3)) == 0) {
@@ -1226,6 +1259,7 @@ void mem_write(int address, int value)
       case 0x30: /* Model III */
         trs80_model3_mem_write(address, value);
         break;
+
       case 0x31: /* CP-500 */
       case 0x32: /* CP-500 64K RAM */
       case 0x33: /* CP-500 80x24 video */
@@ -1312,6 +1346,7 @@ static Uint8 *trs80_model1_ram_addr(int address)
     if ((addr & 0x8000) == bank)
       address += bank_base;
   }
+
   return memory + address;
 }
 
@@ -1350,6 +1385,7 @@ Uint8 *mem_pointer(int address, int writing)
       if (address >= megamem_addr && address <= megamem_addr + 0x3FFF)
         return &memory[megamem_base + (address & 0x3FFF)];
     }
+
     /* The SuperMem sits between the system and the Z80 */
     if (supermem) {
       if (!((address ^ supermem_hi) & 0x8000))
@@ -1364,9 +1400,11 @@ Uint8 *mem_pointer(int address, int writing)
 	  return trs80_model1_mmio_addr(address, writing);
 	else
 	  return trs80_model1_ram_addr(address);
+
       case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
       case 0x19:
 	return trs80_model1_ram_addr(address);
+
       case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
       case 0x1A:
         if (address < 0x37E0)
@@ -1375,30 +1413,36 @@ Uint8 *mem_pointer(int address, int writing)
 	  return trs80_model1_mmio_addr(address, writing);
 	else
 	  return trs80_model1_ram_addr(address);
+
       case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
       case 0x1B:
         if (address >= 0xF7E0)
           return trs80_model1_mmio_addr(address & 0x3FFF, writing);
 	/* Fall through */
+
       case 0x14: /* Model 1: All RAM banking high */
       case 0x1C:
       case 0x15: /* Model 1: All RAM banking low */
       case 0x1D:
 	return trs80_model1_ram_addr(address);
+
       case 0x16: /* Model 1: Low 16K in top 16K */
       case 0x1E:
 	if (address < RAM_START)
 	  return trs80_model1_mmio_addr(address, writing);
 	else
 	  return trs80_model1_ram_addr(address);
+
       case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
 	break;	/* Not clear what really happens */
+
       case 0x20: /* LNW80: HRG in low 16K */
       case 0x28:
 	if (address < RAM_START)
 	  return NULL;
 	else
 	  return trs80_model1_ram_addr(address);
+
       case 0x21: /* EG-64 Memory-Banking-Adaptor */
       case 0x29:
 	if (address < RAM_START) {
@@ -1412,6 +1456,7 @@ Uint8 *mem_pointer(int address, int writing)
 	  return trs80_model1_mmio_addr(address, writing);
 	}
 	return &memory[address];
+
       case 0x22: /* Lubomir Soft Banker */
       case 0x2A:
 	if (address < RAM_START) {
@@ -1425,6 +1470,7 @@ Uint8 *mem_pointer(int address, int writing)
 	  return &memory[address + 0x8000];
 	else
 	  return &memory[address];
+
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       case 0x2B:
 	/* Bit 0 - Bank 1: ROM/EPROM */
@@ -1445,6 +1491,7 @@ Uint8 *mem_pointer(int address, int writing)
 	  return &memory[address + bank_base];
 	else
 	  return &memory[address];
+
       case 0x24: /* TCS Genie IIIs */
       case 0x2C:
 	if ((system_byte & (1 << 0)) == 0) {
@@ -1466,6 +1513,7 @@ Uint8 *mem_pointer(int address, int writing)
 	  return &memory[address];
 	else
 	  return &memory[address + bank_base];
+
       case 0x25: /* Schmidtke 80-Z Video Card */
       case 0x2D:
 	if (system_byte & (1 << 0)) {
@@ -1476,6 +1524,7 @@ Uint8 *mem_pointer(int address, int writing)
 	  return &memory[address];
 	else
 	  return trs80_model1_mmio_addr(address, writing);
+
       case 0x26: /* TCS Genie IIs/SpeedMaster */
       case 0x2E:
 	/* Expansions bit (RAM 192 B) */
@@ -1489,6 +1538,7 @@ Uint8 *mem_pointer(int address, int writing)
 	    return trs80_model1_mmio_addr(address, writing);
 	}
 	return &memory[address];
+
       case 0x27: /* Aster CT-80 */
       case 0x2F:
 	if ((system_byte & (1 << 5)) == 0) { /* device bank */
@@ -1516,6 +1566,7 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x30: /* Model III reading */
       case 0x38: /* Model III writing */
 	return trs80_model3_mem_addr(address, writing);
+
       case 0x31: /* CP-500 reading */
       case 0x32: /* CP-500 64K RAM, reading */
       case 0x33: /* CP-500 80x24 video, reading */

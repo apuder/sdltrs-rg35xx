@@ -106,6 +106,7 @@ int trs_write_protect(int type, int drive)
       emutype = trs_disk_getdisktype(drive);
       writeprot = !trs_disk_getwriteprotect(drive);
       trs_disk_remove(drive);
+
       if (emutype == JV3 || emutype == DMK) {
         f = fopen(prot_filename, "r+");
         if (f != NULL) {
@@ -123,6 +124,7 @@ int trs_write_protect(int type, int drive)
     case HARD:
       writeprot = !trs_hard_getwriteprotect(drive);
       trs_hard_remove(drive);
+
       f = fopen(prot_filename, "r+");
       if (f != NULL) {
         fseek(f, 7, 0);
@@ -138,6 +140,7 @@ int trs_write_protect(int type, int drive)
     case WAFER:
       writeprot = !stringy_get_writeprotect(drive);
       stringy_remove(drive);
+
       f = fopen(prot_filename, "r+");
       if (f != NULL) {
         fseek(f, 5, 0);
@@ -205,6 +208,7 @@ int trs_create_blank_jv1(const char *fname)
     file_error("create JV1 disk '%s'", fname);
     return -1;
   }
+
   fclose(f);
   return 0;
 }
@@ -219,6 +223,7 @@ int trs_create_blank_jv3(const char *fname)
     file_error("create JV3 disk '%s'", fname);
     return -1;
   }
+
   for (i = 0; i < (256 * 34); i++)
     putc(0xff, f);
 
@@ -237,6 +242,7 @@ int trs_create_blank_dmk(const char *fname, int sides, int density,
     file_error("create DMK disk '%s'", fname);
     return -1;
   }
+
   putc(0, f);           /* 0: not write protected */
   putc(0, f);           /* 1: initially zero tracks */
   if (eight) {
@@ -250,8 +256,10 @@ int trs_create_blank_dmk(const char *fname, int sides, int density,
     else
       i = 0x1900;
   }
+
   putc(i & 0xff, f);    /* 2: LSB of track length */
   putc(i >> 8, f);      /* 3: MSB of track length */
+
   i = 0;
   if (sides == 1)   i |= 0x10;
   if (density == 1) i |= 0x40;

@@ -510,6 +510,7 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
     struct stat st = { 0 };
 
     trs_gui_create_filename_list();
+
     while ((dir_entry = readdir(directory))) {
       int const len = strlen(dir_entry->d_name);
 
@@ -539,10 +540,12 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
         if ( (name = (char *)malloc(len + 2)) )
           snprintf(name, len + 2, " %s", dir_entry->d_name);
       }
+
       if (name == NULL) {
         closedir(directory);
         return -1;
       }
+
       trs_gui_add_to_filename_list(name);
     }
     closedir(directory);
@@ -645,6 +648,7 @@ read_directory:
 
       redraw = 0;
     }
+
     key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
     if (key >= ' ' && key <= 'z') {
       key = tolower(key);
@@ -2196,8 +2200,8 @@ void trs_gui_save_state(void)
 {
   filename[0] = 0;
   if (trs_gui_input_string("Save Emulator State",
-      trs_state_file[0] != 0 ? trs_state_file : trs_state_dir, filename,
-      FILENAME_MAX - 5, 1) == 0) {
+      trs_state_file[0] != 0 ? trs_state_file : trs_state_dir,
+      filename, FILENAME_MAX - 5, 1) == 0) {
     trs_add_extension(filename, ".t8s");
     if (trs_gui_file_overwrite()) {
       if (trs_state_save(filename) == 0)
@@ -2225,8 +2229,8 @@ void trs_gui_write_config(void)
 {
   filename[0] = 0;
   if (trs_gui_input_string("Write Configuration",
-      trs_config_file[0] != 0 ? trs_config_file : trs_state_dir, filename,
-      FILENAME_MAX - 5, 1) == 0) {
+      trs_config_file[0] != 0 ? trs_config_file : trs_state_dir,
+      filename, FILENAME_MAX - 5, 1) == 0) {
     trs_add_extension(filename, ".t8c");
     if (trs_gui_file_overwrite()) {
       if (trs_write_config_file(filename) == 0)

@@ -532,10 +532,12 @@ void trs_kb_bracket(int shifted)
   int i;
 
   trs_kb_bracket_state = shifted;
+
   for (i = 0x5b; i <= 0x5f; i++) {
     ascii_key_table[i].shift_action =
       shifted ? TK_ForceShift : TK_ForceNoShift;
   }
+
   for (i = 0x7b; i < 0x7f; i++) {
     ascii_key_table[i].shift_action =
       shifted ? TK_ForceNoShift : TK_ForceShift;
@@ -547,11 +549,13 @@ static int trs_emulate_joystick(int key_down, int bit_action)
 {
   if (bit_action < TK_Joystick)
     return 0;
+
   if (key_down) {
     joystate |= (bit_action & 0x1f);
   } else {
     joystate &= ~(bit_action & 0x1f);
   }
+
   return 1;
 }
 
@@ -713,6 +717,7 @@ void trs_xlate_keysym(int keysym)
 
   if (kt->bit_action == TK_NULL)
     return;
+
   if (trs_emulate_joystick(key_down, kt->bit_action))
     return;
 
@@ -777,6 +782,7 @@ static int kb_mem_value(int address)
         data |= keystate[i];
       }
     }
+
     if (address & 0x80) {
       int tmp = keystate[7];
 
@@ -798,6 +804,7 @@ static int kb_mem_value(int address)
             tmp |= 1;
           }
       }
+
       data |= tmp;
     }
   } else {
@@ -806,9 +813,11 @@ static int kb_mem_value(int address)
         data |= keystate[i];
       }
     }
+
     if ((address & 0x00e0) == 0x00a0)
       data |= keystate[8];
   }
+
   return data;
 }
 
@@ -839,7 +848,9 @@ int trs_kb_mem_read(int address)
   if (key >= 0) {
     change_keystate(key);
   }
+
   key_heartbeat = 0;
+
   return kb_mem_value(address);
 }
 
@@ -879,6 +890,7 @@ int dequeue_key(void)
     debug("dequeue_key 0x%x\n", rval);
 #endif
   }
+
   return rval;
 }
 

@@ -61,18 +61,18 @@ typedef struct {
   int present;
 
   /* Controller register images */
-  Uint8 control;
-  Uint8 data;
-  Uint8 error;
-  Uint8 seccnt;
-  Uint8 secnum;
+  Uint8  control;
+  Uint8  data;
+  Uint8  error;
+  Uint8  seccnt;
+  Uint8  secnum;
   Uint16 secsize;
   Uint16 cyl;
-  Uint8 drive;
-  Uint8 head;
-  Uint8 sdh;
-  Uint8 status;
-  Uint8 command;
+  Uint8  drive;
+  Uint8  head;
+  Uint8  sdh;
+  Uint8  status;
+  Uint8  command;
 
   /* Number of bytes already done in current read/write */
   int bytesdone;
@@ -250,12 +250,12 @@ void trs_hard_out(int port, int value)
   case TRS_HARD_WP:
     break;
   case TRS_HARD_CONTROL:
-    if (value & TRS_HARD_SOFTWARE_RESET) {
+    if (value & TRS_HARD_SOFTWARE_RESET)
       trs_hard_init(0);
-    }
-    if (value & TRS_HARD_DEVICE_ENABLE) {
+
+    if (value & TRS_HARD_DEVICE_ENABLE)
       trs_hard_init(1);
-    }
+
     state.control = value;
     break;
   case TRS_HARD_DATA:
@@ -495,7 +495,7 @@ static int open_drive(int drive)
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
   return 0;
 
- fail:
+fail:
   if (d->file) fclose(d->file);
   d->file = NULL;
   d->filename[0] = 0;
@@ -679,6 +679,7 @@ void trs_hard_load(FILE *file)
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     trs_load_harddrive(file, &state.d[i]);
+
     if (state.d[i].file != NULL) {
       state.d[i].file = fopen(state.d[i].filename, "rb+");
       if (state.d[i].file == NULL) {

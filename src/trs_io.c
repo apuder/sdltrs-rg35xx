@@ -186,9 +186,8 @@ static int rtc_read(int port)
 
 void z80_out(int port, int value)
 {
-  if (trs_io_debug_flags & IODEBUG_OUT) {
+  if (trs_io_debug_flags & IODEBUG_OUT)
     debug("out (0x%02x), 0x%02x; pc 0x%04x\n", port, value, z80_state.pc.word);
-  }
 
   /* EG 3200 Genie III */
   if (eg3200) {
@@ -508,21 +507,22 @@ void z80_out(int port, int value)
     case 0x87:
       if (trs_model >= 4) {
 	int changes = value ^ ctrlimage;
-	if (changes & 0x80) {
+
+	if (changes & 0x80)
 	  mem_video_page(((value & 0x80) >> 7) ? 1024 : 0);
-	}
-	if (changes & 0x70) {
+
+	if (changes & 0x70)
 	  mem_bank((value & 0x70) >> 4);
-	}
-	if (changes & 0x08) {
+
+	if (changes & 0x08)
 	  trs_screen_inverse((value & 0x08) >> 3);
-	}
-	if (changes & 0x04) {
+
+	if (changes & 0x04)
 	  trs_screen_80x24((value & 0x04) >> 2);
-	}
-	if (changes & 0x03) {
+
+	if (changes & 0x03)
 	  mem_map(value & 0x03);
-	}
+
 	ctrlimage = value;
       }
       break;
@@ -625,13 +625,12 @@ void z80_out(int port, int value)
     case 0xFD:
     case 0xFE:
     case 0xFF:
-      if (trs_model == 3 && (value & 0x20) && grafyx_get_microlabs()) {
+      if (trs_model == 3 && (value & 0x20) && grafyx_get_microlabs())
 	/* do Model III Micro-Labs graphics card */
 	grafyx_m3_write_mode(value);
-      } else {
+      else
 	/* do cassette emulation */
 	trs_cassette_out(value & 3);
-      }
       break;
     default:
       break;
@@ -965,10 +964,9 @@ int z80_in(int port)
     }
   }
 
- done:
-  if (trs_io_debug_flags & IODEBUG_IN) {
+done:
+  if (trs_io_debug_flags & IODEBUG_IN)
     debug("in (0x%02x) => 0x%02x; pc %04x\n", port, value, z80_state.pc.word);
-  }
 
   return value;
 }
