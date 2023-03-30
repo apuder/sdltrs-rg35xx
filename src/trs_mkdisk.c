@@ -67,9 +67,7 @@ int trs_write_protect(int type, int drive)
   int emutype = 0;
   int writeprot = 0;
   int newmode;
-#ifndef _WIN32
   struct stat st = { 0 };
-#endif
 
   switch (type) {
     case DISK:
@@ -90,15 +88,15 @@ int trs_write_protect(int type, int drive)
   if (filename[0] == 0)
     return 0;
 
+  if (stat(filename, &st) < 0) {
+    file_error("'%s'", filename);
+    return -1;
+  }
+
   snprintf(prot_filename, FILENAME_MAX, "%s", filename);
 #ifdef _WIN32
   win_set_readonly(prot_filename, 0);
 #else
-  if (stat(prot_filename, &st) < 0) {
-    file_error("'%s'", prot_filename);
-    return -1;
-  }
-
   if (chmod(prot_filename, st.st_mode | (S_IWUSR|S_IWGRP|S_IWOTH)) < 0) {
     file_error("chmod '%s'", prot_filename);
     return -1;
