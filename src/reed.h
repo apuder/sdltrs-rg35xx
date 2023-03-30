@@ -2,6 +2,11 @@
    documentation.  The comments below are copied from his mail
    messages, with some additions. */
 
+#ifndef _REED_H
+#define _REED_H
+
+#include <SDL_types.h>
+
 typedef struct {
   Uint8 id1;       /* 0: Identifier #1: 56H */
   Uint8 id2;       /* 1: Identifier #2: CBH */
@@ -37,3 +42,5 @@ typedef struct {
   char label[32];  /* 32: Volume label: 31 bytes terminated by 0 */
   Uint8 res2[192]; /* 64 - 255: reserved */
 } ReedHardHeader;
+
+#endif /* _REED_H */
