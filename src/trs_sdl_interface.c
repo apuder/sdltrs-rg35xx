@@ -3333,10 +3333,9 @@ hrg_read_data(void)
 
 void m6845_cursor(int position, int start, int end, int visible)
 {
-  int const expanded = (currentmode & EXPANDED) != 0;
+  int expanded = (currentmode & EXPANDED) != 0;
   int row, col;
   int cur_char;
-  int inverted;
   SDL_Rect srcRect, dstRect;
 
   if (position >= screen_chars)
@@ -3367,9 +3366,9 @@ void m6845_cursor(int position, int start, int end, int visible)
   if (expanded)
     srcRect.w *= 2;
 
-  inverted = (currentmode & INVERSE) && (cur_char & 0x80) ? 0 : 2;
+  expanded += (currentmode & INVERSE) && (cur_char & 0x80) ? 0 : 2;
 
-  SDL_BlitSurface(trs_char[inverted + expanded][cur_char], &srcRect, screen, &dstRect);
+  SDL_BlitSurface(trs_char[expanded][cur_char], &srcRect, screen, &dstRect);
   drawnRectCount = MAX_RECTS;
 }
 
