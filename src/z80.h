@@ -263,4 +263,5 @@ extern int	 disassemble(Uint16 pc);
 extern void	 debug_init(void);
 extern void	 debug_shell(void);
 #endif /* ZBX */
-#endif
+
+#endif /* _Z80_H */

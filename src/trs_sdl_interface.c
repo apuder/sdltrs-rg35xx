@@ -917,7 +917,7 @@ static void trs_disk_setsteps(void)
 {
   int i;
 
-  /* Disk Steps are 1 for Single Step or 2 for Double Step for all Eight Default Drives */
+  /* Disk Steps are 1 for Single Step or 2 for Double Step */
   for (i = 0; i < 8; i++) {
     if (disksteps[i] == 1 || disksteps[i] == 2)
       trs_disk_setstep(i, disksteps[i]);
@@ -947,8 +947,8 @@ int trs_load_config_file(void)
 
   background = BLACK;
   cassette_default_sample_rate = MAX_SAMPLE_RATE;
-  /* Disk Sizes are 5" or 8" for all Eight Default Drives */
-  /* Corrected by Larry Kraemer 08-01-2011 */
+  /* Disk Sizes are 5" or 8"
+     Corrected by Larry Kraemer 08-01-2011 */
   disksizes[0] = 5;
   disksizes[1] = 5;
   disksizes[2] = 5;
@@ -959,8 +959,8 @@ int trs_load_config_file(void)
   disksizes[7] = 8;
   trs_disk_setsizes();
 #ifdef __linux
-  /* Disk Steps are 1 for Single Step, 2 for Double Step for all Eight Default Drives */
-  /* Corrected by Larry Kraemer 08-01-2011 */
+  /* Disk Steps are 1 for Single Step, 2 for Double Step
+     Corrected by Larry Kraemer 08-01-2011 */
   disksteps[0] = 1;
   disksteps[1] = 1;
   disksteps[2] = 1;
@@ -2727,6 +2727,7 @@ void trs_screen_refresh(void)
     }
   }
 
+  /* Redraw 6845 CRTC cursor */
   if (trs_clones.model & (EG3200 | GENIE3S)) {
     z80_out(0xF6, 0x09);
     z80_out(0xF7, 0xFF);
@@ -2885,10 +2886,8 @@ void trs_screen_write_char(int position, Uint8 char_index)
         char_index -= 0x40;
     }
     if (!(currentmode & INVERSE) && char_index >= 0x80 && char_index <= 0xbf) {
-      /* Use box graphics character bitmap */
       SDL_BlitSurface(trs_box[expanded][char_index - 0x80], &srcRect, screen, &dstRect);
     } else {
-      /* Use regular character bitmap */
       if (trs_model > 1) {
         if ((currentmode & (ALTERNATE + INVERSE)) == 0 && char_index >= 0xc0)
           char_index -= 0x40;
@@ -2982,10 +2981,8 @@ void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
   dstRect.y = srcRect.h * row + top_margin;
 
   if (char_index >= 0x80 && char_index <= 0xbf)
-    /* Use graphics character bitmap instead of font */
     SDL_BlitSurface(trs_box[2][char_index - 0x80], &srcRect, screen, &dstRect);
   else
-    /* Draw character using a builtin bitmap */
     SDL_BlitSurface(trs_char[invert ? 5 : 4][char_index], &srcRect, screen, &dstRect);
 }
 

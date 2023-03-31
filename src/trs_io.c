@@ -594,7 +594,7 @@ void z80_out(int port, int value)
           break;
       }
       /* clock speed is on D6; it affects timer HZ too */
-      trs_timer_speed(modeimage & 0xC0);
+      trs_timer_speed(modeimage & 0xC0); /* D6/D7 for Seatronic */
       break;
     case TRSDISK3_COMMAND: /* 0xF0 */
       trs_disk_command_write(value);

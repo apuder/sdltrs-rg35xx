@@ -101,7 +101,7 @@ float clock_mhz_4 = CLOCK_4_MHZ;
    with the system date and time.
  */
 #define NEWDOS_DATETIME_VALID_BYTE  0xa5
-/* Model 1 */
+/* Model I */
 #define NEWDOS_DATETIME_VALID_ADDR  0x43ab
 #define NEWDOS_MONTH                0x43b1
 #define NEWDOS_DAY                  0x43b0
@@ -109,7 +109,7 @@ float clock_mhz_4 = CLOCK_4_MHZ;
 #define NEWDOS_HOUR                 0x43ae
 #define NEWDOS_MIN                  0x43ad
 #define NEWDOS_SEC                  0x43ac
-/* Model 3 */
+/* Model III */
 #define NEWDOS3_DATETIME_VALID_ADDR 0x42cb
 #define NEWDOS3_MONTH               0x42d1
 #define NEWDOS3_DAY                 0x42d0

@@ -71,7 +71,7 @@
 /* Start MegaMem > 1MB to leave space for SuperMem or HyperMem */
 #define MEGAMEM_START      (1 * 1024 * 1024) + 65536
 
-/* Interrupt latch register in EI (Model 1) */
+/* Interrupt latch register in EI (Model I) */
 #define TRS_INTLATCH(addr) (((addr)&~3) == 0x37E0)
 
 /* Check address in video memory */
@@ -262,7 +262,7 @@ void mem_bank_base(int card, int bits)
 			/* Not all bits are necessarily really present but hey what
 			   you can't read back you can't tell */
 			selector_reg = bits;
-			/* Always Model 1 */
+			/* Always Model I */
 			memory_map = 0x10 + (selector_reg & 7);
 			/* 0x10 is already the default tandy map we add 11-17 in the style
 			   of the model 4 approach */
@@ -697,13 +697,13 @@ int mem_read(int address)
 	else
 	  return trs80_model1_ram(address);
 
-      case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
+      case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
         if (address >= 0xF7E0 && address <= 0xF7FF)
 	  return trs80_model1_mmio(address & 0x3FFF);
 	else
 	  return trs80_model1_ram(address);
 
-      case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
+      case 0x12: /* Model I: selector mode 2 (ROM disabled) */
         if (address < 0x37E0)
           return trs80_model1_ram(address);
 	if (address < RAM_START)
@@ -711,23 +711,23 @@ int mem_read(int address)
 	else
 	  return trs80_model1_ram(address);
 
-      case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
+      case 0x13: /* Model I: selector mode 3 (CP/M mode) */
         if (address >= 0xF7E0)
           return trs80_model1_mmio(address & 0x3FFF);
 	/* Fall through */
 
-      case 0x14: /* Model 1: All RAM banking high */
-      case 0x15: /* Model 1: All RAM banking low */
+      case 0x14: /* Model I: All RAM banking high */
+      case 0x15: /* Model I: All RAM banking low */
 	return trs80_model1_ram(address);
 
-      case 0x16: /* Model 1: Low 16K in top 16K */
+      case 0x16: /* Model I: Low 16K in top 16K */
 	if (address < RAM_START)
 	  return trs80_model1_mmio(address);
 	else
 	  return trs80_model1_ram(address);
 
-      case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
-        break;	/* Not clear what really happens */
+      case 0x17: /* Model I: Described in the selector doc as 'not useful' */
+        break;	 /* Not clear what really happens */
 
       case 0x20: /* LNW80: HRG in low 16K */
 	if (address < RAM_START) {
@@ -1037,14 +1037,14 @@ void mem_write(int address, int value)
 	  trs80_model1_write_mmio(address, value);
 	break;
 
-      case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
+      case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
         if (address >= 0xF7E0 && address <= 0xF7FF)
           trs80_model1_write_mmio(address & 0x3FFF, value);
 	else
 	  trs80_model1_write_mem(address, value);
 	break;
 
-      case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
+      case 0x12: /* Model I: selector mode 2 (ROM disabled) */
         if (address < 0x37E0)
           trs80_model1_write_mem(address, value);
 	else if (address < RAM_START)
@@ -1053,26 +1053,26 @@ void mem_write(int address, int value)
 	  trs80_model1_write_mem(address, value);
 	break;
 
-      case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
+      case 0x13: /* Model I: selector mode 3 (CP/M mode) */
         if (address >= 0xF7E0)
           trs80_model1_write_mmio(address & 0x3FFF, value);
 	else
 	/* Fall through */
 
-      case 0x14: /* Model 1: All RAM banking high */
-      case 0x15: /* Model 1: All RAM banking low */
+      case 0x14: /* Model I: All RAM banking high */
+      case 0x15: /* Model I: All RAM banking low */
 	trs80_model1_write_mem(address, value);
 	break;
 
-      case 0x16: /* Model 1: Low 16K in top 16K */
+      case 0x16: /* Model I: Low 16K in top 16K */
 	if (address < RAM_START)
 	  trs80_model1_write_mmio(address, value);
 	else
 	  trs80_model1_write_mem(address, value);
 	break;
 
-      case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
-        break;	/* Not clear what really happens */
+      case 0x17: /* Model I: Described in the selector doc as 'not useful' */
+        break;	 /* Not clear what really happens */
 
       case 0x20: /* LNW80: HRG in low 16K */
 	if (address < RAM_START) {
@@ -1401,11 +1401,11 @@ Uint8 *mem_pointer(int address, int writing)
 	else
 	  return trs80_model1_ram_addr(address);
 
-      case 0x11: /* Model 1: selector mode 1 (all RAM except I/O high */
+      case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
       case 0x19:
 	return trs80_model1_ram_addr(address);
 
-      case 0x12: /* Model 1 selector mode 2 (ROM disabled) */
+      case 0x12: /* Model I: selector mode 2 (ROM disabled) */
       case 0x1A:
         if (address < 0x37E0)
           return trs80_model1_ram_addr(address);
@@ -1414,27 +1414,27 @@ Uint8 *mem_pointer(int address, int writing)
 	else
 	  return trs80_model1_ram_addr(address);
 
-      case 0x13: /* Model 1: selector mode 3 (CP/M mode) */
+      case 0x13: /* Model I: selector mode 3 (CP/M mode) */
       case 0x1B:
         if (address >= 0xF7E0)
           return trs80_model1_mmio_addr(address & 0x3FFF, writing);
 	/* Fall through */
 
-      case 0x14: /* Model 1: All RAM banking high */
+      case 0x14: /* Model I: All RAM banking high */
       case 0x1C:
-      case 0x15: /* Model 1: All RAM banking low */
+      case 0x15: /* Model I: All RAM banking low */
       case 0x1D:
 	return trs80_model1_ram_addr(address);
 
-      case 0x16: /* Model 1: Low 16K in top 16K */
+      case 0x16: /* Model I: Low 16K in top 16K */
       case 0x1E:
 	if (address < RAM_START)
 	  return trs80_model1_mmio_addr(address, writing);
 	else
 	  return trs80_model1_ram_addr(address);
 
-      case 0x17: /* Model 1: Described in the selector doc as 'not useful' */
-	break;	/* Not clear what really happens */
+      case 0x17: /* Model I: Described in the selector doc as 'not useful' */
+	break;	 /* Not clear what really happens */
 
       case 0x20: /* LNW80: HRG in low 16K */
       case 0x28:

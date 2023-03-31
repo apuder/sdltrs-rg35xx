@@ -1066,7 +1066,7 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
     }
 
     if (entry[selection].type == MENU_HARD)
-      return selection;
+      return selection; /* Update Hard Disk Geometry */
   }
 }
 

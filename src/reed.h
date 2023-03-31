@@ -1,6 +1,7 @@
 /* Matthew Reed's hard drive format.  Thanks to Matthew for providing
    documentation.  The comments below are copied from his mail
-   messages, with some additions. */
+   messages, with some additions. HDV 1.0 File Format (HDV1):
+   http://www.trs-80emulators.com/hdv1-format/ */
 
 #ifndef _REED_H
 #define _REED_H
