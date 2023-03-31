@@ -2727,15 +2727,15 @@ void trs_screen_refresh(void)
     }
   }
 
+  if (trs_clones.model & (EG3200 | GENIE3S)) {
+    z80_out(0xF6, 0x09);
+    z80_out(0xF7, 0xFF);
+  }
+
   if (trs_show_led) {
     trs_disk_led(-1, 0);
     trs_hard_led(-1, 0);
     trs_turbo_led();
-  }
-
-  if (trs_clones.model & (EG3200 | GENIE3S)) {
-    z80_out(0xF6, 0x09);
-    z80_out(0xF7, 0xFF);
   }
 
   drawnRectCount = MAX_RECTS; /* Will force redraw of whole screen */
@@ -3682,8 +3682,8 @@ int trs_sdl_savebmp(const char *filename)
       return 0;
     }
 
-    file_error("save Screenshot '%s'", filename);
     SDL_FreeSurface(buffer);
+    file_error("save Screenshot '%s'", filename);
   }
   return -1;
 }
