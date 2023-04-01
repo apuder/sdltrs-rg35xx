@@ -304,8 +304,8 @@ int trs_create_blank_hard(const char *fname, int cyls, int heads, int secs)
   rhh.mb4 = 4;
   rhh.crtr = 0x42;
   rhh.heads = heads;
-  rhh.dparm = cyls >> 8; /* MSB of cylinders */
-  rhh.cyl = cyls & 0xff; /* LSB of cylinders */
+  rhh.cylhi = cyls >> 8;   /* MSB of cylinders */
+  rhh.cyllo = cyls & 0xff; /* LSB of cylinders */
   rhh.sec = heads ? (heads * secs) : secs;
   rhh.gran = 8; /* deprecated */
   rhh.dcyl = 1; /* deprecated, should be 1 */

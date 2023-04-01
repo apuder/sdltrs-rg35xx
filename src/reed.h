@@ -32,8 +32,8 @@ typedef struct {
   Uint8 heads;     /* 26: If non-zero, number of heads per cylinder.
 			  If zero, number of heads per cylinder is calculated as
 			  number of sectors per cylinder (byte 29) divided by 32. */
-  Uint8 dparm;     /* 27: Number of cylinders per disk (high 8 bits) */
-  Uint8 cyl;       /* 28: Number of cylinders per disk (lower 8 bits)
+  Uint8 cylhi;     /* 27: Number of cylinders per disk (high 8 bits) */
+  Uint8 cyllo;     /* 28: Number of cylinders per disk (lower 8 bits)
 			  This is the number of cylinders on the drive. which shouldn’t
 			  be higher than 1024. To preserve backwards compatibility,
 			  values of 0 in both bytes 27 and 28 means 256.*/
