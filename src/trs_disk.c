@@ -3800,7 +3800,7 @@ static void trs_save_realstate(FILE *file, RealState *real)
   trs_save_int(file, &real->rps, 1);
   trs_save_int(file, &real->size_code, 1);
   trs_save_int(file, &real->empty, 1);
-  trs_save_int(file, (int *)&real->empty_timeout, 1);
+  trs_save_uint64(file, (Uint64 *)&real->empty_timeout, 1);
   trs_save_uint32(file, &real->fmt_nbytes, 1);
   trs_save_int(file, &real->fmt_fill, 1);
   trs_save_uint8(file, real->buf, MAXSECSIZE);
@@ -3811,7 +3811,7 @@ static void trs_load_realstate(FILE *file, RealState *real)
   trs_load_int(file, &real->rps, 1);
   trs_load_int(file, &real->size_code, 1);
   trs_load_int(file, &real->empty, 1);
-  trs_load_int(file, (int *)&real->empty_timeout, 1);
+  trs_load_uint64(file, (Uint64 *)&real->empty_timeout, 1);
   trs_load_uint32(file, &real->fmt_nbytes, 1);
   trs_load_int(file, &real->fmt_fill, 1);
   trs_load_uint8(file, real->buf, MAXSECSIZE);

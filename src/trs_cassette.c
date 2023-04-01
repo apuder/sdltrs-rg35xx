@@ -125,7 +125,7 @@ static tstate_t cassette_firstoutread;
 static int cassette_value, cassette_next, cassette_flipflop;
 static int cassette_lastnonzero;
 static int cassette_transitionsout;
-static unsigned long cassette_delta;
+static Uint64 cassette_delta;
 static float cassette_roundoff_error;
 
 /* For bit/byte conversion (.cas file i/o) */
@@ -1375,7 +1375,7 @@ trs_cassette_save(FILE *file)
   trs_save_int(file, &cassette_flipflop, 1);
   trs_save_int(file, &cassette_lastnonzero, 1);
   trs_save_int(file, &cassette_transitionsout, 1);
-  trs_save_uint32(file, (unsigned int *) &cassette_delta, 1);
+  trs_save_uint64(file, &cassette_delta, 1);
   trs_save_float(file, &cassette_roundoff_error, 1);
   trs_save_int(file, &cassette_byte, 1);
   trs_save_int(file, &cassette_bitnumber, 1);
@@ -1412,7 +1412,7 @@ trs_cassette_load(FILE *file)
   trs_load_int(file, &cassette_flipflop, 1);
   trs_load_int(file, &cassette_lastnonzero, 1);
   trs_load_int(file, &cassette_transitionsout, 1);
-  trs_load_uint32(file, (unsigned int *) &cassette_delta, 1);
+  trs_load_uint64(file, &cassette_delta, 1);
   trs_load_float(file, &cassette_roundoff_error, 1);
   trs_load_int(file, &cassette_byte, 1);
   trs_load_int(file, &cassette_bitnumber, 1);
