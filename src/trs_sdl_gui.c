@@ -340,8 +340,6 @@ int trs_gui_get_key(void)
 
           if (key >= 0)
             return key;
-          else if (key == KEYBRD || key == JOYGUI)
-            return trs_gui_virtual_keyboard();
         }
         break;
       case SDL_JOYAXISMOTION:
