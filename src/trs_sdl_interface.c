@@ -1652,8 +1652,8 @@ static char *GetSelection(void)
       if (data < 0x20)
         data += 0x40;
 
-      if ((currentmode & INVERSE) && (data & 0x80))
-        data -= 0x80;
+      else if (data & 0x80)
+        data &= 0x7F;
 
       if (data >= 0x20 && data <= 0x7e)
         *curr_data++ = data;
