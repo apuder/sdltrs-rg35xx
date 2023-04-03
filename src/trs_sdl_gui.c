@@ -1500,9 +1500,9 @@ void trs_gui_hard_management(void)
    {"Create Hard Disk Image with Above Parameters", MENU_NORMAL},
    {"", 0}};
   static int drive;
-  int cylinders = trs_hard_getcyls(0) ? trs_hard_getcyls(0) : 202;
-  int heads     = trs_hard_getheads(0) ? trs_hard_getheads(0) : 0;
-  int sectors   = trs_hard_getsecs(0) ? trs_hard_getsecs(0) : 256;
+  int cylinders = 202;
+  int heads     = 0;
+  int sectors   = 256;
   int selection = 0;
 
   while (1) {
@@ -1515,6 +1515,9 @@ void trs_gui_hard_management(void)
       menu[i].text[0] = trs_hard_getwriteprotect(i) ? '*' : ' ';
     }
 
+    if (selection >= 0 && selection < 4)
+      trs_hard_getgeometry(selection, &cylinders, &heads, &sectors);
+
     snprintf(&menu[8].text[55], 6, "%5d", cylinders);
     snprintf(&menu[9].text[57], 4, "%3d", heads);
     snprintf(&menu[10].text[57], 4, "%3d", sectors);
@@ -1523,16 +1526,6 @@ void trs_gui_hard_management(void)
 
     selection = trs_gui_display_menu("Hard Disk Management", menu, selection);
     switch (selection) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-        if (trs_hard_getfilename(selection)[0]) {
-          cylinders = trs_hard_getcyls(selection);
-          heads     = trs_hard_getheads(selection);
-          sectors   = trs_hard_getsecs(selection);
-        }
-        break;
       case 8:
         snprintf(input, 5, "%d", cylinders);
         if (trs_gui_input_string("Enter Cylinder Count", input, input, 4, 0) == 0) {
