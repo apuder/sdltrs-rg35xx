@@ -244,7 +244,6 @@ static void trs_opt_hypermem(char *arg, int intarg, int *stringarg);
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg);
 static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg);
 static void trs_opt_keystretch(char *arg, int intarg, int *stringarg);
-static void trs_opt_microlabs(char *arg, int intarg, int *stringarg);
 static void trs_opt_model(char *arg, int intarg, int *stringarg);
 static void trs_opt_printer(char *arg, int intarg, int *stringarg);
 static void trs_opt_rom(char *arg, int intarg, int *stringarg);
@@ -337,7 +336,7 @@ static const struct {
   { "lower",           trs_opt_value,         0, 1, &lowercase           },
   { "lowercase",       trs_opt_value,         0, 1, &lowercase           },
   { "lubomir",         trs_opt_value,         0, 1, &lubomir             },
-  { "microlabs",       trs_opt_microlabs,     0, 1, NULL                 },
+  { "microlabs",       trs_opt_value,         0, 1, &grafyx_microlabs    },
   { "m1",              trs_opt_value,         0, 1, &trs_model           },
   { "m3",              trs_opt_value,         0, 3, &trs_model           },
   { "m4",              trs_opt_value,         0, 4, &trs_model           },
@@ -361,7 +360,7 @@ static const struct {
   { "nolowercase",     trs_opt_value,         0, 0, &lowercase           },
   { "nolubomir",       trs_opt_value,         0, 0, &lubomir             },
   { "nomegamem",       trs_opt_value,         0, 0, &megamem             },
-  { "nomicrolabs",     trs_opt_microlabs,     0, 0, NULL                 },
+  { "nomicrolabs",     trs_opt_value,         0, 0, &grafyx_microlabs    },
   { "nomousepointer",  trs_opt_value,         0, 0, &mousepointer        },
   { "noresize3",       trs_opt_value,         0, 0, &resize3             },
   { "noresize4",       trs_opt_value,         0, 0, &resize4             },
@@ -714,11 +713,6 @@ static void trs_opt_keystretch(char *arg, int intarg, int *stringarg)
     stretch_amount = STRETCH_AMOUNT;
 }
 
-static void trs_opt_microlabs(char *arg, int intarg, int *stringarg)
-{
-  grafyx_set_microlabs(intarg);
-}
-
 static void trs_opt_model(char *arg, int intarg, int *stringarg)
 {
   if (strcmp(arg, "1") == 0 || strcasecmp(arg, "I") == 0)
@@ -973,7 +967,7 @@ int trs_load_config_file(void)
 #endif
   foreground = WHITE;
   fullscreen = 0;
-  grafyx_set_microlabs(FALSE);
+  grafyx_microlabs = FALSE;
   gui_background = GREEN;
   gui_foreground = WHITE;
   lowercase = 1;
