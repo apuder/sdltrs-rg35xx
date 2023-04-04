@@ -47,6 +47,7 @@
 #include "trs_clones.h"
 #include "trs_disk.h"
 #include "trs_hard.h"
+#include "trs_memory.h"
 #include "trs_sdl_gui.h"
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
@@ -239,11 +240,10 @@ static void trs_opt_doublestep(char *arg, int intarg, int *stringarg);
 static void trs_opt_stepmap(char *arg, int intarg, int *stringarg);
 #endif
 static void trs_opt_hard(char *arg, int intarg, int *stringarg);
-static void trs_opt_huffman(char *arg, int intarg, int *stringarg);
-static void trs_opt_hypermem(char *arg, int intarg, int *stringarg);
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg);
 static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg);
 static void trs_opt_keystretch(char *arg, int intarg, int *stringarg);
+static void trs_opt_memory(char *arg, int intarg, int *variable);
 static void trs_opt_model(char *arg, int intarg, int *stringarg);
 static void trs_opt_printer(char *arg, int intarg, int *stringarg);
 static void trs_opt_rom(char *arg, int intarg, int *stringarg);
@@ -251,12 +251,10 @@ static void trs_opt_samplerate(char *arg, int intarg, int *stringarg);
 static void trs_opt_scale(char *arg, int intarg, int *stringarg);
 static void trs_opt_scalequality(char *arg, int intarg, int *stringarg);
 static void trs_opt_scanshade(char *arg, int intarg, int *stringarg);
-static void trs_opt_selector(char *arg, int intarg, int *stringarg);
 static void trs_opt_serial(char *arg, int intarg, int *stringarg);
 static void trs_opt_shiftbracket(char *arg, int intarg, int *stringarg);
 static void trs_opt_sizemap(char *arg, int intarg, int *stringarg);
 static void trs_opt_speedup(char *arg, int intarg, int *stringarg);
-static void trs_opt_supermem(char *arg, int intarg, int *stringarg);
 static void trs_opt_switches(char *arg, int intarg, int *stringarg);
 static void trs_opt_turborate(char *arg, int intarg, int *stringarg);
 static void trs_opt_value(char *arg, int intarg, int *variable);
@@ -325,8 +323,8 @@ static const struct {
   { "harddir",         trs_opt_dirname,       1, 0, trs_hard_dir         },
   { "hdboot",          trs_opt_value,         0, 1, &trs_hd_boot         },
   { "hideled",         trs_opt_value,         0, 0, &trs_show_led        },
-  { "huffman",         trs_opt_huffman,       0, 1, NULL                 },
-  { "hypermem",        trs_opt_hypermem,      0, 1, NULL                 },
+  { "huffman",         trs_opt_memory,        0, 2, &huffman             },
+  { "hypermem",        trs_opt_memory,        0, 3, &hypermem            },
   { "joyaxismapped",   trs_opt_value,         0, 1, &jaxis_mapped        },
   { "joybuttonmap",    trs_opt_joybuttonmap,  1, 0, NULL                 },
   { "joysticknum",     trs_opt_joysticknum,   1, 0, NULL                 },
@@ -351,8 +349,8 @@ static const struct {
   { "nofullscreen",    trs_opt_value,         0, 0, &fullscreen          },
   { "nofs",            trs_opt_value,         0, 0, &fullscreen          },
   { "nohdboot",        trs_opt_value,         0, 0, &trs_hd_boot         },
-  { "nohuffman",       trs_opt_huffman,       0, 0, NULL                 },
-  { "nohypermem",      trs_opt_hypermem,      0, 0, NULL                 },
+  { "nohuffman",       trs_opt_value,         0, 0, &huffman             },
+  { "nohypermem",      trs_opt_value,         0, 0, &hypermem            },
   { "nojoyaxismapped", trs_opt_value,         0, 0, &jaxis_mapped        },
   { "nokeypadjoy",     trs_opt_value,         0, 0, &trs_keypad_joystick },
   { "nole18",          trs_opt_value,         0, 0, &lowe_le18           },
@@ -365,11 +363,11 @@ static const struct {
   { "noresize3",       trs_opt_value,         0, 0, &resize3             },
   { "noresize4",       trs_opt_value,         0, 0, &resize4             },
   { "noscanlines",     trs_opt_value,         0, 0, &scanlines           },
-  { "noselector",      trs_opt_selector,      0, 0, NULL                 },
+  { "noselector",      trs_opt_value,         0, 0, &selector            },
   { "noshiftbracket",  trs_opt_shiftbracket,  0, 0, NULL                 },
   { "nosound",         trs_opt_value,         0, 0, &trs_sound           },
   { "nostringy",       trs_opt_value,         0, 0, &stringy             },
-  { "nosupermem",      trs_opt_supermem,      0, 0, NULL                 },
+  { "nosupermem",      trs_opt_value,         0, 0, &supermem            },
   { "notruedam",       trs_opt_value,         0, 0, &trs_disk_truedam    },
   { "noturbo",         trs_opt_value,         0, 0, &timer_overclock     },
   { "noturbopaste",    trs_opt_value,         0, 0, &turbo_paste         },
@@ -387,7 +385,7 @@ static const struct {
   { "scalequality",    trs_opt_scalequality,  1, 0, NULL                 },
   { "scanlines",       trs_opt_value,         0, 1, &scanlines           },
   { "scanshade",       trs_opt_scanshade,     1, 0, NULL                 },
-  { "selector",        trs_opt_selector,      0, 1, NULL                 },
+  { "selector",        trs_opt_memory,        0, 5, &selector            },
   { "serial",          trs_opt_serial,        1, 0, NULL                 },
   { "shiftbracket",    trs_opt_shiftbracket,  0, 1, NULL                 },
   { "showled",         trs_opt_value,         0, 1, &trs_show_led        },
@@ -396,7 +394,7 @@ static const struct {
   { "speedup",         trs_opt_speedup,       1, 0, NULL                 },
   { "statedir",        trs_opt_dirname,       1, 0, trs_state_dir        },
   { "stringy",         trs_opt_value,         0, 1, &stringy             },
-  { "supermem",        trs_opt_supermem,      0, 1, NULL                 },
+  { "supermem",        trs_opt_memory,        0, 6, &supermem            },
   { "switches",        trs_opt_switches,      1, 0, NULL                 },
   { "truedam",         trs_opt_value,         0, 1, &trs_disk_truedam    },
   { "turbo",           trs_opt_value,         0, 1, &timer_overclock     },
@@ -666,20 +664,6 @@ static void trs_opt_hard(char *arg, int intarg, int *stringarg)
     trs_hard_attach(intarg, arg);
 }
 
-static void trs_opt_huffman(char *arg, int intarg, int *stringarg)
-{
-  huffman = intarg;
-  if (huffman)
-    hypermem = 0;
-}
-
-static void trs_opt_hypermem(char *arg, int intarg, int *stringarg)
-{
-  hypermem = intarg;
-  if (hypermem)
-    huffman = 0;
-}
-
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg)
 {
   int i;
@@ -711,6 +695,26 @@ static void trs_opt_keystretch(char *arg, int intarg, int *stringarg)
   stretch_amount = atol(arg);
   if (stretch_amount < 0)
     stretch_amount = STRETCH_AMOUNT;
+}
+
+static void trs_opt_memory(char *arg, int intarg, int *variable)
+{
+  *variable = TRUE;
+
+  switch (intarg) {
+    case HUFFMAN:
+      hypermem = FALSE;
+      break;
+    case HYPERMEM:
+      huffman  = FALSE;
+      break;
+    case SELECTOR:
+      supermem = FALSE;
+      break;
+    case SUPERMEM:
+      selector = FALSE;
+      break;
+  }
 }
 
 static void trs_opt_model(char *arg, int intarg, int *stringarg)
@@ -798,13 +802,6 @@ static void trs_opt_scanshade(char *arg, int intarg, int *stringarg)
   scanshade = atoi(arg) & 255;
 }
 
-static void trs_opt_selector(char *arg, int intarg, int *stringarg)
-{
-  selector = intarg;
-  if (selector)
-    supermem = 0;
-}
-
 static void trs_opt_serial(char *arg, int intarg, int *stringarg)
 {
   snprintf(trs_uart_name, FILENAME_MAX, "%s", arg);
@@ -852,13 +849,6 @@ static void trs_opt_speedup(char *arg, int intarg, int *stringarg)
     default:
       error("unknown speedup kit: '%s'", arg);
   }
-}
-
-static void trs_opt_supermem(char *arg, int intarg, int *stringarg)
-{
-  supermem = intarg;
-  if (supermem)
-    selector = 0;
 }
 
 static void trs_opt_switches(char *arg, int intarg, int *stringarg)
