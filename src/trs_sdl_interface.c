@@ -287,6 +287,8 @@ static const struct {
 #ifdef ZBX
   { "debug",           trs_opt_value,         0, 1, &debugger            },
   { "nodebug",         trs_opt_value,         0, 0, &debugger            },
+  { "diskdebug",       trs_opt_switches,      1, 1, &trs_disk_debug_flags},
+  { "iodebug",         trs_opt_switches,      1, 2, &trs_io_debug_flags  },
 #endif
   { "disk0",           trs_opt_disk,          1, 0, NULL                 },
   { "disk1",           trs_opt_disk,          1, 1, NULL                 },
@@ -395,7 +397,7 @@ static const struct {
   { "statedir",        trs_opt_dirname,       1, 0, trs_state_dir        },
   { "stringy",         trs_opt_value,         0, 1, &stringy             },
   { "supermem",        trs_opt_memory,        0, 6, &supermem            },
-  { "switches",        trs_opt_switches,      1, 0, NULL                 },
+  { "switches",        trs_opt_switches,      1, 0, &trs_uart_switches   },
   { "truedam",         trs_opt_value,         0, 1, &trs_disk_truedam    },
   { "turbo",           trs_opt_value,         0, 1, &timer_overclock     },
   { "turbopaste",      trs_opt_value,         0, 1, &turbo_paste         },
@@ -851,14 +853,14 @@ static void trs_opt_speedup(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void trs_opt_switches(char *arg, int intarg, int *stringarg)
+static void trs_opt_switches(char *arg, int intarg, int *variable)
 {
   int base = 10;
 
   if (!strncasecmp(arg, "0x", 2))
     base = 16;
 
-  trs_uart_switches = strtol(arg, NULL, base);
+  *variable = strtol(arg, NULL, base) & 0xFF;
 }
 
 static void trs_opt_turborate(char *arg, int intarg, int *stringarg)
