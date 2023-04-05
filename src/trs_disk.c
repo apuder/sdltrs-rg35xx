@@ -1549,7 +1549,7 @@ trs_disk_data_read(void)
      * 179x data sheet.
      */
     if (state.bytecount ==
-	(state.controller == TRSDISK_P1771 ? 4 /*sec*/ : 6 /*trk*/ )) {
+	(state.controller == TRSDISK_P1771 ? 4 /* sec */ : 6 /* trk */ )) {
       state.sector = state.data;
     }
 
@@ -2487,7 +2487,7 @@ trs_disk_command_write(Uint8 cmd)
 	} else {
 	  /* double density 179x */
 	  switch (d->u.jv3.id[id_index].flags & JV3_DAM) {
-	  default: /*impossible*/
+	  default: /* impossible */
 	  case JV3_DAMDDFB:
 	    new_status = TRSDISK_1791_FB;
 	    break;
@@ -3520,23 +3520,23 @@ real_writetrk(void)
     /* MFM recording */
     if (d->inches == 5) {
       /* 5" DD = 250 kHz MFM */
-      gap3 = (TRKSIZE_DD - 161 - /*slop*/16)/(d->u.real.fmt_nbytes / 4)
-	- 62 - (128 << d->u.real.size_code) - /*slop*/2;
+      gap3 = (TRKSIZE_DD - 161 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
+	- 62 - (128 << d->u.real.size_code) - /* slop */2;
     } else {
       /* 8" DD = 5" HD = 500 kHz MFM */
-      gap3 = (TRKSIZE_8DD - 161 - /*slop*/16)/(d->u.real.fmt_nbytes / 4)
-	- 62 - (128 << d->u.real.size_code) - /*slop*/2;
+      gap3 = (TRKSIZE_8DD - 161 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
+	- 62 - (128 << d->u.real.size_code) - /* slop */2;
     }
   } else {
     /* FM recording */
     if (d->inches == 5) {
       /* 5" SD = 250 kHz FM (125 kbps) */
-      gap3 = (TRKSIZE_SD - 99 - /*slop*/16)/(d->u.real.fmt_nbytes / 4)
-	- 33 - (128 << d->u.real.size_code) - /*slop*/2;
+      gap3 = (TRKSIZE_SD - 99 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
+	- 33 - (128 << d->u.real.size_code) - /* slop */2;
     } else {
       /* 8" SD = 5" HD operated in FM = 500 kHz FM (250 kbps) */
-      gap3 = (TRKSIZE_8SD - 99 - /*slop*/16)/(d->u.real.fmt_nbytes / 4)
-	- 33 - (128 << d->u.real.size_code) - /*slop*/2;
+      gap3 = (TRKSIZE_8SD - 99 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
+	- 33 - (128 << d->u.real.size_code) - /* slop */2;
     }
   }
   if (gap3 < 1) {

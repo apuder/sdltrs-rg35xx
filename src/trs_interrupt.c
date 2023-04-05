@@ -503,17 +503,17 @@ trs_timer_speed(int fast)
           z80_state.clockMHz = (fast & 1) ? TCS_G3S_MHZ : CLOCK_1_MHZ;
         else
         switch (speedup) {
-        case 1: /*Archbold*/
-        case 7: /*CT-80*/
+        case 1: /* Archbold */
+        case 7: /* CT-80 */
           z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
           break;
-        case 2: /*Holmes Sprinter II*/
+        case 2: /* Holmes Sprinter II */
           z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
           break;
-        case 5: /*LNW80*/
+        case 5: /* LNW80 */
           z80_state.clockMHz = (fast & 1) ? CLOCK_4_MHZ : CLOCK_1_MHZ;
           break;
-        case 6: /*TCS SpeedMaster*/
+        case 6: /* TCS SpeedMaster */
           z80_state.clockMHz = (fast & 1) ? TCS_SPM_MHZ : CLOCK_1_MHZ;
           break;
         default:

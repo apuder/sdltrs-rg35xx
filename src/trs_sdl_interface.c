@@ -269,148 +269,148 @@ static const struct {
   int intArg;
   void *strArg;
 } options[] = {
-  { "aspectratio",     trs_opt_value,         0, 1, &aspect_ratio        },
-  { "background",      trs_opt_color,         1, 0, &background          },
-  { "bg",              trs_opt_color,         1, 0, &background          },
-  { "borderwidth",     trs_opt_borderwidth,   1, 0, NULL                 },
-  { "bw",              trs_opt_borderwidth,   1, 0, NULL                 },
-  { "cass",            trs_opt_cass,          1, 0, NULL                 },
-  { "cassdir",         trs_opt_dirname,       1, 0, trs_cass_dir         },
-  { "cassette",        trs_opt_cass,          1, 0, NULL                 },
-  { "charset",         trs_opt_charset,       1, 0, NULL                 },
-  { "charset1",        trs_opt_charset,       1, 1, NULL                 },
-  { "charset3",        trs_opt_charset,       1, 3, NULL                 },
-  { "charset4",        trs_opt_charset,       1, 4, NULL                 },
-  { "clock1",          trs_opt_clock,         1, 1, NULL                 },
-  { "clock3",          trs_opt_clock,         1, 3, NULL                 },
-  { "clock4",          trs_opt_clock,         1, 4, NULL                 },
+  { "aspectratio",     trs_opt_value,         0, 1, &aspect_ratio         },
+  { "background",      trs_opt_color,         1, 0, &background           },
+  { "bg",              trs_opt_color,         1, 0, &background           },
+  { "borderwidth",     trs_opt_borderwidth,   1, 0, NULL                  },
+  { "bw",              trs_opt_borderwidth,   1, 0, NULL                  },
+  { "cass",            trs_opt_cass,          1, 0, NULL                  },
+  { "cassdir",         trs_opt_dirname,       1, 0, trs_cass_dir          },
+  { "cassette",        trs_opt_cass,          1, 0, NULL                  },
+  { "charset",         trs_opt_charset,       1, 0, NULL                  },
+  { "charset1",        trs_opt_charset,       1, 1, NULL                  },
+  { "charset3",        trs_opt_charset,       1, 3, NULL                  },
+  { "charset4",        trs_opt_charset,       1, 4, NULL                  },
+  { "clock1",          trs_opt_clock,         1, 1, NULL                  },
+  { "clock3",          trs_opt_clock,         1, 3, NULL                  },
+  { "clock4",          trs_opt_clock,         1, 4, NULL                  },
 #ifdef ZBX
-  { "debug",           trs_opt_value,         0, 1, &debugger            },
-  { "nodebug",         trs_opt_value,         0, 0, &debugger            },
-  { "diskdebug",       trs_opt_switches,      1, 1, &trs_disk_debug_flags},
-  { "iodebug",         trs_opt_switches,      1, 2, &trs_io_debug_flags  },
+  { "debug",           trs_opt_value,         0, 1, &debugger             },
+  { "nodebug",         trs_opt_value,         0, 0, &debugger             },
+  { "diskdebug",       trs_opt_switches,      1, 1, &trs_disk_debug_flags },
+  { "iodebug",         trs_opt_switches,      1, 2, &trs_io_debug_flags   },
 #endif
-  { "disk0",           trs_opt_disk,          1, 0, NULL                 },
-  { "disk1",           trs_opt_disk,          1, 1, NULL                 },
-  { "disk2",           trs_opt_disk,          1, 2, NULL                 },
-  { "disk3",           trs_opt_disk,          1, 3, NULL                 },
-  { "disk4",           trs_opt_disk,          1, 4, NULL                 },
-  { "disk5",           trs_opt_disk,          1, 5, NULL                 },
-  { "disk6",           trs_opt_disk,          1, 6, NULL                 },
-  { "disk7",           trs_opt_disk,          1, 7, NULL                 },
-  { "diskdir",         trs_opt_dirname,       1, 0, trs_disk_dir         },
-  { "diskset",         trs_opt_diskset,       1, 0, NULL                 },
-  { "disksetdir",      trs_opt_dirname,       1, 0, trs_disk_set_dir     },
-  { "doubler",         trs_opt_doubler,       1, 0, NULL                 },
+  { "disk0",           trs_opt_disk,          1, 0, NULL                  },
+  { "disk1",           trs_opt_disk,          1, 1, NULL                  },
+  { "disk2",           trs_opt_disk,          1, 2, NULL                  },
+  { "disk3",           trs_opt_disk,          1, 3, NULL                  },
+  { "disk4",           trs_opt_disk,          1, 4, NULL                  },
+  { "disk5",           trs_opt_disk,          1, 5, NULL                  },
+  { "disk6",           trs_opt_disk,          1, 6, NULL                  },
+  { "disk7",           trs_opt_disk,          1, 7, NULL                  },
+  { "diskdir",         trs_opt_dirname,       1, 0, trs_disk_dir          },
+  { "diskset",         trs_opt_diskset,       1, 0, NULL                  },
+  { "disksetdir",      trs_opt_dirname,       1, 0, trs_disk_set_dir      },
+  { "doubler",         trs_opt_doubler,       1, 0, NULL                  },
 #ifdef __linux
-  { "doublestep",      trs_opt_doublestep,    0, 2, NULL                 },
-  { "nodoublestep",    trs_opt_doublestep,    0, 1, NULL                 },
-  { "stepmap",         trs_opt_stepmap,       1, 0, NULL                 },
+  { "doublestep",      trs_opt_doublestep,    0, 2, NULL                  },
+  { "nodoublestep",    trs_opt_doublestep,    0, 1, NULL                  },
+  { "stepmap",         trs_opt_stepmap,       1, 0, NULL                  },
 #endif
-  { "emtsafe",         trs_opt_value,         0, 1, &trs_emtsafe         },
-  { "fdc",             trs_opt_value,         0, 1, &trs_disk_controller },
-  { "floppy",          trs_opt_value,         0, 1, &trs_disk_controller },
-  { "fg",              trs_opt_color,         1, 0, &foreground          },
-  { "foreground",      trs_opt_color,         1, 0, &foreground          },
-  { "fullscreen",      trs_opt_value,         0, 1, &fullscreen          },
-  { "fs",              trs_opt_value,         0, 1, &fullscreen          },
-  { "guibackground",   trs_opt_color,         1, 0, &gui_background      },
-  { "guibg",           trs_opt_color,         1, 0, &gui_background      },
-  { "guifg",           trs_opt_color,         1, 0, &gui_foreground      },
-  { "guiforeground",   trs_opt_color,         1, 0, &gui_foreground      },
-  { "hard0",           trs_opt_hard,          1, 0, NULL                 },
-  { "hard1",           trs_opt_hard,          1, 1, NULL                 },
-  { "hard2",           trs_opt_hard,          1, 2, NULL                 },
-  { "hard3",           trs_opt_hard,          1, 3, NULL                 },
-  { "harddir",         trs_opt_dirname,       1, 0, trs_hard_dir         },
-  { "hdboot",          trs_opt_value,         0, 1, &trs_hd_boot         },
-  { "hideled",         trs_opt_value,         0, 0, &trs_show_led        },
-  { "huffman",         trs_opt_memory,        0, 2, &huffman             },
-  { "hypermem",        trs_opt_memory,        0, 3, &hypermem            },
-  { "joyaxismapped",   trs_opt_value,         0, 1, &jaxis_mapped        },
-  { "joybuttonmap",    trs_opt_joybuttonmap,  1, 0, NULL                 },
-  { "joysticknum",     trs_opt_joysticknum,   1, 0, NULL                 },
-  { "keypadjoy",       trs_opt_value,         0, 1, &trs_keypad_joystick },
-  { "keystretch",      trs_opt_keystretch,    1, 0, NULL                 },
-  { "le18",            trs_opt_value,         0, 1, &lowe_le18           },
-  { "lower",           trs_opt_value,         0, 1, &lowercase           },
-  { "lowercase",       trs_opt_value,         0, 1, &lowercase           },
-  { "lubomir",         trs_opt_value,         0, 1, &lubomir             },
-  { "microlabs",       trs_opt_value,         0, 1, &grafyx_microlabs    },
-  { "m1",              trs_opt_value,         0, 1, &trs_model           },
-  { "m3",              trs_opt_value,         0, 3, &trs_model           },
-  { "m4",              trs_opt_value,         0, 4, &trs_model           },
-  { "m4p",             trs_opt_value,         0, 5, &trs_model           },
-  { "megamem",         trs_opt_value,         0, 1, &megamem             },
-  { "model",           trs_opt_model,         1, 0, NULL                 },
-  { "mousepointer",    trs_opt_value,         0, 1, &mousepointer        },
-  { "noaspectratio",   trs_opt_value,         0, 0, &aspect_ratio        },
-  { "noemtsafe",       trs_opt_value,         0, 0, &trs_emtsafe         },
-  { "nofdc",           trs_opt_value,         0, 0, &trs_disk_controller },
-  { "nofloppy",        trs_opt_value,         0, 0, &trs_disk_controller },
-  { "nofullscreen",    trs_opt_value,         0, 0, &fullscreen          },
-  { "nofs",            trs_opt_value,         0, 0, &fullscreen          },
-  { "nohdboot",        trs_opt_value,         0, 0, &trs_hd_boot         },
-  { "nohuffman",       trs_opt_value,         0, 0, &huffman             },
-  { "nohypermem",      trs_opt_value,         0, 0, &hypermem            },
-  { "nojoyaxismapped", trs_opt_value,         0, 0, &jaxis_mapped        },
-  { "nokeypadjoy",     trs_opt_value,         0, 0, &trs_keypad_joystick },
-  { "nole18",          trs_opt_value,         0, 0, &lowe_le18           },
-  { "nolower",         trs_opt_value,         0, 0, &lowercase           },
-  { "nolowercase",     trs_opt_value,         0, 0, &lowercase           },
-  { "nolubomir",       trs_opt_value,         0, 0, &lubomir             },
-  { "nomegamem",       trs_opt_value,         0, 0, &megamem             },
-  { "nomicrolabs",     trs_opt_value,         0, 0, &grafyx_microlabs    },
-  { "nomousepointer",  trs_opt_value,         0, 0, &mousepointer        },
-  { "noresize3",       trs_opt_value,         0, 0, &resize3             },
-  { "noresize4",       trs_opt_value,         0, 0, &resize4             },
-  { "noscanlines",     trs_opt_value,         0, 0, &scanlines           },
-  { "noselector",      trs_opt_value,         0, 0, &selector            },
-  { "noshiftbracket",  trs_opt_shiftbracket,  0, 0, NULL                 },
-  { "nosound",         trs_opt_value,         0, 0, &trs_sound           },
-  { "nostringy",       trs_opt_value,         0, 0, &stringy             },
-  { "nosupermem",      trs_opt_value,         0, 0, &supermem            },
-  { "notruedam",       trs_opt_value,         0, 0, &trs_disk_truedam    },
-  { "noturbo",         trs_opt_value,         0, 0, &timer_overclock     },
-  { "noturbopaste",    trs_opt_value,         0, 0, &turbo_paste         },
-  { "printer",         trs_opt_printer,       1, 0, NULL                 },
-  { "printerdir",      trs_opt_dirname,       1, 0, trs_printer_dir      },
-  { "resize3",         trs_opt_value,         0, 1, &resize3             },
-  { "resize4",         trs_opt_value,         0, 1, &resize4             },
-  { "rom",             trs_opt_rom,           1, 0, NULL                 },
-  { "romfile",         trs_opt_rom,           1, 0, NULL                 },
-  { "romfile1",        trs_opt_rom,           1, 1, NULL                 },
-  { "romfile3",        trs_opt_rom,           1, 3, NULL                 },
-  { "romfile4p",       trs_opt_rom,           1, 5, NULL                 },
-  { "samplerate",      trs_opt_samplerate,    1, 0, NULL                 },
-  { "scale",           trs_opt_scale,         1, 0, NULL                 },
-  { "scalequality",    trs_opt_scalequality,  1, 0, NULL                 },
-  { "scanlines",       trs_opt_value,         0, 1, &scanlines           },
-  { "scanshade",       trs_opt_scanshade,     1, 0, NULL                 },
-  { "selector",        trs_opt_memory,        0, 5, &selector            },
-  { "serial",          trs_opt_serial,        1, 0, NULL                 },
-  { "shiftbracket",    trs_opt_shiftbracket,  0, 1, NULL                 },
-  { "showled",         trs_opt_value,         0, 1, &trs_show_led        },
-  { "sizemap",         trs_opt_sizemap,       1, 0, NULL                 },
-  { "sound",           trs_opt_value,         0, 1, &trs_sound           },
-  { "speedup",         trs_opt_speedup,       1, 0, NULL                 },
-  { "statedir",        trs_opt_dirname,       1, 0, trs_state_dir        },
-  { "stringy",         trs_opt_value,         0, 1, &stringy             },
-  { "supermem",        trs_opt_memory,        0, 6, &supermem            },
-  { "switches",        trs_opt_switches,      1, 0, &trs_uart_switches   },
-  { "truedam",         trs_opt_value,         0, 1, &trs_disk_truedam    },
-  { "turbo",           trs_opt_value,         0, 1, &timer_overclock     },
-  { "turbopaste",      trs_opt_value,         0, 1, &turbo_paste         },
-  { "turborate",       trs_opt_turborate,     1, 0, NULL                 },
-  { "wafer0",          trs_opt_wafer,         1, 0, NULL                 },
-  { "wafer1",          trs_opt_wafer,         1, 1, NULL                 },
-  { "wafer2",          trs_opt_wafer,         1, 2, NULL                 },
-  { "wafer3",          trs_opt_wafer,         1, 3, NULL                 },
-  { "wafer4",          trs_opt_wafer,         1, 4, NULL                 },
-  { "wafer5",          trs_opt_wafer,         1, 5, NULL                 },
-  { "wafer6",          trs_opt_wafer,         1, 6, NULL                 },
-  { "wafer7",          trs_opt_wafer,         1, 7, NULL                 },
-  { "window",          trs_opt_window,        1, 0, NULL                 },
+  { "emtsafe",         trs_opt_value,         0, 1, &trs_emtsafe          },
+  { "fdc",             trs_opt_value,         0, 1, &trs_disk_controller  },
+  { "floppy",          trs_opt_value,         0, 1, &trs_disk_controller  },
+  { "fg",              trs_opt_color,         1, 0, &foreground           },
+  { "foreground",      trs_opt_color,         1, 0, &foreground           },
+  { "fullscreen",      trs_opt_value,         0, 1, &fullscreen           },
+  { "fs",              trs_opt_value,         0, 1, &fullscreen           },
+  { "guibackground",   trs_opt_color,         1, 0, &gui_background       },
+  { "guibg",           trs_opt_color,         1, 0, &gui_background       },
+  { "guifg",           trs_opt_color,         1, 0, &gui_foreground       },
+  { "guiforeground",   trs_opt_color,         1, 0, &gui_foreground       },
+  { "hard0",           trs_opt_hard,          1, 0, NULL                  },
+  { "hard1",           trs_opt_hard,          1, 1, NULL                  },
+  { "hard2",           trs_opt_hard,          1, 2, NULL                  },
+  { "hard3",           trs_opt_hard,          1, 3, NULL                  },
+  { "harddir",         trs_opt_dirname,       1, 0, trs_hard_dir          },
+  { "hdboot",          trs_opt_value,         0, 1, &trs_hd_boot          },
+  { "hideled",         trs_opt_value,         0, 0, &trs_show_led         },
+  { "huffman",         trs_opt_memory,        0, 2, &huffman              },
+  { "hypermem",        trs_opt_memory,        0, 3, &hypermem             },
+  { "joyaxismapped",   trs_opt_value,         0, 1, &jaxis_mapped         },
+  { "joybuttonmap",    trs_opt_joybuttonmap,  1, 0, NULL                  },
+  { "joysticknum",     trs_opt_joysticknum,   1, 0, NULL                  },
+  { "keypadjoy",       trs_opt_value,         0, 1, &trs_keypad_joystick  },
+  { "keystretch",      trs_opt_keystretch,    1, 0, NULL                  },
+  { "le18",            trs_opt_value,         0, 1, &lowe_le18            },
+  { "lower",           trs_opt_value,         0, 1, &lowercase            },
+  { "lowercase",       trs_opt_value,         0, 1, &lowercase            },
+  { "lubomir",         trs_opt_value,         0, 1, &lubomir              },
+  { "microlabs",       trs_opt_value,         0, 1, &grafyx_microlabs     },
+  { "m1",              trs_opt_value,         0, 1, &trs_model            },
+  { "m3",              trs_opt_value,         0, 3, &trs_model            },
+  { "m4",              trs_opt_value,         0, 4, &trs_model            },
+  { "m4p",             trs_opt_value,         0, 5, &trs_model            },
+  { "megamem",         trs_opt_value,         0, 1, &megamem              },
+  { "model",           trs_opt_model,         1, 0, NULL                  },
+  { "mousepointer",    trs_opt_value,         0, 1, &mousepointer         },
+  { "noaspectratio",   trs_opt_value,         0, 0, &aspect_ratio         },
+  { "noemtsafe",       trs_opt_value,         0, 0, &trs_emtsafe          },
+  { "nofdc",           trs_opt_value,         0, 0, &trs_disk_controller  },
+  { "nofloppy",        trs_opt_value,         0, 0, &trs_disk_controller  },
+  { "nofullscreen",    trs_opt_value,         0, 0, &fullscreen           },
+  { "nofs",            trs_opt_value,         0, 0, &fullscreen           },
+  { "nohdboot",        trs_opt_value,         0, 0, &trs_hd_boot          },
+  { "nohuffman",       trs_opt_value,         0, 0, &huffman              },
+  { "nohypermem",      trs_opt_value,         0, 0, &hypermem             },
+  { "nojoyaxismapped", trs_opt_value,         0, 0, &jaxis_mapped         },
+  { "nokeypadjoy",     trs_opt_value,         0, 0, &trs_keypad_joystick  },
+  { "nole18",          trs_opt_value,         0, 0, &lowe_le18            },
+  { "nolower",         trs_opt_value,         0, 0, &lowercase            },
+  { "nolowercase",     trs_opt_value,         0, 0, &lowercase            },
+  { "nolubomir",       trs_opt_value,         0, 0, &lubomir              },
+  { "nomegamem",       trs_opt_value,         0, 0, &megamem              },
+  { "nomicrolabs",     trs_opt_value,         0, 0, &grafyx_microlabs     },
+  { "nomousepointer",  trs_opt_value,         0, 0, &mousepointer         },
+  { "noresize3",       trs_opt_value,         0, 0, &resize3              },
+  { "noresize4",       trs_opt_value,         0, 0, &resize4              },
+  { "noscanlines",     trs_opt_value,         0, 0, &scanlines            },
+  { "noselector",      trs_opt_value,         0, 0, &selector             },
+  { "noshiftbracket",  trs_opt_shiftbracket,  0, 0, NULL                  },
+  { "nosound",         trs_opt_value,         0, 0, &trs_sound            },
+  { "nostringy",       trs_opt_value,         0, 0, &stringy              },
+  { "nosupermem",      trs_opt_value,         0, 0, &supermem             },
+  { "notruedam",       trs_opt_value,         0, 0, &trs_disk_truedam     },
+  { "noturbo",         trs_opt_value,         0, 0, &timer_overclock      },
+  { "noturbopaste",    trs_opt_value,         0, 0, &turbo_paste          },
+  { "printer",         trs_opt_printer,       1, 0, NULL                  },
+  { "printerdir",      trs_opt_dirname,       1, 0, trs_printer_dir       },
+  { "resize3",         trs_opt_value,         0, 1, &resize3              },
+  { "resize4",         trs_opt_value,         0, 1, &resize4              },
+  { "rom",             trs_opt_rom,           1, 0, NULL                  },
+  { "romfile",         trs_opt_rom,           1, 0, NULL                  },
+  { "romfile1",        trs_opt_rom,           1, 1, NULL                  },
+  { "romfile3",        trs_opt_rom,           1, 3, NULL                  },
+  { "romfile4p",       trs_opt_rom,           1, 5, NULL                  },
+  { "samplerate",      trs_opt_samplerate,    1, 0, NULL                  },
+  { "scale",           trs_opt_scale,         1, 0, NULL                  },
+  { "scalequality",    trs_opt_scalequality,  1, 0, NULL                  },
+  { "scanlines",       trs_opt_value,         0, 1, &scanlines            },
+  { "scanshade",       trs_opt_scanshade,     1, 0, NULL                  },
+  { "selector",        trs_opt_memory,        0, 5, &selector             },
+  { "serial",          trs_opt_serial,        1, 0, NULL                  },
+  { "shiftbracket",    trs_opt_shiftbracket,  0, 1, NULL                  },
+  { "showled",         trs_opt_value,         0, 1, &trs_show_led         },
+  { "sizemap",         trs_opt_sizemap,       1, 0, NULL                  },
+  { "sound",           trs_opt_value,         0, 1, &trs_sound            },
+  { "speedup",         trs_opt_speedup,       1, 0, NULL                  },
+  { "statedir",        trs_opt_dirname,       1, 0, trs_state_dir         },
+  { "stringy",         trs_opt_value,         0, 1, &stringy              },
+  { "supermem",        trs_opt_memory,        0, 6, &supermem             },
+  { "switches",        trs_opt_switches,      1, 0, &trs_uart_switches    },
+  { "truedam",         trs_opt_value,         0, 1, &trs_disk_truedam     },
+  { "turbo",           trs_opt_value,         0, 1, &timer_overclock      },
+  { "turbopaste",      trs_opt_value,         0, 1, &turbo_paste          },
+  { "turborate",       trs_opt_turborate,     1, 0, NULL                  },
+  { "wafer0",          trs_opt_wafer,         1, 0, NULL                  },
+  { "wafer1",          trs_opt_wafer,         1, 1, NULL                  },
+  { "wafer2",          trs_opt_wafer,         1, 2, NULL                  },
+  { "wafer3",          trs_opt_wafer,         1, 3, NULL                  },
+  { "wafer4",          trs_opt_wafer,         1, 4, NULL                  },
+  { "wafer5",          trs_opt_wafer,         1, 5, NULL                  },
+  { "wafer6",          trs_opt_wafer,         1, 6, NULL                  },
+  { "wafer7",          trs_opt_wafer,         1, 7, NULL                  },
+  { "window",          trs_opt_window,        1, 0, NULL                  },
 };
 
 static const int num_options = sizeof(options) / sizeof(options[0]);
@@ -505,32 +505,32 @@ static void trs_opt_charset(char *arg, int intarg, int *stringarg)
         trs_charset1 = 3;
     } else {
       switch (tolower((int)*arg)) {
-        case 'e': /*early*/
+        case 'e': /* early */
           trs_charset1 = 0;
           break;
-        case 's': /*stock*/
+        case 's': /* stock */
           trs_charset1 = 1;
           break;
-        case 'l': /*lcmod*/
+        case 'l': /* lcmod */
           trs_charset1 = 2;
           break;
-        case 'w': /*wider*/
+        case 'w': /* wider */
           trs_charset1 = 3;
           break;
-        case 'g': /*genie or german*/
+        case 'g': /* genie or german */
           trs_charset1 = 10;
           break;
-        case 'h': /*ht-1080z*/
+        case 'h': /* ht-1080z */
           trs_charset1 = 11;
           break;
-        case 'm': /*meritum (uppercase only)*/
+        case 'm': /* meritum (uppercase only) */
           trs_charset1 = 12;
           lowercase = 0;
           break;
-        case 'c': /*ct-80*/
+        case 'c': /* ct-80 */
           trs_charset1 = 13;
           break;
-        case 'v': /*video genie*/
+        case 'v': /* video genie */
           trs_charset1 = 14;
           break;
         default:
@@ -552,13 +552,13 @@ static void trs_opt_charset(char *arg, int intarg, int *stringarg)
       int charset;
 
       switch (tolower((int)*arg)) {
-        case 'k': /*katakana*/
+        case 'k': /* katakana */
           charset = 4;
           break;
-        case 'i': /*international*/
+        case 'i': /* international */
           charset = 5;
           break;
-        case 'b': /*bold*/
+        case 'b': /* bold */
           charset = 6;
           break;
         default:
@@ -757,10 +757,10 @@ static void trs_opt_printer(char *arg, int intarg, int *stringarg)
       trs_printer = 0;
   } else {
     switch (tolower((int)*arg)) {
-      case 'n': /*none*/
+      case 'n': /* none */
         trs_printer = 0;
         break;
-      case 't': /*text*/
+      case 't': /* text */
         trs_printer = 1;
         break;
       default:
@@ -824,28 +824,28 @@ static void trs_opt_sizemap(char *arg, int intarg, int *stringarg)
 static void trs_opt_speedup(char *arg, int intarg, int *stringarg)
 {
   switch (tolower((int)*arg)) {
-    case 'n': /*None*/
+    case 'n': /* None */
       speedup = 0;
       break;
-    case 'a': /*Archbold*/
+    case 'a': /* Archbold */
       speedup = 1;
       break;
-    case 'h': /*Holmes*/
+    case 'h': /* Holmes */
       speedup = 2;
       break;
-    case 's': /*Seatronics*/
+    case 's': /* Seatronics */
       speedup = 3;
       break;
-    case 'b': /*Banking*/
+    case 'b': /* Banking */
       speedup = 4;
       break;
-    case 'l': /*LNW80*/
+    case 'l': /* LNW80 */
       speedup = 5;
       break;
-    case 't': /*TCS SpeedMaster*/
+    case 't': /* TCS SpeedMaster */
       speedup = 6;
       break;
-    case 'c': /*Aster CT-80*/
+    case 'c': /* Aster CT-80 */
       speedup = 7;
       break;
     default:

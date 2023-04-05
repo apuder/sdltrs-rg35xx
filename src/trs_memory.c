@@ -72,7 +72,7 @@
 #define MEGAMEM_START      (1 * 1024 * 1024) + 65536
 
 /* Interrupt latch register in EI (Model I) */
-#define TRS_INTLATCH(addr) (((addr)&~3) == 0x37E0)
+#define TRS_INTLATCH(addr) (((addr) &~ 3) == 0x37E0)
 
 /* Check address in video memory */
 #define VIDEO_ADDR(vaddr)  (Uint16)vaddr < MAX_VIDEO_SIZE

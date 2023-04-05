@@ -344,7 +344,7 @@ put_sample(Uint8 sample, int convert, FILE* f)
 #endif
         if (sound_ring_write_ptr >= sound_ring_end)
           sound_ring_write_ptr = sound_ring;
-        sound_ring_count+=2;
+        sound_ring_count += 2;
         break;
       default:
         error("sample format 0x%x not supported", cassette_afmt);
@@ -1018,12 +1018,12 @@ transition_in(void)
 	       cassette_noisefloor, cabs, next);
 #endif
 	if (cabs > 1) {
-	  cassette_avg = (99*cassette_avg + cabs) / 100;
+	  cassette_avg = (99 * cassette_avg + cabs) / 100;
 	}
 	if (cabs > cassette_env) {
-	  cassette_env = (cassette_env + 9*cabs) / 10;
+	  cassette_env = (cassette_env + 9 * cabs) / 10;
 	} else if (cabs > 10) {
-	  cassette_env = (99*cassette_env + cabs) / 100;
+	  cassette_env = (99 * cassette_env + cabs) / 100;
 	}
 	cassette_noisefloor = (cassette_avg + cassette_env) / 2;
       }
@@ -1359,17 +1359,17 @@ trs_cassette_save(FILE *file)
   trs_save_uint32(file, &cassette_format, 1);
   trs_save_int(file, &cassette_state, 1);
   trs_save_int(file, &cassette_motor, 1);
-  trs_save_float(file,&cassette_avg, 1);
-  trs_save_float(file,&cassette_env, 1);
+  trs_save_float(file, &cassette_avg, 1);
+  trs_save_float(file, &cassette_env, 1);
   trs_save_int(file, &cassette_noisefloor, 1);
   trs_save_int(file, &cassette_sample_rate, 1);
   trs_save_int(file, &cassette_default_sample_rate, 1);
   trs_save_int(file, &cassette_stereo, 1);
   trs_save_uint32(file, &cassette_silence, 1);
   trs_save_int(file, &cassette_afmt, 1);
-  trs_save_uint64(file,&last_sound, 1);
-  trs_save_uint64(file,&cassette_transition, 1);
-  trs_save_uint64(file,&cassette_firstoutread, 1);
+  trs_save_uint64(file, &last_sound, 1);
+  trs_save_uint64(file, &cassette_transition, 1);
+  trs_save_uint64(file, &cassette_firstoutread, 1);
   trs_save_int(file, &cassette_value, 1);
   trs_save_int(file, &cassette_next, 1);
   trs_save_int(file, &cassette_flipflop, 1);
@@ -1396,17 +1396,17 @@ trs_cassette_load(FILE *file)
   trs_load_uint32(file, &cassette_format, 1);
   trs_load_int(file, &cassette_state, 1);
   trs_load_int(file, &cassette_motor, 1);
-  trs_load_float(file,&cassette_avg, 1);
-  trs_load_float(file,&cassette_env, 1);
+  trs_load_float(file, &cassette_avg, 1);
+  trs_load_float(file, &cassette_env, 1);
   trs_load_int(file, &cassette_noisefloor, 1);
   trs_load_int(file, &cassette_sample_rate, 1);
   trs_load_int(file, &cassette_default_sample_rate, 1);
   trs_load_int(file, &cassette_stereo, 1);
   trs_load_uint32(file, &cassette_silence, 1);
   trs_load_int(file, &cassette_afmt, 1);
-  trs_load_uint64(file,&last_sound, 1);
-  trs_load_uint64(file,&cassette_transition, 1);
-  trs_load_uint64(file,&cassette_firstoutread, 1);
+  trs_load_uint64(file, &last_sound, 1);
+  trs_load_uint64(file, &cassette_transition, 1);
+  trs_load_uint64(file, &cassette_firstoutread, 1);
   trs_load_int(file, &cassette_value, 1);
   trs_load_int(file, &cassette_next, 1);
   trs_load_int(file, &cassette_flipflop, 1);

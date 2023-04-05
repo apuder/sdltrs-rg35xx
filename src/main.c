@@ -75,11 +75,11 @@ static int hex_byte(const char *string)
 static int load_hex(FILE *file)
 {
     char buffer[BUFFER_SIZE];
-    int high = 0;
+    int  high = 0;
 
-    while(fgets(buffer, BUFFER_SIZE, file))
+    while (fgets(buffer, BUFFER_SIZE, file))
     {
-	if(buffer[0] == ':')
+	if (buffer[0] == ':')
 	{
 	    /* colon */
 	    const char *b = buffer + 1;
@@ -100,11 +100,11 @@ static int load_hex(FILE *file)
 	    b += 2;
 
 	    /* the data */
-	    if(num_bytes)
+	    if (num_bytes)
 	    {
 		int value;
 
-		while(num_bytes--)
+		while (num_bytes--)
 		{
 		    value = hex_byte(b);
 
@@ -116,7 +116,7 @@ static int load_hex(FILE *file)
 
 		/* the checksum */
 		value = hex_byte(b);
-		if(((0x100 - check) & 0xff) != value)
+		if (((0x100 - check) & 0xff) != value)
 		{
 		    return(-1);
 		}

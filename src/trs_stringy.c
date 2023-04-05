@@ -610,7 +610,7 @@ stringy_out(int unit, int value)
   if (old_state == STRINGY_STOPPED &&
       new_state != STRINGY_STOPPED) {
 
-    if (1 /*s->in_port & STRINGY_END_OF_TAPE*/) {
+    if (1 /* s->in_port & STRINGY_END_OF_TAPE */) {
       /*
        * Start at the beginning after motor off/on.  This surely
        * doesn't emulate real hardware accurately, but I get "tape
