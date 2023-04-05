@@ -183,7 +183,9 @@ extern void trs_disk_firstdrq(int dummy);
 extern void trs_uart_set_avail(int dummy);
 extern void trs_uart_set_empty(int dummy);
 
+#ifdef ZBX
 extern void trs_disk_debug(void);
+#endif
 extern int  trs_disk_motoroff(void);
 
 extern int huffman;
