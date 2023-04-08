@@ -1242,7 +1242,7 @@ trs_disk_select_write(Uint8 data)
   static int old_data = -1;
 
   if ((trs_disk_debug_flags & DISKDEBUG_FDCREG) && data != old_data) {
-    debug("select_write(0x%02x) pc 0x%04x\n", data, Z80_PC);
+    debug("select_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
     old_data = data;
   }
 #endif
@@ -1339,7 +1339,7 @@ trs_disk_track_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("track_read() => 0x%02x pc 0x%04x\n", state.track, Z80_PC);
+    debug("track_read() => 0x%02x [PC=%04x]\n", state.track, Z80_PC);
   }
 #endif
   return state.track;
@@ -1350,7 +1350,7 @@ trs_disk_track_write(Uint8 data)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("track_write(0x%02x) pc 0x%04x\n", data, Z80_PC);
+    debug("track_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
   }
 #endif
   state.track = data;
@@ -1361,7 +1361,7 @@ trs_disk_sector_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("sector_read() => 0x%02x pc 0x%04x\n", state.sector, Z80_PC);
+    debug("sector_read() => 0x%02x [PC=%04x]\n", state.sector, Z80_PC);
   }
 #endif
   return state.sector;
@@ -1398,7 +1398,7 @@ trs_disk_sector_write(Uint8 data)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("sector_write(0x%02x) pc 0x%04x\n", data, Z80_PC);
+    debug("sector_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
   }
 #endif
   if (trs_model == 1) {
@@ -1607,7 +1607,7 @@ trs_disk_data_read(void)
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("data_read() => 0x%02x pc 0x%04x\n", state.data, Z80_PC);
+    debug("data_read() => 0x%02x [PC=%04x]\n", state.data, Z80_PC);
   }
 #endif
   return state.data;
@@ -1624,7 +1624,7 @@ trs_disk_data_write(Uint8 data)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("data_write(0x%02x) pc 0x%04x\n", data, Z80_PC);
+    debug("data_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
   }
 #endif
   switch (state.currcommand & TRSDISK_CMDMASK) {
@@ -2225,7 +2225,7 @@ trs_disk_status_read(void)
 #ifdef ZBX
   if ((trs_disk_debug_flags & DISKDEBUG_FDCREG) &&
       state.status != last_status) {
-    debug("status_read() => 0x%02x pc 0x%04x\n", state.status, Z80_PC);
+    debug("status_read() => 0x%02x [PC=%04x]\n", state.status, Z80_PC);
     last_status = state.status;
   }
 #endif
@@ -2264,7 +2264,7 @@ trs_disk_command_write(Uint8 cmd)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("command_write(0x%02x) pc 0x%04x\n", cmd, Z80_PC);
+    debug("command_write(0x%02x) [PC=%04x]\n", cmd, Z80_PC);
   }
 #endif
 

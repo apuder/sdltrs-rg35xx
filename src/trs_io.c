@@ -188,7 +188,7 @@ void z80_out(int port, int value)
 {
 #ifdef ZBX
   if (trs_io_debug_flags & IODEBUG_OUT)
-    debug("out (0x%02x), 0x%02x; pc 0x%04x\n", port, value, z80_state.pc.word);
+    debug("out (0x%02x), 0x%02x [PC=%04x]\n", port, value, z80_state.pc.word);
 #endif
 
   /* EG 3200 Genie III */
@@ -969,7 +969,7 @@ int z80_in(int port)
 done:
 #ifdef ZBX
   if (trs_io_debug_flags & IODEBUG_IN)
-    debug("in (0x%02x) => 0x%02x; pc %04x\n", port, value, z80_state.pc.word);
+    debug("in (0x%02x) => 0x%02x [PC=%04x]\n", port, value, z80_state.pc.word);
 #endif
 
   return value;

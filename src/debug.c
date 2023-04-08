@@ -84,7 +84,7 @@ Running:\n\
         Hard reset the Z80 and devices and commence execution.\n\
     c(ont) <addr>\n\
     g(o)   <addr>\n\
-        Continue execution at current pc or specified hex address for pc.\n\
+        Continue execution at current PC or specified hex address for PC.\n\
     s(tep)\n\
     s(tep)i(nt)\n\
         Execute one instruction, or if the instruction is repeating (such as\n\
