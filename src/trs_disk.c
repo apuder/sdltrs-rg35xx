@@ -792,7 +792,7 @@ trs_disk_insert(int drive, const char *diskname)
     d->file = NULL;
     d->filename[0] = 0;
     d->writeprot = 0;
-    file_error("open disk drive %d image '%s'",
+    file_error("open disk%d: '%s'",
         drive, diskname);
     return;
   }

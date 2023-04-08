@@ -433,7 +433,7 @@ static int open_drive(int drive)
       d->file = fopen(d->filename, "rb");
     }
     if (d->file == NULL) {
-      file_error("open hard drive %d image '%s'",
+      file_error("open hard%d: '%s'",
 	    drive, d->filename);
       err = errno;
       goto fail;
