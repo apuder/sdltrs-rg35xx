@@ -38,6 +38,11 @@ will be executed upon startup of the emulator.</p>
 
 <table align="center" border="1" cellpadding="10" cellspacing="0">
   <tr>
+    <td><code>-aspectratio</code></td>
+    <td>Keep aspect ratio of TRS-80 screen when resizing the SDL2 window.
+        This is the default.</td>
+  </tr>
+  <tr>
     <td><code>-background <u>0xRRGGBB</u><br>
         -bg <u>0xRRGGBB</u></code></td>
     <td>Specifies background color of the emulator window.
@@ -126,6 +131,19 @@ will be executed upon startup of the emulator.</p>
     <td><code>-debug</code></td>
     <td>Enter zbx, the Z80 debugger, at startup of the emulator
         (SDLTRS must be compiled with this feature enabled).</td>
+  </tr>
+  <tr>
+    <td><code>-diskdebug <u>hexval</u></code></td>
+    <td>Set floppy disk controller debug flags to hex value:
+        <code><b>01</b></code> = FDC register I/O,
+        <code><b>02</b></code> = FDC commands,
+        <code><b>04</b></code> = VTOS 3.0 JV3 kludges,
+        <code><b>08</b></code> = Gaps,
+        <code><b>10</b></code> = Phys sector sizes,
+        <code><b>20</b></code> = Readadr timing,
+        <code><b>40</b></code> = DMK,
+        <code><b>80</b></code> = ioctl errors.
+     </td>
   </tr>
   <tr>
     <td><code>-disk<b>N</b> <u>filename</u></code></td>
@@ -226,6 +244,13 @@ will be executed upon startup of the emulator.</p>
         <b>Disables "Dave Huffman (and other)"</b>.</td>
   </tr>
   <tr>
+    <td><code>-iodebug <u>hexval</u></code></td>
+    <td>Set I/O port debug flags:
+        <code><b>01</b></code> = port input,
+        <code><b>02</b></code> = port output.
+     </td>
+  </tr>
+  <tr>
     <td><code>-joysticknum <u>num</u></code></td>
     <td>Use USB joystick number <code><u>num</u></code> as the joystick in the
         emulator. Options for <code><u>num</u></code> are 0 through number of
@@ -292,6 +317,10 @@ will be executed upon startup of the emulator.</p>
     <td><code>-mousepointer</code></td>
     <td>Show mouse pointer for selection in emulator window.
         This is the default, but can be toggled with <b>Alt-'.'</b>.</td>
+  </tr>
+  <tr>
+    <td><code>-noaspectratio</code></td>
+    <td>Disable aspect ratio of TRS-80 screen when resizing SDL2 window.</td>
   </tr>
   <tr>
     <td><code>-nodebug</code></td>

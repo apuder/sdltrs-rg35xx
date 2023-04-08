@@ -20,6 +20,9 @@ is an SDL2-based emulator for Tandy/Radio Shack line of Zilog
 Z80-based microcomputers popular in late 1970s and early 1980s.
 .SH OPTIONS
 .TP
+.B \-aspectratio
+Keep TRS-80 screen aspect ratio when resizing SDL2 window (Default).
+.TP
 .B \-background \fI0xRRGGBB\fP
 .TQ
 .B \-bg \fI0xRRGGBB\fP
@@ -69,6 +72,12 @@ Model III and \fI4.05504\fP MHz for Model 4/4P.
 .TP
 .B \-debug
 Enter zbx debugger (Optional).
+.TP
+.B \-diskdebug \fIhexval\fP
+Set floppy disk controller debug flags to hex value:
+\fI01\fP = FDC register I/O | \fI02\fP = FDC commands | \fI04\fP = VTOS 3.0 JV3
+kludges | \fI08\fP = Gaps | \fI10\fP = Phys sector sizes | \fI20\fP = Readadr
+timing | \fI\40\fP = DMK | \fI80\fP = ioctl errors.
 .TP
 .B \-disk\fIN filename\fP
 Specifies name of floppy disk image file to be inserted into
@@ -148,6 +157,9 @@ Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
 Enable HyperMem (Anitek) memory expansion for Model 4/4P.
 .B Disables "Dave Huffman memory expansion"
 .TP
+.B \-iodebug \fIhexval\fP
+Set I/O port debug flags: \fI01\fP = port input | \fI02\fP = port output.
+.TP
 .B \-joysticknum \fInum\fP
 Use USB joystick number \fInum\fP as joystick in emulator.
 .TP
@@ -193,6 +205,9 @@ Default: Model I
 .TP
 .B \-mousepointer
 Show mouse pointer for selection in emulator window (Default).
+.TP
+.B \-noaspectratio
+Disable aspect ratio of TRS-80 screen when resizing SDL2 window.
 .TP
 .B \-nodebug
 Opposite of \fB-debug\fP (Optional).
