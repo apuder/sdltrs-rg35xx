@@ -1636,15 +1636,9 @@ static char *GetSelection(void)
       Uint8 data = *screen_ptr;
 
       if (data < 0x20)
-        data += 0x40;
-
-      else if (data & 0x80)
-        data &= 0x7F;
-
-      if (data >= 0x20 && data <= 0x7e)
-        *curr_data++ = data;
+        *curr_data++ = data + 0x40;
       else
-        *curr_data++ = ' ';
+        *curr_data++ = data & 0x7F;
     }
 
     if (row != end_row) {
