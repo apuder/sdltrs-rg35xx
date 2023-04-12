@@ -94,56 +94,53 @@ static void m6845_crtc(int value)
     case 0x01: /* Chars displayed */
       if (value == 64 || value == 80)
         m6845_screen(value, 0, 0, 0);
-      break;
+      return;
     case 0x06: /* Lines displayed */
       if (interlaced)
         value *= 2;
       if (value <= 32)
         m6845_screen(0, value, 0, 0);
-      break;
+      return;
     case 0x08: /* Interlace Mode */
       interlaced = ((value & 0x03) == 3);
       m6845_screen(0, 0, 0, interlaced ? 1 : 2);
-      break;
+      return;
     case 0x09: /* Maximum Raster address */
       if (value < 16) {
         max_raster = value;
         m6845_screen(0, 0, max_raster + 1, 0);
       }
-      m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
       break;
     case 0x0A: /* Cursor visible / Cursor Start Raster */
       cursor_vis = (value & 0x60) != 0x20;
       value &= 0x1F;
       cursor_csr = value > max_raster ? max_raster : value;
-      m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
       break;
     case 0x0B: /* Cursor End Raster */
       value &= 0x1F;
       cursor_cer = value > max_raster ? max_raster : value;
-      m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
       break;
     case 0x0C: /* Start Address LSB */
       start_addr = ((value & 0x3F) << 8) | (start_addr & 0x00FF);
-      break;
+      return;
     case 0x0D: /* Start Address MSB */
       start_addr = ((value & 0xFF) << 0) | (start_addr & 0xFF00);
       if (genie3s)
         mem_video_page(start_addr - 1024);
-      break;
+      return;
     case 0x0E: /* Cursor LSB */
       cursor_pos = ((value & 0x3F) << 8) | (cursor_pos & 0x00FF);
-      break;
+      return;
     case 0x0F: /* Cursor MSB */
       cursor_pos = ((value & 0xFF) << 0) | (cursor_pos & 0xFF00);
-      if (cursor_pos != cursor_old) {
-        if (cursor_vis) {
-          m6845_cursor(cursor_old - start_addr, 0, 0, 0);
-          m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, 1);
-        }
-        cursor_old = cursor_pos;
-      }
       break;
+  }
+
+  m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
+
+  if (cursor_pos != cursor_old) {
+    m6845_cursor(cursor_old - start_addr, 0, 0, 0);
+    cursor_old = cursor_pos;
   }
 }
 
