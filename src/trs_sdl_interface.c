@@ -1386,8 +1386,7 @@ void trs_screen_init(int resize)
   if (aspect_ratio)
     SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
 
-  if (resize) {
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  if (resize && fullscreen == 0) {
     SDL_SetWindowPosition(window, window_x, window_y);
     if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
       SDL_SetWindowSize(window, window_w, window_h);
@@ -1395,6 +1394,7 @@ void trs_screen_init(int resize)
       SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
   }
 
+  SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   SDL_ShowWindow(window);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
 
