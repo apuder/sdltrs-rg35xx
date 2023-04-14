@@ -971,12 +971,12 @@ int trs_load_config_file(void)
   strcpy(romfile, "level2.rom");
   strcpy(romfile3, "model3.rom");
   strcpy(romfile4p, "model4p.rom");
-  strcpy(trs_cass_dir, ".");
-  strcpy(trs_disk_dir, ".");
-  strcpy(trs_disk_set_dir, ".");
-  strcpy(trs_hard_dir, ".");
-  strcpy(trs_printer_dir, ".");
-  strcpy(trs_state_dir, ".");
+  sprintf(trs_cass_dir, "%c%c", '.', DIR_SLASH);
+  sprintf(trs_disk_dir, "%c%c", '.', DIR_SLASH);
+  sprintf(trs_disk_set_dir, "%c%c", '.', DIR_SLASH);
+  sprintf(trs_hard_dir, "%c%c", '.', DIR_SLASH);
+  sprintf(trs_printer_dir, "%c%c", '.', DIR_SLASH);
+  sprintf(trs_state_dir, "%c%c", '.', DIR_SLASH);
   stretch_amount = STRETCH_AMOUNT;
   trs_charset = 3;
   trs_charset1 = 3;
