@@ -739,10 +739,7 @@ read_directory:
 #if defined(__OS2__) || defined(_WIN32)
           /* Select a new drive */
           else if (new_dir[0] == '[') {
-            current_dir[0] = new_dir[1];
-            current_dir[1] = new_dir[2];
-            current_dir[2] = DIR_SLASH;
-            current_dir[3] = 0;
+            sprintf(current_dir, "%c:\\", new_dir[1]);
             goto read_directory;
           }
 #endif
@@ -767,10 +764,7 @@ done:
       new_dir = filenamelist[selection];
 #if defined(__OS2__) || defined(_WIN32)
       if (new_dir[0] == '[') {
-        name[0] = new_dir[1];
-        name[1] = new_dir[2];
-        name[2] = DIR_SLASH;
-        name[3] = 0;
+        sprintf(name, "%c:\\", new_dir[1]);
       } else
 #endif
       if (new_dir[1] != '.' && new_dir[2] != '.') {
