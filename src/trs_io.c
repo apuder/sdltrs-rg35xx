@@ -133,15 +133,15 @@ static void m6845_crtc(int value)
       return;
     case 0x0F: /* Cursor MSB */
       cursor_pos = ((value & 0xFF) << 0) | (cursor_pos & 0xFF00);
+      if (cursor_pos != cursor_old) {
+        if (cursor_vis)
+          m6845_cursor(cursor_old - start_addr, 0, 0, 0);
+        cursor_old = cursor_pos;
+      }
       break;
   }
 
   m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
-
-  if (cursor_pos != cursor_old) {
-    m6845_cursor(cursor_old - start_addr, 0, 0, 0);
-    cursor_old = cursor_pos;
-  }
 }
 
 static int rtc_read(int port)
