@@ -139,6 +139,8 @@ static void m6845_crtc(int value)
         cursor_old = cursor_pos;
       }
       break;
+    default:
+      return;
   }
 
   m6845_cursor(cursor_pos - start_addr, cursor_csr, cursor_cer, cursor_vis);
