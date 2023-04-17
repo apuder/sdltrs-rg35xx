@@ -929,7 +929,6 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
 
   while (1) {
     int key = trs_gui_select(entry[selection].text, 2, selection + 2);
-    int sel;
 
     if (key >= '0' && key <= '9') {
       key -= '0';
@@ -937,7 +936,7 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
         selection = key;
     } else
     if (key >= 'A' && key <= 'Z') {
-      sel = selection;
+      int const sel = selection;
 
       do {
         if (++selection > num)
