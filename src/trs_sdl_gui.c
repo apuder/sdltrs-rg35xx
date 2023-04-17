@@ -586,10 +586,12 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   struct stat st = { 0 };
   const char *new_dir;
   int i;
-  int selection;
-  int first_row;
-  int drawcount;
+  int cnt;
+  int num;
+  int row;
+  int top;
   int redraw;
+  int selection;
 
   snprintf(current_dir, FILENAME_MAX, "%s", path);
 
@@ -630,40 +632,42 @@ read_directory:
 
   trs_gui_write_text(text, 2, 0, 0);
 
-  drawcount = filenamecount < 13 ? filenamecount : 13;
-  first_row = selection = 0;
+  cnt = filenamecount < 13 ? filenamecount - 1 : 12;
+  num = filenamecount - cnt - 1;
+  row = top = 0;
   redraw = 1;
 
   while (1) {
     int key;
-    int sel;
 
     if (redraw) {
       trs_gui_clear_rect(2, 2, 60, 13);
 
-      for (i = 0; i < drawcount; i++)
-        trs_gui_write_text(filenamelist[first_row + i], 2, i + 2, 0);
+      for (i = 0; i <= cnt; i++)
+        trs_gui_write_text(filenamelist[top + i], 2, i + 2, 0);
 
       redraw = 0;
     }
 
-    key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
+    selection = row + top;
+
+    key = trs_gui_select(filenamelist[selection], 2, row + 2);
     if (key >= ' ' && key <= 'Z') {
-      sel = i = first_row + selection;
+      int sel = selection;
 
       do {
-        if (++i > filenamecount - 1)
-          i = 0;
-      } while (i != sel && (toupper((int)filenamelist[i][1]) != key));
+        if (++sel >= filenamecount)
+          sel = 0;
+      } while (sel != selection && (toupper((int)filenamelist[sel][1]) != key));
 
-      if (i < 13) {
-        first_row = 0;
-        selection = i;
-      } else if (i + 13 > filenamecount) {
-        first_row = filenamecount - 13;
-        selection = i - first_row;
+      if (sel < 13) {
+        top = 0;
+        row = sel;
+      } else if (sel + 13 > filenamecount) {
+        top = num;
+        row = sel - top;
       } else {
-        first_row = i - selection;
+        top = sel - row;
       }
 
       redraw = 1;
@@ -671,45 +675,45 @@ read_directory:
       switch (key) {
         case SDLK_DOWN:
         case SDLK_RIGHT:
-          if (selection < drawcount - 1)
-            selection++;
+          if (row < cnt)
+            row++;
           else
-            if (first_row < filenamecount - drawcount) {
-              first_row++;
+            if (top < num) {
+              top++;
               redraw = 1;
             }
           break;
         case SDLK_UP:
         case SDLK_LEFT:
-          if (selection > 0)
-            selection--;
+          if (row > 0)
+            row--;
           else
-            if (first_row > 0) {
-              first_row--;
+            if (top > 0) {
+              top--;
               redraw = 1;
             }
           break;
         case SDLK_PAGEUP:
-          first_row -= drawcount;
-          if (first_row < 0)
-            first_row = selection = 0;
+          top -= 13;
+          if (top < 0)
+            top = row = 0;
           redraw = 1;
           break;
         case SDLK_PAGEDOWN:
-          first_row += drawcount;
-          if (first_row > filenamecount - drawcount) {
-            first_row = filenamecount - drawcount;
-            selection = drawcount - 1;
+          top += 13;
+          if (top > num) {
+            top = num;
+            row = cnt;
           }
           redraw = 1;
           break;
         case SDLK_HOME:
-          selection = first_row = 0;
+          row = top = 0;
           redraw = 1;
           break;
         case SDLK_END:
-          selection = drawcount - 1;
-          first_row = filenamecount - drawcount;
+          top = num;
+          row = cnt;
           redraw = 1;
           break;
         case SDLK_INSERT:
@@ -719,7 +723,7 @@ read_directory:
           /* Fall through */
         case SDLK_RETURN:
         case SDLK_SPACE:
-          new_dir = filenamelist[first_row + selection];
+          new_dir = filenamelist[selection];
           if (new_dir[0] == '<') {
             if (new_dir[1] == '.' && new_dir[2] == '.') {
               for (i = strlen(current_dir) - 2; i >= 0; i--) {
@@ -742,40 +746,34 @@ read_directory:
             goto read_directory;
           }
 #endif
-          else
-            goto done;
+          goto done;
           break;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
         case SDLK_F7:
-          selection = -1;
-          goto done;
-          break;
+          trs_gui_delete_filename_list();
+          return -1;
       }
     }
   }
 
 done:
-  if (selection >= 0) {
-    selection += first_row;
-    snprintf(name, FILENAME_MAX, "%s", current_dir);
-    if (browse_dir) {
-      new_dir = filenamelist[selection];
+  snprintf(name, FILENAME_MAX, "%s", current_dir);
+  if (browse_dir) {
+    new_dir = filenamelist[selection];
 #if defined(__OS2__) || defined(_WIN32)
-      if (new_dir[0] == '[') {
-        sprintf(name, "%c:\\", new_dir[1]);
-      } else
-#endif
-      if (new_dir[1] != '.' && new_dir[2] != '.') {
-        snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
-            "%s", &new_dir[1]);
-        name[strlen(name) - 1] = DIR_SLASH;
-      }
-    }
+    if (new_dir[0] == '[')
+      sprintf(name, "%c:\\", new_dir[1]);
     else
+#endif
+    if (new_dir[1] != '.' && new_dir[2] != '.') {
       snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
-          "%s", &filenamelist[selection][1]);
-  }
+          "%s", &new_dir[1]);
+      name[strlen(name) - 1] = DIR_SLASH;
+    }
+  } else
+    snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
+        "%s", &filenamelist[selection][1]);
 
   trs_gui_delete_filename_list();
   return selection;
