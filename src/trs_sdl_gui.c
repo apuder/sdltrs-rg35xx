@@ -408,7 +408,7 @@ int trs_gui_select(const char *text, int x, int y)
   key = trs_gui_get_key();
   trs_gui_write_text(text, x, y, 0);
 
-  return key;
+  return toupper(key);
 }
 
 void trs_gui_display_error(const char *name)
@@ -648,14 +648,13 @@ read_directory:
     }
 
     key = trs_gui_select(filenamelist[first_row + selection], 2, selection + 2);
-    if (key >= ' ' && key <= 'z') {
-      key = tolower(key);
+    if (key >= ' ' && key <= 'Z') {
       sel = i = first_row + selection;
 
       do {
         if (++i > filenamecount - 1)
           i = 0;
-      } while (i != sel && (tolower((int)filenamelist[i][1]) != key));
+      } while (i != sel && (toupper((int)filenamelist[i][1]) != key));
 
       if (i < 13) {
         first_row = 0;
@@ -937,8 +936,7 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
       if (key <= num && entry[key].type != MENU_TITLE)
         selection = key;
     } else
-    if (key >= 'A' && key <= 'z') {
-      key = toupper(key);
+    if (key >= 'A' && key <= 'Z') {
       sel = selection;
 
       do {
@@ -1081,8 +1079,7 @@ int trs_gui_display_popup(const char *title, const char **entry,
   while (1) {
     int key = trs_gui_select(entry[selection], x, selection + y);
 
-    if (key >= '0' && key <= 'z') {
-      key = toupper(key);
+    if (key >= '0' && key <= 'Z') {
       if (num == 1) {
         if (key == 'N')
           return 0;
