@@ -145,9 +145,9 @@ static int  trs_gui_select(const char *text, int x, int y);
 static void trs_gui_display_error(const char *name);
 static void trs_gui_display_message(const char *title, const char *message);
 static void trs_gui_create_filename_list(void);
+static void trs_gui_delete_filename_list(void);
 static void trs_gui_add_to_filename_list(char *name);
 static int  trs_gui_filename_cmp(const void *nptr1, const void *nptr2);
-static void trs_gui_delete_filename_list(void);
 static int  trs_gui_readdirectory(const char *path, const char *mask, int browse_dir);
 static int  trs_gui_input_string(const char *title, const char *input, char* output,
                                  int limit, int file);
@@ -449,6 +449,16 @@ void trs_gui_create_filename_list(void)
   }
 }
 
+void trs_gui_delete_filename_list(void)
+{
+  int i;
+
+  for (i = 0; i < filenamecount; i++)
+    free(filenamelist[i]);
+
+  filenamecount = 0;
+}
+
 void trs_gui_add_to_filename_list(char *name)
 {
   filenamelist[filenamecount++] = name;
@@ -485,16 +495,6 @@ int trs_gui_filename_cmp(const void *nptr1, const void *nptr2)
     return 1;
 
   return strcasecmp(name1, name2);
-}
-
-void trs_gui_delete_filename_list(void)
-{
-  int i;
-
-  for (i = 0; i < filenamecount; i++)
-    free(filenamelist[i]);
-
-  filenamecount = 0;
 }
 
 int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
