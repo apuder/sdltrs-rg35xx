@@ -474,7 +474,7 @@ static void mem_init(void)
       supermem_ram[i++] = 0x00;
     }
 
-    memset(&rom, 0, MAX_ROM_SIZE);
+    memset(&rom, 0xFF, MAX_ROM_SIZE);
 
     mem_map(0);
     mem_bank(0);
