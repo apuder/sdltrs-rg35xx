@@ -593,6 +593,19 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   int redraw;
   int selection;
 
+  trs_gui_clear_screen();
+  trs_gui_frame(0, 0, 63, 15);
+
+  if (browse_dir) {
+    snprintf(text, 63, "Choose %sDirectory", type);
+    trs_gui_center_text(" INS/TAB:Select Directory ", 15, 1);
+  } else {
+    snprintf(text, 63, "Select %s File To Load", type);
+    trs_gui_center_text(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 15, 1);
+  }
+
+  trs_gui_write_text(text, 2, 0, 0);
+
   snprintf(current_dir, FILENAME_MAX, "%s", path);
 
   for (i = strlen(current_dir); i > 0; i--) {
@@ -618,19 +631,8 @@ read_directory:
     return -1;
 
   trs_gui_limit_string(current_dir, text, 58);
-  trs_gui_clear_screen();
-  trs_gui_frame(0, 0, 63, 15);
+  trs_gui_clear_rect(2, 1, 60, 1);
   trs_gui_center_text(text, 1, 0);
-
-  if (browse_dir) {
-    snprintf(text, 63, "Choose %sDirectory", type);
-    trs_gui_center_text(" INS/TAB:Select Directory ", 15, 1);
-  } else {
-    snprintf(text, 63, "Select %s File To Load", type);
-    trs_gui_center_text(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 15, 1);
-  }
-
-  trs_gui_write_text(text, 2, 0, 0);
 
   cnt = filenamecount < 13 ? filenamecount - 1 : 12;
   num = filenamecount - cnt - 1;
