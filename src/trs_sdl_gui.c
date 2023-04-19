@@ -584,7 +584,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   char current_dir[FILENAME_MAX];
   char text[64];
   struct stat st = { 0 };
-  const char *new_dir;
+  const char *cur_entry;
   int i;
   int cnt;
   int num;
@@ -650,8 +650,9 @@ read_directory:
     }
 
     selection = row + top;
+    cur_entry = filenamelist[selection];
 
-    key = trs_gui_select(filenamelist[selection], 2, row + 2);
+    key = trs_gui_select(cur_entry, 2, row + 2);
     if (key >= ' ' && key <= 'Z') {
       int sel = selection;
 
@@ -723,9 +724,8 @@ read_directory:
           /* Fall through */
         case SDLK_RETURN:
         case SDLK_SPACE:
-          new_dir = filenamelist[selection];
-          if (new_dir[0] == '<') {
-            if (new_dir[1] == '.' && new_dir[2] == '.') {
+          if (cur_entry[0] == '<') {
+            if (cur_entry[1] == '.' && cur_entry[2] == '.') {
               for (i = strlen(current_dir) - 2; i >= 0; i--) {
                 if (current_dir[i] == DIR_SLASH) {
                   current_dir[i + 1] = 0;
@@ -734,15 +734,15 @@ read_directory:
               }
             } else {
               snprintf(current_dir + strlen(current_dir),
-                  FILENAME_MAX - strlen(current_dir), "%s", &new_dir[1]);
+                  FILENAME_MAX - strlen(current_dir), "%s", &cur_entry[1]);
               current_dir[strlen(current_dir) - 1] = DIR_SLASH;
             }
             goto read_directory;
           }
 #if defined(__OS2__) || defined(_WIN32)
           /* Select a new drive */
-          else if (new_dir[0] == '[') {
-            sprintf(current_dir, "%c:\\", new_dir[1]);
+          else if (cur_entry[0] == '[') {
+            sprintf(current_dir, "%c:\\", cur_entry[1]);
             goto read_directory;
           }
 #endif
@@ -758,22 +758,18 @@ read_directory:
   }
 
 done:
-  snprintf(name, FILENAME_MAX, "%s", current_dir);
   if (browse_dir) {
-    new_dir = filenamelist[selection];
 #if defined(__OS2__) || defined(_WIN32)
-    if (new_dir[0] == '[')
-      sprintf(name, "%c:\\", new_dir[1]);
+    if (cur_entry[0] == '[')
+      sprintf(name, "%c:\\", cur_entry[1]);
     else
 #endif
-    if (new_dir[1] != '.' && new_dir[2] != '.') {
-      snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
-          "%s", &new_dir[1]);
+    if (cur_entry[1] != '.' && cur_entry[2] != '.') {
+      snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
       name[strlen(name) - 1] = DIR_SLASH;
     }
   } else
-    snprintf(name + strlen(name), FILENAME_MAX - strlen(name),
-        "%s", &filenamelist[selection][1]);
+    snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
 
   trs_gui_delete_filename_list();
   return selection;
