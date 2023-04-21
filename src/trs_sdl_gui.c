@@ -149,9 +149,9 @@ static void trs_gui_delete_filename_list(void);
 static void trs_gui_add_to_filename_list(char *name);
 static int  trs_gui_filename_cmp(const void *nptr1, const void *nptr2);
 static int  trs_gui_readdirectory(const char *path, const char *mask, int browse_dir);
-static int  trs_gui_input_string(const char *title, const char *input, char* output,
+static int  trs_gui_input_string(const char *title, const char *input, char *output,
                                  int limit, int file);
-static int  trs_gui_display_menu(const char* title, MENU_ENTRY *entry, int selection);
+static int  trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection);
 static int  trs_gui_display_popup(const char *title, const char **entry,
                                   int num, int selection);
 static int  trs_gui_display_popup_matrix(const char *title, const char **entry,
@@ -421,7 +421,7 @@ void trs_gui_display_error(const char *name)
   }
 }
 
-void trs_gui_display_message(const char* title, const char *message)
+void trs_gui_display_message(const char *title, const char *message)
 {
   trs_gui_frame(1, 6, 62, 8);
   trs_gui_clear_rect(2, 7, 60, 1);
@@ -579,7 +579,7 @@ int trs_gui_readdirectory(const char *path, const char *mask, int browse_dir)
 }
 
 int trs_gui_file_browse(const char *path, char *name, const char *mask,
-                        int browse_dir, const char* type)
+                        int browse_dir, const char *type)
 {
   char current_dir[FILENAME_MAX];
   char text[64];
@@ -777,7 +777,7 @@ done:
   return selection;
 }
 
-int trs_gui_input_string(const char *title, const char* input, char* output,
+int trs_gui_input_string(const char *title, const char *input, char *output,
                          int limit, int file)
 {
   int insert = 1;
@@ -1124,7 +1124,7 @@ int trs_gui_display_popup(const char *title, const char **entry,
   }
 }
 
-int trs_gui_display_popup_matrix(const char* title, const char **entry,
+int trs_gui_display_popup_matrix(const char *title, const char **entry,
                                  int rows, int cols, int selection)
 {
   int const len = strlen(entry[0]) + 1;

@@ -508,7 +508,7 @@ trs_disk_firstdrq(int bits)
 }
 
 static void
-trs_disk_unimpl(Uint8 cmd, const char* more)
+trs_disk_unimpl(Uint8 cmd, const char *more)
 {
   state.status = TRSDISK_NOTRDY|TRSDISK_WRITEFLT|TRSDISK_NOTFOUND;
   state.bytecount = state.format_bytecount = 0;

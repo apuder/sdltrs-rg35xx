@@ -36,7 +36,7 @@
 int
 load_cmd(FILE* f, Uint8 memory[65536],
 	 Uint8* loadmap, int verbosity, FILE* outf,
-	 int isam, char* pds, int* xferaddr, int stopxfer)
+	 int isam, char *pds, int *xferaddr, int stopxfer)
 {
   int lastaddr = -1, lastcount = -1;
   int c, a1, a2, a3, v, count, dummy, i;

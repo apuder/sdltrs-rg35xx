@@ -175,7 +175,7 @@ void do_emt_setddir(void)
   snprintf(trs_disk_dir, FILENAME_MAX, "%s", (char *)mem_pointer(Z80_HL, 0));
   if (trs_disk_dir[0] == '~' &&
       (trs_disk_dir[1] == DIR_SLASH || trs_disk_dir[1] == '\0')) {
-    const char* home = getenv("HOME");
+    const char *home = getenv("HOME");
 
     if (home) {
       char dirname[FILENAME_MAX];

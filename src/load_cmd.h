@@ -80,4 +80,4 @@
 int
 load_cmd(FILE* f, Uint8 memory[65536],
 	 Uint8* loadmap, int verbosity, FILE* outf,
-	 int isam, char* pds, int* xferaddr, int stopxfer);
+	 int isam, char *pds, int *xferaddr, int stopxfer);

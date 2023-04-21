@@ -66,8 +66,8 @@ extern int turbo_paste;
 void call_function(int function);
 void trs_gui_display_pause(void);
 int  trs_gui_exit_sdltrs(void);
-int  trs_gui_file_browse(const char* path, char* filename, const char* mask,
-                         int browse_dir, const char* type);
+int  trs_gui_file_browse(const char *path, char *filename, const char *mask,
+                         int browse_dir, const char *type);
 void trs_gui_clear_rect(int x, int y, int w, int h);
 void trs_gui_write_char(int col, int row, Uint8 char_index, int invert);
 int  trs_sdl_savebmp(const char *name);
