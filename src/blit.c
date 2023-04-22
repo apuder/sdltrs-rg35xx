@@ -302,8 +302,24 @@ void TrsBlitMap(SDL_Palette *src, SDL_PixelFormat *dst)
 void TrsSoftBlit(SDL_Surface *src, SDL_Rect *srcrect,
                  SDL_Surface *dst, SDL_Rect *dstrect, int xor)
 {
-  Uint8 *srcpix, *dstpix;
-  int srcskip, dstskip;
+  /* Set up the blit information */
+  int const rect_h  = srcrect->h;
+  int const rect_w  = srcrect->w;
+  int const bpp     = dst->format->BytesPerPixel;
+  int const bit_pix = src->format->BitsPerPixel;
+  int const srcskip = src->pitch - (rect_w * bit_pix) / 8;
+  int const dstskip = dst->pitch -  rect_w * bpp;
+
+  Uint8 const *srcpix = (Uint8 *)src->pixels +
+      (Uint16)srcrect->y * src->pitch +
+     ((Uint16)srcrect->x * bit_pix) / 8;
+
+  Uint8 *dstpix = (Uint8 *)dst->pixels +
+      (Uint16)dstrect->y * dst->pitch +
+      (Uint16)dstrect->x * bpp;
+
+  dstrect->h = rect_h;
+  dstrect->w = rect_w;
 
   /* Lock the destination if it's in hardware */
   if (SDL_MUSTLOCK(dst)) {
@@ -311,50 +327,38 @@ void TrsSoftBlit(SDL_Surface *src, SDL_Rect *srcrect,
       return;
   }
 
-  /* Set up the blit information */
-  srcpix = (Uint8 *)src->pixels +
-    (Uint16)srcrect->y * src->pitch +
-    ((Uint16)srcrect->x * src->format->BitsPerPixel) / 8;
-  srcskip = src->pitch - (((int)srcrect->w) * src->format->BitsPerPixel) / 8;
-  dstrect->h = srcrect->h;
-  dstrect->w = srcrect->w;
-  dstpix = (Uint8 *)dst->pixels +
-    (Uint16)dstrect->y * dst->pitch +
-    (Uint16)dstrect->x * dst->format->BytesPerPixel;
-  dstskip = dst->pitch - ((int)dstrect->w) * dst->format->BytesPerPixel;
-
   /* Run the actual software blit */
-  switch(dst->format->BytesPerPixel) {
+  switch(bpp) {
     case 1:
       if (xor)
-        XorBlitImageTo1Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        XorBlitImageTo1Byte(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImageTo1Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        CopyBlitImageTo1Byte(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 2:
       if (xor)
-        XorBlitImageTo2Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        XorBlitImageTo2Byte(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       else
-        CopyBlitImageTo2Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        CopyBlitImageTo2Byte(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       break;
     case 3:
       if (xor)
-        XorBlitImageTo3Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        XorBlitImageTo3Byte(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImageTo3Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        CopyBlitImageTo3Byte(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 4:
       if (xor)
-        XorBlitImageTo4Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        XorBlitImageTo4Byte(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       else
-        CopyBlitImageTo4Byte(dstrect->w, dstrect->h, srcpix, srcskip,
+        CopyBlitImageTo4Byte(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       break;
     default:
