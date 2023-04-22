@@ -2520,18 +2520,16 @@ boxes_init(int fg_color, int bg_color, int width, int height, int expanded)
 static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
     int fg_color, int bg_color, int scale_x, int ram)
 {
-  Uint8 *mypixels, *currpixel;
-  int *mydata, *currdata;
-  int i, j, w;
-  int const size = TRS_CHAR_WIDTH * (ram ? MAX_CHAR_HEIGHT : TRS_CHAR_HEIGHT);
-
   /*
    * The memory allocated for "mydata" will be released in the
    * "bitmap_free" function.
    */
-  mydata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
+  int const size = TRS_CHAR_WIDTH * (ram ? MAX_CHAR_HEIGHT : TRS_CHAR_HEIGHT);
+  int i, j, w;
+  int *mydata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
       scale_x * scale_factor * sizeof(int));
-  mypixels = (Uint8 *)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT * 8);
+  int *currdata = mydata;
+  Uint8 *mypixels = (Uint8 *)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT * 8);
 
   if (mydata == NULL || mypixels == NULL)
     fatal("CreateSurfaceFromDataScale: failed to allocate memory");
@@ -2541,10 +2539,10 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
     for (i = j + 7; i >= j; i--)
       *(mypixels + i) = (*(data + (j >> 3)) >> (i - j)) & 1;
 
-  currdata = mydata;
   /* And prepare our rescaled character. */
   for (j = 0; j < MAX_CHAR_HEIGHT * scale_factor; j++) {
-    currpixel = mypixels + ((j / scale_factor) * TRS_CHAR_WIDTH);
+    Uint8 const *currpixel = mypixels + ((j / scale_factor) * TRS_CHAR_WIDTH);
+
     for (w = 0; w < TRS_CHAR_WIDTH; w++) {
       if (*currpixel++ == 0) {
         for (i = 0; i < scale_x; i++)
