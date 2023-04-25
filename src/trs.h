@@ -78,8 +78,10 @@ extern int trs_emu_mouse;
 extern int trs_continuous; /* 1= run continuously,
 			      0= enter debugger after instruction,
 			     -1= suppress interrupt and enter debugger */
+#ifdef ZBX
 extern int trs_disk_debug_flags;
 extern int trs_io_debug_flags;
+#endif
 extern int trs_emtsafe;
 
 extern int  trs_parse_command_line(int argc, char **argv);
@@ -159,7 +161,9 @@ extern void  trs_disk_motoroff_interrupt(int state);
 extern void trs_uart_rcv_interrupt(int state);
 extern void trs_uart_snd_interrupt(int state);
 extern void trs_timer_interrupt(int state);
+#ifdef ZBX
 extern void trs_timer(int on_off);
+#endif
 extern void trs_timer_init(void);
 extern void trs_timer_mode(int mode);
 extern void trs_timer_speed(int flag);
@@ -183,6 +187,7 @@ extern void trs_uart_set_avail(int dummy);
 extern void trs_uart_set_empty(int dummy);
 
 #ifdef ZBX
+extern void trs_debug(void);
 extern void trs_disk_debug(void);
 #endif
 extern int  trs_disk_motoroff(void);
@@ -208,8 +213,6 @@ extern Uint8 genie3s_hrg_read(int position);
 extern void  m6845_crtc_reset(void);
 extern void  m6845_cursor(int position, int start, int end, int visible);
 extern void  m6845_screen(int chars, int lines, int raster, int factor);
-
-extern void  trs_debug(void);
 
 typedef void (*trs_event_func)(int arg);
 void trs_schedule_event(trs_event_func f, int arg, int tstates);

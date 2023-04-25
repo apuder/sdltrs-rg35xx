@@ -454,6 +454,7 @@ trs_timer_init(void)
   }
 }
 
+#ifdef ZBX
 void
 trs_timer(int on_off)
 {
@@ -463,6 +464,7 @@ trs_timer(int on_off)
   if (timer_on)
     trs_timer_event();
 }
+#endif
 
 void
 trs_timer_speed(int fast)

@@ -56,7 +56,9 @@
 #include "trs_stringy.h"
 #include "trs_uart.h"
 
+#ifdef ZBX
 int trs_io_debug_flags;
+#endif
 
 static int modesel;         /* Model I */
 static int modeimage = 0x8; /* Model III/4/4p & SIO */
