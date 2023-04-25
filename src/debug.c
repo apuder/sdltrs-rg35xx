@@ -930,12 +930,12 @@ void debug_shell(void)
 	    else if(!strcmp(command, "timeroff"))
 	    {
 	        /* Turn off emulated real time clock interrupt */
-	        trs_timer_off();
+	        trs_timer(0);
             }
 	    else if(!strcmp(command, "timeron"))
 	    {
-	        /* Turn off emulated real time clock interrupt */
-	        trs_timer_on();
+	        /* Turn on  emulated real time clock interrupt */
+	        trs_timer(1);
             }
 	    else if(!strcmp(command, "diskdump") || !strcmp(command, "dd"))
 	    {

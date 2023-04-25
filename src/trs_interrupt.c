@@ -455,18 +455,13 @@ trs_timer_init(void)
 }
 
 void
-trs_timer_off(void)
+trs_timer(int on_off)
 {
-  timer_on = 0;
-}
+  if (timer_on == on_off) return;
 
-void
-trs_timer_on(void)
-{
-  if (!timer_on) {
-    timer_on = 1;
+  timer_on = on_off;
+  if (timer_on)
     trs_timer_event();
-  }
 }
 
 void
