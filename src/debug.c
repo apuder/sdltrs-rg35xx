@@ -665,7 +665,7 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "in"))
 	    {
-		int port;
+		unsigned int port;
 
 		if(sscanf(input, "in %x", &port) == 1)
 			printf("in %x = %x\n", port, z80_in(port));
@@ -674,7 +674,7 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "out"))
 	    {
-		int port, value;
+		unsigned int port, value;
 
 		if(sscanf(input, "out %x = %x", &port, &value) == 2)
 			z80_out(port, value);
@@ -771,11 +771,11 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {
-		int addr, value;
+		unsigned int addr, value;
 
 		if (sscanf(input, "%*s %x = %x", &addr, &value) == 2)
 		{
-		    if (addr < trs_rom_size)
+		    if ((int)addr < trs_rom_size)
 			rom_write(addr, value);
 		}
 	    }
