@@ -147,7 +147,7 @@ static int mouse_last_x = -1, mouse_last_y = -1;
 static int mouse_old_style;
 static unsigned int mouse_last_buttons;
 static SDL_Surface *trs_char[6][MAX_CHARS];
-static SDL_Surface *trs_box[3][64];
+static SDL_Surface *trs_box[2][64];
 static SDL_Surface *image;
 static SDL_Surface *screen;
 static SDL_Window *window;
@@ -1741,7 +1741,7 @@ void trs_sdl_cleanup(void)
   for (ch = 0; ch < MAX_CHARS; ch++)
     bitmap_free(ch, 0, 5);
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 2; i++) {
     for (ch = 0; ch < 64; ch++)
       SDL_FreeSurface(trs_box[i][ch]);
   }
@@ -2590,7 +2590,6 @@ bitmap_init(int ram)
 
   boxes_init(foreground, background, cur_char_width, height, 0);
   boxes_init(foreground, background, cur_char_width * 2, height, 1);
-  boxes_init(gui_foreground, gui_background, cur_char_width, cur_char_height, 2);
 }
 
 static void
@@ -2910,10 +2909,29 @@ void trs_screen_update(void)
   SDL_RenderPresent(render);
 }
 
-void trs_gui_clear_rect(int x, int y, int w, int h)
+static void trs_screen_rect(int x, int y, int w, int h, int color)
 {
   SDL_Rect rect;
 
+  rect.x = x;
+  rect.y = y;
+  rect.w = w;
+  rect.h = h;
+
+  SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format,
+#if defined(big_endian) && !defined(__linux)
+      (color & 0xFF),
+      (color >> 8) & 0xFF,
+      (color >> 16) & 0xFF));
+#else
+      (color >> 16) & 0xFF,
+      (color >> 8) & 0xFF,
+      (color & 0xFF)));
+#endif
+}
+
+void trs_gui_clear_rect(int x, int y, int w, int h, int frame)
+{
   /* Add offsets to center */
   if (col_chars != 16) {
     x += (row_chars - 64) / 2;
@@ -2922,21 +2940,21 @@ void trs_gui_clear_rect(int x, int y, int w, int h)
     x += 8;
   }
 
-  rect.x = x * cur_char_width + left_margin;
-  rect.y = y * cur_char_height + top_margin;
-  rect.w = w * cur_char_width;
-  rect.h = h * cur_char_height;
+  x = x * cur_char_width + left_margin;
+  y = y * cur_char_height + top_margin;
+  w = w * cur_char_width;
+  h = h * cur_char_height;
 
-  SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format,
-#if defined(big_endian) && !defined(__linux)
-      (gui_background & 0xFF),
-      (gui_background >> 8) & 0xFF,
-      (gui_background >> 16) & 0xFF));
-#else
-      (gui_background >> 16) & 0xFF,
-      (gui_background >> 8) & 0xFF,
-      (gui_background & 0xFF)));
-#endif
+
+  if (frame) {
+    trs_screen_rect(x, y, w, h, gui_foreground);
+    x += 2;
+    y += 2;
+    w -= 4;
+    h -= 4;
+  }
+
+  trs_screen_rect(x, y, w, h, gui_background);
 }
 
 void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
@@ -2958,10 +2976,7 @@ void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.h * row + top_margin;
 
-  if (char_index >= 0x80 && char_index <= 0xbf)
-    SDL_BlitSurface(trs_box[2][char_index - 0x80], &srcRect, screen, &dstRect);
-  else
-    SDL_BlitSurface(trs_char[invert ? 5 : 4][char_index], &srcRect, screen, &dstRect);
+  SDL_BlitSurface(trs_char[invert ? 5 : 4][char_index], &srcRect, screen, &dstRect);
 }
 
 static void grafyx_write_byte(int x, int y, Uint8 byte)

@@ -136,7 +136,6 @@ int jaxis_mapped;
 
 static void trs_gui_write_text(const char *text, int x, int y, int invert);
 static void trs_gui_center_text(const char *text, int y, int invert);
-static void trs_gui_frame(int x1, int y1, int x2, int y2);
 static void trs_gui_clear_screen(void);
 static void trs_gui_limit_string(const char *orig, char *limited, int limit);
 static void trs_add_extension(char *name, const char *ext);
@@ -221,29 +220,9 @@ void trs_gui_center_text(const char *text, int y, int invert)
   trs_gui_write_text(text, (64 - strlen(text)) / 2, y, invert);
 }
 
-void trs_gui_frame(int x1, int y1, int x2, int y2)
-{
-  int i;
-
-  for (i = x1 + 1; i < x2; i++) {
-    trs_gui_write_char(i, y1, 131, 0);
-    trs_gui_write_char(i, y2, 176, 0);
-  }
-
-  for (i = y1 + 1; i < y2; i++) {
-    trs_gui_write_char(x1, i, 149, 0);
-    trs_gui_write_char(x2, i, 170, 0);
-  }
-
-  trs_gui_write_char(x1, y1, 151, 0);
-  trs_gui_write_char(x2, y1, 171, 0);
-  trs_gui_write_char(x1, y2, 181, 0);
-  trs_gui_write_char(x2, y2, 186, 0);
-}
-
 void trs_gui_clear_screen(void)
 {
-  trs_gui_clear_rect(0, 0, 64, 16);
+  trs_gui_clear_rect(0, 0, 64, 16, 1);
 }
 
 void trs_gui_limit_string(const char *orig, char *limited, int limit)
@@ -423,8 +402,7 @@ void trs_gui_display_error(const char *name)
 
 void trs_gui_display_message(const char *title, const char *message)
 {
-  trs_gui_frame(1, 6, 62, 8);
-  trs_gui_clear_rect(2, 7, 60, 1);
+  trs_gui_clear_rect(2, 6, 60, 3, 1);
   trs_gui_write_text(title, 3, 6, 0);
   trs_gui_write_text(message, 3, 7, 0);
   trs_gui_write_text(" Press ENTER/ESC to continue ", 32, 8, 1);
@@ -593,8 +571,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   int redraw;
   int selection;
 
-  trs_gui_clear_screen();
-  trs_gui_frame(0, 0, 63, 15);
+  trs_gui_clear_rect(0, 0, 64, 16, 1);
 
   if (browse_dir) {
     snprintf(text, 63, "Choose %sDirectory", type);
@@ -631,7 +608,7 @@ read_directory:
     return -1;
 
   trs_gui_limit_string(current_dir, text, 58);
-  trs_gui_clear_rect(2, 1, 60, 1);
+  trs_gui_clear_rect(2, 1, 60, 1, 0);
   trs_gui_center_text(text, 1, 0);
 
   cnt = filenamecount < 13 ? filenamecount - 1 : 12;
@@ -643,7 +620,7 @@ read_directory:
     int key;
 
     if (redraw) {
-      trs_gui_clear_rect(2, 2, 60, 13);
+      trs_gui_clear_rect(2, 2, 60, 13, 0);
 
       for (i = 0; i <= cnt; i++)
         trs_gui_write_text(filenamelist[top + i], 2, i + 2, 0);
@@ -793,7 +770,7 @@ int trs_gui_input_string(const char *title, const char *input, char *output,
 redraw:
   col = pos > 60 ? pos - 59 : 0;
 
-  trs_gui_frame(1, 6, 62, 8);
+  trs_gui_clear_rect(1, 6, 62, 3, 1);
   trs_gui_center_text(title, 6, 0);
 
   if (file)
@@ -909,7 +886,6 @@ int trs_gui_display_menu(const char *title, MENU_ENTRY *entry, int selection)
 {
   int num = 0;
 
-  trs_gui_frame(0, 0, 63, 15);
   trs_gui_write_text(title, 2, 0, 0);
 
   if (strstr(title, "Man"))
@@ -1064,7 +1040,7 @@ int trs_gui_display_popup(const char *title, const char **entry,
   int const y = (16 - num) / 2;
   int i;
 
-  trs_gui_frame(x - 1, y - 1, x + len, y + num);
+  trs_gui_clear_rect(x - 1, y - 1, len + 2, num + 2, 1);
   trs_gui_center_text(title, y - 1, 0);
 
   for (i = 0; i < num; i++)
@@ -1134,8 +1110,7 @@ int trs_gui_display_popup_matrix(const char *title, const char **entry,
   int const y = (16 - rows) / 2;
   int row, col;
 
-  trs_gui_frame(x - 1, y - 1, x + width, y + rows);
-  trs_gui_clear_rect(x, y, width, rows);
+  trs_gui_clear_rect(x - 1, y - 1, width + 2, rows + 2, 1);
   trs_gui_center_text(title, y - 1, 0);
 
   for (row = 0; row < rows; row++)
@@ -2357,7 +2332,7 @@ int trs_gui_joystick_get_button(void)
 {
   SDL_Event event;
 
-  trs_gui_frame(25, 7, 38, 9);
+  trs_gui_clear_rect(25, 7, 14, 3, 1);
   trs_gui_write_text("Press Button", 26, 8, 0);
   trs_screen_update();
 
@@ -2618,8 +2593,7 @@ void trs_gui_rom_files(void)
 
 void trs_gui_about_sdltrs(void)
 {
-  trs_gui_clear_screen();
-  trs_gui_frame(0, 0, 63, 15);
+  trs_gui_clear_rect(0, 0, 64, 16, 1);
   trs_gui_write_text("About", 2, 0, 0);
   trs_gui_center_text("SDLTRS", 3, 0);
   trs_gui_center_text("Version 1.2.27", 4, 0);
@@ -2637,8 +2611,7 @@ void trs_gui_about_sdltrs(void)
 
 void trs_gui_keys_sdltrs(void)
 {
-  trs_gui_clear_screen();
-  trs_gui_frame(0, 0, 63, 15);
+  trs_gui_clear_rect(0, 0, 64, 16, 1);
   trs_gui_write_text("Keys", 2, 0, 0);
   trs_gui_write_text("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 0);
   trs_gui_write_text("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 0);
@@ -2667,8 +2640,7 @@ void trs_gui_keys_sdltrs(void)
 
 void trs_gui_display_pause(void)
 {
-  trs_gui_frame(1, 6, 62, 8);
-  trs_gui_clear_rect(2, 7, 60, 1);
+  trs_gui_clear_rect(2, 6, 60, 3, 1);
   trs_gui_center_text("Emulation Paused", 7, 0);
   trs_screen_update();
 }
