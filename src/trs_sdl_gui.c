@@ -699,7 +699,8 @@ read_directory:
         case SDLK_INSERT:
         case SDLK_TAB:
           if (browse_dir)
-            goto done;
+            if (cur_entry[1] != '.' && cur_entry[2] != '.')
+              goto done;
           /* Fall through */
         case SDLK_RETURN:
         case SDLK_SPACE:
@@ -737,18 +738,14 @@ read_directory:
   }
 
 done:
-  if (browse_dir) {
 #if defined(__OS2__) || defined(_WIN32)
-    if (cur_entry[0] == '[')
-      sprintf(name, "%c:\\", cur_entry[1]);
-    else
+  if (browse_dir && cur_entry[0] == '[')
+    sprintf(name, "%c: ", cur_entry[1]);
+  else
 #endif
-    if (cur_entry[1] != '.' && cur_entry[2] != '.') {
-      snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
-      name[strlen(name) - 1] = DIR_SLASH;
-    }
-  } else
-    snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
+  snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
+  if (browse_dir)
+    name[strlen(name) - 1] = DIR_SLASH;
 
   trs_gui_delete_filename_list();
   return selection;
