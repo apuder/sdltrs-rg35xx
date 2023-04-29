@@ -1597,6 +1597,20 @@ static char *GetSelection(void)
     return copy_data;
   }
 
+  if (selectionStartX > selectionEndX) {
+    int swap = selectionStartX;
+
+    selectionStartX = selectionEndX;
+    selectionEndX = swap;
+  }
+
+  if (selectionStartY > selectionEndY) {
+    int swap = selectionStartY;
+
+    selectionStartY = selectionEndY;
+    selectionEndY = swap;
+  }
+
   if (selectionStartX < 0)
     selectionStartX = 0;
 
