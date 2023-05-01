@@ -1502,10 +1502,10 @@ static void MarkSelection(void)
     copy_x = end_x = OrigWidth - scale;
     copy_y = end_y = screen_height - scale;
     DrawRectangle(orig_x, orig_y, end_x, end_y);
-    selection_x1 = orig_x - left_margin;
-    selection_y1 = orig_y - top_margin;
-    selection_x2 = copy_x - left_margin;
-    selection_y2 = copy_y - top_margin;
+    selection_x1 = orig_x;
+    selection_y1 = orig_y;
+    selection_x2 = copy_x;
+    selection_y2 = copy_y;
     drawnRectCount = MAX_RECTS;
     copyStatus = COPY_DEFINED;
   } else {
@@ -1530,10 +1530,10 @@ static void MarkSelection(void)
         orig_x = 0;
         orig_y = 0;
         DrawRectangle(orig_x, orig_y, copy_x, copy_y);
-        selection_x1 = orig_x - left_margin;
-        selection_y1 = orig_y - top_margin;
-        selection_x2 = copy_x - left_margin;
-        selection_y2 = copy_y - top_margin;
+        selection_x1 = orig_x;
+        selection_y1 = orig_y;
+        selection_x2 = copy_x;
+        selection_y2 = copy_y;
         drawnRectCount = MAX_RECTS;
         copyStatus = COPY_DEFINED;
       }
@@ -1560,10 +1560,10 @@ static void MarkSelection(void)
           copyStatus = COPY_IDLE;
         } else {
           DrawRectangle(orig_x, orig_y, end_x, end_y);
-          selection_x1 = orig_x - left_margin;
-          selection_y1 = orig_y - top_margin;
-          selection_x2 = copy_x - left_margin;
-          selection_y2 = copy_y - top_margin;
+          selection_x1 = orig_x;
+          selection_y1 = orig_y;
+          selection_x2 = copy_x;
+          selection_y2 = copy_y;
           copyStatus = COPY_DEFINED;
         }
       }
@@ -1610,6 +1610,11 @@ static char *GetSelection(void)
     selection_y1 = selection_y2;
     selection_y2 = swap;
   }
+
+  selection_x1 -= left_margin;
+  selection_x2 -= left_margin;
+  selection_y1 -= top_margin;
+  selection_y2 -= top_margin;
 
   if (selection_x1 < 0)
     selection_x1 = 0;
