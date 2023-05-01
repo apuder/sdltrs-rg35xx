@@ -179,10 +179,10 @@ extern int  PasteManagerGetChar(Uint8 *character);
 #define COPY_DEFINED  2
 #define COPY_CLEAR    3
 static int copyStatus;
-static int selectionStartX;
-static int selectionStartY;
-static int selectionEndX;
-static int selectionEndY;
+static int selection_x1;
+static int selection_y1;
+static int selection_x2;
+static int selection_y2;
 static int selectAll;
 static int timer_saved;
 static unsigned int cycles_saved;
@@ -1502,10 +1502,10 @@ static void MarkSelection(void)
     copy_x = end_x = OrigWidth - scale;
     copy_y = end_y = screen_height - scale;
     DrawRectangle(orig_x, orig_y, end_x, end_y);
-    selectionStartX = orig_x - left_margin;
-    selectionStartY = orig_y - top_margin;
-    selectionEndX = copy_x - left_margin;
-    selectionEndY = copy_y - top_margin;
+    selection_x1 = orig_x - left_margin;
+    selection_y1 = orig_y - top_margin;
+    selection_x2 = copy_x - left_margin;
+    selection_y2 = copy_y - top_margin;
     drawnRectCount = MAX_RECTS;
     copyStatus = COPY_DEFINED;
   } else {
@@ -1530,10 +1530,10 @@ static void MarkSelection(void)
         orig_x = 0;
         orig_y = 0;
         DrawRectangle(orig_x, orig_y, copy_x, copy_y);
-        selectionStartX = orig_x - left_margin;
-        selectionStartY = orig_y - top_margin;
-        selectionEndX = copy_x - left_margin;
-        selectionEndY = copy_y - top_margin;
+        selection_x1 = orig_x - left_margin;
+        selection_y1 = orig_y - top_margin;
+        selection_x2 = copy_x - left_margin;
+        selection_y2 = copy_y - top_margin;
         drawnRectCount = MAX_RECTS;
         copyStatus = COPY_DEFINED;
       }
@@ -1560,10 +1560,10 @@ static void MarkSelection(void)
           copyStatus = COPY_IDLE;
         } else {
           DrawRectangle(orig_x, orig_y, end_x, end_y);
-          selectionStartX = orig_x - left_margin;
-          selectionStartY = orig_y - top_margin;
-          selectionEndX = copy_x - left_margin;
-          selectionEndY = copy_y - top_margin;
+          selection_x1 = orig_x - left_margin;
+          selection_y1 = orig_y - top_margin;
+          selection_x2 = copy_x - left_margin;
+          selection_y2 = copy_y - top_margin;
           copyStatus = COPY_DEFINED;
         }
       }
@@ -1597,45 +1597,45 @@ static char *GetSelection(void)
     return copy_data;
   }
 
-  if (selectionStartX > selectionEndX) {
-    int swap = selectionStartX;
+  if (selection_x1 > selection_x2) {
+    int swap = selection_x1;
 
-    selectionStartX = selectionEndX;
-    selectionEndX = swap;
+    selection_x1 = selection_x2;
+    selection_x2 = swap;
   }
 
-  if (selectionStartY > selectionEndY) {
-    int swap = selectionStartY;
+  if (selection_y1 > selection_y2) {
+    int swap = selection_y1;
 
-    selectionStartY = selectionEndY;
-    selectionEndY = swap;
+    selection_y1 = selection_y2;
+    selection_y2 = swap;
   }
 
-  if (selectionStartX < 0)
-    selectionStartX = 0;
+  if (selection_x1 < 0)
+    selection_x1 = 0;
 
-  if (selectionStartY < 0)
-    selectionStartY = 0;
+  if (selection_y1 < 0)
+    selection_y1 = 0;
 
-  if (selectionStartX % cur_char_width == 0)
-    start_col = selectionStartX / cur_char_width;
+  if (selection_x1 % cur_char_width == 0)
+    start_col = selection_x1 / cur_char_width;
   else
-    start_col = selectionStartX / cur_char_width + 1;
+    start_col = selection_x1 / cur_char_width + 1;
 
-  if (selectionEndX % cur_char_width == cur_char_width - 1)
-    end_col = selectionEndX / cur_char_width;
+  if (selection_x2 % cur_char_width == cur_char_width - 1)
+    end_col = selection_x2 / cur_char_width;
   else
-    end_col = selectionEndX / cur_char_width - 1;
+    end_col = selection_x2 / cur_char_width - 1;
 
-  if (selectionStartY % cur_char_height == 0)
-    start_row = selectionStartY / cur_char_height;
+  if (selection_y1 % cur_char_height == 0)
+    start_row = selection_y1 / cur_char_height;
   else
-    start_row = selectionStartY / cur_char_height + 1;
+    start_row = selection_y1 / cur_char_height + 1;
 
-  if (selectionEndY % cur_char_height >= cur_char_height / 2)
-    end_row = selectionEndY / cur_char_height;
+  if (selection_y2 % cur_char_height >= cur_char_height / 2)
+    end_row = selection_y2 / cur_char_height;
   else
-    end_row = selectionEndY / cur_char_height - 1;
+    end_row = selection_y2 / cur_char_height - 1;
 
   if (end_col >= row_chars)
     end_col = row_chars - 1;
