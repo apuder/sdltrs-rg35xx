@@ -212,10 +212,10 @@ static const struct {
    changed; we ignore the difference.  Actually, we ignore more than
    that; we convert the values as if 0 were really halfway between
    high and low.  */
-Uint8 const value_to_sample[] = { 127, /* 0.46 V */
-			          254, /* 0.85 V */
-			          0,   /* 0.00 V */
-			          127, /* unused, but close to 0.46 V */
+static Uint8 const value_to_sample[] = { 127, /* 0.46 V */
+			                 254, /* 0.85 V */
+			                 0,   /* 0.00 V */
+			                 127, /* unused, but close to 0.46 V */
 };
 
 /* .wav file definitions */
