@@ -571,7 +571,7 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
   int redraw;
   int selection;
 
-  trs_gui_clear_rect(0, 0, 64, 16, 1);
+  trs_gui_clear_screen();
 
   if (browse_dir) {
     snprintf(text, 63, "Choose %sDirectory", type);
@@ -2590,7 +2590,7 @@ void trs_gui_rom_files(void)
 
 void trs_gui_about_sdltrs(void)
 {
-  trs_gui_clear_rect(0, 0, 64, 16, 1);
+  trs_gui_clear_screen();
   trs_gui_write_text("About", 2, 0, 0);
   trs_gui_center_text("SDLTRS", 3, 0);
   trs_gui_center_text("Version 1.2.27", 4, 0);
@@ -2608,7 +2608,7 @@ void trs_gui_about_sdltrs(void)
 
 void trs_gui_keys_sdltrs(void)
 {
-  trs_gui_clear_rect(0, 0, 64, 16, 1);
+  trs_gui_clear_screen();
   trs_gui_write_text("Keys", 2, 0, 0);
   trs_gui_write_text("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 0);
   trs_gui_write_text("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 0);
