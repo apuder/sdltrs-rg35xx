@@ -2540,27 +2540,27 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
     int fg_color, int bg_color, int scale_x, int ram)
 {
   /*
-   * The memory allocated for "mydata" will be released in the
+   * The memory allocated for "fontdata" will be released in the
    * "bitmap_free" function.
    */
   int const size = TRS_CHAR_WIDTH * (ram ? MAX_CHAR_HEIGHT : TRS_CHAR_HEIGHT);
   int i, j, w;
-  int *mydata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
+  int *fontdata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
       scale_x * scale_factor * sizeof(int));
-  int *currdata = mydata;
-  Uint8 *mypixels = (Uint8 *)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT * 8);
+  int *currdata = fontdata;
+  Uint8 *pixels = (Uint8 *)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT * 8);
 
-  if (mydata == NULL || mypixels == NULL)
+  if (fontdata == NULL || pixels == NULL)
     fatal("CreateSurfaceFromDataScale: failed to allocate memory");
 
   /* Read the character data */
   for (j = 0; j < size; j += 8)
     for (i = j + 7; i >= j; i--)
-      *(mypixels + i) = (*(data + (j >> 3)) >> (i - j)) & 1;
+      *(pixels + i) = (*(data + (j >> 3)) >> (i - j)) & 1;
 
   /* And prepare our rescaled character. */
   for (j = 0; j < MAX_CHAR_HEIGHT * scale_factor; j++) {
-    Uint8 const *currpixel = mypixels + ((j / scale_factor) * TRS_CHAR_WIDTH);
+    Uint8 const *currpixel = pixels + ((j / scale_factor) * TRS_CHAR_WIDTH);
 
     for (w = 0; w < TRS_CHAR_WIDTH; w++) {
       if (*currpixel++ == 0) {
@@ -2573,9 +2573,9 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
     }
   }
 
-  free(mypixels);
+  free(pixels);
 
-  return SDL_CreateRGBSurfaceFrom(mydata, TRS_CHAR_WIDTH * scale_x,
+  return SDL_CreateRGBSurfaceFrom(fontdata, TRS_CHAR_WIDTH * scale_x,
          MAX_CHAR_HEIGHT * scale_factor, 32, TRS_CHAR_WIDTH * scale_x * 4,
 #if defined(big_endian) && !defined(__linux)
          0x000000ff, 0x0000ff00, 0x00ff0000, 0);
