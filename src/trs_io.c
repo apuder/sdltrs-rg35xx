@@ -129,7 +129,7 @@ static void m6845_crtc(int value)
     case 0x0D: /* Start Address MSB */
       start_addr = ((value & 0xFF) << 0) | (start_addr & 0xFF00);
       if (genie3s)
-        mem_video_page(start_addr - 1024);
+        mem_video_page(1024 - start_addr);
       return;
     case 0x0E: /* Cursor LSB */
       cursor_pos = ((value & 0x3F) << 8) | (cursor_pos & 0x00FF);

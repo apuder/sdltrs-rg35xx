@@ -787,11 +787,11 @@ int mem_read(int address)
 	    if (address >= KEYBOARD_START && address <= 0x38FF)
 	      return trs_kb_mem_read(address);
 	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return video[address - video_memory];
+	      return video[address + video_offset];
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
-	      return video[(address - video_memory) & 0x7FF];
+	      return video[(address + video_offset) & 0x7FF];
 	  }
 	  /* Disk I/O */
 	  if (address >= 0x37E0 && address <= 0x37EF)
@@ -1147,13 +1147,13 @@ void mem_write(int address, int value)
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
 	    if (address >= VIDEO_START && address <= 0x3FFF) {
-	      trs80_screen_write_char(address - video_memory, value);
+	      trs80_screen_write_char(address + video_offset, value);
 	      return;
 	    }
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF) {
-	      trs80_screen_write_char((address - video_memory) & 0x7FF, value);
+	      trs80_screen_write_char((address + video_offset) & 0x7FF, value);
 	      return;
 	    }
 	  }
@@ -1173,7 +1173,7 @@ void mem_write(int address, int value)
 	  return;
 	/* Write to Font-SRAM */
 	if (genie3s & (1 << 1) && address >= 0x8000) {
-	  genie3s_char(video[(VIDEO_START - video_memory)],
+	  genie3s_char(video[(VIDEO_START + video_offset)],
 	      (address - 0x8000) >> 11, value);
 	  return;
 	}
@@ -1489,11 +1489,11 @@ Uint8 *mem_pointer(int address, int writing)
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
 	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return &video[address - video_memory];
+	      return &video[address + video_offset];
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
-	      return &video[(address - video_memory) & 0x7FF];
+	      return &video[(address + video_offset) & 0x7FF];
 	  }
 	}
 	/* ROM */
