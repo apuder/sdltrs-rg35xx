@@ -734,7 +734,7 @@ int mem_read(int address)
 	      ((system_byte & (1 << 2)) && address >= 0x3000 && address <= 0x35FF) ||
 	      ((system_byte & (1 << 4)) && address >= 0x3600 && address <= 0x37FF) ||
 	      ((system_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
-	      ((system_byte & (1 << 6)) && address >= 0x3C00 && address <= 0x3FFF))
+	      ((system_byte & (1 << 6)) && address >= 0x3C00))
 		return memory[address];
 	  if (address <= 0x35FF) return rom[address];
 	  return trs80_model1_mmio(address);
@@ -744,7 +744,7 @@ int mem_read(int address)
       case 0x22: /* Lubomir Soft Banker */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 6)) && address <= 0x37DF) ||
-	      ((system_byte & (1 << 5)) && address >= 0x37E0 && address <= 0x3FFF))
+	      ((system_byte & (1 << 5)) && address >= 0x37E0))
 		return memory[address];
 	  return trs80_model1_mmio(address);
 	}
@@ -1081,7 +1081,7 @@ void mem_write(int address, int value)
 	      ((system_byte & (1 << 3)) && address >= 0x3000 && address <= 0x35FF) ||
 	      ((system_byte & (1 << 4)) && address >= 0x3600 && address <= 0x37FF) ||
 	      ((system_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
-	      ((system_byte & (1 << 6)) && address >= 0x3C00 && address <= 0x3FFF)) {
+	      ((system_byte & (1 << 6)) && address >= 0x3C00)) {
 		memory[address] = value;
 		return;
 	  }
@@ -1094,7 +1094,7 @@ void mem_write(int address, int value)
       case 0x22: /* Lubomir Soft Banker */
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 7)) && address <= 0x37DF) ||
-	      ((system_byte & (1 << 5)) && address >= 0x37E0 && address <= 0x3FFF)) {
+	      ((system_byte & (1 << 5)) && address >= 0x37E0)) {
 		memory[address] = value;
 		return;
 	  }
@@ -1442,7 +1442,7 @@ Uint8 *mem_pointer(int address, int writing)
 	      ((system_byte & (1 << 2)) && address >= 0x3000 && address <= 0x35FF) ||
 	      ((system_byte & (1 << 4)) && address >= 0x3600 && address <= 0x37FF) ||
 	      ((system_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
-	      ((system_byte & (1 << 6)) && address >= 0x3C00 && address <= 0x3FFF))
+	      ((system_byte & (1 << 6)) && address >= 0x3C00))
 		return &memory[address];
 	  if (address <= 0x35FF) return &rom[address];
 	  return trs80_model1_mmio_addr(address, writing);
@@ -1453,7 +1453,7 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x2A:
 	if (address < RAM_START) {
 	  if (((system_byte & (1 << 6)) && address <= 0x37DF) ||
-	      ((system_byte & (1 << 5)) && address >= 0x37E0 && address <= 0x3FFF))
+	      ((system_byte & (1 << 5)) && address >= 0x37E0))
 		return &memory[address];
 	  return trs80_model1_mmio_addr(address, writing);
 	}
