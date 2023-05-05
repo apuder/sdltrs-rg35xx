@@ -99,8 +99,7 @@ static Uint8 rom[MAX_ROM_SIZE + 1];
 static Uint8 supermem_ram[MAX_SUPERMEM_SIZE + 1];
 static int memory_map;
 static int bank_offset[2];
-static int video_memory = VIDEO_START;
-static int video_offset;
+static int video_offset = -VIDEO_START;
 static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
@@ -142,7 +141,6 @@ int mem_video_write(int vaddr, Uint8 value)
 
 void mem_video_page(int offset)
 {
-  video_memory =  VIDEO_START + offset;
   video_offset = -VIDEO_START + offset;
 }
 
@@ -445,11 +443,11 @@ void s80z_out(int value)
 {
 	if (value & (1 << 2)) {
 		if (speedup == 4)
-			video_memory = 0x3900; /* Homebrew 80*22 SYS80.SYS */
+			video_offset = 0x3900; /* Homebrew 80*22 SYS80.SYS */
 		else
-			video_memory = (value & (1 << 1)) ? 0xB000 : 0xF000;
+			video_offset = (value & (1 << 1)) ? 0xB000 : 0xF000;
 	} else {
-		video_memory = VIDEO_START;
+		video_offset = VIDEO_START;
 	}
 
 	if ((value & (1 << 6)) != (system_byte & (1 << 6)))
@@ -812,8 +810,8 @@ int mem_read(int address)
 
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_memory && address <= video_memory + 0xFFF)
-	    return video[((address - video_memory) & 0x7FF)];
+	  if (address >= video_offset && address <= video_offset + 0xFFF)
+	    return video[((address - video_offset) & 0x7FF)];
 	}
 	if ((system_byte & (1 << 3)) || address >= RAM_START)
 	  return memory[address];
@@ -1187,8 +1185,8 @@ void mem_write(int address, int value)
 
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_memory && address <= video_memory + 0xFFF) {
-	    trs80_screen_write_char(((address - video_memory) & 0x7FF), value);
+	  if (address >= video_offset && address <= video_offset + 0xFFF) {
+	    trs80_screen_write_char(((address - video_offset) & 0x7FF), value);
 	    return;
 	  }
 	}
@@ -1509,8 +1507,8 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x25: /* Schmidtke 80-Z Video Card */
       case 0x2D:
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_memory && address <= video_memory + 0xFFF)
-	    return &video[((address - video_memory) & 0x7FF)];
+	  if (address >= video_offset && address <= video_offset + 0xFFF)
+	    return &video[((address - video_offset) & 0x7FF)];
 	}
 	if ((system_byte & (1 << 3)) || address >= RAM_START)
 	  return &memory[address];
@@ -1634,7 +1632,6 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &lowercase, 1);
   trs_save_int(file, &memory_map, 1);
   trs_save_int(file, bank_offset, 2);
-  trs_save_int(file, &video_memory, 1);
   trs_save_int(file, &video_offset, 1);
   trs_save_int(file, &romin, 1);
   trs_save_uint32(file, &bank_base, 1);
@@ -1665,7 +1662,6 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &lowercase, 1);
   trs_load_int(file, &memory_map, 1);
   trs_load_int(file, bank_offset, 2);
-  trs_load_int(file, &video_memory, 1);
   trs_load_int(file, &video_offset, 1);
   trs_load_int(file, &romin, 1);
   trs_load_uint32(file, &bank_base, 1);
