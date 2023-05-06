@@ -1244,7 +1244,7 @@ void trs_screen_reset(void)
 
   /* initially, screen is blank (i.e. full of spaces) */
   memset(trs_screen, ' ', SCREEN_SIZE);
-  memset(char_ram, 0, 1024);
+  memset(char_ram, 0, MAX_CHARS * MAX_CHAR_HEIGHT);
   memset(grafyx, 0, G_MSIZE);
   memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
   memset(hrg_screen, 0, HRG_MEMSIZE);
