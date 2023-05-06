@@ -462,12 +462,12 @@ static void mem_init(void)
     int i;
 
     /* Initialize RAM & ROM */
-    for (i = 0; i < MAX_MEMORY_SIZE;) {
+    for (i = 0; i < MAX_MEMORY_SIZE - 1;) {
       memory[i++] = 0xFF;
       memory[i++] = 0x00;
     }
 
-    for (i = 0; i < MAX_SUPERMEM_SIZE;) {
+    for (i = 0; i < MAX_SUPERMEM_SIZE - 1;) {
       supermem_ram[i++] = 0xFF;
       supermem_ram[i++] = 0x00;
     }
