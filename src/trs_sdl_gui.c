@@ -2402,14 +2402,9 @@ void trs_gui_joystick_settings(void)
    {"Unmap All Buttons", MENU_NORMAL},
    {"Check Button Mapping", MENU_NORMAL},
    {"", 0}};
-  char *joystick[MAX_JOYSTICKS + 1];
-  char joysticks[MAX_JOYSTICKS + 1][64];
   int selection = 0;
   int button, key;
-  int i, num_joysticks, joy_index;
-
-  for (i = 0; i < MAX_JOYSTICKS + 1; i++)
-    joystick[i] = joysticks[i];
+  int i;
 
   while (1) {
     snprintf(&menu[0].text[50], 11, "%s", yes_no[trs_keypad_joystick]);
@@ -2431,13 +2426,20 @@ void trs_gui_joystick_settings(void)
         trs_set_keypad_joystick();
         break;
       case 1:
-        num_joysticks = SDL_NumJoysticks();
+      {
+        char *joystick[MAX_JOYSTICKS + 1];
+        char joysticks[MAX_JOYSTICKS + 1][64];
+        int joy_index;
+        int num_joysticks = SDL_NumJoysticks();
+
         if (num_joysticks > MAX_JOYSTICKS)
           num_joysticks = MAX_JOYSTICKS;
 
+        joystick[0] = joysticks[0];
         snprintf(joystick[0], 61, "%60s", "None");
 
         for (i = 0; i < num_joysticks; i++) {
+          joystick[i + 1] = joysticks[i + 1];
           snprintf(joystick[i + 1], 61, "Joystick %1d - %47s", i,
               SDL_JoystickName(SDL_JoystickOpen(i)));
         }
@@ -2452,6 +2454,7 @@ void trs_gui_joystick_settings(void)
         trs_joystick_num = joy_index - 1;
         trs_open_joystick();
         break;
+      }
       case 2:
         jaxis_mapped = trs_gui_display_popup("Arrow", yes_no, 2, jaxis_mapped);
         break;
