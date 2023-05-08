@@ -39,7 +39,7 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support VideoExtension HRG for EACA EG 3200 Genie III
   * Support Genieplus Memory Card for EACA EG 3200 Genie III
   * Support Prologica CP-500/M80 by Leonardo Brondani Schenkel
-  * Partial emulation of Aster CT-80
+  * Partial emulation of [Aster CT-80]
   * Support 128/256/512/1024 bytes Sector Size for WD1000/1010
   * Support up to 8192 Hard Disk Cylinders
   * Modify addresses in ROM with debugger
@@ -74,6 +74,7 @@ Thanks to Tércio Martins a package for Arch Linux is available in the [AUR].
 ![screenshot](screenshots/sdltrs04.png)
 ![screenshot](screenshots/sdltrs05.png)
 
+[Aster CT-80]: https://electrickery.nl/comp/trs80/aster/
 [AUR]: https://aur.archlinux.org/packages/sdl2trs/
 [BUILDING.md]: BUILDING.md
 [Documentation]: https://jengun.gitlab.io/sdltrs
