@@ -2565,7 +2565,7 @@ void trs_gui_rom_files(void)
   int selection = 1;
 
   while (1) {
-    trs_gui_limit_string(romfile, &menu[1].text[2], 58);
+    trs_gui_limit_string(romfile1, &menu[1].text[2], 58);
     trs_gui_limit_string(romfile3, &menu[4].text[2], 58);
     trs_gui_limit_string(romfile4p, &menu[7].text[2], 58);
     snprintf(&menu[11].text[50], 11, "%s", yes_no[trs_hd_boot]);
@@ -2574,7 +2574,7 @@ void trs_gui_rom_files(void)
     selection = trs_gui_display_menu("ROM File Selection", menu, selection);
     switch (selection) {
       case 1:
-        trs_gui_file_browse(romfile, romfile, NULL, 0, "Model I ROM");
+        trs_gui_file_browse(romfile1, romfile1, NULL, 0, "Model I ROM");
         break;
       case 4:
         trs_gui_file_browse(romfile3, romfile3, NULL, 0, "Model III / 4 ROM");

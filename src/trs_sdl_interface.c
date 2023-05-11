@@ -97,7 +97,7 @@ int scanlines;
 int scanshade;
 int window_border_width;
 int turbo_paste;
-char romfile[FILENAME_MAX];
+char romfile1[FILENAME_MAX];
 char romfile3[FILENAME_MAX];
 char romfile4p[FILENAME_MAX];
 char trs_disk_dir[FILENAME_MAX];
@@ -737,7 +737,7 @@ static void trs_opt_rom(char *arg, int intarg, int *stringarg)
 {
   switch (intarg ? intarg : trs_model) {
     case 1:
-      snprintf(romfile, FILENAME_MAX, "%s", arg);
+      snprintf(romfile1, FILENAME_MAX, "%s", arg);
       break;
     case 3:
     case 4:
@@ -968,7 +968,7 @@ int trs_load_config_file(void)
   scale = 1;
   scanlines = 0;
   scanshade = 127;
-  strcpy(romfile, "level2.rom");
+  strcpy(romfile1, "level2.rom");
   strcpy(romfile3, "model3.rom");
   strcpy(romfile4p, "model4p.rom");
   sprintf(trs_cass_dir, "%c%c", '.', DIR_SLASH);
@@ -1173,7 +1173,7 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "printerdir=%s\n", trs_printer_dir);
   fprintf(config_file, "%sresize3\n", resize3 ? "" : "no");
   fprintf(config_file, "%sresize4\n", resize4 ? "" : "no");
-  fprintf(config_file, "romfile1=%s\n", romfile);
+  fprintf(config_file, "romfile1=%s\n", romfile1);
   fprintf(config_file, "romfile3=%s\n", romfile3);
   fprintf(config_file, "romfile4p=%s\n", romfile4p);
   fprintf(config_file, "samplerate=%d\n", cassette_default_sample_rate);

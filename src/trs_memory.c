@@ -99,7 +99,7 @@ static Uint8 rom[MAX_ROM_SIZE + 1];
 static Uint8 supermem_ram[MAX_SUPERMEM_SIZE + 1];
 static int memory_map;
 static int bank_offset[2];
-static int video_offset = -VIDEO_START;
+static int video_addr = -VIDEO_START;
 static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
@@ -141,22 +141,22 @@ int mem_video_write(int vaddr, Uint8 value)
 
 void mem_video_page(int offset)
 {
-  video_offset = -VIDEO_START + offset;
+  video_addr = -VIDEO_START + offset;
 }
 
 Uint8 mem_video_page_read(int vaddr)
 {
-  return mem_video_read(vaddr + video_offset);
+  return mem_video_read(vaddr + video_addr);
 }
 
 int mem_video_page_write(int vaddr, Uint8 value)
 {
-  return mem_video_write(vaddr + video_offset, value);
+  return mem_video_write(vaddr + video_addr, value);
 }
 
 Uint8 *mem_video_page_addr(int vaddr)
 {
-  vaddr = vaddr + video_offset;
+  vaddr = vaddr + video_addr;
   if (VIDEO_ADDR(vaddr)) {
     return video + vaddr;
   } else { /* emulator bug, should never happen */
@@ -443,11 +443,11 @@ void s80z_out(int value)
 {
 	if (value & (1 << 2)) {
 		if (speedup == 4)
-			video_offset = 0x3900; /* Homebrew 80*22 SYS80.SYS */
+			video_addr = 0x3900; /* Homebrew 80*22 SYS80.SYS */
 		else
-			video_offset = (value & (1 << 1)) ? 0xB000 : 0xF000;
+			video_addr = (value & (1 << 1)) ? 0xB000 : 0xF000;
 	} else {
-		video_offset = VIDEO_START;
+		video_addr = VIDEO_START;
 	}
 
 	if ((value & (1 << 6)) != (system_byte & (1 << 6)))
@@ -779,11 +779,11 @@ int mem_read(int address)
 	    if (address >= KEYBOARD_START && address <= 0x38FF)
 	      return trs_kb_mem_read(address);
 	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return video[address + video_offset];
+	      return video[address + video_addr];
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
-	      return video[(address + video_offset) & 0x7FF];
+	      return video[(address + video_addr) & 0x7FF];
 	  }
 	  /* Disk I/O */
 	  if (address >= 0x37E0 && address <= 0x37EF)
@@ -804,8 +804,8 @@ int mem_read(int address)
 
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_offset && address <= video_offset + 0xFFF)
-	    return video[((address - video_offset) & 0x7FF)];
+	  if (address >= video_addr && address <= video_addr + 0xFFF)
+	    return video[((address - video_addr) & 0x7FF)];
 	}
 	if ((system_byte & (1 << 3)) || address >= RAM_START)
 	  return memory[address];
@@ -1139,13 +1139,13 @@ void mem_write(int address, int value)
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
 	    if (address >= VIDEO_START && address <= 0x3FFF) {
-	      trs80_screen_write_char(address + video_offset, value);
+	      trs80_screen_write_char(address + video_addr, value);
 	      return;
 	    }
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF) {
-	      trs80_screen_write_char((address + video_offset) & 0x7FF, value);
+	      trs80_screen_write_char((address + video_addr) & 0x7FF, value);
 	      return;
 	    }
 	  }
@@ -1165,7 +1165,7 @@ void mem_write(int address, int value)
 	  return;
 	/* Write to Font-SRAM */
 	if (genie3s & (1 << 1) && address >= 0x8000) {
-	  genie3s_char(video[(VIDEO_START + video_offset)],
+	  genie3s_char(video[(VIDEO_START + video_addr)],
 	      (address - 0x8000) >> 11, value);
 	  return;
 	}
@@ -1179,8 +1179,8 @@ void mem_write(int address, int value)
 
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_offset && address <= video_offset + 0xFFF) {
-	    trs80_screen_write_char(((address - video_offset) & 0x7FF), value);
+	  if (address >= video_addr && address <= video_addr + 0xFFF) {
+	    trs80_screen_write_char(((address - video_addr) & 0x7FF), value);
 	    return;
 	  }
 	}
@@ -1257,7 +1257,7 @@ void mem_write(int address, int value)
 	    memory[address + bank_offset[address >> 15]] = value;
 	} else if (address >= VIDEO_START) {
 	    if (mem_video_page_write(address, value))
-	      trs_screen_write_char(address + video_offset, value);
+	      trs_screen_write_char(address + video_addr, value);
 	} else if (address == PRINTER_ADDRESS) {
 	    trs_printer_write(value);
 	}
@@ -1270,7 +1270,7 @@ void mem_write(int address, int value)
 	    memory[address + bank_offset[address >> 15]] = value;
 	} else if (address >= VIDEO_START) {
 	    if (mem_video_page_write(address, value))
-	      trs_screen_write_char(address + video_offset, value);
+	      trs_screen_write_char(address + video_addr, value);
 	}
 	break;
 
@@ -1481,11 +1481,11 @@ Uint8 *mem_pointer(int address, int writing)
 	if ((system_byte & (1 << 0)) == 0) {
 	  if ((system_byte & (1 << 4)) == 0) {
 	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return &video[address + video_offset];
+	      return &video[address + video_addr];
 	  } else {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
-	      return &video[(address + video_offset) & 0x7FF];
+	      return &video[(address + video_addr) & 0x7FF];
 	  }
 	}
 	/* ROM */
@@ -1501,8 +1501,8 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x25: /* Schmidtke 80-Z Video Card */
       case 0x2D:
 	if (system_byte & (1 << 0)) {
-	  if (address >= video_offset && address <= video_offset + 0xFFF)
-	    return &video[((address - video_offset) & 0x7FF)];
+	  if (address >= video_addr && address <= video_addr + 0xFFF)
+	    return &video[((address - video_addr) & 0x7FF)];
 	}
 	if ((system_byte & (1 << 3)) || address >= RAM_START)
 	  return &memory[address];
@@ -1626,7 +1626,7 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &lowercase, 1);
   trs_save_int(file, &memory_map, 1);
   trs_save_int(file, bank_offset, 2);
-  trs_save_int(file, &video_offset, 1);
+  trs_save_int(file, &video_addr, 1);
   trs_save_int(file, &romin, 1);
   trs_save_uint32(file, &bank_base, 1);
   trs_save_uint8(file, &mem_command, 1);
@@ -1656,7 +1656,7 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &lowercase, 1);
   trs_load_int(file, &memory_map, 1);
   trs_load_int(file, bank_offset, 2);
-  trs_load_int(file, &video_offset, 1);
+  trs_load_int(file, &video_addr, 1);
   trs_load_int(file, &romin, 1);
   trs_load_uint32(file, &bank_base, 1);
   trs_load_uint8(file, &mem_command, 1);

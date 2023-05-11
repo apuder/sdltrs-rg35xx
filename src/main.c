@@ -229,7 +229,7 @@ void trs_rom_init(void)
 {
   switch (trs_model) {
     case 1:
-      if (trs_load_rom(romfile) != 0)
+      if (trs_load_rom(romfile1) != 0)
         trs_load_compiled_rom(0, sizeof(trs_fakerom), trs_fakerom);
 
       if (stringy)
