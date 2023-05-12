@@ -688,9 +688,7 @@ int mem_read(int address)
 	  return trs80_model1_ram(address);
 
       case 0x12: /* Model I: selector mode 2 (ROM disabled) */
-        if (address < 0x37E0)
-          return trs80_model1_ram(address);
-	if (address < RAM_START)
+        if (address >= 0x37E0 && address < RAM_START)
 	  return trs80_model1_mmio(address);
 	else
 	  return trs80_model1_ram(address);
@@ -1029,9 +1027,7 @@ void mem_write(int address, int value)
 	break;
 
       case 0x12: /* Model I: selector mode 2 (ROM disabled) */
-        if (address < 0x37E0)
-          trs80_model1_write_mem(address, value);
-	else if (address < RAM_START)
+        if (address >= 0x37E0 && address < RAM_START)
 	  trs80_model1_write_mmio(address, value);
 	else
 	  trs80_model1_write_mem(address, value);
@@ -1391,9 +1387,7 @@ Uint8 *mem_pointer(int address, int writing)
 
       case 0x12: /* Model I: selector mode 2 (ROM disabled) */
       case 0x1A:
-        if (address < 0x37E0)
-          return trs80_model1_ram_addr(address);
-	if (address < RAM_START)
+        if (address >= 0x37E0 && address < RAM_START)
 	  return trs80_model1_mmio_addr(address, writing);
 	else
 	  return trs80_model1_ram_addr(address);
