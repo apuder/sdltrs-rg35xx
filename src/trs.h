@@ -52,18 +52,18 @@
 #define DIR_SLASH '/'
 #endif
 
-extern char romfile1[FILENAME_MAX];
-extern char romfile3[FILENAME_MAX];
-extern char romfile4p[FILENAME_MAX];
-extern char trs_hard_dir[FILENAME_MAX];
-extern char trs_cass_dir[FILENAME_MAX];
-extern char trs_disk_dir[FILENAME_MAX];
-extern char trs_disk_set_dir[FILENAME_MAX];
-extern char trs_state_dir[FILENAME_MAX];
-extern char trs_printer_dir[FILENAME_MAX];
-extern char trs_cmd_file[FILENAME_MAX];
-extern char trs_config_file[FILENAME_MAX];
-extern char trs_state_file[FILENAME_MAX];
+extern char romfile1[];
+extern char romfile3[];
+extern char romfile4p[];
+extern char trs_hard_dir[];
+extern char trs_cass_dir[];
+extern char trs_disk_dir[];
+extern char trs_disk_set_dir[];
+extern char trs_state_dir[];
+extern char trs_printer_dir[];
+extern char trs_cmd_file[];
+extern char trs_config_file[];
+extern char trs_state_file[];
 
 extern int trs_model; /* 1, 3, 4, 5(=4p) */
 extern int eg3200;    /* EACA EG 3200: Genie III */
