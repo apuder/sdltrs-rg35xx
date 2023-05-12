@@ -2545,7 +2545,7 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
   Uint8 pixels[TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT] = { 0 };
 
   if (fontdata == NULL)
-    fatal("CreateSurfaceFromDataScale: failed to allocate memory");
+    fatal("failed to allocate font data memory");
 
   /* Read the character data */
   for (j = 0; j < size; j += 8)
