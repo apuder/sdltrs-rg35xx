@@ -744,7 +744,7 @@ int mem_read(int address)
 
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
 	/* Bit 0 - Bank 1: ROM/EPROM */
-	if ((eg3200 & (1 << 0)) == 0 && address <= 0x2FFF)
+	if ((eg3200 & (1 << 0)) == 0 && address < trs_rom_size)
 	  return rom[address];
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
 	if ((eg3200 & (1 << 1)) == 0) {
@@ -1450,7 +1450,7 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       case 0x2B:
 	/* Bit 0 - Bank 1: ROM/EPROM */
-	if ((eg3200 & (1 << 0)) == 0 && address <= 0x2FFF)
+	if ((eg3200 & (1 << 0)) == 0 && address < trs_rom_size)
 	  return writing ? NULL : &rom[address];
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
 	if ((eg3200 & (1 << 1)) == 0) {
