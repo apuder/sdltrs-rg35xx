@@ -494,6 +494,7 @@ void trs_reset(int poweron)
     trs_disk_init(poweron); /* also inits trs_hard and trs_stringy */
     trs_uart_init(poweron);
 
+    trs_kb_reset();    /* Part of keyboard stretch kludge */
     trs_cancel_event();
     trs_timer_interrupt(0);
 
@@ -573,9 +574,6 @@ void trs_reset(int poweron)
 			break;
 	}
     }
-
-    trs_kb_reset();  /* Part of keyboard stretch kludge */
-    clear_key_queue(); /* init the key queue */
 }
 
 void mem_map(int which)
