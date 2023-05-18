@@ -471,6 +471,8 @@ static void mem_init(void)
     mem_map(0);
     mem_bank(0);
     mem_video_page(0);
+
+    clear_key_queue(); /* init the key queue */
 }
 
 /* Handle reset button if poweron=0;
