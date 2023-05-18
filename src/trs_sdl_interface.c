@@ -2531,13 +2531,12 @@ boxes_init(int fg_color, int bg_color, int width, int height, int expanded)
 }
 
 static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
-    int fg_color, int bg_color, int scale_x, int ram)
+    int fg_color, int bg_color, int scale_x)
 {
   /*
    * The memory allocated for "fontdata" will be released in the
    * "bitmap_free" function.
    */
-  int const size = TRS_CHAR_WIDTH * (ram ? MAX_CHAR_HEIGHT : TRS_CHAR_HEIGHT);
   int i, j, w;
   int *fontdata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
       scale_x * scale_factor * sizeof(int));
@@ -2548,7 +2547,7 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
     fatal("failed to allocate font data memory");
 
   /* Read the character data */
-  for (j = 0; j < size; j += 8)
+  for (j = 0; j < TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT; j += 8)
     for (i = j + 7; i >= j; i--)
       pixels[i] = (*(data + (j >> 3)) >> (i - j)) & 1;
 
@@ -2590,9 +2589,9 @@ bitmap_init(int ram)
     /* GUI Normal + Inverse */
     bitmap_free(i, 4, 5);
     trs_char[4][i] = CreateSurfaceFromDataScale(
-        trs_char_data[gui][i], gui_foreground, gui_background, 1, 0);
+        trs_char_data[gui][i], gui_foreground, gui_background, 1);
     trs_char[5][i] = CreateSurfaceFromDataScale(
-        trs_char_data[gui][i], gui_background, gui_foreground, 1, 0);
+        trs_char_data[gui][i], gui_background, gui_foreground, 1);
   }
 
   /* Adjust block graphics for CP-500/M80 80x24 video mode */
@@ -2613,16 +2612,16 @@ bitmap_char(int char_index, int ram)
 
   /* Normal */
   trs_char[0][char_index] = CreateSurfaceFromDataScale(
-      char_data, foreground, background, 1, ram);
+      char_data, foreground, background, 1);
   /* Expanded */
   trs_char[1][char_index] = CreateSurfaceFromDataScale(
-      char_data, foreground, background, 2, ram);
+      char_data, foreground, background, 2);
   /* Inverse */
   trs_char[2][char_index] = CreateSurfaceFromDataScale(
-      char_data, background, foreground, 1, ram);
+      char_data, background, foreground, 1);
   /* Expanded + Inverse */
   trs_char[3][char_index] = CreateSurfaceFromDataScale(
-      char_data, background, foreground, 2, ram);
+      char_data, background, foreground, 2);
 }
 
 static void
