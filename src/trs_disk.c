@@ -2213,7 +2213,7 @@ trs_disk_status_read(void)
   static int last_status = -1;
 #endif
 
-  if (trs_disk_controller == FALSE) return 0xff;
+  if (trs_disk_controller == FALSE && trs_model <= 4) return 0xff;
 
   type1_status();
   if (!(state.status & TRSDISK_NOTRDY)) {
