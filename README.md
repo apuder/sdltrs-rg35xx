@@ -65,6 +65,8 @@ This version is available in [RetroPie] since version 4.6.6 and Valerio
 Lupi's fork of [RetroPie-Setup] ...
 
 Thanks to Tércio Martins a package for Arch Linux is available in the [AUR].
+Thanks to B. Watson SDL2TRS is available in the [SlackBuilds] Repository
+(Slackware 15).
 
 ## Screenshots
 
@@ -83,4 +85,5 @@ Thanks to Tércio Martins a package for Arch Linux is available in the [AUR].
 [RetroPie-Setup]: https://github.com/valerino/RetroPie-Setup
 [SDL]: https://www.libsdl.org
 [SDLTRS]: http://sdltrs.sourceforge.net
+[SlackBuilds]: http://slackbuilds.org/repository/15.0/system/sdltrs/
 [xtrs]: https://www.tim-mann.org/xtrs.html
