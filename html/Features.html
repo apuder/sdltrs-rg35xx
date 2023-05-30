@@ -463,14 +463,14 @@ controls. If the user does not have write permission for a floppy file,
 and/or the file has an internal write protect flag set, a write-protect tab
 is emulated. The write protect flag can be changed in the Text GUI.</p>
 
-<p>If you try to boot an emulated Model I, III, or 4 with no emulated disk
-(that is, no disk in drive 0), SDLTRS emulates having no floppy disk
-controller. The behavior of a real machine with a disk controller in this
-case didn't seem useful to emulate faithfully: A real Model I hangs with a
-screen full of garbage; a real Model III or 4 goes into a retry loop printing
-"Diskette?" on the screen and rechecking if you've inserted one. A real Model
-4P always has a floppy controller, however, so SDLTRS always emulates
-one.</p>
+<p>If you try to boot an emulated Model I, III, or 4 with no disk image in
+drive 0, SDLTRS "hangs" with a black screen. A real Mode shows a screen full
+of garbage; a real Model III or 4 goes into a retry loop printing "Diskette?"
+on the screen and rechecking if you've inserted one. To boot into ROM BASIC,
+hold down ESC (for the TRS-80 BREAK key) and press F10 to reboot the machine,
+or disable the Floppy Disk Controller (Expansion Interface) in the TextGUI or
+by using the option <code>-nofdc</code> / <code>-nofloppy</code>. A real Model
+4P always has a floppy controller, however, so SDLTRS always emulates one.</p>
 
 <p>Due to a limitation of the original Model I hardware, drive <code>:3</code>
 cannot be double-sided in Model I mode. In the original Model I, you could not
