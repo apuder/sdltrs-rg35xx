@@ -48,7 +48,7 @@ SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
 [SDL] library, even on machines with only a few hundred MHz of CPU speed.
 
-Browse the [Documentation] online ...
+  * [Documentation] online.
 
 ## License
 
@@ -64,9 +64,9 @@ This branch contains the SDL2 version with hardware rendering support.
 This version is available in [RetroPie] since version 4.6.6 and Valerio
 Lupi's fork of [RetroPie-Setup] ...
 
-Thanks to Tércio Martins a package for Arch Linux is available in the [AUR].
-Thanks to B. Watson SDL2TRS is available in the [SlackBuilds] Repository
-(Slackware 15).
+  * Thanks to Tércio Martins a package for Arch Linux is available in the [AUR].
+  * Thanks to B. Watson SDL2TRS is available in the [SlackBuilds] Repository
+    (Slackware 15).
 
 ## Screenshots
 
