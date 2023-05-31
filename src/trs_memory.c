@@ -545,6 +545,7 @@ void trs_reset(int poweron)
 	grafyx_write_mode(0);
 	trs_interrupt_mask_write(0);
 	trs_nmi_mask_write(0);
+	trs_screen_80x24(0);
     }
 
     if (trs_model == 3) {
