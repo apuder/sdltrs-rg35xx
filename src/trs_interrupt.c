@@ -302,8 +302,13 @@ trs_interrupt_latch_read(void)
   Uint8 tmp = interrupt_latch;
 
   if (trs_model == 1) {
-    interrupt_latch &= ~M1_TIMER_BIT; /* acknowledge this one (only) */
-    z80_state.irq = (interrupt_latch != 0);
+    if (genie3s) {
+      interrupt_latch = z80_state.irq = 0;
+      tmp |= (1 << 7);
+    } else {
+      interrupt_latch &= ~M1_TIMER_BIT; /* acknowledge this one (only) */
+      z80_state.irq = (interrupt_latch != 0);
+    }
     return tmp;
   } else {
     /* In some clones (like CP-500/M80) reading from the
