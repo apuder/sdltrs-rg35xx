@@ -1421,12 +1421,13 @@ trs_disk_sector_write(Uint8 data)
         break;
       }
     } else {
-      if (trs_disk_doubler & TRSDISK_PERCOM) {
-        switch (data) {
-          case 0xA0: /* 8" >> 5.25" */
-          case 0xC0: /* 5.25" >> 8" / wait logic "off" */
-          case 0xE0: /* wait logic "on" */
-            return;
+      if ((trs_disk_doubler & TRSDISK_PERCOM) ||
+          (trs_clones.model & (EG3200 | GENIE3S | SPEEDMASTER))) {
+        if (data & (1 << 7)) {
+          DiskState *d = &disk[state.curdrive];
+
+          d->inches = (data & (1 << 6)) ? 8 : 5;
+          return;
         }
       }
     }
