@@ -579,6 +579,11 @@ void trs_reset(int poweron)
     }
 }
 
+int get_mem_map(void)
+{
+    return memory_map;
+}
+
 void mem_map(int which)
 {
     memory_map = which + (trs_model << 4) + (romin << 2);
