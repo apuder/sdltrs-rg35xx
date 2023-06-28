@@ -41,4 +41,4 @@ extern void s80z_out(int value);
 extern void sys_byte_out(int value);
 extern int  sys_byte_in(void);
 
-#endif
+#endif /* _TRS_MEMORY_H */
