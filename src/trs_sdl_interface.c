@@ -2718,9 +2718,24 @@ void trs_screen_refresh(void)
   }
 
   /* Redraw 6845 CRTC cursor */
-  if (trs_clones.model & (EG3200 | GENIE3S)) {
-    z80_out(0xF6, 0x09);
-    z80_out(0xF7, 0xFF);
+  switch (get_mem_map()) {
+    case 0x23: /* EG 3200 */
+    case 0x24: /* Genie IIIs */
+      z80_out(0xF6, 0x09);
+      z80_out(0xF7, 0xFF);
+      break;
+    case 0x25: /* Schmidtke 80-Z Video Card */
+      z80_out(0xD0, 0x09);
+      z80_out(0xD1, 0xFF);
+      break;
+    case 0x27: /* Aster CT-80 */
+      if (row_chars == 80) {
+        z80_out(0xFC, 0x09);
+        z80_out(0xFD, 0xFF);
+      }
+      break;
+    default:
+      break;
   }
 
   if (trs_show_led) {
