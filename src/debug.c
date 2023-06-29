@@ -49,6 +49,7 @@
 
 #include "error.h"
 #include "trs.h"
+#include "trs_memory.h"
 
 #define MAXLINE		(256)
 #define ADDRESS_SPACE	(0x10000)
@@ -340,6 +341,7 @@ static void debug_print_registers(void)
 	   Z80_H, Z80_L, Z80_SP, Z80_HL_PRIME);
     printf("I R: %.2x %.2x\n", Z80_I, Z80_R7 | (Z80_R & 0x7f));
 
+    printf("\nMemory map used: 0x%X", get_mem_map());
     printf("\nT-state counter: %" TSTATE_T_LEN "", z80_state.t_count);
     printf("\nZ80 Clock Speed: %.2f MHz\n", z80_state.clockMHz);
 }
