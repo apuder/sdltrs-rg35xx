@@ -110,7 +110,7 @@ static Uint32 supermem_hi;
 static int selector_reg;
 static int system_byte;
 
-Uint8 mem_video_read(int vaddr)
+static Uint8 mem_video_read(int vaddr)
 {
   if (VIDEO_ADDR(vaddr)) {
     return video[vaddr];
@@ -122,7 +122,7 @@ Uint8 mem_video_read(int vaddr)
   }
 }
 
-int mem_video_write(int vaddr, Uint8 value)
+static int mem_video_write(int vaddr, Uint8 value)
 {
   if (VIDEO_ADDR(vaddr)) {
     if (video[vaddr] != value) {
