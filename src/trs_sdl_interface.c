@@ -1655,7 +1655,7 @@ static char *GetSelection(void)
     Uint8 const *screen_ptr = &trs_screen[row * row_chars + start_col];
 
     for (col = start_col; col <= end_col; col++, screen_ptr++) {
-      Uint8 data = *screen_ptr;
+      Uint8 const data = *screen_ptr;
 
       if (data < 0x20)
         *curr_data++ = data + 0x40;
