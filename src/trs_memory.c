@@ -1299,9 +1299,8 @@ void mem_write(int address, int value)
  */
 int mem_read_word(int address)
 {
-    int rval;
+    int rval = mem_read(address++);
 
-    rval = mem_read(address++);
     rval |= mem_read(address & 0xFFFF) << 8;
     return rval;
 }

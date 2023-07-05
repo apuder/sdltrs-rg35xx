@@ -361,10 +361,8 @@ trs_timer_event(void)
 
 void trs_timer_sync_with_host(void)
 {
-  Uint32 curtime;
   static Uint32 lasttime;
-
-  curtime = SDL_GetTicks();
+  Uint32 curtime = SDL_GetTicks();
 
   if (lasttime + deltatime > curtime)
     SDL_Delay(lasttime + deltatime - curtime);
