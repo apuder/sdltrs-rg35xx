@@ -384,17 +384,17 @@ void z80_out(int port, int value)
     case 0xB9: /* Orchestra-85 left channel */
       trs_orch90_out(1, value);
       break;
-    case 0xD0:
+    case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
     case 0x10: /* Homebrew 80*22 SYS80.SYS */
       if (speedup <= 4)
         ctrlimage = value;
       break;
-    case 0xD1:
+    case 0xD1: /* Schmidtke 80-Z Card: 6845 CRTC */
     case 0x11: /* Homebrew 80*22 SYS80.SYS */
       if (speedup <= 4)
         m6845_crtc(value);
       break;
-    case 0xD2:
+    case 0xD2: /* Schmidtke 80-Z Card: Banking */
       if (speedup <= 4)
         s80z_out(value);
       break;
