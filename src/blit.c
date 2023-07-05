@@ -254,7 +254,7 @@ void TrsBlitMap(SDL_Palette *src, SDL_PixelFormat *dst)
 {
   Uint8 *map;
   int i;
-  unsigned alpha;
+  Uint32 alpha;
   Uint32 mapValue;
 
   if (blitMap != NULL)
