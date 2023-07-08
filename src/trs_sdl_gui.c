@@ -405,16 +405,9 @@ void trs_gui_display_message(const char *title, const char *message)
   trs_gui_clear_rect(2, 6, 60, 3, 1);
   trs_gui_write_text(title, 3, 6, 0);
   trs_gui_write_text(message, 3, 7, 0);
-  trs_gui_write_text(" Press ENTER/ESC to continue ", 32, 8, 1);
+  trs_gui_write_text(" Press any key to continue ", 34, 8, 1);
   trs_screen_update();
-
-  while (1) {
-    switch (trs_gui_get_key()) {
-      case SDLK_ESCAPE:
-      case SDLK_RETURN:
-        return;
-    }
-  }
+  trs_gui_get_key();
 }
 
 void trs_gui_create_filename_list(void)
