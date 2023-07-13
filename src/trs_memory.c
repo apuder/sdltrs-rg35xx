@@ -277,9 +277,9 @@ void mem_bank_base(int card, int bits)
 			break;
 		case SUPERMEM:
 			/* Emulate a 512Kb system. A standard model 1 SuperMEM
-			   is 256K or 512K with double stacked chips */
-			bits &= 0x0F; /* 15 bits of address + 4bits logical */
-			supermem_base = bits << 15;
+			   is 256K or 512K with double stacked chips
+			   15 bits of address + 4bits logical */
+			supermem_base = (bits & 0x0F) << 15;
 			/* The supermem can flip the low or high 32K. Set
 			   bit 5 to map low */
 			if (bits & 0x20)
