@@ -1248,31 +1248,6 @@ static void do_outir(void)
  * Interrupt handling routines:
  */
 
-static void do_di(void)
-{
-    z80_state.iff1 = z80_state.iff2 = 0;
-}
-
-static void do_ei(void)
-{
-    z80_state.iff1 = z80_state.iff2 = 1;
-}
-
-static void do_im0(void)
-{
-    z80_state.interrupt_mode = 0;
-}
-
-static void do_im1(void)
-{
-    z80_state.interrupt_mode = 1;
-}
-
-static void do_im2(void)
-{
-    z80_state.interrupt_mode = 2;
-}
-
 static void do_int(void)
 {
     /* handle a maskable interrupt */
@@ -2620,15 +2595,18 @@ static int do_ED_instruction(void)
 
       case 0x46:	/* im 0 */
       case 0x66:	/* im 0 [undocumented]*/
-	do_im0();  T_COUNT(8);
+	z80_state.interrupt_mode = 0;
+	T_COUNT(8);
 	break;
       case 0x56:	/* im 1 */
       case 0x76:	/* im 1 [undocumented] */
-	do_im1();  T_COUNT(8);
+	z80_state.interrupt_mode = 1;
+	T_COUNT(8);
 	break;
       case 0x5E:	/* im 2 */
       case 0x7E:	/* im 2 [undocumented] */
-	do_im2();  T_COUNT(8);
+	z80_state.interrupt_mode = 2;
+	T_COUNT(8);
 	break;
 
       case 0x78:	/* in a, (c) */
@@ -3316,7 +3294,7 @@ int z80_run(int continuous)
 	    break;
 
 	  case 0xF3:	/* di */
-	    do_di();
+	    z80_state.iff1 = z80_state.iff2 = 0;
 	    T_COUNT(4);
 	    break;
 
@@ -3335,7 +3313,7 @@ int z80_run(int continuous)
 	    break;
 
 	  case 0xFB:	/* ei */
-	    do_ei();
+	    z80_state.iff1 = z80_state.iff2 = 1;
 	    T_COUNT(4);
 	    break;
 
