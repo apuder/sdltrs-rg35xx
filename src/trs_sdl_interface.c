@@ -1513,8 +1513,21 @@ static void MarkSelection(void)
     copyStatus = COPY_DEFINED;
   } else {
     mouse = SDL_GetMouseState(&copy_x, &copy_y);
-    copy_x /= ((float)window_w / (float)OrigWidth);
-    copy_y /= ((float)window_h / (float)OrigHeight);
+    if (aspect_ratio) {
+      float render_scale_x, render_scale_y;
+      int   real_w, real_h;
+
+      SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
+      real_w = OrigWidth  * render_scale_x;
+      real_h = OrigHeight * render_scale_y;
+      copy_x = copy_x - ((window_w / 2) - (real_w / 2));
+      copy_y = copy_y - ((window_h / 2) - (real_h / 2));
+      copy_x = copy_x / (float)real_w * (float)OrigWidth;
+      copy_y = copy_y / (float)real_h * (float)OrigHeight;
+    } else {
+      copy_x /= ((float)window_w / (float)OrigWidth);
+      copy_y /= ((float)window_h / (float)OrigHeight);
+    }
 
     if (copy_x > OrigWidth - scale)
       copy_x = OrigWidth - scale;
