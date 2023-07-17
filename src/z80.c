@@ -4266,7 +4266,7 @@ void z80_reset(void)
     z80_state.r7 = 0;
     z80_state.iff1 = 0;
     z80_state.iff2 = 0;
-    z80_state.interrupt_mode = 0;
+    z80_state.interrupt_mode = 1;
     z80_state.irq = z80_state.nmi = FALSE;
     z80_state.sched = 0;
 }
