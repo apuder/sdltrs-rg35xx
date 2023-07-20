@@ -50,6 +50,7 @@
 #include "error.h"
 #include "trs.h"
 #include "trs_memory.h"
+#include "trs_state_save.h"
 
 #define MAXLINE		(256)
 #define ADDRESS_SPACE	(0x10000)
@@ -161,6 +162,9 @@ Miscellaneous:\n\
     save <start addr> , <end addr> <filename>\n\
     save <start addr> / <num bytes> <filename>\n\
         Save memory in the range of hex addresses to the specified file.\n\
+    state load <filename>\n\
+    state save <filename>\n\
+        Load or save the current emulator state.\n\
     timeroff\n\
     timeron\n\
         Disable/enable the emulated TRS-80 real time clock interrupt.\n\
@@ -975,6 +979,19 @@ void debug_shell(void)
 		else if(sscanf(input, "save %x / %x %s", &start_address, &num_bytes, file) == 3)
 		{
 		    save_memory(start_address, num_bytes, file);
+		}
+	    }
+	    else if(!strcmp(command, "state"))
+	    {
+		char *file = input;
+
+		if(sscanf(input, "state load %s", file) == 1)
+		{
+		    trs_state_load(file);
+		}
+		else if(sscanf(input, "state save %s", file) == 1)
+		{
+		    trs_state_save(file);
 		}
 	    }
 	    else
