@@ -1513,6 +1513,10 @@ static void MarkSelection(void)
     copyStatus = COPY_DEFINED;
   } else {
     mouse = SDL_GetMouseState(&copy_x, &copy_y);
+    if ((mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) == 0 &&
+        copyStatus == COPY_IDLE)
+      return;
+
     if (aspect_ratio) {
       float render_scale_x, render_scale_y;
       int   real_w, real_h;
@@ -1534,10 +1538,6 @@ static void MarkSelection(void)
 
     if (copy_y > screen_height - scale)
       copy_y = screen_height - scale;
-
-    if ((copyStatus == COPY_IDLE) &&
-        ((mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) == 0))
-      return;
   }
 
   switch (copyStatus) {
