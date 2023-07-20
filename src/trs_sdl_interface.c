@@ -153,6 +153,8 @@ static SDL_Surface *screen;
 static SDL_Window *window;
 static SDL_Renderer *render;
 static SDL_Texture *texture;
+static float render_scale_x;
+static float render_scale_y;
 static int window_x = SDL_WINDOWPOS_UNDEFINED;
 static int window_y = SDL_WINDOWPOS_UNDEFINED;
 static int window_w;
@@ -1518,12 +1520,9 @@ static void MarkSelection(void)
       return;
 
     if (aspect_ratio) {
-      float render_scale_x, render_scale_y;
-      int   real_w, real_h;
+      int const real_w = OrigWidth  * render_scale_x;
+      int const real_h = OrigHeight * render_scale_y;
 
-      SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
-      real_w = OrigWidth  * render_scale_x;
-      real_h = OrigHeight * render_scale_y;
       copy_x = copy_x - ((window_w / 2) - (real_w / 2));
       copy_y = copy_y - ((window_h / 2) - (real_h / 2));
       copy_x = copy_x / (float)real_w * (float)OrigWidth;
@@ -1886,6 +1885,7 @@ void trs_get_event(int wait)
           case SDL_WINDOWEVENT_SIZE_CHANGED:
             window_w = event.window.data1;
             window_h = event.window.data2;
+            SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
             break;
           default:
             break;
