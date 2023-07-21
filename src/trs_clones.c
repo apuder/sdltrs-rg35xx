@@ -63,6 +63,8 @@ void trs_clone_save(FILE *file)
 
 void trs_clone_load(FILE *file)
 {
-  trs_load_int(file, &current_clone, 1);
-  trs_clones_model(current_clone);
+  int clone_model;
+
+  trs_load_int(file, &clone_model, 1);
+  trs_clones_model(clone_model);
 }
