@@ -236,17 +236,14 @@ void mem_bank_base(int card, int bits)
 			}
 			break;
 		case HUFFMAN:
-			bits &= 0x1F;
-			bank_base = bits << 16;
+			bank_base = (bits & 0x1F) << 16;
 			mem_bank(mem_command);
 			break;
 		case HYPERMEM:
 			/* HyperMem replaces the upper 64K bank with multiple
-			   banks according to port 0x90 bits 4-1 */
-			bits &= 0x1E;
-			/* 0 base is upper bank of 64K */
-			bits += 2;
-			bank_base = bits << 15;
+			   banks according to port 0x90 bits 4-1.
+			   0 base is upper bank of 64K */
+			bank_base = ((bits & 0x1E) + 2) << 15;
 			mem_bank(mem_command);
 			break;
 		case RAM192B:
@@ -280,12 +277,9 @@ void mem_bank_base(int card, int bits)
 			   is 256K or 512K with double stacked chips
 			   15 bits of address + 4bits logical */
 			supermem_base = (bits & 0x0F) << 15;
-			/* The supermem can flip the low or high 32K. Set
-			   bit 5 to map low */
-			if (bits & 0x20)
-			    supermem_hi = 0x0000;
-			else
-			    supermem_hi = 0x8000;
+			/* The supermem can flip the low or high 32K.
+			   Set bit 5 to map low */
+			supermem_hi = (bits & 0x20) ? 0x0000 : 0x8000;
 			break;
 		default:
 			break;
