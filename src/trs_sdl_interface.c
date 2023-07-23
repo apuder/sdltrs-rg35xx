@@ -375,6 +375,7 @@ static const struct {
   { "notruedam",       trs_opt_value,         0, 0, &trs_disk_truedam     },
   { "noturbo",         trs_opt_value,         0, 0, &timer_overclock      },
   { "noturbopaste",    trs_opt_value,         0, 0, &turbo_paste          },
+  { "pause",           trs_opt_value,         0, 1, &trs_paused           },
   { "printer",         trs_opt_printer,       1, 0, NULL                  },
   { "printerdir",      trs_opt_dirname,       1, 0, trs_printer_dir       },
   { "resize3",         trs_opt_value,         0, 1, &resize3              },
