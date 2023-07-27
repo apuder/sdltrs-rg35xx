@@ -376,6 +376,9 @@ trs_inityear(void)
     time_t fake;
     struct tm tm;
 
+#if _WIN32
+#    define localtime_r(T,Tm) (localtime_s(Tm,T) ? NULL : Tm)
+#endif
     localtime_r(&real, &tm);
     tm.tm_year = trs_year - 1900;
     fake = mktime(&tm);
