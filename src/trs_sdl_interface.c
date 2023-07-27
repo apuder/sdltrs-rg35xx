@@ -1742,10 +1742,7 @@ static void trs_screen_flush(void)
 #endif
   }
 
-  SDL_UpdateTexture(texture, NULL, screen->pixels, screen->pitch);
-  SDL_RenderClear(render);
-  SDL_RenderCopy(render, texture, NULL, NULL);
-  SDL_RenderPresent(render);
+  trs_screen_update();
 
   drawnRectCount = 0;
 }
