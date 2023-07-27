@@ -43,6 +43,7 @@
 #ifndef _TRS_H
 #define _TRS_H
 
+#include <time.h>
 #include "z80.h"
 
 
