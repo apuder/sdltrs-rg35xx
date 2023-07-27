@@ -262,6 +262,7 @@ static void trs_opt_turborate(char *arg, int intarg, int *stringarg);
 static void trs_opt_value(char *arg, int intarg, int *variable);
 static void trs_opt_wafer(char *arg, int intarg, int *stringarg);
 static void trs_opt_window(char *arg, int intarg, int *stringarg);
+static void trs_opt_year(char *arg, int intarg, int *stringarg);
 
 /* Option handling */
 static const struct {
@@ -417,6 +418,7 @@ static const struct {
   { "wafer6",          trs_opt_wafer,         1, 6, NULL                  },
   { "wafer7",          trs_opt_wafer,         1, 7, NULL                  },
   { "window",          trs_opt_window,        1, 0, NULL                  },
+  { "year",            trs_opt_year,          1, 0, NULL                  },
 };
 
 static const int num_options = sizeof(options) / sizeof(options[0]);
@@ -892,6 +894,11 @@ static void trs_opt_window(char *arg, int intarg, int *stringag)
   sscanf(arg, "%d,%d,%d,%d", &window_x, &window_y, &window_w, &window_h);
 }
 
+static void trs_opt_year(char *arg, int intarg, int *stringarg)
+{
+  trs_year = atoi(arg);
+}
+
 static void trs_disk_setsizes(void)
 {
   int i;
@@ -1227,6 +1234,7 @@ int trs_write_config_file(const char *filename)
     fprintf(config_file, "wafer%d=%s\n", i, stringy_get_name(i));
 
   fprintf(config_file, "window=%d,%d,%d,%d\n", window_x, window_y, window_w, window_h);
+  fprintf(config_file, "year=%d\n", trs_year);
 
   fclose(config_file);
   return 0;

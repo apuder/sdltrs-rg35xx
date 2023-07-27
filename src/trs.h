@@ -160,6 +160,9 @@ extern void  trs_disk_motoroff_interrupt(int state);
 /* extern void trs_uart_err_interrupt(int state); */
 extern void trs_uart_rcv_interrupt(int state);
 extern void trs_uart_snd_interrupt(int state);
+
+extern time_t trs_timeoffset;
+extern int  trs_year;
 extern void trs_timer_interrupt(int state);
 #ifdef ZBX
 extern void trs_timer(int on_off);

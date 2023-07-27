@@ -66,6 +66,9 @@ int timer_overclock_rate = 5;
 int speedup = 1;
 unsigned int cycles_per_timer;
 
+time_t trs_timeoffset;
+int    trs_year;
+
 #define CLOCK_1_MHZ 1.77408
 #define CLOCK_2_MHZ 2.02752
 #define CLOCK_4_MHZ 4.05504
@@ -359,6 +362,27 @@ trs_timer_event(void)
   }
 }
 
+/*
+ * Initialize time offset.  This can useful for TRS-80 operating
+ * systems that behave better when the year is within a limited range.
+ */
+static void
+trs_inityear(void)
+{
+  if (trs_year <= 0) {
+    trs_timeoffset = 0;
+  } else {
+    time_t real = time(NULL);
+    time_t fake;
+    struct tm tm;
+
+    localtime_r(&real, &tm);
+    tm.tm_year = trs_year - 1900;
+    fake = mktime(&tm);
+    trs_timeoffset = fake - real;
+  }
+}
+
 void trs_timer_sync_with_host(void)
 {
   static Uint32 lasttime;
@@ -414,12 +438,13 @@ trs_timer_init(void)
       z80_state.clockMHz = clock_mhz_4;
   }
 
+  trs_inityear();
   trs_timer_event();
   trs_timer_mode(timer_overclock);
 
   if ((trs_clones.model & (EG3200 | GENIE3S)) == 0) {
     /* Also initialize the clock in memory - hack */
-    time_t tt = time(NULL);
+    time_t tt = time(NULL) + trs_timeoffset;
     struct tm *lt = localtime(&tt);
     extern Uint8 memory[];
 

@@ -377,7 +377,7 @@ void do_emt_strerror(void)
 
 void do_emt_time(void)
 {
-  time_t now = time(0);
+  time_t now = time(0) + trs_timeoffset;
 
   if (Z80_A == 1) {
 #if __alpha

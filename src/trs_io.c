@@ -151,7 +151,7 @@ static void m6845_crtc(int value)
 
 static int rtc_read(int port)
 {
-  time_t time_secs = time(NULL);
+  time_t time_secs = time(NULL) + trs_timeoffset;
   struct tm *time_info = localtime(&time_secs);
 
   switch (port & 0x0F) {
@@ -820,7 +820,7 @@ int z80_in(int port)
   } else {
     /* Ports in David Keil's TRS-80 Emulator */
     if (port >= 0x68 && port <= 0x6D) {
-      time_t time_secs = time(NULL);
+      time_t time_secs = time(NULL) + trs_timeoffset;
       struct tm *time_info = localtime(&time_secs);
 
       switch (port) {
