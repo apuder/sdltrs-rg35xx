@@ -1965,7 +1965,7 @@ void trs_gui_display_settings(void)
         snprintf(input, 3, "%d", window_border_width);
         if (trs_gui_input_string("Enter Window border width in pixels (0 to 50)",
             input, input, 2, 0) == 0) {
-          value = atol(input);
+          value = atoi(input);
           if (value != window_border_width) {
             if (value < 0 || value > 50)
               value = 2;

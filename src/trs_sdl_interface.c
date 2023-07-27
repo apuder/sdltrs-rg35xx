@@ -487,7 +487,7 @@ static const char *charset_name(int charset)
 
 static void trs_opt_borderwidth(char *arg, int intarg, int *stringarg)
 {
-  window_border_width = atol(arg);
+  window_border_width = atoi(arg);
   if (window_border_width < 0 || window_border_width > 50)
     window_border_width = 2;
 }
@@ -700,7 +700,7 @@ static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg)
 
 static void trs_opt_keystretch(char *arg, int intarg, int *stringarg)
 {
-  stretch_amount = atol(arg);
+  stretch_amount = atoi(arg);
   if (stretch_amount < 0)
     stretch_amount = STRETCH_AMOUNT;
 }
@@ -777,7 +777,7 @@ static void trs_opt_printer(char *arg, int intarg, int *stringarg)
 
 static void trs_opt_samplerate(char *arg, int intarg, int *stringarg)
 {
-  cassette_default_sample_rate = atol(arg);
+  cassette_default_sample_rate = atoi(arg);
   if (cassette_default_sample_rate < 0 ||
       cassette_default_sample_rate > MAX_SAMPLE_RATE)
     cassette_default_sample_rate = MAX_SAMPLE_RATE;
