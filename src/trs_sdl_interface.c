@@ -228,7 +228,6 @@ static int hrg_enable;
 static int hrg_addr;
 static Uint8 le18_x, le18_y, le18_on;
 
-static void trs_opt_borderwidth(char *arg, int intarg, int *stringarg);
 static void trs_opt_cass(char *arg, int intarg, int *stringarg);
 static void trs_opt_charset(char *arg, int intarg, int *stringarg);
 static void trs_opt_clock(char *arg, int intarg, int *stringarg);
@@ -242,27 +241,22 @@ static void trs_opt_doublestep(char *arg, int intarg, int *stringarg);
 static void trs_opt_stepmap(char *arg, int intarg, int *stringarg);
 #endif
 static void trs_opt_hard(char *arg, int intarg, int *stringarg);
+static void trs_opt_intval(char *arg, int intarg, int *stringarg);
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg);
 static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg);
-static void trs_opt_keystretch(char *arg, int intarg, int *stringarg);
 static void trs_opt_memory(char *arg, int intarg, int *variable);
 static void trs_opt_model(char *arg, int intarg, int *stringarg);
 static void trs_opt_printer(char *arg, int intarg, int *stringarg);
 static void trs_opt_rom(char *arg, int intarg, int *stringarg);
-static void trs_opt_samplerate(char *arg, int intarg, int *stringarg);
-static void trs_opt_scale(char *arg, int intarg, int *stringarg);
 static void trs_opt_scalequality(char *arg, int intarg, int *stringarg);
-static void trs_opt_scanshade(char *arg, int intarg, int *stringarg);
 static void trs_opt_serial(char *arg, int intarg, int *stringarg);
 static void trs_opt_shiftbracket(char *arg, int intarg, int *stringarg);
 static void trs_opt_sizemap(char *arg, int intarg, int *stringarg);
 static void trs_opt_speedup(char *arg, int intarg, int *stringarg);
 static void trs_opt_switches(char *arg, int intarg, int *stringarg);
-static void trs_opt_turborate(char *arg, int intarg, int *stringarg);
 static void trs_opt_value(char *arg, int intarg, int *variable);
 static void trs_opt_wafer(char *arg, int intarg, int *stringarg);
 static void trs_opt_window(char *arg, int intarg, int *stringarg);
-static void trs_opt_year(char *arg, int intarg, int *stringarg);
 
 /* Option handling */
 static const struct {
@@ -275,8 +269,8 @@ static const struct {
   { "aspectratio",     trs_opt_value,         0, 1, &aspect_ratio         },
   { "background",      trs_opt_color,         1, 0, &background           },
   { "bg",              trs_opt_color,         1, 0, &background           },
-  { "borderwidth",     trs_opt_borderwidth,   1, 0, NULL                  },
-  { "bw",              trs_opt_borderwidth,   1, 0, NULL                  },
+  { "borderwidth",     trs_opt_intval,        1, 1, NULL                  },
+  { "bw",              trs_opt_intval,        1, 1, NULL                  },
   { "cass",            trs_opt_cass,          1, 0, NULL                  },
   { "cassdir",         trs_opt_dirname,       1, 0, trs_cass_dir          },
   { "cassette",        trs_opt_cass,          1, 0, NULL                  },
@@ -334,7 +328,7 @@ static const struct {
   { "joybuttonmap",    trs_opt_joybuttonmap,  1, 0, NULL                  },
   { "joysticknum",     trs_opt_joysticknum,   1, 0, NULL                  },
   { "keypadjoy",       trs_opt_value,         0, 1, &trs_keypad_joystick  },
-  { "keystretch",      trs_opt_keystretch,    1, 0, NULL                  },
+  { "keystretch",      trs_opt_intval,        1, 2, NULL                  },
   { "le18",            trs_opt_value,         0, 1, &lowe_le18            },
   { "lower",           trs_opt_value,         0, 1, &lowercase            },
   { "lowercase",       trs_opt_value,         0, 1, &lowercase            },
@@ -389,11 +383,11 @@ static const struct {
   { "romfile3",        trs_opt_rom,           1, 3, NULL                  },
   { "rom4p",           trs_opt_rom,           1, 5, NULL                  },
   { "romfile4p",       trs_opt_rom,           1, 5, NULL                  },
-  { "samplerate",      trs_opt_samplerate,    1, 0, NULL                  },
-  { "scale",           trs_opt_scale,         1, 0, NULL                  },
+  { "samplerate",      trs_opt_intval,        1, 3, NULL                  },
+  { "scale",           trs_opt_intval,        1, 4, NULL                  },
   { "scalequality",    trs_opt_scalequality,  1, 0, NULL                  },
   { "scanlines",       trs_opt_value,         0, 1, &scanlines            },
-  { "scanshade",       trs_opt_scanshade,     1, 0, NULL                  },
+  { "scanshade",       trs_opt_intval,        1, 5, NULL                  },
   { "selector",        trs_opt_memory,        0, 5, &selector             },
   { "serial",          trs_opt_serial,        1, 0, NULL                  },
   { "shiftbracket",    trs_opt_shiftbracket,  0, 1, NULL                  },
@@ -408,7 +402,7 @@ static const struct {
   { "truedam",         trs_opt_value,         0, 1, &trs_disk_truedam     },
   { "turbo",           trs_opt_value,         0, 1, &timer_overclock      },
   { "turbopaste",      trs_opt_value,         0, 1, &turbo_paste          },
-  { "turborate",       trs_opt_turborate,     1, 0, NULL                  },
+  { "turborate",       trs_opt_intval,        1, 6, NULL                  },
   { "wafer0",          trs_opt_wafer,         1, 0, NULL                  },
   { "wafer1",          trs_opt_wafer,         1, 1, NULL                  },
   { "wafer2",          trs_opt_wafer,         1, 2, NULL                  },
@@ -418,7 +412,7 @@ static const struct {
   { "wafer6",          trs_opt_wafer,         1, 6, NULL                  },
   { "wafer7",          trs_opt_wafer,         1, 7, NULL                  },
   { "window",          trs_opt_window,        1, 0, NULL                  },
-  { "year",            trs_opt_year,          1, 0, NULL                  },
+  { "year",            trs_opt_intval,        1, 7, NULL                  },
 };
 
 static const int num_options = sizeof(options) / sizeof(options[0]);
@@ -485,13 +479,6 @@ static const char *charset_name(int charset)
     case 14:
       return "videogenie";
   }
-}
-
-static void trs_opt_borderwidth(char *arg, int intarg, int *stringarg)
-{
-  window_border_width = atoi(arg);
-  if (window_border_width < 0 || window_border_width > 50)
-    window_border_width = 2;
 }
 
 static void trs_opt_cass(char *arg, int intarg, int *stringarg)
@@ -674,6 +661,54 @@ static void trs_opt_hard(char *arg, int intarg, int *stringarg)
     trs_hard_attach(intarg, arg);
 }
 
+static void trs_opt_intval(char *arg, int intarg, int *stringarg)
+{
+  int value = atoi(arg);
+
+  switch (intarg) {
+    case 1: /* borderwidth */
+      if (value < 0 || value > 50)
+        value = 2;
+
+      window_border_width = value;
+      break;
+    case 2: /* keystretch */
+      if (value < 0)
+        value = STRETCH_AMOUNT;
+
+      stretch_amount = value;
+      break;
+    case 3: /* samplerate */
+      if (value < 0 || value > MAX_SAMPLE_RATE)
+        value = MAX_SAMPLE_RATE;
+
+      cassette_default_sample_rate = value;
+      break;
+    case 4: /* scale */
+      if (value <= 0)
+        value = 1;
+      else if (value > MAX_SCALE)
+        value = MAX_SCALE;
+
+      scale = value;
+      break;
+    case 5: /* scanshade */
+      scanshade = value & 255;
+      break;
+    case 6: /* turborate */
+      if (value <= 0)
+        value = 1;
+
+      timer_overclock_rate = value;
+      break;
+    case 7: /* year */
+      trs_year = value;
+      break;
+    default:
+      break;
+  }
+}
+
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg)
 {
   int i;
@@ -698,13 +733,6 @@ static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg)
     trs_joystick_num = -1;
   else
     trs_joystick_num = atoi(arg);
-}
-
-static void trs_opt_keystretch(char *arg, int intarg, int *stringarg)
-{
-  stretch_amount = atoi(arg);
-  if (stretch_amount < 0)
-    stretch_amount = STRETCH_AMOUNT;
 }
 
 static void trs_opt_memory(char *arg, int intarg, int *variable)
@@ -777,23 +805,6 @@ static void trs_opt_printer(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void trs_opt_samplerate(char *arg, int intarg, int *stringarg)
-{
-  cassette_default_sample_rate = atoi(arg);
-  if (cassette_default_sample_rate < 0 ||
-      cassette_default_sample_rate > MAX_SAMPLE_RATE)
-    cassette_default_sample_rate = MAX_SAMPLE_RATE;
-}
-
-static void trs_opt_scale(char *arg, int intarg, int *stringarg)
-{
-  scale = atoi(arg);
-  if (scale <= 0)
-    scale = 1;
-  else if (scale > MAX_SCALE)
-    scale = MAX_SCALE;
-}
-
 static void trs_opt_scalequality(char *arg, int intarg, int *stringarg)
 {
   switch (*arg) {
@@ -805,11 +816,6 @@ static void trs_opt_scalequality(char *arg, int intarg, int *stringarg)
     default:
       error("unknown render scale quality: %s", arg);
   }
-}
-
-static void trs_opt_scanshade(char *arg, int intarg, int *stringarg)
-{
-  scanshade = atoi(arg) & 255;
 }
 
 static void trs_opt_serial(char *arg, int intarg, int *stringarg)
@@ -871,13 +877,6 @@ static void trs_opt_switches(char *arg, int intarg, int *variable)
   *variable = strtol(arg, NULL, base) & 0xFF;
 }
 
-static void trs_opt_turborate(char *arg, int intarg, int *stringarg)
-{
-  timer_overclock_rate = atoi(arg);
-  if (timer_overclock_rate <= 0)
-    timer_overclock_rate = 1;
-}
-
 static void trs_opt_value(char *arg, int intarg, int *variable)
 {
   *variable = intarg;
@@ -892,11 +891,6 @@ static void trs_opt_wafer(char *arg, int intarg, int *stringarg)
 static void trs_opt_window(char *arg, int intarg, int *stringag)
 {
   sscanf(arg, "%d,%d,%d,%d", &window_x, &window_y, &window_w, &window_h);
-}
-
-static void trs_opt_year(char *arg, int intarg, int *stringarg)
-{
-  trs_year = atoi(arg);
 }
 
 static void trs_disk_setsizes(void)
