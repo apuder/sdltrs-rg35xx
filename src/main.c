@@ -176,7 +176,7 @@ static int trs_load_rom(const char *filename)
       fclose(program);
 
       if (trs_rom_size > 0x3800) {
-        error("ROM file '%s' size %d exceeds 14 kB", filename, trs_rom_size);
+        error("MODELA/III file '%s' size %d exceeds 14 kB", filename, trs_rom_size);
         return -1;
       } else {
         trs_load_compiled_rom(0, trs_rom_size, loadrom);
