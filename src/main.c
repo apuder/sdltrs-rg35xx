@@ -160,7 +160,7 @@ static int trs_load_rom(const char *filename)
       return -1;
     } else
       return 0;
-  } else if (c == 1 || c == 5) {
+  } else if (trs_model >= 3 && (c == 1 || c == 5)) {
     /* Assume MODELA/III file */
     Uint8 loadrom[Z80_ADDRESS_LIMIT] = { 0 };
 
