@@ -362,6 +362,20 @@ trs_timer_event(void)
   }
 }
 
+#if defined (_WIN32) && !defined(__MINGW64__)
+static struct tm *
+localtime_r(time_t *tp, struct tm *tmp)
+{
+  struct tm *r = localtime(tp);
+  if (r) {
+    *tmp = *r;
+    r = tmp;
+  }
+
+  return r;
+}
+#endif
+
 /*
  * Initialize time offset.  This can useful for TRS-80 operating
  * systems that behave better when the year is within a limited range.
@@ -376,7 +390,7 @@ trs_inityear(void)
     time_t fake;
     struct tm tm;
 
-#if defined (_WIN32) || defined(__MINGW64__)
+#if defined (_WIN32) && defined(__MINGW64__)
 #   define localtime_r(T,Tm) (localtime_s(Tm,T) ? NULL : Tm)
 #endif
 
