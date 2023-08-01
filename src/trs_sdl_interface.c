@@ -1000,6 +1000,7 @@ int trs_load_config_file(void)
   trs_model = 1;
   trs_show_led = TRUE;
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
+  trs_year = 0;
   window_border_width = 2;
 
   if (trs_config_file[0] == 0) {
