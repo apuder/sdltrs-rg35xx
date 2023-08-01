@@ -2036,8 +2036,8 @@ void trs_gui_misc_settings(void)
 {
   MENU_ENTRY menu[] =
   {{"Close and Reopen Printer Output File", MENU_NORMAL},
-   {"", MENU_TITLE},
    {"Emulator Traps Safe                                     ", MENU_NORMAL},
+   {"Fake year for TRS-80 time-of-day clock                  ", MENU_NORMAL},
    {"Keystretch Value                                        ", MENU_NORMAL},
    {"Printer Type                                            ", MENU_NORMAL},
    {"Serial Port Name:", MENU_TITLE},
@@ -2055,7 +2055,8 @@ void trs_gui_misc_settings(void)
   while (1) {
     char input[12];
 
-    snprintf(&menu[2].text[50], 11, "%s", yes_no[trs_emtsafe]);
+    snprintf(&menu[1].text[50], 11, "%s", yes_no[trs_emtsafe]);
+    snprintf(&menu[2].text[56], 5, "%4d", trs_year);
     snprintf(&menu[3].text[50], 11, "%10d", stretch_amount);
     snprintf(&menu[4].text[51], 10, "%s", printer[trs_printer]);
     trs_gui_limit_string(trs_uart_name, &menu[6].text[2], 58);
@@ -2075,8 +2076,17 @@ void trs_gui_misc_settings(void)
         else
           trs_gui_display_message("Warning", "No Printer Output in File");
         break;
-      case 2:
+      case 1:
         trs_emtsafe = trs_gui_display_popup("Emtsafe", yes_no, 2, trs_emtsafe);
+        break;
+      case 2:
+        snprintf(input, 5, "%4d", trs_year);
+        if (trs_gui_input_string("Enter year (0 to disable)",
+            input, input, 4, 0) == 0) {
+          trs_year = atoi(input);
+          if (trs_year < 0)
+            trs_year = 0;
+        }
         break;
       case 3:
         snprintf(input, 11, "%d", stretch_amount);
