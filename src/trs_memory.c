@@ -773,19 +773,19 @@ int mem_read(int address)
 
       case 0x24: /* TCS Genie IIIs */
 	if ((system_byte & (1 << 0)) == 0) {
-	  if ((system_byte & (1 << 4)) == 0) {
-	    if (address >= KEYBOARD_START && address <= 0x38FF)
-	      return trs_kb_mem_read(address);
-	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return video[address + video_addr];
-	  } else {
+	  if (system_byte & (1 << 4)) {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
 	      return video[(address + video_addr) & 0x7FF];
+	  } else {
+	    if (address >= VIDEO_START && address <= 0x3FFF)
+	      return video[address + video_addr];
 	  }
-	  /* Disk I/O */
+	  /* Disk I/O and Keyboard */
 	  if (address >= 0x37E0 && address <= 0x37EF)
 	    return trs80_model1_mmio(address);
+	  if (address >= KEYBOARD_START && address <= 0x38FF)
+	    return trs_kb_mem_read(address);
 	}
 	/* ROM/EPROM */
 	if ((system_byte & (1 << 2)) == 0 && address <= 0x2FFF)
@@ -1133,15 +1133,15 @@ void mem_write(int address, int value)
 
       case 0x24: /* TCS Genie IIIs */
 	if ((system_byte & (1 << 0)) == 0) {
-	  if ((system_byte & (1 << 4)) == 0) {
-	    if (address >= VIDEO_START && address <= 0x3FFF) {
-	      trs80_screen_write_char(address + video_addr, value);
-	      return;
-	    }
-	  } else {
+	  if (system_byte & (1 << 4)) {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF) {
 	      trs80_screen_write_char((address + video_addr) & 0x7FF, value);
+	      return;
+	    }
+	  } else {
+	    if (address >= VIDEO_START && address <= 0x3FFF) {
+	      trs80_screen_write_char(address + video_addr, value);
 	      return;
 	    }
 	  }
@@ -1472,13 +1472,13 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x24: /* TCS Genie IIIs */
       case 0x2C:
 	if ((system_byte & (1 << 0)) == 0) {
-	  if ((system_byte & (1 << 4)) == 0) {
-	    if (address >= VIDEO_START && address <= 0x3FFF)
-	      return &video[address + video_addr];
-	  } else {
+	  if (system_byte & (1 << 4)) {
 	    /* 2K Video RAM */
 	    if (address >= KEYBOARD_START && address <= 0x3FFF)
 	      return &video[(address + video_addr) & 0x7FF];
+	  } else {
+	    if (address >= VIDEO_START && address <= 0x3FFF)
+	      return &video[address + video_addr];
 	  }
 	}
 	/* ROM */
