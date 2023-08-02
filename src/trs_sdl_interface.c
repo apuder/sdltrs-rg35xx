@@ -702,7 +702,8 @@ static void trs_opt_intval(char *arg, int intarg, int *stringarg)
       timer_overclock_rate = value;
       break;
     case 7: /* year */
-      trs_year = value;
+      if (value >= 0)
+        trs_year = value;
       break;
     default:
       break;
