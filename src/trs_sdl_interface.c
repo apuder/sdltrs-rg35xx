@@ -1525,22 +1525,26 @@ static void MarkSelection(void)
       return;
 
     if (aspect_ratio) {
-      int const real_w = OrigWidth  * render_scale_x;
-      int const real_h = OrigHeight * render_scale_y;
+      float const real_w = (float)OrigWidth  * render_scale_x;
+      float const real_h = (float)OrigHeight * render_scale_y;
 
       copy_x = copy_x - ((window_w / 2) - (real_w / 2));
       copy_y = copy_y - ((window_h / 2) - (real_h / 2));
-      copy_x = copy_x / (float)real_w * (float)OrigWidth;
-      copy_y = copy_y / (float)real_h * (float)OrigHeight;
+      copy_x = copy_x / real_w * OrigWidth;
+      copy_y = copy_y / real_h * OrigHeight;
     } else {
       copy_x /= ((float)window_w / (float)OrigWidth);
       copy_y /= ((float)window_h / (float)OrigHeight);
     }
 
-    if (copy_x > OrigWidth - scale)
+    if (copy_x < 0)
+      copy_x = 0;
+    else if (copy_x > OrigWidth - scale)
       copy_x = OrigWidth - scale;
 
-    if (copy_y > screen_height - scale)
+    if (copy_y < 0)
+      copy_y = 0;
+    else if (copy_y > screen_height - scale)
       copy_y = screen_height - scale;
   }
 
