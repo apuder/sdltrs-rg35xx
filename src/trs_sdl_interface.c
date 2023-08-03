@@ -485,6 +485,8 @@ static void trs_opt_cass(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_cassette_insert(arg);
+  else
+    trs_cassette_remove();
 }
 
 static void trs_opt_charset(char *arg, int intarg, int *stringarg)
@@ -597,6 +599,8 @@ static void trs_opt_disk(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_disk_insert(intarg, arg);
+  else
+    trs_disk_remove(intarg);
 }
 
 static void trs_opt_diskset(char *arg, int intarg, int *stringarg)
@@ -659,6 +663,8 @@ static void trs_opt_hard(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_hard_attach(intarg, arg);
+  else
+    trs_hard_remove(intarg);
 }
 
 static void trs_opt_intval(char *arg, int intarg, int *stringarg)
@@ -887,6 +893,8 @@ static void trs_opt_wafer(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     stringy_insert(intarg, arg);
+  else
+    stringy_remove(intarg);
 }
 
 static void trs_opt_window(char *arg, int intarg, int *stringag)
