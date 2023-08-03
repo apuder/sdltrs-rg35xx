@@ -495,79 +495,60 @@ static void trs_opt_charset(char *arg, int intarg, int *stringarg)
     intarg = trs_model;
 
   if (intarg == 1) {
-    if (isdigit((int)*arg)) {
-      trs_charset1 = atoi(arg);
-      if (trs_charset1 < 0 || (trs_charset1 > 3 && (trs_charset1 < 10 ||
-          trs_charset1 > 12)))
+    switch (tolower((int)*arg)) {
+      case 'e': /* early */
+        trs_charset1 = 0;
+        break;
+      case 's': /* stock */
+        trs_charset1 = 1;
+        break;
+      case 'l': /* lcmod */
+        trs_charset1 = 2;
+        break;
+      case 'w': /* wider */
         trs_charset1 = 3;
-    } else {
-      switch (tolower((int)*arg)) {
-        case 'e': /* early */
-          trs_charset1 = 0;
-          break;
-        case 's': /* stock */
-          trs_charset1 = 1;
-          break;
-        case 'l': /* lcmod */
-          trs_charset1 = 2;
-          break;
-        case 'w': /* wider */
-          trs_charset1 = 3;
-          break;
-        case 'g': /* genie or german */
-          trs_charset1 = 10;
-          break;
-        case 'h': /* ht-1080z */
-          trs_charset1 = 11;
-          break;
-        case 'm': /* meritum (uppercase only) */
-          trs_charset1 = 12;
-          lowercase = 0;
-          break;
-        case 'c': /* ct-80 */
-          trs_charset1 = 13;
-          break;
-        case 'v': /* video genie */
-          trs_charset1 = 14;
-          break;
-        default:
-          error("unknown charset1: '%s'", arg);
-      }
+        break;
+      case 'g': /* genie or german */
+        trs_charset1 = 10;
+        break;
+      case 'h': /* ht-1080z */
+        trs_charset1 = 11;
+        break;
+      case 'm': /* meritum (uppercase only) */
+        trs_charset1 = 12;
+        lowercase = 0;
+        break;
+      case 'c': /* ct-80 */
+        trs_charset1 = 13;
+        break;
+      case 'v': /* video genie */
+        trs_charset1 = 14;
+        break;
+      default:
+        error("unknown charset1: '%s'", arg);
     }
   } else {
-    if (isdigit((int)*arg)) {
-      if (intarg == 3) {
-        trs_charset3 = atoi(arg);
-        if (trs_charset3 < 4 || trs_charset3 > 6)
-          trs_charset3 = 4;
-      } else {
-        trs_charset4 = atoi(arg);
-        if (trs_charset4 < 7 || trs_charset4 > 9)
-          trs_charset4 = 8;
-      }
-    } else {
-      int charset;
+    int charset;
 
-      switch (tolower((int)*arg)) {
-        case 'k': /* katakana */
-          charset = 4;
-          break;
-        case 'i': /* international */
-          charset = 5;
-          break;
-        case 'b': /* bold */
-          charset = 6;
-          break;
-        default:
-          error("unknown charset%d: '%s'", intarg, arg);
-          return;
-      }
-
-      if (intarg == 3)
-        trs_charset3 = charset;
-      else
-        trs_charset4 = charset + 3;
+    switch (tolower((int)*arg)) {
+      case 'k': /* katakana */
+        charset = 4;
+        break;
+      case 'i': /* international */
+        charset = 5;
+        break;
+      case 'b': /* bold */
+        charset = 6;
+        break;
+      default:
+        error("unknown charset%d: '%s'", intarg, arg);
+        return;
     }
+
+    if (intarg == 3)
+      trs_charset3 = charset;
+    else
+      trs_charset4 = charset + 3;
   }
 }
 
