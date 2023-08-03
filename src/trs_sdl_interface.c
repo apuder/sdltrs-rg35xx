@@ -775,21 +775,17 @@ static void trs_opt_rom(char *arg, int intarg, int *stringarg)
 
 static void trs_opt_printer(char *arg, int intarg, int *stringarg)
 {
-  if (isdigit((int)*arg)) {
-    trs_printer = atoi(arg);
-    if (trs_printer < 0 || trs_printer > 1)
+  switch (tolower((int)*arg)) {
+    case 'n': /* none */
+    case '0':
       trs_printer = 0;
-  } else {
-    switch (tolower((int)*arg)) {
-      case 'n': /* none */
-        trs_printer = 0;
-        break;
-      case 't': /* text */
-        trs_printer = 1;
-        break;
-      default:
-        error("unknown printer type: '%s'", arg);
-    }
+      break;
+    case 't': /* text */
+    case '1':
+      trs_printer = 1;
+      break;
+    default:
+      error("unknown printer type: '%s'", arg);
   }
 }
 
@@ -1167,7 +1163,7 @@ int trs_write_config_file(const char *filename)
       trs_model == 5 ? 4 : trs_model, trs_model == 5 ? "P" : "");
 
   fprintf(config_file, "%smousepointer\n", mousepointer ? "" : "no");
-  fprintf(config_file, "printer=%d\n", trs_printer);
+  fprintf(config_file, "printer=%s\n", trs_printer ? "text" : "none");
   fprintf(config_file, "printerdir=%s\n", trs_printer_dir);
   fprintf(config_file, "%sresize3\n", resize3 ? "" : "no");
   fprintf(config_file, "%sresize4\n", resize4 ? "" : "no");
