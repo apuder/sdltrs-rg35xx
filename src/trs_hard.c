@@ -446,7 +446,7 @@ static int open_drive(int drive)
   /* Read in the Reed header and check some basic magic numbers (not all) */
   res = fread(&rhh, sizeof(rhh), 1, d->file);
   if (res != 1 || rhh.id1 != 0x56 || rhh.id2 != 0xcb || rhh.ver >= 0x20) {
-    error("trs_hard: unrecognized hard drive image '%s'", d->filename);
+    error("unrecognized hard%d drive image '%s'", drive, d->filename);
     err = -1;
     goto fail;
   }
@@ -478,8 +478,8 @@ static int open_drive(int drive)
 
   if ((rhh.sec % d->secs) != 0 ||
       d->heads <= 0 || d->heads > TRS_HARD_MAXHEADS) {
-    error("trs_hard: unusable geometry (%d heads/%d secs) in image '%s'",
-          d->heads, d->secs, d->filename);
+    error("unusable geometry (%d heads/%d secs) in hard%d image '%s'",
+          d->heads, d->secs, drive, d->filename);
     err = -1;
     goto fail;
   }
@@ -511,8 +511,8 @@ static int find_sector(int newstatus)
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
-    error("trs_hard: requested cyl %d hd %d sec %d; max cyl %d hd %d sec %d",
-	  state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
+    error("hard%d: requested cyl %d hd %d sec %d; max cyl %d hd %d sec %d",
+	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_NFERR;
     return 0;
