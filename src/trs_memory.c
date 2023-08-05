@@ -558,7 +558,6 @@ void trs_reset(int poweron)
 	switch (speedup) {
 		case 5:		/* LNW80 */
 			trs_clones_model(LNW80);
-			trs_disk_doubler = TRSDISK_PERCOM;
 			break;
 		case 6:		/* TCS SpeedMaster 5.3 */
 			memory_map = 0x26;
