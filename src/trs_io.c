@@ -347,6 +347,10 @@ void z80_out(int port, int value)
     case 0xB9: /* Orchestra-85 left channel */
       trs_orch90_out(1, value);
       return;
+    case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
+      if (lubomir)
+        lsb_bank_out(value);
+      return;
     case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
     case 0x10: /* Homebrew 80*22 SYS80.SYS */
       if (speedup <= 4)
@@ -607,11 +611,6 @@ void z80_out(int port, int value)
   /* Ports common to all TRS-80 models */
   switch (port) {
   case TRS_HARD_WP:       /* 0xC0 */
-    if (trs_model == 1 && lubomir) {
-      lsb_bank_out(value);
-      return;
-    }
-    /* Fall through */
   case TRS_HARD_CONTROL:  /* 0xC1 */
   case TRS_HARD_DATA:     /* 0xC8 */
   case TRS_HARD_PRECOMP:  /* 0xC9 */
