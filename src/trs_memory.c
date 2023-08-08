@@ -779,12 +779,12 @@ int mem_read(int address)
 	  } else {
 	    if (address >= VIDEO_START && address <= 0x3FFF)
 	      return video[address + video_addr];
+	    if (address >= KEYBOARD_START && address <= 0x38FF)
+	      return trs_kb_mem_read(address);
 	  }
-	  /* Disk I/O and Keyboard */
+	  /* Disk I/O  */
 	  if (address >= 0x37E0 && address <= 0x37EF)
 	    return trs80_model1_mmio(address);
-	  if (address >= KEYBOARD_START && address <= 0x38FF)
-	    return trs_kb_mem_read(address);
 	}
 	/* ROM/EPROM */
 	if ((system_byte & (1 << 2)) == 0 && address <= 0x2FFF)
