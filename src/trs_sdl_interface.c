@@ -1282,16 +1282,20 @@ void trs_screen_init(int resize)
   cur_char_height = TRS_CHAR_HEIGHT * 2;
 
   if (trs_model == 1) {
-    if (eg3200) {
-      /* Use alternate font for Holte-ROM */
-      trs_charset = trs_rom_size > 2048 ? 16 : 15;
-    } else if (genie3s) {
-      cur_char_height = m6845_raster * scale_factor;
-    } else {
-      currentmode = NORMAL;
-      trs_charset = trs_charset1;
-      if (trs_charset < 3)
-        cur_char_width = 6;
+    switch (trs_clones.model) {
+      case EG3200:
+        /* Use alternate font for Holte-ROM */
+        trs_charset = trs_rom_size > 2048 ? 16 : 15;
+        break;
+      case GENIE3S:
+        cur_char_height = m6845_raster * scale_factor;
+        break;
+      default:
+        currentmode = NORMAL;
+        trs_charset = trs_charset1;
+        if (trs_charset < 3)
+          cur_char_width = 6 * scale;
+        break;
     }
   } else {
     if (trs_model == 3) {
