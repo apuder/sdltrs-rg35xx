@@ -896,10 +896,8 @@ than the emulator traps.</p>
 
 <h2><a name="Interrupts"></a><u>Interrupts</u></h2>
 
-<p>The emulator supports only interrupt mode 1 of the Z80. It will complain if
-your program enables interrupts after powerup without executing an IM 1
-instruction first. All Model I/III/4/4P software does this, as the built-in
-peripherals in these machines support only IM 1.</p>
+<p>The emulator uses interrupt mode 1 of the Z80 by default for all TRS-80
+models, as the built-in peripherals in these machines support only IM 1.</p>
 
 <p>The Model I has a 40 Hz heartbeat clock interrupt, while the Model III
 uses 30 Hz, and the Model 4/4P can run at either 30 Hz or 60 Hz. The emulator
