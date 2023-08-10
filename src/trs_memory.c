@@ -182,18 +182,18 @@ void mem_bank(int command)
 	break;
       case 3:
         /* L64 Lower / H64 upper */
-	bank_offset[0] = 0 << 15;
+	bank_offset[0] =  0 << 15;
 	bank_offset[1] = (0 << 15) + bank_base;
 	break;
       case 6:
         /* H64 Lower / L64 upper */
 	bank_offset[0] = (0 << 15) + bank_base;
-	bank_offset[1] = 0 << 15;
+	bank_offset[1] =  0 << 15;
 	break;
       case 7:
         /* H64 Upper / L64 Upper */
 	bank_offset[0] = (1 << 15) + bank_base;
-	bank_offset[1] = 0 << 15;
+	bank_offset[1] =  0 << 15;
 	break;
       default:
 	error("unknown mem_bank command %d", command);
@@ -782,7 +782,7 @@ int mem_read(int address)
 	    if (address >= KEYBOARD_START && address <= 0x38FF)
 	      return trs_kb_mem_read(address);
 	  }
-	  /* Disk I/O  */
+	  /* Disk I/O */
 	  if (address >= 0x37E0 && address <= 0x37EF)
 	    return trs80_model1_mmio(address);
 	}

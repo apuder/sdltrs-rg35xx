@@ -2900,10 +2900,10 @@ void trs_screen_write_char(int position, Uint8 char_index)
     if (!(currentmode & INVERSE) && char_index >= 0x80 && char_index <= 0xbf) {
       SDL_BlitSurface(trs_box[expanded][char_index - 0x80], &srcRect, screen, &dstRect);
     } else {
-      if (trs_model > 1 && char_index >= 0xc0
-         && (currentmode & (ALTERNATE + INVERSE)) == 0)
-          char_index -= 0x40;
-
+      if (trs_model > 1 && char_index >= 0xc0 &&
+          (currentmode & (ALTERNATE + INVERSE)) == 0) {
+        char_index -= 0x40;
+      }
       if ((currentmode & INVERSE) && (char_index & 0x80)) {
         expanded += 2;
         char_index &= 0x7f;

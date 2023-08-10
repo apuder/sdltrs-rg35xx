@@ -410,8 +410,8 @@ void trs_timer_sync_with_host(void)
     lasttime = curtime;
 
   if (trs_show_led) {
-    trs_disk_led(0,0);
-    trs_hard_led(0,0);
+    trs_disk_led(0, 0);
+    trs_hard_led(0, 0);
   }
 
   trs_timer_event();

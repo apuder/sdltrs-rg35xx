@@ -216,9 +216,9 @@ typedef struct {
 
 #define JV3_SIDES      2
 #define JV3_IDSTART    0
-#define JV3_SECSTART   (34*256) /* start of sectors within file */
-#define JV3_SECSPERBLK ((int)(JV3_SECSTART/3))
-#define JV3_SECSMAX    (2*JV3_SECSPERBLK)
+#define JV3_SECSTART   (34 * 256) /* start of sectors within file */
+#define JV3_SECSPERBLK ((int)(JV3_SECSTART / 3))
+#define JV3_SECSMAX    (2 * JV3_SECSPERBLK)
 
 #define JV1_SECPERTRK 10
 
@@ -1686,7 +1686,7 @@ trs_disk_data_write(Uint8 data)
 	      i += 2;
 #ifdef ZBX
 	      if (trs_disk_debug_flags & DISKDEBUG_DMK) {
-		debug("DMK smashed phytk %d physec %d\n", d->phytrack, i/2);
+		debug("DMK smashed phytk %d physec %d\n", d->phytrack, i / 2);
 	      }
 #endif
 	    } else {
@@ -2568,7 +2568,7 @@ trs_disk_command_write(Uint8 cmd)
 	/* DMK search dumps the size code into state.bytecount; adjust
            to real bytecount here */
 	if (non_ibm) {
-	  state.bytecount = 16 * (((state.bytecount - 1)&0xff) + 1);
+	  state.bytecount = 16 * (((state.bytecount - 1) & 0xff) + 1);
 	} else {
 	  state.bytecount = 128 << (state.bytecount & 3);
 	}
@@ -2828,7 +2828,7 @@ trs_disk_command_write(Uint8 cmd)
 	/* DMK search dumps the size code into state.bytecount; adjust
            to real bytecount here */
 	if (non_ibm) {
-	  state.bytecount = 16 * (((state.bytecount - 1)&0xff) + 1);
+	  state.bytecount = 16 * (((state.bytecount - 1) & 0xff) + 1);
 	} else {
 	  state.bytecount = 128 << (state.bytecount & 3);
 	}
@@ -2913,7 +2913,7 @@ trs_disk_command_write(Uint8 cmd)
 	state.status = TRSDISK_BUSY;
 	state.bytecount = 0;
 	trs_schedule_event(trs_disk_done, TRSDISK_NOTFOUND,
-			   1000000*z80_state.clockMHz);
+			   1000000 * z80_state.clockMHz);
 	break;
       }
       /* Compute how long it should have taken for this sector to come
@@ -2963,7 +2963,7 @@ trs_disk_command_write(Uint8 cmd)
 	  state.status = TRSDISK_BUSY;
 	  state.bytecount = 0;
 	  trs_schedule_event(trs_disk_done, TRSDISK_NOTFOUND,
-			     1000000*z80_state.clockMHz);
+			     1000000 * z80_state.clockMHz);
 	  break;
 	}
 	/* Which sector header is next?  Use a rough assumption that
@@ -3039,7 +3039,7 @@ trs_disk_command_write(Uint8 cmd)
       state.status = TRSDISK_BUSY;
       state.bytecount = 0;
       trs_schedule_event(trs_disk_done, TRSDISK_NOTFOUND,
-			 1000000*z80_state.clockMHz);
+			 1000000 * z80_state.clockMHz);
       break;
     found:
       /* Convert dden byte count to t-states */
@@ -3568,7 +3568,7 @@ real_readadr(void)
   state.last_readadr = -1;
   /* Sector not found; fail */
   state.status = TRSDISK_BUSY;
-  trs_schedule_event(trs_disk_done, new_status, 200000*z80_state.clockMHz);
+  trs_schedule_event(trs_disk_done, new_status, 200000 * z80_state.clockMHz);
 #else
   trs_disk_unimpl(state.currcommand, "read address on real floppy");
 #endif
@@ -3599,23 +3599,23 @@ real_writetrk(void)
     /* MFM recording */
     if (d->inches == 5) {
       /* 5" DD = 250 kHz MFM */
-      gap3 = (TRKSIZE_DD - 161 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
-	- 62 - (128 << d->u.real.size_code) - /* slop */2;
+      gap3 = (TRKSIZE_DD - 161 - /* slop */16) / (d->u.real.fmt_nbytes / 4)
+	- 62 - (128 << d->u.real.size_code) - /* slop */ 2;
     } else {
       /* 8" DD = 5" HD = 500 kHz MFM */
-      gap3 = (TRKSIZE_8DD - 161 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
-	- 62 - (128 << d->u.real.size_code) - /* slop */2;
+      gap3 = (TRKSIZE_8DD - 161 - /* slop */16) / (d->u.real.fmt_nbytes / 4)
+	- 62 - (128 << d->u.real.size_code) - /* slop */ 2;
     }
   } else {
     /* FM recording */
     if (d->inches == 5) {
       /* 5" SD = 250 kHz FM (125 kbps) */
-      gap3 = (TRKSIZE_SD - 99 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
-	- 33 - (128 << d->u.real.size_code) - /* slop */2;
+      gap3 = (TRKSIZE_SD - 99 - /* slop */16) / (d->u.real.fmt_nbytes / 4)
+	- 33 - (128 << d->u.real.size_code) - /* slop */ 2;
     } else {
       /* 8" SD = 5" HD operated in FM = 500 kHz FM (250 kbps) */
-      gap3 = (TRKSIZE_8SD - 99 - /* slop */16)/(d->u.real.fmt_nbytes / 4)
-	- 33 - (128 << d->u.real.size_code) - /* slop */2;
+      gap3 = (TRKSIZE_8SD - 99 - /* slop */16) / (d->u.real.fmt_nbytes / 4)
+	- 33 - (128 << d->u.real.size_code) - /* slop */ 2;
     }
   }
   if (gap3 < 1) {
