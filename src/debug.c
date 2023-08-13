@@ -357,21 +357,6 @@ void trs_debug(void)
     if (trs_continuous > 0) trs_continuous = 0;
 }
 
-void debug_init(void)
-{
-    int i;
-
-    traps = (Uint8 *) malloc(ADDRESS_SPACE * sizeof(Uint8));
-    if (traps == NULL)
-      fatal("debug_init: failed to allocate traps");
-
-    memset(traps, 0, ADDRESS_SPACE * sizeof(Uint8));
-
-    for(i = 0; i < MAX_TRAPS; ++i) trap_table[i].valid = 0;
-
-    puts("Type \"h(elp)\" for a list of commands.");
-}
-
 static void print_memory(Uint16 address, int num_bytes)
 {
     while(num_bytes > 0)
@@ -443,6 +428,21 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
     } else {
 	file_error("save memory '%s'", filename);
     }
+}
+
+static void debug_init(void)
+{
+    int i;
+
+    traps = (Uint8 *) malloc(ADDRESS_SPACE * sizeof(Uint8));
+    if (traps == NULL)
+      fatal("debug_init: failed to allocate traps");
+
+    memset(traps, 0, ADDRESS_SPACE * sizeof(Uint8));
+
+    for(i = 0; i < MAX_TRAPS; ++i) trap_table[i].valid = 0;
+
+    puts("Type \"h(elp)\" for a list of commands.");
 }
 
 static void debug_run(void)
@@ -542,6 +542,8 @@ void debug_shell(void)
     char input[MAXLINE];
     char command[MAXLINE];
     int done = 0;
+
+    debug_init();
 
 #ifdef READLINE
     char *line;

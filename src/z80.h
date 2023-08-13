@@ -261,7 +261,6 @@ extern Uint8	*mem_pointer(int address, int writing);
 
 #ifdef ZBX
 extern int	 disassemble(Uint16 pc);
-extern void	 debug_init(void);
 extern void	 debug_shell(void);
 #endif /* ZBX */
 

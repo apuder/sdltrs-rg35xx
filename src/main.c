@@ -304,7 +304,6 @@ int main(int argc, char *argv[])
 
 #ifdef ZBX
   puts("Entering debugger.");
-  debug_init();
   debug_shell();
 #endif
 
