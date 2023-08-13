@@ -240,6 +240,7 @@ static void trs_opt_doubler(char *arg, int intarg, int *stringarg);
 static void trs_opt_doublestep(char *arg, int intarg, int *stringarg);
 static void trs_opt_stepmap(char *arg, int intarg, int *stringarg);
 #endif
+static void trs_opt_halt(char *arg, int intarg, int *stringarg);
 static void trs_opt_hard(char *arg, int intarg, int *stringarg);
 static void trs_opt_intval(char *arg, int intarg, int *stringarg);
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg);
@@ -315,6 +316,7 @@ static const struct {
   { "guibg",           trs_opt_color,         1, 0, &gui_background       },
   { "guifg",           trs_opt_color,         1, 0, &gui_foreground       },
   { "guiforeground",   trs_opt_color,         1, 0, &gui_foreground       },
+  { "halt",            trs_opt_halt,          1, 0, NULL                  },
   { "hard0",           trs_opt_hard,          1, 0, NULL                  },
   { "hard1",           trs_opt_hard,          1, 1, NULL                  },
   { "hard2",           trs_opt_hard,          1, 2, NULL                  },
@@ -639,6 +641,12 @@ static void trs_opt_stepmap(char *arg, int intarg, int *stringarg)
          &disksteps[4], &disksteps[5], &disksteps[6], &disksteps[7]);
 }
 #endif
+
+static void trs_opt_halt(char *arg, int intarg, int *stringarg)
+{
+  if (arg[0])
+    z80_halt = tolower((int)*arg);
+}
 
 static void trs_opt_hard(char *arg, int intarg, int *stringarg)
 {

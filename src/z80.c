@@ -63,6 +63,8 @@
 #include "trs_imp_exp.h"
 #include "trs_state_save.h"
 
+unsigned int z80_halt;
+
 /*
  * The state of our Z80 registers is kept in this structure:
  */
@@ -3360,10 +3362,18 @@ int z80_run(int continuous)
 	    break;
 
 	  case 0x76:	/* halt */
-	    if (trs_model == 1) {
-		/* Z80 HALT output is tied to reset button circuit */
+#ifdef ZBX
+	    if (z80_halt == 'd') {
+		trs_debug();
+	    }
+#endif
+	    if (z80_halt == 'r') {
 		trs_reset(0);
 	    } else {
+	      if (trs_model == 1 && z80_halt != 'h') {
+		/* Z80 HALT output is tied to reset button circuit */
+		trs_reset(0);
+	      } else {
 		/* Really halt (i.e., wait for interrupt) */
 	        /* Slight kludge: we back up the PC and keep going
 		   around the main loop reexecuting the halt.  A real
@@ -3381,6 +3391,7 @@ int z80_run(int continuous)
 		    pause();
 		}
 #endif
+	      }
 	    }
 	    T_COUNT(4);
 	    break;

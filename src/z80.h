@@ -245,6 +245,7 @@ struct z80_state_struct
 #define CARRY_FLAG		(Z80_F & CARRY_MASK)
 
 extern struct		z80_state_struct z80_state;
+extern unsigned int	z80_halt;
 extern unsigned int	cycles_per_timer;
 
 extern void	 z80_reset(void);
