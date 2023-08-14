@@ -646,6 +646,8 @@ static void trs_opt_halt(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     z80_halt = tolower((int)*arg);
+  else
+    z80_halt = 0;
 }
 
 static void trs_opt_hard(char *arg, int intarg, int *stringarg)
@@ -1140,6 +1142,11 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "foreground=0x%x\n", foreground);
   fprintf(config_file, "guibackground=0x%x\n", gui_background);
   fprintf(config_file, "guiforeground=0x%x\n", gui_foreground);
+
+  fprintf(config_file, "halt=%s\n",
+      z80_halt == 'd' ? "debugger" :
+      z80_halt == 'h' ? "halt"     :
+      z80_halt == 'r' ? "reset"    : "");
 
   for (i = 0; i < 4; i++)
     fprintf(config_file, "hard%d=%s\n", i, trs_hard_getfilename(i));
