@@ -996,6 +996,7 @@ int trs_load_config_file(void)
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
   window_border_width = 2;
+  z80_halt = 0;
 
   if (trs_config_file[0] == 0) {
     const char *home = getenv("HOME");
