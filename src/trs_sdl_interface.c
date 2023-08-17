@@ -1534,8 +1534,10 @@ static void MarkSelection(void)
       return;
 
     if (aspect_ratio) {
-      float const real_w = (float)OrigWidth  * render_scale_x;
-      float const real_h = (float)OrigHeight * render_scale_y;
+      float const real_w = ((float)OrigWidth  + render_scale_x)
+          * render_scale_x;
+      float const real_h = ((float)OrigHeight + render_scale_y)
+          * render_scale_y;
 
       copy_x = copy_x - ((window_w / 2) - (real_w / 2));
       copy_y = copy_y - ((window_h / 2) - (real_h / 2));
