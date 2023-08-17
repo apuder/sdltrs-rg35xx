@@ -543,8 +543,6 @@ void debug_shell(void)
     char command[MAXLINE];
     int done = 0;
 
-    debug_init();
-
 #ifdef READLINE
     char *line;
     char history_file[MAXLINE];
@@ -553,6 +551,8 @@ void debug_shell(void)
     snprintf(history_file, MAXLINE - 1, "%s/.zbx-history", home);
     read_history(history_file);
 #endif
+
+    debug_init();
 
     while(!done)
     {
