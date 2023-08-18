@@ -64,7 +64,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-cass[ette] <u>filename</u></code></td>
     <td>Specifies the name of the cassette image file to be inserted into the
-        emulated cassette drive.</td>
+        emulated cassette drive. Use <code>""</code> as <u>filename</u> to
+        remove an image from the cassette drive.</td>
   </tr>
   <tr>
     <td><code>-charset <u>name</u></code></td>
@@ -148,7 +149,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-disk<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the floppy disk image file to be inserted into
-        Disk<b>N</b>, where <code><b>N</b></code>=0 through 7.</td>
+        Disk<b>N</b>, where <code><b>N</b></code>=0 through 7. Use <code>""
+        </code> as <u>filename</u> to remove an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-diskdir <u>dir</u></code></td>
@@ -216,9 +218,15 @@ will be executed upon startup of the emulator.</p>
         Default is white (<code>0xE0E0FF</code>).</td>
   </tr>
   <tr>
+    <td><code>-halt <u>action</u></code></td>
+    <td>Set <u>action</u> for Z80 HLT instruction: <u>debugger</u>, <u>halt</u>
+        or <u>reset</u>. Default depends on the selected TRS-80 Model.</td>
+  </tr>
+  <tr>
     <td><code>-hard<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the hard disk image file to be inserted into
-        Hard<b>N</b>, where <code><b>N</b></code>=0 through 3.</td>
+        Hard<b>N</b>, where <code><b>N</b></code>=0 through 3. Use <code>""
+        </code> as <u>filename</u> to remove an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-harddir <u>dir</u></code></td>
@@ -640,13 +648,15 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-wafer<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the stringy wafer image file to be inserted into
-        Wafer<b>N</b>, where <code><b>N</b></code>=0 through 7.</td>
+        Wafer<b>N</b>, where <code><b>N</b></code>=0 through 7. Use <code>""
+        </code> as <u>filename</u> to remove an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-year <u>year</u></code></td>
     <td>Set the year for TRS-80 time-of-day clock instead of the current year.
         This can useful for TRS-80 operating systems that behave better when
-        the year is within a limited range.</td>
+        the year is within a limited range. Enter year including the century
+        or <code>0</code> (default setting) to use the current year.</td>
   </tr>
 </table>
 
