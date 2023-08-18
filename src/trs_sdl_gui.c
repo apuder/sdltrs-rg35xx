@@ -1191,11 +1191,14 @@ void trs_gui_disk_creation(void)
 {
   MENU_ENTRY menu[] =
   {{"Image Type                                             ", MENU_NORMAL},
+   {"", MENU_TITLE},
    {"Number of Sides                                        ", MENU_NORMAL},
    {"Density                                                ", MENU_NORMAL},
    {"Physical Size                                          ", MENU_NORMAL},
+   {"", MENU_TITLE},
    {"Ignore Density Flag                                    ", MENU_NORMAL},
    {"Insert Created Floppy Disk Image Into Drive            ", MENU_NORMAL},
+   {"", MENU_TITLE},
    {"Create Disk Image with Above Parameters", MENU_NORMAL},
    {"", 0}};
   const char *disk_type[] = {"   JV1", "   JV3", "   DMK"};
@@ -1208,15 +1211,15 @@ void trs_gui_disk_creation(void)
   static int size;
   static int ignore_density;
   static int drive;
-  int selection = 6;
+  int selection = 9;
 
   while (1) {
     snprintf(&menu[0].text[54], 7, "%s", disk_type[type]);
-    snprintf(&menu[1].text[54], 7, "%s", disk_side[sides - 1]);
-    snprintf(&menu[2].text[54], 7, "%s", disk_dens[density - 1]);
-    snprintf(&menu[3].text[54], 7, "%s", disk_size[size]);
-    snprintf(&menu[4].text[50], 11, "%s", yes_no[ignore_density]);
-    snprintf(&menu[5].text[55], 6, "%s", drives[drive]);
+    snprintf(&menu[2].text[54], 7, "%s", disk_side[sides - 1]);
+    snprintf(&menu[3].text[54], 7, "%s", disk_dens[density - 1]);
+    snprintf(&menu[4].text[54], 7, "%s", disk_size[size]);
+    snprintf(&menu[6].text[50], 11, "%s", yes_no[ignore_density]);
+    snprintf(&menu[7].text[55], 6, "%s", drives[drive]);
     trs_gui_clear_screen();
 
     selection = trs_gui_display_menu("Floppy Disk Creation", menu, selection);
@@ -1224,22 +1227,22 @@ void trs_gui_disk_creation(void)
       case 0:
         type = trs_gui_display_popup("Type", disk_type, 3, type);
         break;
-      case 1:
+      case 2:
         sides = trs_gui_display_popup("Sides", disk_side, 2, sides - 1) + 1;
         break;
-      case 2:
+      case 3:
         density = trs_gui_display_popup("Dens", disk_dens, 2, density - 1) + 1;
         break;
-      case 3:
+      case 4:
         size = trs_gui_display_popup("Size", disk_size, 2, size);
         break;
-      case 4:
+      case 6:
         ignore_density = trs_gui_display_popup("Ignore", yes_no, 2, ignore_density);
         break;
-      case 5:
+      case 7:
         drive = trs_gui_display_popup("Drive", drives, 9, drive);
         break;
-      case 6:
+      case 9:
         filename[0] = 0;
         if (trs_gui_input_string("Enter Filename for Disk Image",
             trs_disk_dir, filename, FILENAME_MAX, 1) == 0) {
@@ -1607,6 +1610,7 @@ void trs_gui_cassette_management(void)
    {"", MENU_TITLE},
    {"Image Type                                            ", MENU_NORMAL},
    {"Insert Created Cassette Into Drive                    ", MENU_NORMAL},
+   {"", MENU_TITLE},
    {"Create Blank Cassette Image with Above Parameters", MENU_NORMAL},
    {"", 0}};
   const char *cass_type[] = {"   CAS", "   CPT", "   WAV"};
@@ -1656,7 +1660,7 @@ void trs_gui_cassette_management(void)
       case 6:
         insert = trs_gui_display_popup("Insert", yes_no, 2, insert);
         break;
-      case 7:
+      case 8:
         filename[0] = 0;
         if (trs_gui_input_string("Enter Filename for Cassette Image",
             trs_cass_dir, filename, FILENAME_MAX, 1) == 0) {
