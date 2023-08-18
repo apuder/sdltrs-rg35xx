@@ -33,7 +33,7 @@
 
 static const char stateFileBanner[] = "SDLTRS State Save File";
 static int const stateFileBannerLen = sizeof(stateFileBanner) - 1;
-static unsigned stateVersionNumber = 7;
+static unsigned stateVersionNumber = 8;
 
 int trs_state_save(const char *filename)
 {
