@@ -1,3 +1,16 @@
+## Version 1.2.28 Release 08-19-2023:
+
+ * Added XTRS feature to fake year for TRS-80 clock-of-day.
+ * Added 5" / 8" disk size switch for Percom doubler and clones.
+ * Added debug commands to load and save the emulator state.
+ * Added option to set the action for Z80 HALT instruction.
+ * Added option to pause the emulator at startup.
+ * Fixed 6845 CRTC cursor redraw issues.
+ * Fixed bugs in mouse selection.
+ * Fixed AlphaTech SuperMem 32K bank switch.
+ * Fixed loading of state file for TRS-80 clones.
+ * Fixed more bugs and internal improvements.
+
 ## Version 1.2.27 Release 04-09-2023:
 
  * Added command line option for Disk- and I/O ports debug flags.
