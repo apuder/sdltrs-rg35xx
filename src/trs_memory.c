@@ -625,8 +625,8 @@ static int trs80_model1_mmio(int address)
 {
   if (address >= VIDEO_START) return video[address - VIDEO_START];
   if (address < trs_rom_size) return rom[address];
-  if (address == TRSDISK_DATA) return trs_disk_data_read();
   if (TRS_INTLATCH(address)) return trs_interrupt_latch_read();
+  if (address == TRSDISK_DATA) return trs_disk_data_read();
   if (address == TRSDISK_STATUS) return trs_disk_status_read();
   if (address == TRSDISK_TRACK) return trs_disk_track_read();
   if (address == TRSDISK_SECTOR) return trs_disk_sector_read();
