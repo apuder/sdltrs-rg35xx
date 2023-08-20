@@ -1314,7 +1314,7 @@ void trs_screen_init(int resize)
         currentmode = NORMAL;
         trs_charset = trs_charset1;
         if (trs_charset < 3)
-          cur_char_width = 6 * scale;
+          cur_char_width = 6;
         break;
     }
   } else {
