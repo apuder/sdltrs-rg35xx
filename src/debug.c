@@ -168,6 +168,8 @@ Miscellaneous:\n\
     timeroff\n\
     timeron\n\
         Disable/enable the emulated TRS-80 real time clock interrupt.\n\
+    halt <action>\n\
+        Change action for Z80 HALT instruction: debugger, halt or reset.\n\
     diskdebug <hexval>\n\
         Set floppy disk controller debug flags to hexval.\n\
         1=FDC register I/O, 2=FDC commands, 4=VTOS 3.0 JV3 kludges, 8=Gaps,\n\
@@ -945,6 +947,32 @@ void debug_shell(void)
 	        /* Turn on  emulated real time clock interrupt */
 	        trs_timer(1);
             }
+	    else if(!strcmp(command, "halt"))
+	    {
+	        char halt;
+
+		if(sscanf(input, "%*s %c", &halt) == 1)
+		{
+		    z80_halt = halt;
+		}
+		else
+		{
+		    switch (z80_halt) {
+			case 'd':
+			    puts("debugger");
+			    break;
+			case 'h':
+			    puts("halt");
+			    break;
+			case 'r':
+			    puts("reset");
+			    break;
+			default:
+			    puts("default");
+			    break;
+		    }
+		}
+	    }
 	    else if(!strcmp(command, "diskdump") || !strcmp(command, "dd"))
 	    {
 		trs_disk_debug();
