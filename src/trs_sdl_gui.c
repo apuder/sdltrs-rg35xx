@@ -1869,7 +1869,7 @@ void trs_gui_display_settings(void)
   const char *font34[] = {"     Katakana",
                           "International",
                           "         Bold"};
-  const char *scales[] = {" None", "  2 x", "  3 x", "  4 x"};
+  const char *scales[] = {"  1  ", "  2  ", "  3  ", "  4  "};
   int selection = 0;
   int gui_charset1 = trs_charset1 >= 10 ? trs_charset1 - 6 : trs_charset1;
 
@@ -1888,7 +1888,7 @@ void trs_gui_display_settings(void)
     snprintf(&menu[7].text[52], 9, "%8d", window_border_width);
     snprintf(&menu[8].text[50], 11, "%s", yes_no[resize3]);
     snprintf(&menu[9].text[50], 11, "%s", yes_no[resize4]);
-    snprintf(&menu[10].text[55], 6, "%s", scales[scale - 1]);
+    snprintf(&menu[10].text[55], 6, "%5d", scale);
     snprintf(&menu[11].text[50], 11, "%s", yes_no[trs_show_led]);
 #ifdef OLD_SCANLINES
     snprintf(&menu[12].text[50], 11, "%s", yes_no[scanlines]);
