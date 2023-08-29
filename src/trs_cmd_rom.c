@@ -612,74 +612,22 @@ static void trs_boot_hd(void)
  * See the LDOS Quarterly, April 1, 1982 (Vol 1, No 4), for documentation
  * of the TRS-80 DOS /cmd file format.
  *
- * Load the /cmd file f into the given memory, optionally selecting
- * out an ISAM or PDS member.  Return LOAD_CMD_OK for success if f was a
- * normal /cmd file, LOAD_CMD_ISAM for success if it was an ISAM file,
- * LOAD_CMD_PDS for success if this was a PDS file, LOAD_CMD_EOF for
- * failure due to premature end of file, LOAD_CMD_NOT_FOUND for ISAM
- * or PDF member not found, or a positive number B for an unknown or
- * badly formatted load block of typecode B (load file format error).
- *
- * Optional flags:
- *
- * If loadmap is not NULL, it must point to an array of 2**16
- * bytes.  Each byte in the return value will have a count (mod 256)
- * of the number of times that memory location was loaded.  Usually each
- * count will be 0 or 1, of course.
- *
- * If verbosity is VERBOSITY_QUIET, print nothing.  If verbosity is
- * VERBOSITY_TEXT, print module headers, PDS headers, patch names, and
- * copyright notices.  If verbosity is VERBOSITY_MAP, also print load
- * map information as we go along, but coalesce adjacent blocks that
- * load contiguously into memory.  If verbosity is VERBOSITY_DETAILED,
- * don't coalesce.
- *
- * If isam is not -1, search for the given isam member number and load
- * it instead of loading the whole file.
- *
- * If pds is not NULL, search for the given pds member name and
- * load it instead of loading the whole file.  isam and pds cannot
- * both be used.
- *
- * If xferaddr is not NULL, return the transfer address there, or if
- * there is no transfer address, return -1.
- *
- * If stopxfer is 1, stop loading when a transfer address is seen; if
- * 0, continue loading.  stopxfer = 0 is needed if you want to parse
- * a PDS file with a front end loader.  stopxfer = 1 is useful to deal
- * with ordinary /cmd files that have extra garbage at the end, as
- * sometimes happens.  stopxfer = 0 should be considered the default.
+ * Load the /cmd file f into the given memory.  Return LOAD_CMD_OK for
+ * success if f was a normal /cmd file, LOAD_CMD_EOF for failure due to
+ * premature end of file, or a positive number B for an unknown or badly
+ * formatted load block of typecode B (load file format error).
  */
 
-#define LOAD_CMD_OK 0
+#define LOAD_CMD_OK   0
 #define LOAD_CMD_EOF -1
-#define LOAD_CMD_NOT_FOUND -2
-#define LOAD_CMD_ISAM -3
-#define LOAD_CMD_PDS -4
-
-#define VERBOSITY_QUIET 0
-#define VERBOSITY_TEXT 1
-#define VERBOSITY_MAP 2
-#define VERBOSITY_DETAILED 3
-
-#define ISAM_NONE -1
 
 static int
-load_cmd(FILE* f, Uint8 memory[65536],
-	 Uint8* loadmap, int verbosity, FILE* outf,
-	 int isam, char *pds, int *xferaddr, int stopxfer)
+load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 {
-  int lastaddr = -1, lastcount = -1;
-  int c, a1, a2, a3, v, count, dummy, i;
-  int pflags1, pflags2;
-  char pentry[9];
-  int ientry, iaddr, iseek, ilen;
+  int c, a1, a2, v, count, dummy;
   int status = LOAD_CMD_OK;
   Uint16 addr; /* wrap at 2**16 */
 
-  if (loadmap) {
-    memset(loadmap, 0, 65536);
-  }
   if (xferaddr) {
     *xferaddr = -1;
   } else {
@@ -688,16 +636,8 @@ load_cmd(FILE* f, Uint8 memory[65536],
 
   for (;;) {
     c = getc(f); /* get block type code */
-    if (c != 1 /* not loading bytes into memory */) {
-      if (verbosity >= VERBOSITY_MAP) {
-	if (lastaddr != -1) {
-	  fprintf(outf, "loaded 0x%04x - 0x%04x\n",
-		  lastaddr, lastaddr + lastcount - 1);
-	}
-	lastaddr = -1;
-      }
-    }
     if (c == EOF) return status;
+
     count = getc(f);
     if (count == EOF) {
       if (c == 3) return status;
@@ -706,46 +646,20 @@ load_cmd(FILE* f, Uint8 memory[65536],
     if (count == 0) count = 256;
 
     switch (c) {
-    case 0: /* skip (used by Model I TRSDOS BOOT/SYS easter egg) */
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "skip block, %d bytes\n", count);
-      }
-      while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-      }
-      break;
-
     case 1: /* load bytes into memory */
       a1 = getc(f);
       if (a1 == EOF) return LOAD_CMD_EOF;
       a2 = getc(f);
       if (a2 == EOF) return LOAD_CMD_EOF;
       addr = a1 + a2 * 256;
+
       count -= 2;
       if (count <= 0) count += 256;
-      if (verbosity >= VERBOSITY_MAP) {
-	if (verbosity >= VERBOSITY_DETAILED ||
-	    addr != lastaddr + lastcount) {
-	  if (lastaddr != -1) {
-	    fprintf(outf, "loaded 0x%04x - 0x%04x\n",
-		    lastaddr, lastaddr + lastcount - 1);
-	  }
-	  lastaddr = addr;
-	  lastcount = count;
-	} else {
-	  lastcount += count;
-	}
-      }
+
       while (count-- > 0) {
 	v = getc(f);
 	if (v == EOF) return LOAD_CMD_EOF;
-	/* Don't load PDS front end if specific member requested */
-	if (!(pds && isam == -1)) {
-	  memory[addr] = v;
-	  if (loadmap) loadmap[addr]++;
-	}
-	addr++;
+	memory[addr++] = v;
       }
       break;
 
@@ -755,12 +669,9 @@ load_cmd(FILE* f, Uint8 memory[65536],
       if (a1 == EOF) return LOAD_CMD_EOF;
       a2 = getc(f);
       if (a2 == EOF) return LOAD_CMD_EOF;
+
       *xferaddr = a1 + a2 * 256;
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "transfer address = 0x%04x\n", *xferaddr);
-      }
-      if (stopxfer) return status;
-      break;
+      return status;
 
     case 3: /* end of file with no transfer address */
       while (count-- > 0) {
@@ -769,168 +680,11 @@ load_cmd(FILE* f, Uint8 memory[65536],
       }
       return status;
 
-    case 4: /* end of ISAM/PDS member */
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "end of ISAM/PDS member\n");
-      }
-      while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-      }
-      if (isam != -1) return status;
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "seek ptr = 0x%06lx\n", ftell(f));
-      }
-      break;
-
     case 5: /* module header */
-      if (verbosity >= VERBOSITY_TEXT) {
-	fprintf(outf, "module header = \"");
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	  putc(v, outf);
-	}
-	fprintf(outf, "\"\n");
-      } else {
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	}
-      }
-      break;
-
-    case 6: /* PDS header */
-      if (verbosity >= VERBOSITY_TEXT) {
-	fprintf(outf, "PDS header = \"");
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	  putc(v, outf);
-	}
-	fprintf(outf, "\"\n");
-      } else {
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	}
-      }
-      break;
-
-    case 7: /* Patch name header */
-      if (verbosity >= VERBOSITY_TEXT) {
-	fprintf(outf, "patch name = \"");
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	  putc(v, outf);
-	}
-	fprintf(outf, "\"\n");
-      } else {
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	}
-      }
-      break;
-
-    case 8: /* ISAM directory entry */
-      if (status == LOAD_CMD_OK) status = LOAD_CMD_ISAM;
-      if (count == 6 || count == 9) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-	ientry = v;
-	a1 = getc(f);
-	if (a1 == EOF) return LOAD_CMD_EOF;
-	a2 = getc(f);
-	if (a2 == EOF) return LOAD_CMD_EOF;
-	iaddr = a1 + a2 * 256;
-	a1 = getc(f);
-	if (a1 == EOF) return LOAD_CMD_EOF;
-	a2 = getc(f);
-	if (a2 == EOF) return LOAD_CMD_EOF;
-	a3 = getc(f);
-	if (a3 == EOF) return LOAD_CMD_EOF;
-	iseek = (a2 << 16) + (a1 << 8) + a3;
-      } else {
-	return c;
-      }
-      if (count == 9) {
-	/* Is this right? */
-	a1 = getc(f);
-	if (a1 == EOF) return LOAD_CMD_EOF;
-	a2 = getc(f);
-	if (a2 == EOF) return LOAD_CMD_EOF;
-	a3 = getc(f);
-	if (a3 == EOF) return LOAD_CMD_EOF;
-	ilen = (a2 << 16) + (a1 << 8) + a3; /*???*/
-      } else {
-	ilen = -1;
-      }
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "ISAM entry 0x%02x, transfer 0x%04x, seek ptr 0x%06x",
-		ientry, iaddr, iseek);
-	if (ilen != -1) {
-	  fprintf(outf, ", length 0x%06x\n", ilen);
-	} else {
-	  fprintf(outf, "\n");
-	}
-      }
-      if (ientry == isam) {
-	fseek(f, iseek, 0);
-	*xferaddr = iaddr;
-      }
-      break;
-
-    case 0x0a: /* end of ISAM directory */
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "end of ISAM directory\n");
-      }
       while (count-- > 0) {
 	v = getc(f);
 	if (v == EOF) return LOAD_CMD_EOF;
       }
-      if (isam != -1) return LOAD_CMD_NOT_FOUND;
-      break;
-
-    case 0x0c: /* PDS directory entry */
-      status = LOAD_CMD_PDS;
-      if (count != 11) {
-	return c;
-      }
-      for (i = 0; i < 8; i++) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-	pentry[i] = v;
-      }
-      pentry[8] = '\000';
-      v = getc(f);
-      if (v == EOF) return LOAD_CMD_EOF;
-      ientry = v;
-      v = getc(f);
-      if (v == EOF) return LOAD_CMD_EOF;
-      pflags1 = v;
-      v = getc(f);
-      if (v == EOF) return LOAD_CMD_EOF;
-      pflags2 = v;
-      if (pds && strcmp(pds, pentry) == 0) {
-	isam = ientry;
-      }
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "PDS entry \"%s\", ISAM 0x%02x, flags 0x%02x 0x%02x\n",
-		pentry, ientry, pflags1, pflags2);
-      }
-      break;
-
-    case 0x0e: /* end of PDS directory */
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "end of PDS directory\n");
-      }
-      while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-      }
-      if (pds != NULL && isam == -1) return LOAD_CMD_NOT_FOUND;
       break;
 
     case 0x10: /* yanked load block */
@@ -939,32 +693,13 @@ load_cmd(FILE* f, Uint8 memory[65536],
       a2 = getc(f);
       if (a2 == EOF) return LOAD_CMD_EOF;
       addr = a1 + a2 * 256;
+
       count -= 2;
       if (count <= 0) count += 256;
-      if (verbosity >= VERBOSITY_MAP) {
-	fprintf(outf, "yanked load block 0x%04x - 0x%04x\n",
-		addr, addr + count - 1);
-      }
+
       while (count-- > 0) {
 	v = getc(f);
 	if (v == EOF) return LOAD_CMD_EOF;
-      }
-      break;
-
-    case 0x1f: /* copyright block */
-      if (verbosity >= VERBOSITY_TEXT) {
-	fprintf(outf, "====copyright block====\n");
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	  putc(v, outf);
-	}
-	fprintf(outf, "\n=======================\n");
-      } else {
-	while (count-- > 0) {
-	  v = getc(f);
-	  if (v == EOF) return LOAD_CMD_EOF;
-	}
       }
       break;
 
@@ -1079,7 +814,7 @@ static int trs_load_rom(const char *filename)
     Uint8 loadrom[Z80_ADDRESS_LIMIT] = { 0 };
 
     rewind(program);
-    if (load_cmd(program, loadrom, NULL, 0, NULL, -1, NULL, NULL, 1) == LOAD_CMD_OK) {
+    if (load_cmd(program, loadrom, NULL) == LOAD_CMD_OK) {
       trs_rom_size = Z80_ADDRESS_LIMIT;
       while (trs_rom_size > 0) {
         if (loadrom[--trs_rom_size] != 0) {
@@ -1125,7 +860,7 @@ int trs_load_cmd(const char *filename)
     return -1;
   }
 
-  if (load_cmd(program, memory, NULL, 0, NULL, -1, NULL, &entry, 1) == LOAD_CMD_OK) {
+  if (load_cmd(program, memory, &entry) == LOAD_CMD_OK) {
     debug("entry point of '%s': 0x%x (%d) ...\n", filename, entry, entry);
     if (entry >= 0)
       Z80_PC = entry;
