@@ -657,9 +657,9 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (count <= 0) count += 256;
 
       while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
-	memory[addr++] = v;
+        v = getc(f);
+        if (v == EOF) return LOAD_CMD_EOF;
+        memory[addr++] = v;
       }
       break;
 
@@ -675,15 +675,15 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 
     case 3: /* end of file with no transfer address */
       while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
+        v = getc(f);
+        if (v == EOF) return LOAD_CMD_EOF;
       }
       return status;
 
     case 5: /* module header */
       while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
+        v = getc(f);
+        if (v == EOF) return LOAD_CMD_EOF;
       }
       break;
 
@@ -698,8 +698,8 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (count <= 0) count += 256;
 
       while (count-- > 0) {
-	v = getc(f);
-	if (v == EOF) return LOAD_CMD_EOF;
+        v = getc(f);
+        if (v == EOF) return LOAD_CMD_EOF;
       }
       break;
 
@@ -707,72 +707,68 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       return c;
     }
   }
+
   return status;
 }
 
 static int hex_byte(const char *string)
 {
-    char buf[3];
+  char buf[3];
 
-    buf[0] = string[0];
-    buf[1] = string[1];
-    buf[2] = '\0';
+  buf[0] = string[0];
+  buf[1] = string[1];
+  buf[2] = '\0';
 
-    return(strtol(buf, (char **)NULL, 16));
+  return(strtol(buf, (char **)NULL, 16));
 }
 
 static int load_hex(FILE *file)
 {
-    char buffer[BUFFER_SIZE];
-    int  high = 0;
+  char buffer[BUFFER_SIZE];
+  int  high = 0;
 
-    while (fgets(buffer, BUFFER_SIZE, file))
-    {
-	if (buffer[0] == ':')
-	{
-	    /* colon */
-	    const char *b = buffer + 1;
+  while (fgets(buffer, BUFFER_SIZE, file)) {
+    if (buffer[0] == ':') {
+      /* colon */
+      const char *b = buffer + 1;
 
-	    /* number of bytes on the line */
-	    int num_bytes = hex_byte(b);
-	    int check = num_bytes;
-	    int address;
+      /* number of bytes on the line */
+      int num_bytes = hex_byte(b);
+      int check = num_bytes;
+      int address;
 
-	    b += 2;
+      b += 2;
 
-	    /* the starting address */
-	    address  = hex_byte(b) << 8;  b += 2;
-	    address |= hex_byte(b);  b += 2;
-	    check   += (address >> 8) + (address & 0xff);
+      /* the starting address */
+      address  = hex_byte(b) << 8;  b += 2;
+      address |= hex_byte(b);  b += 2;
+      check   += (address >> 8) + (address & 0xff);
 
-	    /* a zero? */
-	    b += 2;
+      /* a zero? */
+      b += 2;
 
-	    /* the data */
-	    if (num_bytes)
-	    {
-		int value;
+      /* the data */
+      if (num_bytes) {
+        int value;
 
-		while (num_bytes--)
-		{
-		    value = hex_byte(b);
+        while (num_bytes--) {
+          value = hex_byte(b);
+          b += 2;
+          rom_write(address++, value);
+          check += value;
+        }
 
-		    b += 2;
-		    rom_write(address++, value);
-		    check += value;
-		}
-		if (address > high) high = address;
+        if (address > high) high = address;
 
-		/* the checksum */
-		value = hex_byte(b);
-		if (((0x100 - check) & 0xff) != value)
-		{
-		    return(-1);
-		}
-	    }
-	}
+        /* the checksum */
+        value = hex_byte(b);
+        if (((0x100 - check) & 0xff) != value)
+          return -1;
+      }
     }
-    return high; /* returns highest address loaded + 1 */
+  }
+
+  return high; /* returns highest address loaded + 1 */
 }
 
 static void trs_load_compiled_rom(int address, int size, const Uint8 rom[])
