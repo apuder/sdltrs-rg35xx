@@ -1654,7 +1654,7 @@ trs_disk_data_write(Uint8 data)
       state.bytecount--;
       if (state.bytecount <= 0) {
 	if (d->emutype == DMK) {
-	  int idamp, i, j;
+	  int i, j;
 
 	  c = state.crc >> 8;
 	  d->u.dmk.buf[d->u.dmk.curbyte++] = c;
@@ -1678,8 +1678,9 @@ trs_disk_data_write(Uint8 data)
 	     happen with weird "protected" formats */
 	  i = j = d->u.dmk.nextidam;
 	  while (i < DMK_TKHDR_SIZE) {
-	    idamp = (d->u.dmk.buf[i] + (d->u.dmk.buf[i + 1] << 8))
+	    int const idamp = (d->u.dmk.buf[i] + (d->u.dmk.buf[i + 1] << 8))
 	      & DMK_IDAMP_BITS;
+
 	    if (idamp != 0 && idamp != DMK_IDAMP_BITS &&
 		d->u.dmk.curbyte /*!!+ erase shutoff slop?*/ > idamp) {
 	      /* Yes, smashed this one */
@@ -2275,7 +2276,7 @@ trs_disk_command_write(Uint8 cmd)
       state.format != FMT_DONE) {
     /* Interrupted format: must write out partial track */
     Uint8 oldtkhdr[DMK_TKHDR_SIZE];
-    int c, i, j, idamp;
+    int c, i, j;
 
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_DMK) {
@@ -2294,7 +2295,8 @@ trs_disk_command_write(Uint8 cmd)
       i = 0;
       j = d->u.dmk.nextidam;
       while (i < DMK_TKHDR_SIZE) {
-	idamp = (oldtkhdr[i] + (oldtkhdr[i + 1] << 8)) & DMK_IDAMP_BITS;
+	int const idamp = (oldtkhdr[i] + (oldtkhdr[i + 1] << 8)) & DMK_IDAMP_BITS;
+
 	if (idamp == 0 || idamp == DMK_IDAMP_BITS) break;
 	if (idamp < d->u.dmk.curbyte) {
 	  /* IDAM overwritten; don't copy */

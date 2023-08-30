@@ -798,10 +798,11 @@ void do_emt_resetdisk(void)
 
 void trs_imp_exp_save(FILE *file)
 {
-  int i, file_not_null;
+  int i;
 
   for (i = 0; i < MAX_OPENDIR; i++) {
-    file_not_null = (dir[i].dir != NULL);
+    int file_not_null = (dir[i].dir != NULL);
+
     trs_save_int(file, &file_not_null, 1);
     trs_save_filename(file, dir[i].pathname);
   }
@@ -817,7 +818,7 @@ void trs_imp_exp_save(FILE *file)
 
 void trs_imp_exp_load(FILE *file)
 {
-  int i, dir_present;
+  int i;
 
   /* Close any open dirs and files */
   for (i = 0; i < MAX_OPENDIR; i++) {
@@ -832,6 +833,8 @@ void trs_imp_exp_load(FILE *file)
 
   /* Load the state */
   for (i = 0; i < MAX_OPENDIR; i++) {
+    int dir_present;
+
     trs_load_int(file, &dir_present, 1);
     trs_load_filename(file, dir[i].pathname);
 
