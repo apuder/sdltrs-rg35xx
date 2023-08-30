@@ -600,10 +600,10 @@ void do_emt_misc(void)
     break;
 #endif
   case 10:
-    Z80_HL = grafyx_get_microlabs();
+    Z80_HL = grafyx_get_microlabs() ? 1 : 0;
     break;
   case 11:
-    grafyx_set_microlabs(Z80_HL);
+    grafyx_set_microlabs(Z80_HL ? 1 : 0);
     break;
   case 12:
     Z80_HL = 0;
@@ -623,7 +623,8 @@ void do_emt_misc(void)
     Z80_HL = trs_disk_doubler;
     break;
   case 17:
-    trs_disk_doubler = Z80_HL;
+    if (Z80_HL >= 0 && Z80_HL <= 3)
+      trs_disk_doubler = Z80_HL;
     break;
   /* Removed; do not reuse
   case 18:
@@ -631,16 +632,16 @@ void do_emt_misc(void)
     break;
   */
   case 20:
-    Z80_HL = trs_disk_truedam;
+    Z80_HL = trs_disk_truedam ? 1 : 0;
     break;
   case 21:
-    trs_disk_truedam = Z80_HL;
+    trs_disk_truedam = Z80_HL ? 1 : 0;
     break;
   case 24:
-    Z80_HL = lowercase;
+    Z80_HL = lowercase ? 1 : 0;
     break;
   case 25:
-    lowercase = Z80_HL;
+    lowercase = Z80_HL ? 1 : 0;
     break;
   default:
     error("unsupported function code %d to emt_misc", Z80_A);
