@@ -626,11 +626,12 @@ void do_emt_misc(void)
     if (Z80_HL >= 0 && Z80_HL <= 3)
       trs_disk_doubler = Z80_HL;
     break;
-  /* Removed; do not reuse
   case 18:
-  case 19:
+    Z80_HL = trs_sound ? 1 : 0;
     break;
-  */
+  case 19:
+    trs_sound = Z80_HL ? 1 : 0;
+    break;
   case 20:
     Z80_HL = trs_disk_truedam ? 1 : 0;
     break;
