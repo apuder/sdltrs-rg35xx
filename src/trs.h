@@ -225,6 +225,7 @@ extern void trs_do_event(void);
 extern void trs_cancel_event(void);
 trs_event_func trs_event_scheduled(void);
 
+extern int   grafyx_microlabs;
 extern void  grafyx_write_x(int value);
 extern void  grafyx_write_y(int value);
 extern void  grafyx_write_data(int value);
@@ -234,8 +235,6 @@ extern int   grafyx_read_mode(void);
 extern void  grafyx_write_xoffset(int value);
 extern void  grafyx_write_yoffset(int value);
 extern void  grafyx_write_overlay(int value);
-extern void  grafyx_set_microlabs(int on_off);
-extern int   grafyx_get_microlabs(void);
 extern void  grafyx_m3_reset(void);
 extern void  grafyx_m3_write_mode(int value);
 extern Uint8 grafyx_m3_read_byte(int position);

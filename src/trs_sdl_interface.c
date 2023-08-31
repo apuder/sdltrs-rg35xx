@@ -89,6 +89,7 @@ int trs_paused;
 int trs_emu_mouse;
 int trs_show_led;
 int fullscreen;
+int grafyx_microlabs;
 int lowe_le18;
 int resize3;
 int resize4;
@@ -198,7 +199,6 @@ static unsigned int cycles_saved;
 #define G_MSIZE (2 * G_YSIZE) * G_XSIZE
 static Uint8 grafyx[G_MSIZE];
 static Uint8 grafyx_unscaled[G_YSIZE][G_XSIZE];
-static int grafyx_microlabs;
 static int grafyx_x, grafyx_y, grafyx_mode;
 static int grafyx_enable;
 static int grafyx_overlay;
@@ -3187,16 +3187,6 @@ void grafyx_write_overlay(int value)
     trs_screen_640x240((grafyx_enable && !grafyx_overlay) || text80x24);
     trs_screen_refresh();
   }
-}
-
-int grafyx_get_microlabs(void)
-{
-  return grafyx_microlabs;
-}
-
-void grafyx_set_microlabs(int on_off)
-{
-  grafyx_microlabs = on_off;
 }
 
 /* Model III MicroLabs support */

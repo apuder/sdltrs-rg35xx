@@ -1747,7 +1747,7 @@ void trs_gui_emulator_settings(void)
     snprintf(&menu[6].text[50], 11, "%s", yes_no[lubomir]);
     snprintf(&menu[7].text[50], 11, "%s", yes_no[selector]);
     snprintf(&menu[8].text[50], 11, "%s", yes_no[supermem]);
-    snprintf(&menu[9].text[50], 11, "%s", yes_no[grafyx_get_microlabs()]);
+    snprintf(&menu[9].text[50], 11, "%s", yes_no[grafyx_microlabs]);
     snprintf(&menu[10].text[50], 11, "%s", yes_no[megamem]);
     snprintf(&menu[11].text[50], 11, "%s", yes_no[huffman]);
     snprintf(&menu[12].text[50], 11, "%s", yes_no[hypermem]);
@@ -1809,8 +1809,8 @@ void trs_gui_emulator_settings(void)
           selector = 0;
         break;
       case 9:
-        grafyx_set_microlabs(trs_gui_display_popup("Grafyx", yes_no, 2,
-            grafyx_get_microlabs()));
+        grafyx_microlabs = trs_gui_display_popup("Grafyx", yes_no, 2,
+            grafyx_microlabs);
         break;
       case 10:
         megamem = trs_gui_display_popup("MegaMem", yes_no, 2, megamem);

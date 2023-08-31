@@ -595,7 +595,7 @@ void z80_out(int port, int value)
     case 0xFD:
     case 0xFE:
     case 0xFF:
-      if (trs_model == 3 && (value & 0x20) && grafyx_get_microlabs())
+      if (trs_model == 3 && (value & 0x20) && grafyx_microlabs)
 	/* do Model III Micro-Labs graphics card */
 	grafyx_m3_write_mode(value);
       else

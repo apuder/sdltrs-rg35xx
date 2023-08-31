@@ -600,10 +600,10 @@ void do_emt_misc(void)
     break;
 #endif
   case 10:
-    Z80_HL = grafyx_get_microlabs() ? 1 : 0;
+    Z80_HL = grafyx_microlabs ? 1 : 0;
     break;
   case 11:
-    grafyx_set_microlabs(Z80_HL ? 1 : 0);
+    grafyx_microlabs = Z80_HL ? 1 : 0;
     break;
   case 12:
     Z80_HL = 0;
