@@ -250,7 +250,7 @@ static void XorBlitImageTo4Byte(int width, int height, const Uint8 *src,
   }
 }
 
-void TrsBlitMap(SDL_Palette *src, SDL_PixelFormat *dst)
+void TrsBlitMap(const SDL_Palette *src, const SDL_PixelFormat *dst)
 {
   Uint8 *map;
   int i;
@@ -299,8 +299,8 @@ void TrsBlitMap(SDL_Palette *src, SDL_PixelFormat *dst)
 
 
 /* The general purpose software blit routine */
-void TrsSoftBlit(SDL_Surface *src, SDL_Rect *srcrect,
-                 SDL_Surface *dst, SDL_Rect *dstrect, int xor)
+void TrsSoftBlit(const SDL_Surface *src, const SDL_Rect *srcrect,
+                       SDL_Surface *dst, SDL_Rect *dstrect, int xor)
 {
   /* Set up the blit information */
   int const rect_h  = srcrect->h;
