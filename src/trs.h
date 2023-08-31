@@ -219,42 +219,44 @@ extern void  m6845_cursor(int position, int start, int end, int visible);
 extern void  m6845_screen(int chars, int lines, int raster, int factor);
 
 typedef void (*trs_event_func)(int arg);
-void trs_schedule_event(trs_event_func f, int arg, int tstates);
-void trs_schedule_event_us(trs_event_func f, int arg, int us);
-void trs_do_event(void);
-void trs_cancel_event(void);
+extern void trs_schedule_event(trs_event_func f, int arg, int tstates);
+extern void trs_schedule_event_us(trs_event_func f, int arg, int us);
+extern void trs_do_event(void);
+extern void trs_cancel_event(void);
 trs_event_func trs_event_scheduled(void);
 
-void  grafyx_write_x(int value);
-void  grafyx_write_y(int value);
-void  grafyx_write_data(int value);
-int   grafyx_read_data(void);
-void  grafyx_write_mode(int value);
-int   grafyx_read_mode(void);
-void  grafyx_write_xoffset(int value);
-void  grafyx_write_yoffset(int value);
-void  grafyx_write_overlay(int value);
-void  grafyx_set_microlabs(int on_off);
-int   grafyx_get_microlabs(void);
-void  grafyx_m3_reset(void);
-void  grafyx_m3_write_mode(int value);
-Uint8 grafyx_m3_read_byte(int position);
-int   grafyx_m3_write_byte(int position, int value);
-void  hrg_onoff(int enable);
-void  hrg_write_addr(int addr, int mask);
-void  hrg_write_data(int data);
-int   hrg_read_data(void);
-extern int lowe_le18;
-void  lowe_le18_write_x(int);
-void  lowe_le18_write_y(int);
-int   lowe_le18_read(void);
-void  lowe_le18_write_data(int);
-void  lowe_le18_write_control(int);
+extern void  grafyx_write_x(int value);
+extern void  grafyx_write_y(int value);
+extern void  grafyx_write_data(int value);
+extern int   grafyx_read_data(void);
+extern void  grafyx_write_mode(int value);
+extern int   grafyx_read_mode(void);
+extern void  grafyx_write_xoffset(int value);
+extern void  grafyx_write_yoffset(int value);
+extern void  grafyx_write_overlay(int value);
+extern void  grafyx_set_microlabs(int on_off);
+extern int   grafyx_get_microlabs(void);
+extern void  grafyx_m3_reset(void);
+extern void  grafyx_m3_write_mode(int value);
+extern Uint8 grafyx_m3_read_byte(int position);
+extern int   grafyx_m3_write_byte(int position, int value);
 
-void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons);
-void trs_set_mouse_pos(int x, int y);
-void trs_get_mouse_max(int *x, int *y, unsigned int *sens);
-void trs_set_mouse_max(int x, int y, unsigned int sens);
+extern void  hrg_onoff(int enable);
+extern void  hrg_write_addr(int addr, int mask);
+extern void  hrg_write_data(int data);
+extern int   hrg_read_data(void);
+
+extern int   lowe_le18;
+extern void  lowe_le18_write_x(int);
+extern void  lowe_le18_write_y(int);
+extern int   lowe_le18_read(void);
+extern void  lowe_le18_write_data(int);
+extern void  lowe_le18_write_control(int);
+
+extern void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons);
+extern void trs_set_mouse_pos(int x, int y);
+extern void trs_get_mouse_max(int *x, int *y, unsigned int *sens);
+extern void trs_set_mouse_max(int x, int y, unsigned int sens);
 
 extern int timer_hz;
 extern int timer_overclock_rate;
@@ -264,10 +266,10 @@ extern float clock_mhz_1;
 extern float clock_mhz_3;
 extern float clock_mhz_4;
 
-int put_twobyte(Uint16 n, FILE* f);
-int put_fourbyte(Uint32 n, FILE* f);
-int get_twobyte(Uint16 *n, FILE* f);
-int get_fourbyte(Uint32 *n, FILE* f);
+extern int put_twobyte(Uint16 n, FILE* f);
+extern int put_fourbyte(Uint32 n, FILE* f);
+extern int get_twobyte(Uint16 *n, FILE* f);
+extern int get_fourbyte(Uint32 *n, FILE* f);
 
 
 #endif /*_TRS_H*/
