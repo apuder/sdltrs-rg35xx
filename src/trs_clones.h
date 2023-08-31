@@ -24,4 +24,5 @@ struct trs_clones {
 extern struct trs_clones trs_clones;
 extern void trs_clones_model(int clone);
 
-#endif
+#endif /* _TRS_CLONES_H */
+
