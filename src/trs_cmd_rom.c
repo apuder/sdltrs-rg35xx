@@ -624,17 +624,19 @@ static void trs_boot_hd(void)
 static int
 load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 {
-  int c, a1, a2, count, dummy;
-  Uint16 addr; /* wrap at 2**16 */
-
   if (xferaddr) {
     *xferaddr = -1;
   } else {
+    int dummy;
+
     xferaddr = &dummy;
   }
 
   for (;;) {
-    c = getc(f); /* get block type code */
+    Uint16 addr; /* wrap at 2**16 */
+    int a1, a2, count;
+    int const c = getc(f); /* get block type code */
+
     if (c == EOF) return LOAD_CMD_OK;
 
     count = getc(f);
