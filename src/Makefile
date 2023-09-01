@@ -16,6 +16,7 @@ SRCS	+= trs_interrupt.c
 SRCS	+= trs_io.c
 SRCS	+= trs_memory.c
 SRCS	+= trs_mkdisk.c
+SRCS	+= trs_options.c
 SRCS	+= trs_printer.c
 SRCS	+= trs_sdl_gui.c
 SRCS	+= trs_sdl_interface.c

@@ -21,6 +21,7 @@ sdl2trs_SOURCES=src/blit.c \
 		src/trs_io.c \
 		src/trs_memory.c \
 		src/trs_mkdisk.c \
+		src/trs_options.c \
 		src/trs_printer.c \
 		src/trs_sdl_gui.c \
 		src/trs_sdl_interface.c \

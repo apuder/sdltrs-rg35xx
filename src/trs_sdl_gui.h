@@ -59,6 +59,7 @@
 
 extern int jbutton_map[N_JOYBUTTONS];
 extern int jaxis_mapped;
+extern int mousepointer;
 extern int scanlines;
 extern int scanshade;
 extern int turbo_paste;
