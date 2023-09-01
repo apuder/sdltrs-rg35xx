@@ -624,8 +624,7 @@ static void trs_boot_hd(void)
 static int
 load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 {
-  int c, a1, a2, v, count, dummy;
-  int status = LOAD_CMD_OK;
+  int c, a1, a2, count, dummy;
   Uint16 addr; /* wrap at 2**16 */
 
   if (xferaddr) {
@@ -636,11 +635,11 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 
   for (;;) {
     c = getc(f); /* get block type code */
-    if (c == EOF) return status;
+    if (c == EOF) return LOAD_CMD_OK;
 
     count = getc(f);
     if (count == EOF) {
-      if (c == 3) return status;
+      if (c == 3) return LOAD_CMD_OK;
       return LOAD_CMD_EOF;
     }
     if (count == 0) count = 256;
@@ -657,7 +656,8 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (count <= 0) count += 256;
 
       while (count-- > 0) {
-        v = getc(f);
+        int const v = getc(f);
+
         if (v == EOF) return LOAD_CMD_EOF;
         memory[addr++] = v;
       }
@@ -671,19 +671,17 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (a2 == EOF) return LOAD_CMD_EOF;
 
       *xferaddr = a1 + a2 * 256;
-      return status;
+      return LOAD_CMD_OK;
 
     case 3: /* end of file with no transfer address */
       while (count-- > 0) {
-        v = getc(f);
-        if (v == EOF) return LOAD_CMD_EOF;
+        if (getc(f) == EOF) return LOAD_CMD_EOF;
       }
-      return status;
+      return LOAD_CMD_OK;
 
     case 5: /* module header */
       while (count-- > 0) {
-        v = getc(f);
-        if (v == EOF) return LOAD_CMD_EOF;
+        if (getc(f) == EOF) return LOAD_CMD_EOF;
       }
       break;
 
@@ -698,8 +696,7 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (count <= 0) count += 256;
 
       while (count-- > 0) {
-        v = getc(f);
-        if (v == EOF) return LOAD_CMD_EOF;
+        if (getc(f) == EOF) return LOAD_CMD_EOF;
       }
       break;
 
@@ -708,7 +705,7 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
     }
   }
 
-  return status;
+  return LOAD_CMD_OK;
 }
 
 static int hex_byte(const char *string)
