@@ -1,6 +1,5 @@
 PROG	 = sdl2trs
 
-SRCS	+= blit.c
 SRCS	+= debug.c
 SRCS	+= dis.c
 SRCS	+= error.c

@@ -10,7 +10,6 @@ set(CMAKE_C_FLAGS
 )
 
 set(SOURCES
-	src/blit.c
 	src/debug.c
 	src/dis.c
 	src/error.c

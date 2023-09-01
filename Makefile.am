@@ -5,8 +5,7 @@ AM_CFLAGS=	-Wall
 bin_PROGRAMS=	sdl2trs
 dist_man_MANS=	src/sdl2trs.1
 
-sdl2trs_SOURCES=src/blit.c \
-		src/debug.c \
+sdl2trs_SOURCES=src/debug.c \
 		src/dis.c \
 		src/error.c \
 		src/main.c \

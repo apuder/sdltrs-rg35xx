@@ -8,7 +8,6 @@ project('sdl2trs', 'c',
 add_project_arguments('-Wno-unused-parameter', '-Wno-unused-result', language: 'c')
 
 sources = files([
-	'src/blit.c',
 	'src/debug.c',
 	'src/dis.c',
 	'src/error.c',
