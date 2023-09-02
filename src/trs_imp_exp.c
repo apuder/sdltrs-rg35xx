@@ -623,7 +623,7 @@ void do_emt_misc(void)
     Z80_HL = trs_disk_doubler;
     break;
   case 17:
-    if (Z80_HL >= 0 && Z80_HL <= 3)
+    if (Z80_HL < 4)
       trs_disk_doubler = Z80_HL;
     break;
   case 18:

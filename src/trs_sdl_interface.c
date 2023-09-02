@@ -406,7 +406,7 @@ static void XorBlitImageTo4Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void TrsBlitMap(const SDL_Palette *src, const SDL_PixelFormat *dst)
+static void TrsBlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
 {
   Uint8 *map;
   int i;
