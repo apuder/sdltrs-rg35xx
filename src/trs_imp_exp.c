@@ -520,12 +520,10 @@ void do_emt_readdir(void)
 
 void do_emt_chdir(void)
 {
-  int const ok = chdir((char *)mem_pointer(Z80_HL, 0));
-
   if (emt_block("chdir"))
     return;
 
-  if (ok < 0) {
+  if (chdir((char *)mem_pointer(Z80_HL, 0)) < 0) {
     Z80_A = errno;
     Z80_F &= ~ZERO_MASK;
   } else {
