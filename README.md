@@ -6,7 +6,7 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Ctrl-A, Ctrl-C & Ctrl-V can now be used in the Emulator (CP/M & WordStar)
   * Display scanlines to simulate an old CRT monitor resolution
   * Access to real floppy disks works now on Linux
-  * Tried to fix reported bugs to the original version
+  * Fixed reported bugs to the original version
   * Port to SDL2 (see [BUILDING.md])
   * Support Exatron Stringy Floppy for TRS-80 Model I
   * Select and execute CMD files directly in the Emulator
@@ -43,6 +43,9 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support 128/256/512/1024 bytes Sector Size for WD1000/1010
   * Support up to 8192 Hard Disk Cylinders
   * Modify addresses in ROM with debugger
+  * Character sets of Aster CT-80, HT-1080Z and Meritum I
+  * Support 5" / 8" disk size switch commands of Percom doubler
+  * Select action for Z80 HALT instruction
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
