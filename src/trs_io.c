@@ -358,7 +358,7 @@ void z80_out(int port, int value)
         case 0x11: /* Homebrew 80*22 SYS80.SYS */
           if (speedup <= 4)
             m6845_crtc(value);
-          break;
+          return;
         case 0xD2: /* Schmidtke 80-Z Card: Banking */
           if (speedup <= 4)
             s80z_out(value);
@@ -819,11 +819,9 @@ int z80_in(int port)
     case 0x9D: /* !!? */
     case 0x9E: /* !!? */
     case 0x9F: /* !!? */
-      if (trs_model == 5 /*4p*/) {
-	value = rominimage;
-	goto done;
-      }
-      break;
+      if (trs_model == 5 /*4p*/)
+        value = rominimage;
+      goto done;
     case 0xE0:
     case 0xE1:
     case 0xE2:
