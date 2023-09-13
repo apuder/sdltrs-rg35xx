@@ -624,13 +624,8 @@ static void trs_boot_hd(void)
 static int
 load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
 {
-  if (xferaddr) {
+  if (xferaddr)
     *xferaddr = -1;
-  } else {
-    int dummy;
-
-    xferaddr = &dummy;
-  }
 
   for (;;) {
     Uint16 addr; /* wrap at 2**16 */
@@ -672,7 +667,7 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       a2 = getc(f);
       if (a2 == EOF) return LOAD_CMD_EOF;
 
-      *xferaddr = a1 + a2 * 256;
+      if (xferaddr) *xferaddr = a1 + a2 * 256;
       return LOAD_CMD_OK;
 
     case 3: /* end of file with no transfer address */
