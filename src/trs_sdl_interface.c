@@ -2330,9 +2330,7 @@ void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
 
 static void grafyx_write_byte(int x, int y, Uint8 byte)
 {
-  if (grafyx_unscaled[y][x] == byte) {
-    return;
-  } else {
+  if (grafyx_unscaled[y][x] != byte) {
     int const screen_x = ((x - grafyx_xoffset + G_XSIZE) % G_XSIZE);
     int const screen_y = ((y - grafyx_yoffset + G_YSIZE) % G_YSIZE);
     int const on_screen = (screen_x < row_chars && screen_y < col_chars
@@ -2340,18 +2338,16 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
     int const position = (y * scale_factor) * G_XSIZE + x;
     SDL_Rect srcRect, dstRect;
 
-    if (grafyx_enable && on_screen) {
-      srcRect.w = cur_char_width;
-      srcRect.h = scale_factor;
-      srcRect.x = srcRect.w * x;
-      srcRect.y = srcRect.h * y;
-      dstRect.x = srcRect.w * screen_x + left_margin;
-      dstRect.y = srcRect.h * screen_y + top_margin;
+    srcRect.w = cur_char_width;
+    srcRect.h = scale_factor;
+    srcRect.x = srcRect.w * x;
+    srcRect.y = srcRect.h * y;
+    dstRect.x = srcRect.w * screen_x + left_margin;
+    dstRect.y = srcRect.h * screen_y + top_margin;
 
-      /* Erase old byte, preserving text */
-      if (grafyx_overlay)
-        TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
-    }
+    if (grafyx_enable && grafyx_overlay && on_screen)
+     /* Erase old byte, preserving text */
+      TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
 
     /* Save new byte in local memory */
     grafyx_unscaled[y][x] = byte;
