@@ -2073,6 +2073,7 @@ void trs_screen_refresh(void)
 void trs_disk_led(int drive, int on_off)
 {
   static int countdown[8];
+  int const led_pos = border_width;
   int i;
   SDL_Rect rect;
 
@@ -2085,14 +2086,14 @@ void trs_disk_led(int drive, int on_off)
       if (on_off == -1)
         countdown[i] = 0;
 
-      rect.x = border_width + 24 * i;
+      rect.x = led_pos + 24 * i;
       SDL_FillRect(screen, &rect, countdown[i] ? bright_red : light_red);
       drawnRectCount = MAX_RECTS;
     }
   }
   else if (on_off) {
     if (countdown[drive] == 0) {
-      rect.x = border_width + 24 * drive;
+      rect.x = led_pos + 24 * drive;
       SDL_FillRect(screen, &rect, bright_red);
       drawnRectCount = MAX_RECTS;
     }
@@ -2103,7 +2104,7 @@ void trs_disk_led(int drive, int on_off)
       if (countdown[i]) {
         countdown[i]--;
         if (countdown[i] == 0) {
-          rect.x = border_width + 24 * i;
+          rect.x = led_pos + 24 * i;
           SDL_FillRect(screen, &rect, light_red);
           drawnRectCount = MAX_RECTS;
         }
@@ -2115,7 +2116,7 @@ void trs_disk_led(int drive, int on_off)
 void trs_hard_led(int drive, int on_off)
 {
   static int countdown[4];
-  int const drive0_led_x = OrigWidth - border_width - 88;
+  int const led_pos = OrigWidth - border_width - 88;
   int i;
   SDL_Rect rect;
 
@@ -2128,14 +2129,14 @@ void trs_hard_led(int drive, int on_off)
       if (on_off == -1)
         countdown[i] = 0;
 
-      rect.x = drive0_led_x + 24 * i;
+      rect.x = led_pos + 24 * i;
       SDL_FillRect(screen, &rect, countdown[i] ? bright_red : light_red);
       drawnRectCount = MAX_RECTS;
     }
   }
   else if (on_off) {
     if (countdown[drive] == 0) {
-      rect.x = drive0_led_x + 24 * drive;
+      rect.x = led_pos + 24 * drive;
       SDL_FillRect(screen, &rect, bright_red);
       drawnRectCount = MAX_RECTS;
     }
@@ -2146,7 +2147,7 @@ void trs_hard_led(int drive, int on_off)
       if (countdown[i]) {
         countdown[i]--;
         if (countdown[i] == 0) {
-          rect.x = drive0_led_x + 24 * i;
+          rect.x = led_pos * i;
           SDL_FillRect(screen, &rect, light_red);
           drawnRectCount = MAX_RECTS;
         }
