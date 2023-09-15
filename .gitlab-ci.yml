@@ -19,4 +19,4 @@ build-clang:
  <<: *job_definition
  script:
  - apt-get install -y -qq clang meson libreadline-dev libsdl2-dev 1> /dev/null
- - CC="clang" meson build && cd build && ninja
+ - CC="clang" meson setup build && cd build && ninja
