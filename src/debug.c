@@ -805,7 +805,7 @@ void debug_shell(void)
 		char regname[MAXLINE];
 		unsigned int addr, value;
 
-		if(sscanf(input, "%*s $%[a-zA-Z] = %x", regname, &value) == 2)
+		if(sscanf(input, "%*s $%[a-zA-Z'] = %x", regname, &value) == 2)
 		{
 		    if(!strcasecmp(regname, "a")) {
 			Z80_A = value;
