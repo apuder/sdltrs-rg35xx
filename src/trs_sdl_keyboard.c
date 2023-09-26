@@ -502,7 +502,7 @@ static int force_shift = TK_Neutral;
 static int joystate;
 static int key_heartbeat;
 int trs_joystick_num;
-int trs_keypad_joystick = TRUE;
+int trs_keypad_joystick = 1;
 
 /* Avoid changing state too fast so keystrokes aren't lost. */
 static tstate_t key_stretch_timeout;

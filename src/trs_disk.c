@@ -67,7 +67,7 @@
 #include "trs_stringy.h"
 #include "trs_state_save.h"
 
-int trs_disk_controller = TRUE;
+int trs_disk_controller = 1;
 int trs_disk_doubler = TRSDISK_BOTH;
 int trs_disk_truedam;
 int trs_disk_debug_flags;
@@ -2215,7 +2215,7 @@ trs_disk_status_read(void)
   static int last_status = -1;
 #endif
 
-  if (trs_disk_controller == FALSE && trs_model <= 4) return 0xff;
+  if (trs_disk_controller == 0 && trs_model <= 4) return 0xff;
 
   type1_status();
   if (!(state.status & TRSDISK_NOTRDY)) {

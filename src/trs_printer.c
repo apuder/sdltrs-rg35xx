@@ -46,14 +46,14 @@
 
 static FILE *printer;
 static char printer_filename[FILENAME_MAX];
-static int printer_open = FALSE;
+static int printer_open = 0;
 int trs_printer = NO_PRINTER;
 
 int trs_printer_reset(void)
 {
   if (printer_open) {
     fclose(printer);
-    printer_open = FALSE;
+    printer_open = 0;
     return 0;
   } else
     return -1;
@@ -68,11 +68,11 @@ static void trs_printer_open(void)
     if (snprintf(printer_filename, FILENAME_MAX, "%s%ctrsprn%04d.txt",
         trs_printer_dir, DIR_SLASH, file_num) < FILENAME_MAX) {
       if (stat(printer_filename, &st) < 0) {
-        printer_open = TRUE;
+        printer_open = 1;
         printer = fopen(printer_filename,"w");
         if (printer == NULL) {
           file_error("open printer output file '%s'", printer_filename);
-          printer_open = FALSE;
+          printer_open = 0;
         }
         return;
       }

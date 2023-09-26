@@ -70,7 +70,7 @@
 #define TRS_CHAR_HEIGHT4 10
 
 /* Public data */
-int  aspect_ratio  = TRUE;
+int  aspect_ratio  = 1;
 char scale_quality = '1';
 
 /* Private data */
@@ -1007,7 +1007,7 @@ static void trs_screen_flush(void)
   if (mousepointer) {
     if (!trs_emu_mouse && paste_state == PASTE_IDLE) {
       MarkSelection();
-      selectAll = FALSE;
+      selectAll = 0;
     }
   }
 
@@ -1133,7 +1133,7 @@ void trs_get_event(int wait)
         if (paste_state == PASTE_KEYUP)
           trs_xlate_keysym(0x10000 | paste_key);
         paste_state = PASTE_KEYUP;
-        paste_lastkey = TRUE;
+        paste_lastkey = 1;
       }
     }
 
@@ -1295,7 +1295,7 @@ void trs_get_event(int wait)
               paste_state = PASTE_GETNEXT;
               break;
             case SDLK_a:
-              selectAll = mousepointer = TRUE;
+              selectAll = mousepointer = 1;
               SDL_ShowCursor(SDL_ENABLE);
               break;
             case SDLK_DELETE:

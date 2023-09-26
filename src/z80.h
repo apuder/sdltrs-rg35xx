@@ -44,12 +44,6 @@
 #include <ctype.h>
 #include <SDL_types.h>
 
-#ifndef TRUE
-#define TRUE	(1)
-#define FALSE	(0)
-#endif
-
-
 typedef Uint64 tstate_t;
 #define TSTATE_T_MID (((Uint64) -1LL)/2ULL)
 

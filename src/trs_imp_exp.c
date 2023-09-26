@@ -105,7 +105,7 @@ void do_emt_mouse(void)
   int x, y;
   unsigned int buttons, sens;
 
-  trs_emu_mouse = TRUE;
+  trs_emu_mouse = 1;
 
   switch (Z80_B) {
   case 1:

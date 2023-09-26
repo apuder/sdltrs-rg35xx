@@ -203,7 +203,7 @@ stringy_create(const char *name)
 			     STRINGY_FMT_DEFAULT,
 			     STRINGY_LEN_DEFAULT,
 			     STRINGY_EOT_DEFAULT,
-			     FALSE);
+			     0);
 }
 
 static int
@@ -474,7 +474,7 @@ stringy_bit_read(stringy_info_t *s, int *bit)
       if (ferror(s->file) != 0) {
         file_error("stringy bit read");
         clearerr(s->file);
-        return FALSE;
+        return 0;
     }
     if (ires < 0) {
       ires = 0;
@@ -483,7 +483,7 @@ stringy_bit_read(stringy_info_t *s, int *bit)
   }
   *bit = (s->esf_bytebuf & (1 << s->esf_bitpos)) != 0;
   s->esf_bitpos = (s->esf_bitpos + 1) % 8;
-  return TRUE;
+  return 1;
 }
 
 static int
@@ -496,12 +496,12 @@ stringy_flux_read(stringy_info_t *s, int *flux, stringy_pos_t *delta)
   case STRINGY_FMT_DEBUG:
     bres = fscanf(s->file, "%d %u\n", flux, delta);
     if (bres == EOF) {
-      if (ferror(s->file)) return FALSE;
+      if (ferror(s->file)) return 0;
       stringy_read_debug_header(s);
       bres = fscanf(s->file, "%d %u\n", flux, delta);
-      if (bres == EOF && ferror(s->file)) return FALSE;
+      if (bres == EOF && ferror(s->file)) return 0;
     }
-    return TRUE;
+    return 1;
 
   case STRINGY_FMT_ESF:
     bres = stringy_bit_read(s, &bit);
@@ -519,10 +519,10 @@ stringy_flux_read(stringy_info_t *s, int *flux, stringy_pos_t *delta)
      */
     *flux = !bit;
     *delta = STRINGY_CELL_WIDTH;
-    return TRUE;
+    return 1;
   }
 
-  return FALSE;
+  return 0;
 }
 
 static void

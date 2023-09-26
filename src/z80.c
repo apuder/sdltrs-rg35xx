@@ -4244,7 +4244,7 @@ int z80_run(int continuous)
 		    Z80_PC++;
 		}
 	        do_nmi();
-	        z80_state.nmi_seen = TRUE;
+	        z80_state.nmi_seen = 1;
                 if (trs_model == 1) {
 		  /* Simulate releasing the pushbutton here; ugh. */
 		  trs_reset_button_interrupt(0);
@@ -4278,7 +4278,7 @@ void z80_reset(void)
     z80_state.iff1 = 0;
     z80_state.iff2 = 0;
     z80_state.interrupt_mode = 1;
-    z80_state.irq = z80_state.nmi = FALSE;
+    z80_state.irq = z80_state.nmi = 0;
     z80_state.sched = 0;
 }
 

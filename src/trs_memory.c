@@ -481,7 +481,7 @@ void trs_reset(int poweron)
     romin = 0;
     supermem_base = 0;
     supermem_hi = 0x8000;
-    trs_emu_mouse = FALSE;
+    trs_emu_mouse = 0;
 
     /* Close disks opened by Z80 programs */
     do_emt_resetdisk();

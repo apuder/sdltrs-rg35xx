@@ -99,7 +99,7 @@ static int cassette_sample_rate;
 int cassette_default_sample_rate = MAX_SAMPLE_RATE;
 static int cassette_stereo;
 static Uint32 cassette_silence;
-static int soundDeviceOpen = FALSE;
+static int soundDeviceOpen = 0;
 
 int trs_sound = 1;
 
@@ -496,7 +496,7 @@ set_audio_format(int state)
   SDL_AudioSpec desired, obtained;
 
   SDL_CloseAudio();
-  soundDeviceOpen = FALSE;
+  soundDeviceOpen = 0;
 
   desired.freq = cassette_sample_rate;
 #ifdef big_endian
@@ -514,7 +514,7 @@ set_audio_format(int state)
     cassette_state = FAILED;
     return -1;
   }
-  soundDeviceOpen = TRUE;
+  soundDeviceOpen = 1;
   if (obtained.format != AUDIO_U8 &&
 #ifdef big_endian
       obtained.format != AUDIO_S16MSB) {
@@ -650,7 +650,7 @@ static int assert_state(int state)
   if (cassette_state != CLOSE && cassette_state != FAILED) {
     if (cassette_format == DIRECT_FORMAT) {
       SDL_CloseAudio();
-      soundDeviceOpen = FALSE;
+      soundDeviceOpen = 0;
       cassette_position = 0;
     } else {
       cassette_position = ftell(cassette_file);
@@ -1241,8 +1241,8 @@ trs_orch90_out(int channels, int value)
     nsamples * (1000000.0 / cassette_sample_rate) - ddelta_us;
 
   while (nsamples-- > 0) {
-    put_sample(orch90_left, TRUE, cassette_file);
-    put_sample(orch90_right, TRUE, cassette_file);
+    put_sample(orch90_left, 1, cassette_file);
+    put_sample(orch90_right, 1, cassette_file);
   }
 
   if (trs_event_scheduled() == orch90_flush ||

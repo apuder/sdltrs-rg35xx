@@ -51,7 +51,7 @@ const char *program_name;
 
 int main(int argc, char *argv[])
 {
-  int zbx = FALSE;
+  int zbx = 0;
   wordregister x;
 
   /* program_name must be set first because the error
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
   if (!zbx || fullscreen)
     /* Run continuously until exit or request to enter debugger */
-    z80_run(TRUE);
+    z80_run(1);
 
 #ifdef ZBX
   puts("Entering debugger.");

@@ -590,20 +590,20 @@ static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg)
 
 static void trs_opt_memory(char *arg, int intarg, int *variable)
 {
-  *variable = TRUE;
+  *variable = 1;
 
   switch (intarg) {
     case HUFFMAN:
-      hypermem = FALSE;
+      hypermem = 0;
       break;
     case HYPERMEM:
-      huffman  = FALSE;
+      huffman  = 0;
       break;
     case SELECTOR:
-      supermem = FALSE;
+      supermem = 0;
       break;
     case SUPERMEM:
-      selector = FALSE;
+      selector = 0;
       break;
   }
 }
@@ -812,7 +812,7 @@ int trs_load_config_file(void)
 #endif
   foreground = WHITE;
   fullscreen = 0;
-  grafyx_microlabs = FALSE;
+  grafyx_microlabs = 0;
   gui_background = GREEN;
   gui_foreground = WHITE;
   lowercase = 1;
@@ -834,16 +834,16 @@ int trs_load_config_file(void)
   trs_charset1 = 3;
   trs_charset3 = 4;
   trs_charset4 = 8;
-  trs_disk_controller = TRUE;
+  trs_disk_controller = 1;
   trs_disk_doubler = TRSDISK_BOTH;
   trs_disk_truedam = 0;
   trs_emtsafe = 1;
   trs_hd_boot = 0;
   trs_joystick_num = 0;
-  trs_kb_bracket(FALSE);
-  trs_keypad_joystick = TRUE;
+  trs_kb_bracket(0);
+  trs_keypad_joystick = 1;
   trs_model = 1;
-  trs_show_led = TRUE;
+  trs_show_led = 1;
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
   window_border_width = 2;
