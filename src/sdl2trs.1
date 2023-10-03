@@ -79,7 +79,7 @@ Set floppy disk controller debug flags to hex value:
 kludges | \fI08\fP = Gaps | \fI10\fP = Phys sector sizes | \fI20\fP = Readadr
 timing | \fI\40\fP = DMK | \fI80\fP = ioctl errors.
 .TP
-.B \-disk\fIN filename\fP
+.B \-d[isk]\fIN filename\fP
 Specifies name of floppy disk image file to be inserted into
 Disk\fIN\fP, where \fIN\fP=0 through 7.
 .TP
@@ -139,7 +139,7 @@ Default: white (\fI0xE0E0FF\fP)
 Set action for Z80 HALT instruction: \fI(d)ebugger\fP | \fI(h)alt\fP |
 \fI(r)eset\fP. Default depends on the selected TRS-80 Model.
 .TP
-.B \-hard\fIN filename\fP
+.B \-h[ard]\fIN filename\fP
 Specifies name of hard disk image file to be inserted into
 Hard\fIN\fP, where \fIN\fP=0 through 3.
 .TP
@@ -410,7 +410,7 @@ Engage "Turbo" mode temporarily while pasting from clipboard.
 Set \fIfactor\fP of normal TRS-80 speed that the emulator runs in Turbo mode.
 Default: \fI5\fP
 .TP
-.B \-wafer\fIN filename\fP
+.B \-w[afer]\fIN filename\fP
 Specifies name of stringy wafer image file to be inserted into
 Wafer\fIN\fP, where \fIN\fP=0 through 7.
 .TP
