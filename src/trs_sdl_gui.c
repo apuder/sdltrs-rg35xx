@@ -1702,7 +1702,7 @@ void trs_gui_emulator_settings(void)
   MENU_ENTRY menu[] =
   {{"Model                                             ", MENU_NORMAL},
    {"CPU Clock Speed                                   ", MENU_NORMAL},
-   {"Speedup Kit Emulation for Model I/III/4/4P        ", MENU_NORMAL},
+   {"Speedup Kit or Banking for Model I/III/4/4P       ", MENU_NORMAL},
    {"Exatron Stringy Floppy Emulation for Model I      ", MENU_NORMAL},
    {"LE18 (Lowe Electronics) Graphics for Model I      ", MENU_NORMAL},
    {"Lowercase Modification for Model I                ", MENU_NORMAL},
@@ -1722,7 +1722,7 @@ void trs_gui_emulator_settings(void)
                          "       Archbold",
                          "  Holmes II/III",
                          "     Seatronics",
-                         "        Banking",
+                         "Banking Model I",
                          "          LNW80",
                          "TCS SpeedMaster",
                          "    CT-80 Aster"};
@@ -1809,7 +1809,7 @@ void trs_gui_emulator_settings(void)
           selector = 0;
         break;
       case 9:
-        grafyx_microlabs = trs_gui_display_popup("Grafyx", yes_no, 2,
+        grafyx_microlabs = trs_gui_display_popup("Micro-Labs", yes_no, 2,
             grafyx_microlabs);
         break;
       case 10:
@@ -2683,7 +2683,7 @@ void trs_gui(void)
   MENU_ENTRY menu[] =
   {{"Floppy Disk Management   (Alt-D)", MENU_NORMAL},
    {"Hard Disk Management     (Alt-H)", MENU_NORMAL},
-   {"Cassette Management      (Alt-T)", MENU_NORMAL},
+   {"Cassette/Tape Management (Alt-T)", MENU_NORMAL},
    {"Stringy Wafer Management (Alt-G)", MENU_NORMAL},
    {"Emulator Settings        (Alt-E)", MENU_NORMAL},
    {"Display Settings         (Alt-I)", MENU_NORMAL},
