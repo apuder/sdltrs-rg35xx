@@ -815,15 +815,24 @@ int trs_load_config_file(void)
   grafyx_microlabs = 0;
   gui_background = GREEN;
   gui_foreground = WHITE;
+  huffman = 0;
+  hypermem = 0;
+  lowe_le18 = 0;
   lowercase = 1;
+  lubomir = 0;
+  megamem = 0;
+  mousepointer = 1;
   resize3 = 1;
   resize4 = 0;
   scale = 1;
   scanlines = 0;
   scanshade = 127;
+  selector = 0;
   strcpy(romfile1, "level2.rom");
   strcpy(romfile3, "model3.rom");
   strcpy(romfile4p, "model4p.rom");
+  stringy = 0;
+  speedup = 1;
   sprintf(trs_cass_dir, "%c%c", '.', DIR_SLASH);
   sprintf(trs_disk_dir, "%c%c", '.', DIR_SLASH);
   sprintf(trs_disk_set_dir, "%c%c", '.', DIR_SLASH);
@@ -831,6 +840,9 @@ int trs_load_config_file(void)
   sprintf(trs_printer_dir, "%c%c", '.', DIR_SLASH);
   sprintf(trs_state_dir, "%c%c", '.', DIR_SLASH);
   stretch_amount = STRETCH_AMOUNT;
+  supermem = 0;
+  timer_overclock = 0;
+  timer_overclock_rate = 5;
   trs_charset1 = 3;
   trs_charset3 = 4;
   trs_charset4 = 8;
@@ -843,9 +855,12 @@ int trs_load_config_file(void)
   trs_kb_bracket(0);
   trs_keypad_joystick = 1;
   trs_model = 1;
+  trs_printer = 0;
   trs_show_led = 1;
+  trs_sound = 1;
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
+  turbo_paste = 0;
   window_border_width = 2;
   z80_halt = 0;
 
