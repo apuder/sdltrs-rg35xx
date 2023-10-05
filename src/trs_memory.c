@@ -80,6 +80,7 @@
 /* We allow for 2MB of banked memory via port 0x94. That is the extreme limit
    of the port mods rather than anything normal (512K might be more 'normal' */
 Uint8 memory[MAX_MEMORY_SIZE + 1]; /* +1 so strings from mem_pointer are NUL-terminated */
+int trs_model = 1;
 int trs_rom_size;
 int lowercase = 1;
 int eg3200;   /* EACA EG 3200 Genie III */

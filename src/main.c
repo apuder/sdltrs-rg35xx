@@ -46,7 +46,6 @@
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
-int trs_model = 1;
 const char *program_name;
 
 int main(int argc, char *argv[])
