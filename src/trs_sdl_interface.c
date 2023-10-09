@@ -2169,7 +2169,7 @@ void trs_turbo_led(void)
   drawnRectCount = MAX_RECTS;
 }
 
-void trs_screen_write_char(int position, Uint8 char_index)
+void trs_screen_write_char(unsigned int position, Uint8 char_index)
 {
   unsigned int row, col;
   int expanded = (currentmode & EXPANDED) != 0;
@@ -2497,7 +2497,7 @@ void grafyx_m3_write_mode(int value)
   if (changed) trs_screen_refresh();
 }
 
-int grafyx_m3_write_byte(int position, int byte)
+int grafyx_m3_write_byte(unsigned int position, int byte)
 {
   if (grafyx_microlabs && (grafyx_mode & G3_COORD)) {
     grafyx_write_byte(position % 64, (position / 64) * 12 + grafyx_y, byte);
@@ -2506,7 +2506,7 @@ int grafyx_m3_write_byte(int position, int byte)
     return 0;
 }
 
-Uint8 grafyx_m3_read_byte(int position)
+Uint8 grafyx_m3_read_byte(unsigned int position)
 {
   if (grafyx_microlabs && (grafyx_mode & G3_COORD))
     return grafyx_unscaled[(position / 64) * 12 + grafyx_y][position % 64];
@@ -2701,10 +2701,10 @@ hrg_read_data(void)
   return hrg_screen[hrg_addr];
 }
 
-void m6845_cursor(int position, int start, int end, int visible)
+void m6845_cursor(unsigned int position, int start, int end, int visible)
 {
   int expanded = (currentmode & EXPANDED) != 0;
-  int row, col;
+  unsigned int row, col;
   int cur_char;
   SDL_Rect srcRect, dstRect;
 
@@ -2793,9 +2793,9 @@ void genie3s_hrg(int value)
   if (changed) trs_screen_refresh();
 }
 
-void genie3s_hrg_write(int position, int byte)
+void genie3s_hrg_write(unsigned int position, int byte)
 {
-  int pos, row, col;
+  unsigned int pos, row, col;
 
   if ((currentmode & EXPANDED) && (position & 1)) return;
 
@@ -2813,9 +2813,9 @@ void genie3s_hrg_write(int position, int byte)
       mirror_bits(byte));
 }
 
-Uint8 genie3s_hrg_read(int position)
+Uint8 genie3s_hrg_read(unsigned int position)
 {
-  int pos, row, col;
+  unsigned int pos, row, col;
 
   if (row_chars == 64) {
     pos = position & (screen_chars - 1);
