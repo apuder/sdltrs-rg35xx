@@ -1113,7 +1113,7 @@ void mem_write(int address, int value)
 	  }
 	  if (address >= 0x4400 && address <= 0x47FF) {
 	    genie3s_char(((address - 0x4400) / 16) + 192,
-			  (address - 0x4400) & 0x0F, value);
+			  (address - 0x4400), value);
 	    return;
 	  }
 	}
