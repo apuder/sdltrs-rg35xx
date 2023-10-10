@@ -432,19 +432,20 @@ cwrite::
 		bdos b_fwseq,c_fcb1
 
 	; display action
-		push af
 		ld e,'w'
 		call verbose
-		pop af
 
 	; restore regs
 		pop hl
 		pop de
 		pop bc
-		ret z
+		inc a
+		jp z,cwrite2
+		xor a
+		ret
 
 	; display error message
-		bdos b_couts,m_cwrite
+cwrite2:	bdos b_couts,m_cwrite
 		xor a
 		dec a
 		ret			; ret nz
