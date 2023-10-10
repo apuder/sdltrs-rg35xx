@@ -22,7 +22,7 @@ MACLIB LIBSTR.MLB
 ; Start
 ;##############################################################################
 
-xtrs_start::	defb	'LIBXTRS',nul
+xtrs_start::	defb	'LIBXTRS',0
 
 ;##############################################################################
 ; Messages
@@ -387,7 +387,7 @@ modeldone:	pop de			; restore de
 		inc hl
 
 	; terminate
-		ld (hl),nul
+		ld (hl),0
 
 		pop hl			; restore hl
 		ret

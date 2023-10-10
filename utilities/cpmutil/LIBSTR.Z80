@@ -20,7 +20,7 @@ MACLIB CPM.MLB
 ; Start
 ;##############################################################################
 
-str_start::	defb	'LIBSTR',nul
+str_start::	defb	'LIBSTR',0
 
 ;##############################################################################
 ; Character functions
@@ -77,7 +77,7 @@ casels::
 		push hl
 
 casels1:	ld a,(hl)		; fetch
-		cp nul
+		cp 0
 		jr z,casels2		; nul?
 		call caselc		; convert
 		ld (hl),a		; store
@@ -97,7 +97,7 @@ caseus::
 		push hl
 
 caseus1:	ld a,(hl)		; fetch
-		cp nul
+		cp 0
 		jr z,caseus2		; nul?
 		call caselc		; convert
 		ld (hl),a		; store
@@ -218,7 +218,7 @@ nulp2:
 		pop hl
 
 	; terminate with nul
-		ld (hl),nul		; nul terminate
+		ld (hl),0		; nul terminate
 
 		pop hl
 		pop de

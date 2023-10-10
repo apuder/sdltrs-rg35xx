@@ -56,7 +56,7 @@ MACLIB LIBXTRS.MLB
 ; Offset assembly so that print file matches linked output
 ;##############################################################################
 
-		.phase 103h
+;		.phase 103h
 
 ;##############################################################################
 ; Messages
@@ -127,8 +127,8 @@ hfnbuffer::	defs	128		; host filename
 dfnbuffer::	defs	9		; disk filename "diskXX-X"
 
 ; cmd skeletons: %d becomes disk filename, %h becomes host filename
-mnt_cmd::	defb	'rm -f %d;test -f %h && ln -s %h %d',nul
-umt_cmd::	defb	'rm -f %d',nul
+mnt_cmd::	defb	'rm -f %d;test -f %h && ln -s %h %d',0
+umt_cmd::	defb	'rm -f %d',0
 
 cmdbuffer::	defs	300		; buffer to store expanded host commands
 
@@ -572,7 +572,7 @@ copyspaces:
 		inc hl			; bump
 		inc de
 		push af
-		ld a,nul
+		ld a,0
 		ld (de),a		; always terminate destination
 		pop af
 		jr copyspaces		; again

@@ -22,7 +22,7 @@ MACLIB LIBSTR.MLB
 ; Start
 ;##############################################################################
 
-hfn_start::	defb	'LIBHFN',nul
+hfn_start::	defb	'LIBHFN',0
 
 ;##############################################################################
 ; Storage
@@ -76,7 +76,7 @@ hfn_s2:
 		push af
 
 	; terminate host filename in buffer
-		ld a,nul
+		ld a,0
 		ld (de),a
 
 	; save current location in source
@@ -127,7 +127,7 @@ hfn_e1:
 	; process escape character
 		inc hl			; fetch next character
 		ld a,(hl)
-		cp nul
+		cp 0
 		jr z,hfn_e3		; nul? (can't escape a nul)
 		call casecc		; change case
 
@@ -139,7 +139,7 @@ hfn_e2:
 		jr hfn_e1		; again
 
 hfn_e3: ; terminate
-		ld a,nul
+		ld a,0
 		ld (de),a		; terminate dest
 		ret
 
@@ -175,7 +175,7 @@ hfnfromfcb::
 
 hfnterm:
 	; terminate
-		ld a,nul
+		ld a,0
 		ld (hl),a
 
 		pop hl

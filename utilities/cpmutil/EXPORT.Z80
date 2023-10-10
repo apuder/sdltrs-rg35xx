@@ -72,7 +72,7 @@ MACLIB LIBXTRS.MLB
 ; Offset assembly so that print file matches linked output
 ;##############################################################################
 
-		.phase 103h
+;		.phase 103h
 
 ;##############################################################################
 ; Messages

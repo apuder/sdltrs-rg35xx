@@ -22,7 +22,7 @@ MACLIB LIBSTR.MLB
 ; Start
 ;##############################################################################
 
-cfn_start::	defb	'LIBCFN',nul
+cfn_start::	defb	'LIBCFN',0
 
 ;##############################################################################
 ; Code
@@ -108,7 +108,7 @@ cgetname:
 ;		hl -> next byte in source (nul or space), or byte after '.'
 ;------------------------------------------------------------------------------
 		ld a,(hl)		; fetch
-		cp nul
+		cp 0
 		jr z,cgetshort		; nul?
 		cp spc
 		jr z,cgetshort		; space?
@@ -127,7 +127,7 @@ cgetskip:
 	; eat extra chars in source
 	; stop on nul or space, stop after '.'
 		ld a,(hl)		; fetch
-		cp nul
+		cp 0
 		ret z			; nul?
 		cp spc
 		ret z			; space?
@@ -204,7 +204,7 @@ cpmcname:
 
 cpmterm:
 	; terminate
-		ld a,nul
+		ld a,0
 		ld (hl),a
 
 		pop hl

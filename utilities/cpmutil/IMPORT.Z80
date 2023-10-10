@@ -45,7 +45,7 @@ MACLIB LIBXTRS.MLB
 ; Offset assembly so that print file matches linked output
 ;##############################################################################
 
-		.phase 103h
+;		.phase 103h
 
 ;##############################################################################
 ; Messages
@@ -297,7 +297,7 @@ binary:
 		ld a,c_iobufsize
 		sub b			; a has number bytes to nul
 binary1:	jr z,binary2
-		ld (hl),nul
+		ld (hl),0
 		inc hl
 		dec a
 		jr binary1
@@ -360,7 +360,7 @@ text4:				; end of file reached
 
 				; fill cpm buffer with nul chars
 		ld b,c
-		ld a,nul
+		ld a,0
 text5:		ld (de),a
 		inc de
 		djnz text5

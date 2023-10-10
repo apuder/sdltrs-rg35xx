@@ -150,11 +150,11 @@ cfn_dotest:
 
 cfn_becomes:	defb	' -> $'
 
-cfn_t1:		defb	'A',nul
-cfn_t2:		defb	'A:',nul
-cfn_t3:		defb	'A:ABCDEFGHIJ.ABCDE',nul
-cfn_t4:		defb	'A:AB?D*FGHI.?B*D',nul
-cfn_t5:		defb	'A:A.B.C.D',nul
+cfn_t1:		defb	'A',0
+cfn_t2:		defb	'A:',0
+cfn_t3:		defb	'A:ABCDEFGHIJ.ABCDE',0
+cfn_t4:		defb	'A:AB?D*FGHI.?B*D',0
+cfn_t5:		defb	'A:A.B.C.D',0
 
 hfn_test::
 ;==============================================================================
@@ -195,8 +195,8 @@ hfn_dotest:	ld de,c_iobuf
 		bdos b_couts,m_crlf
 		ret
 
-hfn_t1:		defb	'TESTHOSTFILENAME',nul
-hfn_t2:		defb	'[ANOTHER[TEST[HOST[FILENAME',nul
+hfn_t1:		defb	'TESTHOSTFILENAME',0
+hfn_t2:		defb	'[ANOTHER[TEST[HOST[FILENAME',0
 
 ch_fn_test::
 ;==============================================================================
@@ -230,7 +230,7 @@ ch_fn_test::
 
 		ret
 
-chfn_t1:	defb	'A:ABCD.EF',nul
+chfn_t1:	defb	'A:ABCD.EF',0
 
 xtrs_test::
 ;==============================================================================
