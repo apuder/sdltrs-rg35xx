@@ -79,9 +79,9 @@ char scale_quality = '1';
 static Uint8 trs_screen[SCREEN_SIZE];
 static Uint8 char_ram[MAX_CHARS][MAX_CHAR_HEIGHT];
 static Uint8 *blitMap;
+static Uint16 screen_chars = 1024;
 static int trs_charset;
 static int cpu_panel;
-static int screen_chars = 1024;
 static int row_chars = 64;
 static int col_chars = 16;
 static int border_width = 2;
@@ -2914,7 +2914,7 @@ void trs_main_save(FILE *file)
 
   trs_save_int(file, &trs_model, 1);
   trs_save_uint8(file, trs_screen, SCREEN_SIZE);
-  trs_save_int(file, &screen_chars, 1);
+  trs_save_uint16(file, &screen_chars, 1);
   trs_save_int(file, &col_chars, 1);
   trs_save_int(file, &row_chars, 1);
   trs_save_int(file, &currentmode, 1);
@@ -2955,7 +2955,7 @@ void trs_main_load(FILE *file)
 
   trs_load_int(file, &trs_model, 1);
   trs_load_uint8(file, trs_screen, SCREEN_SIZE);
-  trs_load_int(file, &screen_chars, 1);
+  trs_load_uint16(file, &screen_chars, 1);
   trs_load_int(file, &col_chars, 1);
   trs_load_int(file, &row_chars, 1);
   trs_load_int(file, &currentmode, 1);
