@@ -108,7 +108,7 @@ cgetname:
 ;		hl -> next byte in source (nul or space), or byte after '.'
 ;------------------------------------------------------------------------------
 		ld a,(hl)		; fetch
-		cp 0
+		or a
 		jr z,cgetshort		; nul?
 		cp spc
 		jr z,cgetshort		; space?
@@ -127,7 +127,7 @@ cgetskip:
 	; eat extra chars in source
 	; stop on nul or space, stop after '.'
 		ld a,(hl)		; fetch
-		cp 0
+		or a
 		ret z			; nul?
 		cp spc
 		ret z			; space?

@@ -77,7 +77,7 @@ casels::
 		push hl
 
 casels1:	ld a,(hl)		; fetch
-		cp 0
+		or a
 		jr z,casels2		; nul?
 		call caselc		; convert
 		ld (hl),a		; store
@@ -97,7 +97,7 @@ caseus::
 		push hl
 
 caseus1:	ld a,(hl)		; fetch
-		cp 0
+		or a
 		jr z,caseus2		; nul?
 		call caselc		; convert
 		ld (hl),a		; store

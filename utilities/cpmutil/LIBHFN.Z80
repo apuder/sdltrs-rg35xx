@@ -127,7 +127,7 @@ hfn_e1:
 	; process escape character
 		inc hl			; fetch next character
 		ld a,(hl)
-		cp 0
+		or a
 		jr z,hfn_e3		; nul? (can't escape a nul)
 		call casecc		; change case
 

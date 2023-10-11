@@ -457,7 +457,7 @@ opt_action:
 	; process option
 		call caseuc		; make case-insensitive
 		cp 'L'
-		jp z,opt_l
+		jr z,opt_l
 
 	; invalid option
 		ld (option),a

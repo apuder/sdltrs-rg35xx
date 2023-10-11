@@ -152,7 +152,7 @@ main::
 		call options
 
 	; cpm fileref
-		jp z,no_cpmfref		; end of parameters?
+		jr z,no_cpmfref		; end of parameters?
 		ld de,c_fcb1		; fcb to fill
 		call cfntofcb		; put cpm fname into fcb
 		call skipspaces
@@ -267,12 +267,12 @@ exp_prep::
 	; check count of files to export
 		ld a,b
 		or c
-		jp z,exp_none		; no files to export?
+		jr z,exp_none		; no files to export?
 		dec bc
 		ld a,b
 		or c
-		jp z,exp_one		; only 1 file to export?
-		jp exp_many		; more than 1 file to export
+		jr z,exp_one		; only 1 file to export?
+		jr exp_many		; more than 1 file to export
 
 exp_none::
 ;==============================================================================
@@ -299,7 +299,7 @@ exp_one::
 
 	; export it
 		call export
-		jp exp_done
+		jr exp_done
 
 exp_many::
 ;==============================================================================

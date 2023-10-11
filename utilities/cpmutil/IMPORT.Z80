@@ -406,7 +406,7 @@ copen::
 
 copen1:		bdos b_fnew,c_fcb1	; make new file (a=0FFh is error)
 		inc a
-		jp z,copen2
+		jr z,copen2
 		xor a
 		ret
 
@@ -440,7 +440,7 @@ cwrite::
 		pop de
 		pop bc
 		inc a
-		jp z,cwrite2
+		jr z,cwrite2
 		xor a
 		ret
 
