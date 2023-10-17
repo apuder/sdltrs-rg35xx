@@ -1490,10 +1490,10 @@ void trs_get_event(int wait)
               case SDLK_F3:  keysym.sym = 0x121; goto done; /* ] */
               case SDLK_F4:  keysym.sym = 0x122; goto done; /* ^ */
               case SDLK_LCTRL: /* P1 on SpeedMaster or Control */
-                keysym.sym = (speedup == 6) ? 0x11c : 0x11a;
+                keysym.sym = (speedup == 7) ? 0x11c : 0x11a;
                 goto done;
               case SDLK_END:   /* P2 on SpeedMaster or Shifted Down Arrow */
-                keysym.sym = (speedup == 6) ? 0x088 : 0x117;
+                keysym.sym = (speedup == 7) ? 0x088 : 0x117;
                 goto done;
               default:
                 break;

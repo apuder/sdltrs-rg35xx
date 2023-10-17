@@ -1723,9 +1723,9 @@ void trs_gui_emulator_settings(void)
                          "  Holmes II/III",
                          "     Seatronics",
                          "Banking Model I",
+                         "    CT-80 Aster",
                          "          LNW80",
-                         "TCS SpeedMaster",
-                         "    CT-80 Aster"};
+                         "TCS SpeedMaster"};
   int selection = 0;
   int model_selection = trs_model == 1 ? 0 : trs_model - 2;
   float clock_mhz[4];

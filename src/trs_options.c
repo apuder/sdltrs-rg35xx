@@ -722,13 +722,13 @@ static void trs_opt_speedup(char *arg, int intarg, int *stringarg)
     case 'b': /* Banking */
       speedup = 4;
       break;
-    case 'l': /* LNW80 */
+    case 'c': /* Aster CT-80 */
       speedup = 5;
       break;
-    case 't': /* TCS SpeedMaster */
+    case 'l': /* LNW80 */
       speedup = 6;
       break;
-    case 'c': /* Aster CT-80 */
+    case 't': /* TCS SpeedMaster */
       speedup = 7;
       break;
     default:
@@ -1091,9 +1091,9 @@ int trs_write_config_file(const char *filename)
       speedup == 2 ? "holmes"          :
       speedup == 3 ? "seatronics"      :
       speedup == 4 ? "banking"         :
-      speedup == 5 ? "lnw80"           :
-      speedup == 6 ? "tcs speedmaster" :
-      speedup == 7 ? "ct80"            : "none");
+      speedup == 5 ? "ct80"            :
+      speedup == 6 ? "lnw80"           :
+      speedup == 7 ? "tcs-speedmaster" : "none");
 
   fprintf(config_file, "statedir=%s\n", trs_state_dir);
 #ifdef __linux

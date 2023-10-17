@@ -413,16 +413,16 @@ void sys_byte_out(int value)
 		case 4: /* Banking-Modification from Martin Doppelbauer */
 			memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
 			break;
-		case 5: /* LNW80: HRG in low 16 kB */
-			memory_map = (value & (1 << 3)) ? 0x20 : 0x10;
-			/* Fall through - HRG on/off bit is identical */
-		case 6: /* TCS Genie IIs/SpeedMaster */
-			if ((value & (1 << 1)) != (system_byte & (1 << 1)))
-				hrg_onoff((value & (1 << 1)) ? 2 : 0);
-			break;
-		case 7: /* Aster CT-80 */
+		case 5: /* Aster CT-80 */
 			if ((value & (1 << 0)) != (system_byte & (1 << 0)))
 				trs_timer_speed(value & (1 << 0));
+			break;
+		case 6: /* LNW80: HRG in low 16 kB */
+			memory_map = (value & (1 << 3)) ? 0x20 : 0x10;
+			/* Fall through - HRG on/off bit is identical */
+		case 7: /* TCS Genie IIs/SpeedMaster */
+			if ((value & (1 << 1)) != (system_byte & (1 << 1)))
+				hrg_onoff((value & (1 << 1)) ? 2 : 0);
 			break;
 	}
 
@@ -557,17 +557,17 @@ void trs_reset(int poweron)
 	trs_interrupt_latch_clear();
 
 	switch (speedup) {
-		case 5:		/* LNW80 */
-			trs_clones_model(LNW80);
-			break;
-		case 6:		/* TCS SpeedMaster 5.3 */
-			memory_map = 0x26;
-			trs_clones_model(SPEEDMASTER);
-			break;
-		case 7:		/* Aster CT-80 */
+		case 5:		/* Aster CT-80 */
 			memory_map = 0x27;
 			system_byte = 0x06;
 			trs_clones_model(CT80);
+			break;
+		case 6:		/* LNW80 */
+			trs_clones_model(LNW80);
+			break;
+		case 7:		/* TCS SpeedMaster 5.3 */
+			memory_map = 0x26;
+			trs_clones_model(SPEEDMASTER);
 			break;
 	}
     }

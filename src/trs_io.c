@@ -336,7 +336,7 @@ void z80_out(int port, int value)
             mem_bank_base(SELECTOR, value);
           return;
         case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-          if (speedup == 6)
+          if (speedup == 7)
             mem_bank_base(RAM192B, value);
           return;
         case 0xB5: /* Orchestra-85 right channel */
@@ -402,11 +402,11 @@ void z80_out(int port, int value)
             eg3200_init_out(value);
           return;
         case 0xFC:
-          if (speedup == 7) /* 6845 CRTC Aster CT-80 */
+          if (speedup == 5) /* 6845 CRTC Aster CT-80 */
             ctrlimage = value;
           return;
         case 0xFD:
-          if (speedup == 7) /* 6845 CRTC Aster CT-80 */
+          if (speedup == 5) /* 6845 CRTC Aster CT-80 */
             m6845_crtc(value);
           else
             /* Printer port of EACA Genie/System 80 */
@@ -768,7 +768,7 @@ int z80_in(int port)
           value = hrg_read_data();
           goto done;
         case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-          if (speedup == 6)
+          if (speedup == 7)
             value = mem_read_bank_base(RAM192B);
           goto done;
         case 0xDF:

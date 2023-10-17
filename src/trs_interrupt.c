@@ -429,10 +429,10 @@ trs_timer_init(void)
         z80_state.clockMHz = TCS_G3S_MHZ;
       } else {
         switch (speedup) {
-          case 5: /* LNW80 */
+          case 6: /* LNW80 */
             z80_state.clockMHz = CLOCK_4_MHZ;
             break;
-          case 6: /* TCS SpeedMaster 5.3 */
+          case 7: /* TCS SpeedMaster 5.3 */
             z80_state.clockMHz = TCS_SPM_MHZ;
             break;
           default:
@@ -541,16 +541,16 @@ trs_timer_speed(int fast)
         else
         switch (speedup) {
         case 1: /* Archbold */
-        case 7: /* CT-80 */
+        case 5: /* CT-80 */
           z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
           break;
         case 2: /* Holmes Sprinter II */
           z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
           break;
-        case 5: /* LNW80 */
+        case 6: /* LNW80 */
           z80_state.clockMHz = (fast & 1) ? CLOCK_4_MHZ : CLOCK_1_MHZ;
           break;
-        case 6: /* TCS SpeedMaster */
+        case 7: /* TCS SpeedMaster */
           z80_state.clockMHz = (fast & 1) ? TCS_SPM_MHZ : CLOCK_1_MHZ;
           break;
         default:
