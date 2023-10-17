@@ -2912,7 +2912,6 @@ void trs_main_save(FILE *file)
 {
   int i;
 
-  trs_save_int(file, &trs_model, 1);
   trs_save_uint8(file, trs_screen, SCREEN_SIZE);
   trs_save_uint16(file, &screen_chars, 1);
   trs_save_int(file, &col_chars, 1);
@@ -2953,7 +2952,6 @@ void trs_main_load(FILE *file)
 {
   int i;
 
-  trs_load_int(file, &trs_model, 1);
   trs_load_uint8(file, trs_screen, SCREEN_SIZE);
   trs_load_uint16(file, &screen_chars, 1);
   trs_load_int(file, &col_chars, 1);

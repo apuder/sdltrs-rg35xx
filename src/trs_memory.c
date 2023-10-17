@@ -1615,6 +1615,7 @@ void trs_mem_save(FILE *file)
   trs_save_uint8(file, supermem_ram, MAX_SUPERMEM_SIZE + 1);
   trs_save_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_save_uint8(file, video, MAX_VIDEO_SIZE + 1);
+  trs_save_int(file, &trs_model, 1);
   trs_save_int(file, &trs_rom_size, 1);
   trs_save_int(file, &lowercase, 1);
   trs_save_int(file, &memory_map, 1);
@@ -1645,6 +1646,7 @@ void trs_mem_load(FILE *file)
   trs_load_uint8(file, supermem_ram, MAX_SUPERMEM_SIZE + 1);
   trs_load_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_load_uint8(file, video, MAX_VIDEO_SIZE + 1);
+  trs_load_int(file, &trs_model, 1);
   trs_load_int(file, &trs_rom_size, 1);
   trs_load_int(file, &lowercase, 1);
   trs_load_int(file, &memory_map, 1);
