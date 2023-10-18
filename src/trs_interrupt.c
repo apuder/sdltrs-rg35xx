@@ -519,13 +519,13 @@ trs_timer_speed(int fast)
      *   0       1     = 4 MHz
      *   0       0     = 2 MHz
      */
-    if ((fast & 0x80) >> 7) {
-      if ((fast & 0x40) >> 6)
+    if (fast & 0x80) {
+      if (fast & 0x40)
         z80_state.clockMHz = CLOCK_8_MHZ;
       else
         z80_state.clockMHz = CLOCK_5_MHZ;
     } else {
-      if ((fast & 0x40) >> 6)
+      if (fast & 0x40)
         z80_state.clockMHz = CLOCK_4_MHZ;
       else
         z80_state.clockMHz = CLOCK_2_MHZ;
@@ -571,7 +571,7 @@ trs_timer_speed(int fast)
     }
   }
   if (trs_model >= 4) {
-    if (((fast & 0x80) >> 7) || ((fast & 0x40) >> 6))
+    if ((fast & 0x80) || (fast & 0x40))
       timer_hz = TIMER_HZ_4;
     else
       timer_hz = TIMER_HZ_3;

@@ -479,7 +479,7 @@ void z80_out(int port, int value)
 	int changes = value ^ ctrlimage;
 
 	if (changes & 0x80)
-	  mem_video_page(((value & 0x80) >> 7) ? 1024 : 0);
+	  mem_video_page((value & 0x80) ? 1024 : 0);
 
 	if (changes & 0x70)
 	  mem_bank((value & 0x70) >> 4);

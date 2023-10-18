@@ -199,7 +199,7 @@ static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7)
+      if (byte & 0x80)
         *dst = map[1];
       else
         *dst = map[0];
@@ -224,7 +224,7 @@ static void CopyBlitImageTo2Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7)
+      if (byte & 0x80)
         *dst = map[1];
       else
         *dst = map[0];
@@ -249,7 +249,7 @@ static void CopyBlitImageTo3Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7) {
+      if (byte & 0x80) {
         dst[0] = map[3];
         dst[1] = map[4];
         dst[2] = map[5];
@@ -279,7 +279,7 @@ static void CopyBlitImageTo4Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7)
+      if (byte & 0x80)
         *dst = map[1];
       else
         *dst = map[0];
@@ -304,7 +304,7 @@ static void XorBlitImageTo1Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7) {
+      if (byte & 0x80) {
         if (*dst == map[0])
           *dst = map[1];
         else
@@ -331,7 +331,7 @@ static void XorBlitImageTo2Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7) {
+      if (byte & 0x80) {
         if (*dst == map[0])
           *dst = map[1];
         else
@@ -358,7 +358,7 @@ static void XorBlitImageTo3Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7) {
+      if (byte & 0x80) {
         if ((dst[0] == map[0]) && (dst[1] == map[1]) && (dst[2] == map[2])) {
           dst[0] = map[3];
           dst[1] = map[4];
@@ -390,7 +390,7 @@ static void XorBlitImageTo4Byte(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if ((byte & 0x80) >> 7) {
+      if (byte & 0x80) {
         if (*dst == map[0])
           *dst = map[1];
         else
