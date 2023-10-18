@@ -498,6 +498,8 @@ void trs_reset(int poweron)
     if (poweron || genie3s || trs_model >= 4) {
 	if (poweron || trs_model >= 4)
 		mem_init();
+	trs_rom_init();
+	trs_timer_init();
 	/* No quirks */
 	trs_clones_model(0);
 	/* Blank Video */
@@ -511,8 +513,6 @@ void trs_reset(int poweron)
 	  trs_hard_led(-1, -1);
 	}
 
-	trs_rom_init();
-	trs_timer_init();
         /* Reset processor */
 	z80_reset();
     } else {
