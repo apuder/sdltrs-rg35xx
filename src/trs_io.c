@@ -63,7 +63,6 @@ int trs_io_debug_flags;
 static int modesel;         /* Model I */
 static int modeimage = 0x8; /* Model III/4/4p & SIO */
 static int ctrlimage;       /* Model 4/4p & M6845 */
-static int rominimage;      /* Model 4p */
 
 /* RTC addr/data */
 static int rtc_reg;
@@ -521,13 +520,11 @@ void z80_out(int port, int value)
         mem_bank_base(HUFFMAN, value);
       return;
     case 0x9C:
-    case 0x9D: /* !!? */
-    case 0x9E: /* !!? */
-    case 0x9F: /* !!? */
-      if (trs_model == 5 /*4p*/) {
-	rominimage = value & 1;
-	mem_romin(rominimage);
-      }
+    case 0x9D:
+    case 0x9E:
+    case 0x9F:
+      if (trs_model == 5 /*4p*/)
+	mem_romin(value);
       return;
     case 0xE0:
     case 0xE1:
@@ -815,13 +812,6 @@ int z80_in(int port)
       if (trs_model >= 4 && huffman)
         value = mem_read_bank_base(HUFFMAN);
       goto done;
-    case 0x9C: /* !!? */
-    case 0x9D: /* !!? */
-    case 0x9E: /* !!? */
-    case 0x9F: /* !!? */
-      if (trs_model == 5 /*4p*/)
-        value = rominimage;
-      goto done;
     case 0xE0:
     case 0xE1:
     case 0xE2:
@@ -975,7 +965,6 @@ void trs_io_save(FILE *file)
   trs_save_int(file, &modesel, 1);
   trs_save_int(file, &modeimage, 1);
   trs_save_int(file, &ctrlimage, 1);
-  trs_save_int(file, &rominimage, 1);
   trs_save_int(file, &cursor_csr, 1);
   trs_save_int(file, &cursor_cer, 1);
   trs_save_int(file, &cursor_old, 1);
@@ -992,7 +981,6 @@ void trs_io_load(FILE *file)
   trs_load_int(file, &modesel, 1);
   trs_load_int(file, &modeimage, 1);
   trs_load_int(file, &ctrlimage, 1);
-  trs_load_int(file, &rominimage, 1);
   trs_load_int(file, &cursor_csr, 1);
   trs_load_int(file, &cursor_cer, 1);
   trs_load_int(file, &cursor_old, 1);
