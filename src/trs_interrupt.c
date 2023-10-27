@@ -382,7 +382,7 @@ trs_inityear(void)
   } else {
     time_t real = time(NULL);
     time_t fake;
-    struct tm tm;
+    struct tm tm = { 0 };
 
 #if defined (_WIN32) && defined(__MINGW64__)
 #   define localtime_r(T,Tm) (localtime_s(Tm,T) ? NULL : Tm)
