@@ -1423,7 +1423,7 @@ trs_disk_sector_write(Uint8 data)
     } else {
       if ((trs_disk_doubler & TRSDISK_PERCOM) ||
           (trs_clones.model & (EG3200 | GENIE3S | LNW80 | SPEEDMASTER))) {
-        if (data & (1 << 7)) {
+        if (data & (1 << 7) && (data & 0x1F) == 0) {
           DiskState *d = &disk[state.curdrive];
 
           d->inches = (data & (1 << 6)) ? 8 : 5;
