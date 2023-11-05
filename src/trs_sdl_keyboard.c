@@ -738,7 +738,6 @@ void trs_xlate_keysym(int keysym)
 
 static void change_keystate(int action)
 {
-  int key_down;
   int i;
 #ifdef KBDEBUG
   debug("change_keystate: action 0x%x\n", action);
@@ -761,8 +760,7 @@ static void change_keystate(int action)
       break;
 
     default:
-      key_down = TK_DOWN(action);
-      if (key_down) {
+      if (TK_DOWN(action)) {
         keystate[TK_ADDR(action)] |= (1 << TK_DATA(action));
       } else {
         keystate[TK_ADDR(action)] &= ~(1 << TK_DATA(action));
