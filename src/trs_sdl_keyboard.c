@@ -650,14 +650,12 @@ void trs_open_joystick(void)
 
 void trs_joy_axis(Uint8 axis, short value, int bounce)
 {
-  int dir;
+  int dir = 0;
 
   if (value < -bounce)
     dir = -1;
   else if (value > bounce)
     dir = 1;
-  else
-    dir = 0;
 
   if (axis == 0) {
     switch (dir) {
