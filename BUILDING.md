@@ -15,9 +15,9 @@ It is recommended to use [MSYS2] to make things easier:
 - Get the latest version of Mingw-w64 via [MSYS2], which provides up-to-date
   native builds of GCC, Mingw-w64, and other helpful C++ tools and libraries.
 - Follow the Installation instructions on the [MSYS2] website to install
-  Mingw-w64 and install the Mingw-w64 toolchain
+  Mingw-w64 and install the Mingw-w64 toolchain by executing
   ```sh
-  pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
+  pacman -S --needed base-devel mingw-w64-x86_64-toolchain
   ```
   in a MSYS2 terminal.
   Accept the default to install all the members in the `toolchain` group.
