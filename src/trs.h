@@ -108,7 +108,6 @@ extern void trs_turbo_led(void);
 
 extern void trs_reset(int poweron);
 extern void trs_exit(int confirm);
-extern void trs_sdl_cleanup(void);
 
 extern void trs_kb_reset(void);
 extern void trs_kb_bracket(int shifted);

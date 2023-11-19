@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
     fatal("SDL_Init failed: %s", SDL_GetError());
 
-  if (atexit(trs_sdl_cleanup))
-    fatal("failed to register SDL cleanup");
+  if (atexit(SDL_Quit))
+    fatal("failed to register SDL_Quit.");
 
   zbx = trs_parse_command_line(argc, argv);
 

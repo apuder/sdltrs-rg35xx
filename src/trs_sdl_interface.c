@@ -416,9 +416,6 @@ static void TrsBlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
   if (blitMap != NULL)
     free(blitMap);
 
-  if (src == NULL || dst == NULL)
-    return;
-
   map = (Uint8 *)malloc(src->ncolors * dst->BytesPerPixel);
   if (map == NULL) {
     return;
@@ -1072,29 +1069,6 @@ void trs_exit(int confirm)
   }
 
   exit(EXIT_SUCCESS);
-}
-
-void trs_sdl_cleanup(void)
-{
-  int i, ch;
-
-  /* Free color map */
-  TrsBlitMap(NULL, NULL);
-
-  for (ch = 0; ch < MAX_CHARS; ch++)
-    bitmap_free(ch, 0, 5);
-
-  for (i = 0; i < 2; i++) {
-    for (ch = 0; ch < 64; ch++)
-      SDL_FreeSurface(trs_box[i][ch]);
-  }
-
-  SDL_FreeSurface(screen);
-  SDL_FreeSurface(image);
-  SDL_DestroyTexture(texture);
-  SDL_DestroyRenderer(render);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 }
 
 static void trs_flip_fullscreen(void)
