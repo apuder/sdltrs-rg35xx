@@ -23,16 +23,12 @@ Z80-based microcomputers popular in late 1970s and early 1980s.
 .B \-aspectratio
 Keep TRS-80 screen aspect ratio when resizing SDL2 window (Default).
 .TP
-.B \-background \fI0xRRGGBB\fP
-.TQ
-.B \-bg \fI0xRRGGBB\fP
+\fB\-background\fP | \fB\-bg\fP \fI0xRRGGBB\fP
 Specifies background color of emulator window.
 \fIRRGGBB\fP are hex values of Red, Green, and Blue components.
 Default: black (\fI0x000000\fP)
 .TP
-.B \-borderwidth \fIwidth\fP
-.TQ
-.B \-bw \fIwidth\fP
+\fB\-borderwidth\fP | \fB\-bw\fP \fIwidth\fP
 Put border of \fIwidth\fP pixels (0 to 50) around TRS-80 window.
 Default: \fI2\fP
 .TP
@@ -107,31 +103,21 @@ Make real floppy drives double-step (35/40-track media in 80 track drive).
 Turn off ability for Emulation traps to write to unexpected places in
 host filesystem (Default).
 .TP
-.B \-fdc
-.TQ
-.B \-floppy
+\fB\-floppy\fP | \fB\-fdc\fP
 Enable Floppy Disk Controller (Default).
 .TP
-.B \-foreground \fI0xRRGGBB\fP
-.TQ
-.B \-fg \fI0xRRGGBB\fP
+\fB\-foreground\fP | \fB\-fg\fP \fI0xRRGGBB\fP
 Specifies foreground color of emulator window.
 Default: white (\fI0xE0E0FF\fP)
 .TP
-.B \-fullscreen
-.TQ
-.B \-fs
+\fB\-fullscreen\fP | \fB\-fs\fP
 Run in fullscreen mode.
 .TP
-.B \-guibackground \fI0xRRGGBB\fP
-.TQ
-.B \-guibg \fI0xRRGGBB\fP
+\fB\-guibackground\fP | \fB\-guibg\fP \fI0xRRGGBB\fP
 Specifies background color of text based GUI window.
 Default: dark green (\fI0x344843\fP)
 .TP
-.B \-guiforeground \fI0xRRGGBB\fP
-.TQ
-.B \-guifg \fI0xRRGGBB\fP
+\fB\-guiforeground\fP | \fB\-guifg\fP \fI0xRRGGBB\fP
 Specifies foreground color of text based GUI window.
 Default: white (\fI0xE0E0FF\fP)
 .TP
@@ -223,14 +209,10 @@ Turn off double-step mode for all real floppy drives (Default).
 .B \-noemtsafe
 Turn on ability for Emulation traps.
 .TP
-.B \-nofdc
-.TQ
-.B \-nofloppy
+\fB\-nofloppy\fP | \fB\-nofdc\fP
 Disable Floppy Disk Controller.
 .TP
-.B \-nofullscreen
-.TQ
-.B \-nofs
+\fB\-nofullscreen\fP | \fB\-nofs\fP
 Run in windowed mode (Default).
 .TP
 .B \-nohdboot
