@@ -567,12 +567,12 @@ void trs_screen_caption(void)
     static const char *trs_name[] = {
         "TRS-80 Model I", "", "TRS-80 Model III", "TRS-80 Model 4", "TRS-80 Model 4P" };
 
-    snprintf(title, 79, "%s %s (%.2f MHz) %s%s",
+    snprintf(title, 79, "%s%s (%.2f MHz)%s%s",
              timer_overclock ? "Turbo " : "",
              trs_clones.name ? trs_clones.name : trs_name[trs_model - 1],
              z80_state.clockMHz,
-             trs_paused ? "PAUSED " : "",
-             trs_sound ? "" : "(Mute)");
+             trs_paused ? " PAUSED " : "",
+             trs_sound ? "" : " (Mute)");
   }
 
   SDL_SetWindowTitle(window, title);
