@@ -358,7 +358,7 @@ trs_timer_event(void)
 
 #if defined (_WIN32) && !defined(__MINGW64__)
 static struct tm *
-localtime_r(time_t *tp, struct tm *tmp)
+localtime_r(const time_t *tp, struct tm *tmp)
 {
   struct tm *r = localtime(tp);
   if (r) {
@@ -456,8 +456,8 @@ trs_timer_init(void)
 
   if ((trs_clones.model & (EG3200 | GENIE3S)) == 0) {
     /* Also initialize the clock in memory - hack */
-    time_t tt = time(NULL) + trs_timeoffset;
-    struct tm *lt = localtime(&tt);
+    const time_t tt = time(NULL) + trs_timeoffset;
+    const struct tm *lt = localtime(&tt);
     extern Uint8 memory[];
 
     if (trs_model == 1) {

@@ -150,8 +150,8 @@ static void m6845_crtc(int value)
 
 static int rtc_read(int port)
 {
-  time_t time_secs = time(NULL) + trs_timeoffset;
-  struct tm *time_info = localtime(&time_secs);
+  const time_t time_secs = time(NULL) + trs_timeoffset;
+  const struct tm *time_info = localtime(&time_secs);
 
   switch (port & 0x0F) {
     case 0xC: /* year (high) */
@@ -475,7 +475,7 @@ void z80_out(int port, int value)
     case 0x86:
     case 0x87:
       if (trs_model >= 4) {
-	int changes = value ^ ctrlimage;
+	int const changes = value ^ ctrlimage;
 
 	if (changes & 0x80)
 	  mem_video_page((value & 0x80) ? 1024 : 0);
@@ -923,8 +923,8 @@ int z80_in(int port)
   } else {
     /* Ports in David Keil's TRS-80 Emulator */
     if (port >= 0x68 && port <= 0x6D) {
-      time_t time_secs = time(NULL) + trs_timeoffset;
-      struct tm *time_info = localtime(&time_secs);
+      const time_t time_secs = time(NULL) + trs_timeoffset;
+      const struct tm *time_info = localtime(&time_secs);
 
       switch (port) {
         case 0x68:
