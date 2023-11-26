@@ -232,6 +232,7 @@ static const struct {
   { "m4",              trs_opt_value,         0, 4, &trs_model            },
   { "m4p",             trs_opt_value,         0, 5, &trs_model            },
   { "megamem",         trs_opt_value,         0, 1, &megamem              },
+  { "m",               trs_opt_model,         1, 0, NULL                  },
   { "model",           trs_opt_model,         1, 0, NULL                  },
   { "mouse",           trs_opt_value,         0, 1, &mousepointer         },
   { "mousepointer",    trs_opt_value,         0, 1, &mousepointer         },
