@@ -54,6 +54,8 @@
 ;	02APR03 RKG 3.1 Re-wrote text export to fix bug when exporting text
 ;			files that don't contain a sub character.
 
+.Z80
+
 ;##############################################################################
 ; Macro Libraries and External Functions
 ;##############################################################################
