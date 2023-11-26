@@ -1081,6 +1081,7 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%skeypadjoy\n", option(trs_keypad_joystick));
   fprintf(config_file, "keystretch=%d\n", stretch_amount);
   fprintf(config_file, "%sle18\n", option(lowe_le18));
+  fprintf(config_file, "%sled\n", option(trs_show_led));
   fprintf(config_file, "%slowercase\n", option(lowercase));
   fprintf(config_file, "%slubomir\n", option(lubomir));
   fprintf(config_file, "%smegamem\n", option(megamem));
@@ -1105,7 +1106,6 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%sselector\n", option(selector));
   fprintf(config_file, "serial=%s\n", trs_uart_name);
   fprintf(config_file, "%sshiftbracket\n", option(trs_kb_bracket_state));
-  fprintf(config_file, "%sled\n", trs_show_led ? "show" : "hide");
 
   fprintf(config_file, "sizemap=%d,%d,%d,%d,%d,%d,%d,%d\n",
       trs_disk_getsize(0), trs_disk_getsize(1), trs_disk_getsize(2), trs_disk_getsize(3),
