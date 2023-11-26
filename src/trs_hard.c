@@ -572,7 +572,7 @@ static void hard_data_out(int value)
   }
 
   if (res == EOF) {
-    error("trs_hard: errno %d while writing drive %d", errno, state.drive);
+    file_error("writing on hard%d", state.drive);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_DATAERR; /* arbitrary choice */
   }
