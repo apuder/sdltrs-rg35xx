@@ -2416,10 +2416,10 @@ void trs_gui_joystick_settings(void)
   while (1) {
     snprintf(&menu[0].text[50], 11, "%s", yes_no[trs_keypad_joystick]);
 
-    if (trs_joystick_num == -1)
+    if (trs_joystick == -1)
       snprintf(&menu[1].text[50], 11, "      None");
     else
-      snprintf(&menu[1].text[50], 11, "Joystick %1d", trs_joystick_num);
+      snprintf(&menu[1].text[50], 11, "Joystick %1d", trs_joystick);
 
     snprintf(&menu[2].text[50], 11, "%s", yes_no[jaxis_mapped]);
     trs_gui_clear_screen();
@@ -2451,14 +2451,14 @@ void trs_gui_joystick_settings(void)
               SDL_JoystickName(SDL_JoystickOpen(i)));
         }
 
-        if ((trs_joystick_num == -1) || (trs_joystick_num >= num_joysticks))
+        if ((trs_joystick == -1) || (trs_joystick >= num_joysticks))
           joy_index = 0;
         else
-          joy_index = trs_joystick_num + 1;
+          joy_index = trs_joystick + 1;
 
         joy_index = trs_gui_display_popup("Joystick", (const char**)joystick,
             num_joysticks + 1, joy_index);
-        trs_joystick_num = joy_index - 1;
+        trs_joystick = joy_index - 1;
         trs_open_joystick();
         break;
       }

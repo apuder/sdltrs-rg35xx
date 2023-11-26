@@ -501,7 +501,7 @@ static int keystate[9];
 static int force_shift = TK_Neutral;
 static int joystate;
 static int key_heartbeat;
-int trs_joystick_num;
+int trs_joystick;
 int trs_keypad_joystick = 1;
 
 /* Avoid changing state too fast so keystrokes aren't lost. */
@@ -640,12 +640,12 @@ void trs_open_joystick(void)
     open_joy = NULL;
  }
 
-  if ((trs_joystick_num != -1) &&
-      (trs_joystick_num <= SDL_NumJoysticks() - 1)) {
-      open_joy = SDL_JoystickOpen(trs_joystick_num);
+  if ((trs_joystick != -1) &&
+      (trs_joystick <= SDL_NumJoysticks() - 1)) {
+      open_joy = SDL_JoystickOpen(trs_joystick);
   }
   else
-    trs_joystick_num = -1;
+    trs_joystick = -1;
 }
 
 void trs_joy_axis(Uint8 axis, short value, int bounce)

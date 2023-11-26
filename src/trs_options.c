@@ -110,7 +110,7 @@ static void trs_opt_halt(char *arg, int intarg, int *stringarg);
 static void trs_opt_hard(char *arg, int intarg, int *stringarg);
 static void trs_opt_intval(char *arg, int intarg, int *stringarg);
 static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg);
-static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg);
+static void trs_opt_joystick(char *arg, int intarg, int *stringarg);
 static void trs_opt_memory(char *arg, int intarg, int *variable);
 static void trs_opt_model(char *arg, int intarg, int *stringarg);
 static void trs_opt_printer(char *arg, int intarg, int *stringarg);
@@ -210,8 +210,9 @@ static const struct {
   { "hypermem",        trs_opt_memory,        0, 3, &hypermem             },
   { "joyaxismapped",   trs_opt_value,         0, 1, &jaxis_mapped         },
   { "joybuttonmap",    trs_opt_joybuttonmap,  1, 0, NULL                  },
-  { "joysticknum",     trs_opt_joysticknum,   1, 0, NULL                  },
-  { "js",              trs_opt_joysticknum,   1, 0, NULL                  },
+  { "joystick",        trs_opt_joystick,      1, 0, NULL                  },
+  { "joysticknum",     trs_opt_joystick,      1, 0, NULL                  },
+  { "js",              trs_opt_joystick,      1, 0, NULL                  },
   { "keypadjoy",       trs_opt_value,         0, 1, &trs_keypad_joystick  },
   { "kp",              trs_opt_value,         0, 1, &trs_keypad_joystick  },
   { "keystretch",      trs_opt_intval,        1, 2, NULL                  },
@@ -626,12 +627,12 @@ static void trs_opt_joybuttonmap(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void trs_opt_joysticknum(char *arg, int intarg, int *stringarg)
+static void trs_opt_joystick(char *arg, int intarg, int *stringarg)
 {
   if (strcasecmp(arg, "none") == 0)
-    trs_joystick_num = -1;
+    trs_joystick = -1;
   else
-    trs_joystick_num = atoi(arg);
+    trs_joystick = atoi(arg);
 }
 
 static void trs_opt_memory(char *arg, int intarg, int *variable)
@@ -897,7 +898,7 @@ int trs_load_config_file(void)
   trs_disk_truedam = 0;
   trs_emtsafe = 1;
   trs_hd_boot = 0;
-  trs_joystick_num = 0;
+  trs_joystick = 0;
   trs_kb_bracket(0);
   trs_keypad_joystick = 1;
   trs_model = 1;
@@ -1071,11 +1072,11 @@ int trs_write_config_file(const char *filename)
   for (i = 0; i < N_JOYBUTTONS; i++)
     fprintf(config_file, i < N_JOYBUTTONS - 1 ? "%d," : "%d\n", jbutton_map[i]);
 
-  fprintf(config_file, "joysticknum=");
-  if (trs_joystick_num == -1)
+  fprintf(config_file, "joystick=");
+  if (trs_joystick == -1)
     fprintf(config_file, "none\n");
   else
-    fprintf(config_file, "%d\n", trs_joystick_num);
+    fprintf(config_file, "%d\n", trs_joystick);
 
   fprintf(config_file, "%skeypadjoy\n", option(trs_keypad_joystick));
   fprintf(config_file, "keystretch=%d\n", stretch_amount);
