@@ -576,9 +576,8 @@ int trs_gui_file_browse(const char *path, char *name, const char *mask,
 
   trs_gui_write_text(text, 2, 0, 0);
 
-  snprintf(current_dir, FILENAME_MAX, "%s", path);
-
-  for (i = strlen(current_dir); i > 0; i--) {
+  i = snprintf(current_dir, FILENAME_MAX, "%s", path);
+  for (; i > 0; i--) {
     if (current_dir[i] == DIR_SLASH) {
       current_dir[i + 1] = 0;
       break;
@@ -698,16 +697,17 @@ read_directory:
         case SDLK_RETURN:
         case SDLK_SPACE:
           if (cur_entry[0] == '<') {
+            int const len = strlen(current_dir);
+
             if (cur_entry[1] == '.' && cur_entry[2] == '.') {
-              for (i = strlen(current_dir) - 2; i >= 0; i--) {
+              for (i = len - 2; i >= 0; i--) {
                 if (current_dir[i] == DIR_SLASH) {
                   current_dir[i + 1] = 0;
                   break;
                 }
               }
             } else {
-              snprintf(current_dir + strlen(current_dir),
-                  FILENAME_MAX - strlen(current_dir), "%s", &cur_entry[1]);
+              snprintf(current_dir + len, FILENAME_MAX - len, "%s", &cur_entry[1]);
               current_dir[strlen(current_dir) - 1] = DIR_SLASH;
             }
             goto read_directory;
