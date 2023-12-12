@@ -830,8 +830,8 @@ int mem_read(int address)
       case 0x27: /* Aster CT-80 */
 	if ((system_byte & (1 << 5)) == 0) { /* device bank */
 	  /* Boot-ROM */
-	  if ((system_byte & (1 << 1)) && address <= 0x2FFF)
-	    return rom[(address & 0x7FF) | 0x3000];
+	  if ((system_byte & (1 << 1)) && address <= 0x7FF)
+	    return rom[address | 0x3000];
 	  if ((system_byte & (1 << 2)) == 0 && address <= 0x2FFF)
 	    return rom[address];
 	  if ((system_byte & (1 << 3)) == 0) {
@@ -1519,8 +1519,8 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x2F:
 	if ((system_byte & (1 << 5)) == 0) { /* device bank */
 	  /* Boot-ROM */
-	  if ((system_byte & (1 << 1)) && address <= 0x2FFF)
-	    return writing ? NULL : &rom[(address & 0x7FF) | 0x3000];
+	  if ((system_byte & (1 << 1)) && address <= 0x7FF)
+	    return writing ? NULL : &rom[address | 0x3000];
 	  if ((system_byte & (1 << 2)) == 0 && address <= 0x2FFF)
 	    return writing ? NULL : &rom[address];
 	  if ((system_byte & (1 << 3)) == 0) {
