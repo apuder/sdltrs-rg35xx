@@ -559,7 +559,6 @@ void trs_reset(int poweron)
 	switch (speedup) {
 		case 5:		/* Aster CT-80 */
 			memory_map = 0x27;
-			system_byte = 0x06;
 			trs_clones_model(CT80);
 			break;
 		case 6:		/* LNW80 */
