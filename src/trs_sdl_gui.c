@@ -707,8 +707,8 @@ read_directory:
                 }
               }
             } else {
-              snprintf(current_dir + len, FILENAME_MAX - len, "%s", &cur_entry[1]);
-              current_dir[strlen(current_dir) - 1] = DIR_SLASH;
+              i = snprintf(current_dir + len, FILENAME_MAX - len, "%s", &cur_entry[1]);
+              current_dir[i + len - 1] = DIR_SLASH;
             }
             goto read_directory;
           }
@@ -839,8 +839,7 @@ redraw:
           char directory[FILENAME_MAX];
 
           if (trs_gui_file_browse(input, directory, NULL, 1, "") >= 0) {
-            snprintf(output, limit, "%s", directory);
-            pos = len = strlen(output);
+            pos = len = snprintf(output, limit, "%s", directory);
           }
           goto redraw;
         }
