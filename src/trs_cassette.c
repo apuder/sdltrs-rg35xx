@@ -439,13 +439,13 @@ parse_wav_header(FILE *f)
   expect2 = WAVE_FORMAT_MONO * WAVE_FORMAT_8BIT / 8;
   if (get_twobyte(&n2, f) < 0) return -1;
   if (n2 != expect2) {
-    error("unusable wav file: must be %d bytes/sample", expect2);
+    error("unusable wav file: must be %d bytes/sample, got %d", expect2, n2);
     return -1;
   }
   expect2 = WAVE_FORMAT_8BIT;
   if (get_twobyte(&n2, f) < 0) return -1;
   if (n2 != expect2) {
-    error("unusable wav file: must be %d bits/sample", expect2);
+    error("unusable wav file: must be %d bits/sample, got %d", expect2, n2);
     return -1;
   }
   fmt_size -= 16;  /* size read so far */
