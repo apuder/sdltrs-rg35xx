@@ -604,6 +604,8 @@ void trs_screen_init(int resize)
         trs_charset = trs_charset1;
         if (trs_charset < 3)
           cur_char_width = 6;
+        else if (trs_charset == 13)
+          cur_char_height = 14 * scale_factor;
         break;
     }
   } else {
