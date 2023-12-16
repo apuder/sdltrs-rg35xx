@@ -396,9 +396,8 @@ create_wav_header(FILE *f)
 static int
 check_chunk_id(char *expected, FILE* f)
 {
-  char c4[5];
+  char c4[5] = { 0 };
 
-  c4[4] = '\0';
   if (fread(c4, 4, 1, f) != 1) return -1;
   if (strcmp(c4, expected) != 0) {
     error("unusable wav file: expected chunk id '%s', got '%s'", expected, c4);
