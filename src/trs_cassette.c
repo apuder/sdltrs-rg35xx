@@ -1208,10 +1208,9 @@ trs_orch90_out(int channels, int value)
   long nsamples;
   float ddelta_us;
   int new_left, new_right;
-  int v;
 
   /* Convert 8-bit signed to 8-bit unsigned */
-  v = (value & 0xff) ^ 0x80;
+  int const v = (value & 0xff) ^ 0x80;
 
   if (cassette_motor != 0) return;
   if (assert_state(ORCH90) < 0) return;
