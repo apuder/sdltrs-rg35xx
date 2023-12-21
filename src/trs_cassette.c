@@ -221,9 +221,7 @@ static Uint8 const value_to_sample[] = { 127, /* 0.46 V */
 /* .wav file definitions */
 #define WAVE_FORMAT_PCM (0x0001)
 #define WAVE_FORMAT_MONO 1
-#define WAVE_FORMAT_STEREO 2
 #define WAVE_FORMAT_8BIT 8
-#define WAVE_FORMAT_16BIT 16
 #define WAVE_RIFFSIZE_OFFSET 0x04
 #define WAVE_RIFF_OFFSET 0x08
 #define WAVE_DATAID_OFFSET 0x24
