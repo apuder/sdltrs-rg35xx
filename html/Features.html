@@ -430,8 +430,37 @@ or <b>ESC</b>.</p>
 <h2><a name="Emulated_cassette"></a><u>Emulated cassette</u></h2>
 
 <p>To control the emulated cassette, a file for the loaded tape is controlled
-by the <code>-cassette</code> option or the cassette option in the menu system.
-There is also a menu option to control the cassette position in the file.</p>
+by the <code>-c[assette]</code> option or with the "Cassette/Tape Management"
+(<b>Alt-T</b>) in the GUI. SDLTRS supports different types of cassette images
+which are specified by the file extension:</p>
+
+<table border="1" cellpadding="5" cellspacing="0">
+  <tr>
+    <td><code>.CAS</code></td>
+    <td>format is fairly compact and is compatible with other TRS-80 emulators
+        that have cassette support. This format represents the bit stream that
+        (the emulator thinks) the TRS-80 cassette routines were trying to save
+        to the tape, not the actual electrical signals on the tape.</td>
+  </tr>
+  <tr>
+    <td><code>.CPT</code></td>
+    <td>format (for "cassette pulse train") encodes the exact values and timing
+        of the signals that the TRS-80 cassette routine sends to the cassette
+        port to be recorded on the tape. Timing is to the nearest microsecond.
+        This format emulates a perfect, noise-free cassette, so any cassette
+        routines that even halfway worked on real hardware should work.</td>
+  </tr>
+  <tr>
+    <td><code>.WAV</code></td>
+    <td>format refers to WAVE, a standard sound file format developed by IBM
+        and Microsoft. The <code>WAV</code> format is intermediate in emulation
+        accuracy between <code>CAS</code> and <code>CPT</code>. It does represent
+        actual signals, not decoded bits, but its timing precision is limited by
+        the sample rate used. The <code>WAV</code> parsing has some limitations:
+        Samples must be 8-bit monophonic PCM, and the file must contain only
+        one data chunk and no extra optional RIFF chunks in the header.</td>
+  </tr>
+</table>
 
 <h2><a name="Printer"></a><u>Printer</u></h2>
 
