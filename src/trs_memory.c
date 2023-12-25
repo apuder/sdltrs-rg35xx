@@ -502,11 +502,11 @@ void trs_reset(int poweron)
 	/* Blank Video */
 	memset(&video, ' ', MAX_VIDEO_SIZE);
 	m6845_crtc_reset();
+	/* No quirks */
+	trs_clones_model(0);
 	trs_screen_reset();
 	trs_screen_init(1);
 	trs_timer_init();
-	/* No quirks */
-	trs_clones_model(0);
 
 	if (trs_show_led) {
 	  trs_disk_led(-1, -1);
