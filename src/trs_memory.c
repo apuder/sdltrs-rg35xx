@@ -455,13 +455,9 @@ void s80z_out(int value)
 static void mem_init(void)
 {
     /* Initialize RAM & ROM */
-    memset(&memory, 0xFF, MAX_MEMORY_SIZE);
-    memset(&supermem_ram, 0xFF, MAX_SUPERMEM_SIZE);
+    memset(&memory, 0xC9, MAX_MEMORY_SIZE);
+    memset(&supermem_ram, 0xC9, MAX_SUPERMEM_SIZE);
     memset(&rom, 0xFF, MAX_ROM_SIZE);
-
-    if (trs_model < 4)
-      /* Fill memory of random seed buffer */
-      memset(&memory[0x4090], 0x7F, 0x3);
 
     mem_map(0);
     mem_bank(0);
