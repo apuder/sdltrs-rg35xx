@@ -14,6 +14,7 @@
 #define RAM192B         (4) /* TCS Genie IIs/SpeedMaster 768 KB */
 #define SELECTOR        (5) /* Selector Card for TRS-80 Model I */
 #define SUPERMEM        (6) /* AlphaTech SuperMem 512 KB (I/III) */
+#define TCS_GENIE3S     (7) /* TCS Genie IIIs 1024 KB */
 
 int    trs80_model3_mem_read(int address);
 void   trs80_model3_mem_write(int address, int value);

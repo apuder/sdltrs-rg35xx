@@ -282,6 +282,17 @@ void mem_bank_base(int card, int bits)
 			   Set bit 5 to map low */
 			supermem_hi = (bits & 0x20) ? 0x0000 : 0x8000;
 			break;
+		case TCS_GENIE3S:
+			if (bits == mem_command)
+				return;
+
+			mem_command = bits;
+
+			/* D0/D1: 256K block */
+			bank_offset[0] = (bits & 0x03) << 18;
+			/* D7: Common area */
+			bank_offset[1] = (bits & 0x80) ? bank_offset[0] : 0;
+			break;
 		default:
 			break;
 	}
@@ -293,6 +304,7 @@ int mem_read_bank_base(int card)
 		case HUFFMAN:
 			return (bank_base >> 16) & 0x1F;
 		case RAM192B:
+		case TCS_GENIE3S:
 			return (mem_command);
 		case SUPERMEM:
 			return (supermem_base >> 15) |
@@ -471,6 +483,8 @@ static void mem_init(void)
 void trs_reset(int poweron)
 {
     bank_base = 0x10000;
+    bank_offset[0] = 0;
+    bank_offset[1] = 0;
     eg3200 = 0;
     megamem_addr = 0;
     megamem_base = 0;
@@ -791,9 +805,9 @@ int mem_read(int address)
 	/* "Constant bit" points to Bank 0 */
 	if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
 	    (address >= 0xE000 && (genie3s & (1 << 0))))
-	  return memory[address];
+	  return memory[address + bank_offset[1]];
 	else
-	  return memory[address + bank_base];
+	  return memory[address + bank_offset[0] + bank_base];
 
       case 0x25: /* Schmidtke 80-Z Video Card */
 	if (system_byte & (1 << 0)) {
@@ -1163,9 +1177,9 @@ void mem_write(int address, int value)
 	/* "Constant bit" points to Bank 0 */
 	if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
 	    (address >= 0xE000 && (genie3s & (1 << 0))))
-	  memory[address] = value;
+	  memory[address + bank_offset[1]] = value;
 	else
-	  memory[address + bank_base] = value;
+	  memory[address + bank_offset[0] + bank_base] = value;
 	break;
 
       case 0x25: /* Schmidtke 80-Z Video Card */
@@ -1482,9 +1496,9 @@ Uint8 *mem_pointer(int address, int writing)
 	/* "Constant bit" points to Bank 0 */
 	if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
 	    (address >= 0xE000 && (genie3s & (1 << 0))))
-	  return &memory[address];
+	  return &memory[address + bank_offset[1]];
 	else
-	  return &memory[address + bank_base];
+	  return &memory[address + bank_offset[0] + bank_base];
 
       case 0x25: /* Schmidtke 80-Z Video Card */
       case 0x2D:

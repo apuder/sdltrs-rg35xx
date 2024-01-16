@@ -298,6 +298,9 @@ void z80_out(int port, int value)
           case 0xFA:
             genie3s_sys_out(value);
             break;
+          case 0xFB:
+            mem_bank_base(TCS_GENIE3S, value);
+            break;
           case 0xFD:
             trs_printer_write(value);
             break;
@@ -739,6 +742,9 @@ int z80_in(int port)
             break;
           case 0xFA:
             value = sys_byte_in();
+            break;
+          case 0xFB:
+            value = mem_read_bank_base(TCS_GENIE3S);
             break;
           case 0xFD:
             value = trs_printer_read();
