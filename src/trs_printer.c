@@ -41,13 +41,11 @@
 #include "error.h"
 #include "trs.h"
 
-#define NO_PRINTER   0
-#define TEXT_PRINTER 1
+int trs_printer = 0;
 
 static FILE *printer;
 static char printer_filename[FILENAME_MAX];
 static int printer_open = 0;
-int trs_printer = NO_PRINTER;
 
 int trs_printer_reset(void)
 {
@@ -82,7 +80,7 @@ static void trs_printer_open(void)
 
 void trs_printer_write(int value)
 {
-  if (trs_printer == TEXT_PRINTER) {
+  if (trs_printer) {
     if (!printer_open)
       trs_printer_open();
 
