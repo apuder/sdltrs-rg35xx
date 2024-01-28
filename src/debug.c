@@ -63,7 +63,7 @@
 #define BREAK_ONCE_FLAG		(0x10)
 #define WATCHPOINT_FLAG		(0x20)
 
-static Uint8 *traps;
+static Uint8 traps[ADDRESS_SPACE];
 static int num_traps;
 static int print_instructions;
 static int stop_signaled;
@@ -435,12 +435,6 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 static void debug_init(void)
 {
     int i;
-
-    traps = (Uint8 *) malloc(ADDRESS_SPACE * sizeof(Uint8));
-    if (traps == NULL)
-      fatal("debug_init: failed to allocate traps");
-
-    memset(traps, 0, ADDRESS_SPACE * sizeof(Uint8));
 
     for(i = 0; i < MAX_TRAPS; ++i) trap_table[i].valid = 0;
 
