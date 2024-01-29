@@ -432,15 +432,6 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
     }
 }
 
-static void debug_init(void)
-{
-    int i;
-
-    for(i = 0; i < MAX_TRAPS; ++i) trap_table[i].valid = 0;
-
-    puts("Type \"h(elp)\" for a list of commands.");
-}
-
 static void debug_run(void)
 {
     Uint8 t;
@@ -548,7 +539,7 @@ void debug_shell(void)
     read_history(history_file);
 #endif
 
-    debug_init();
+    puts("Type \"h(elp)\" for a list of commands.");
 
     while(!done)
     {
