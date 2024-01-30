@@ -74,6 +74,9 @@
 /* Interrupt latch register in EI (Model I) */
 #define TRS_INTLATCH(addr) (((addr) &~ 3) == 0x37E0)
 
+/* Printer addresses (Model III/4/4P) */
+#define TRS_PRINTER(addr)  (((addr) &~ 1) == 0x37E8)
+
 /* Check address in video memory */
 #define VIDEO_ADDR(vaddr)  (Uint16)vaddr < MAX_VIDEO_SIZE
 
@@ -652,7 +655,7 @@ int trs80_model3_mem_read(int address)
   if (address >= RAM_START) return memory[address];
   if (address >= VIDEO_START) return grafyx_m3_read_byte(address - VIDEO_START);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
-  if (address == PRINTER_ADDRESS) return trs_printer_read();
+  if (TRS_PRINTER(address)) return trs_printer_read();
   if (address < trs_rom_size) return rom[address];
 #if MEMDEBUG
   error("Invalid read of address %04x, returning FF [PC=%04x, mem_map=%02x]",
@@ -880,7 +883,7 @@ int mem_read(int address)
 	}
 	if (address >= VIDEO_START) return mem_video_page_read(address);
 	if (address < trs_rom_size) return rom[address];
-	if (address == PRINTER_ADDRESS) return trs_printer_read();
+	if (TRS_PRINTER(address)) return trs_printer_read();
 	if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
 	break;
 
@@ -989,7 +992,7 @@ void trs80_model3_mem_write(int address, int value)
       return;
     else
       trs80_screen_write_char(address - VIDEO_START, value);
-  } else if (address == PRINTER_ADDRESS) {
+  } else if (TRS_PRINTER(address)) {
     trs_printer_write(value);
 #if MEMDEBUG
   } else {
@@ -1263,7 +1266,7 @@ void mem_write(int address, int value)
 	} else if (address >= VIDEO_START) {
 	    if (mem_video_page_write(address, value))
 	      trs_screen_write_char(address + video_addr, value);
-	} else if (address == PRINTER_ADDRESS) {
+	} else if (TRS_PRINTER(address)) {
 	    trs_printer_write(value);
 	}
 	break;
