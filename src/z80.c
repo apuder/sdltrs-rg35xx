@@ -2928,12 +2928,13 @@ int z80_run(int continuous)
     Uint8 instruction;
     Uint16 address; /* generic temps */
     int ret = 0;
-    tstate_t t_delta;
     trs_continuous = continuous;
 
     /* loop to do a z80 instruction */
     do {
-    /* Speed control */
+	/* Speed control */
+	tstate_t t_delta;
+
 	if (z80_state.t_count > last_t_count)
 	  t_delta = z80_state.t_count - last_t_count;
 	else
