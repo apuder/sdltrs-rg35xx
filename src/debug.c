@@ -312,10 +312,8 @@ static void print_memory(Uint16 address, int num_bytes)
 {
     while(num_bytes > 0)
     {
+	int bytes_to_print = num_bytes < 16 ? num_bytes : 16;
 	int i;
-	int bytes_to_print = 16;
-
-	if(bytes_to_print > num_bytes) bytes_to_print = num_bytes;
 
 	printf("%.4x:\t", address);
 
