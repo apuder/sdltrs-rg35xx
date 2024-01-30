@@ -80,109 +80,58 @@ static struct
 static void help_message(void)
 {
     puts("(zbx) commands:\n\
-\n\
-Running:\n\
-    r(un)\n\
-        Hard reset the Z80 and devices and commence execution.\n\
-    c(ont) <addr>\n\
-    g(o)   <addr>\n\
-        Continue execution at current PC or specified hex address for PC.\n\
-    s(tep)\n\
-    s(tep)i(nt)\n\
-        Execute one instruction, or if the instruction is repeating (such as\n\
-        LDIR), execute only one iteration.  With \"step\", an interrupt is\n\
-        not allowed to occur after the instruction; with \"stepint\", an\n\
-        interrupt is allowed.\n\
-    n(ext)\n\
-    n(ext)i(nt)\n\
-        Execute one instruction.  If the instruction is a CALL, continue\n\
-        until the return.  If the instruction is repeating (such as LDIR),\n\
-        continue until it finishes.  Interrupts are always allowed during\n\
-        execution, but only \"nextint\" allows an interrupt afterwards.\n\
-    re(set)\n\
-        Hard reset the Z80 and devices.\n\
-    s(oft)r(eset)\n\
-        Press the system reset button.  On Model I/III, softreset resets the\n\
-        devices and posts a nonmaskable interrupt to the CPU; on Model 4/4P,\n\
-        softreset is the same as hard reset.\n\
-Printing:\n\
-    (dum)p\n\
-        Print the values of the Z80 registers.\n\
-    l(ist)\n\
-    l(ist) <addr>\n\
-    l(ist) <start addr> , <end addr>\n\
-        Disassemble 10 instructions at the current pc, 10 instructions at\n\
-        the specified hex address, or the instructions in the range of hex\n\
-        addresses.\n\
-    <start addr> , <end addr> /\n\
-    <start addr> / <num bytes>\n\
-    <addr> =\n\
-        Print the memory values in the specified range.  All values are hex.\n\
-    tr(ace)on\n\
-        Enable tracing of all instructions.\n\
-    tr(ace)off\n\
-        Disable tracing.\n\
-    d(isk)d(ump)\n\
-        Print the state of the floppy disk controller emulation.\n\
-Traps:\n\
-    st(atus)\n\
-        Show all traps (breakpoints, tracepoints, watchpoints).\n\
-    cl(ear)\n\
-        Delete the trap at the current address.\n\
-    d(elete) <n>\n\
-    d(elete) *\n\
-        Delete trap n, or all traps.\n\
-    stop at <address>\n\
-    b(reak) <address>\n\
-        Set a breakpoint at the specified hex address.\n\
-    t(race) <address>\n\
-        Set a trap to trace execution at the specified hex address.\n\
-    traceon at <address>\n\
-    tron <address>\n\
-        Set a trap to enable tracing at the specified hex address.\n\
-    traceoff at <address>\n\
-    troff <address>\n\
-        Set a trap to disable tracing at the specified hex address.\n\
-    w(atch) <address>\n\
-        Set a trap to watch specified hex address for changes.\n\
-Miscellaneous:\n\
-    a(ssign) $<reg> = <value>\n\
-    a(ssign) <addr> = <value>\n\
-    set $<reg> = <value>\n\
-    set <addr> = <value>\n\
-        Change the value of a register, register pair, I/O or memory byte.\n\
-    rom <addr> = <value>\n\
-        Change byte in ROM.\n\
-    in <port>\n\
-        Input from the given I/O port.\n\
-    out <port> = <value>\n\
-        Output to the given I/O port.\n\
-    load <start addr> <filename>\n\
-        Load memory from file to the specified hex address.\n\
-    save <start addr> , <end addr> <filename>\n\
-    save <start addr> / <num bytes> <filename>\n\
-        Save memory in the range of hex addresses to the specified file.\n\
-    state load <filename>\n\
-    state save <filename>\n\
-        Load or save the current emulator state.\n\
-    timeroff\n\
-    timeron\n\
-        Disable/enable the emulated TRS-80 real time clock interrupt.\n\
-    halt <action>\n\
-        Change action for Z80 HALT instruction: debugger, halt or reset.\n\
-    diskdebug <hexval>\n\
-        Set floppy disk controller debug flags to hexval.\n\
-        1=FDC register I/O, 2=FDC commands, 4=VTOS 3.0 JV3 kludges, 8=Gaps,\n\
-        10=Phys sector sizes, 20=Readadr timing, 40=DMK, 80=ioctl errors.\n\
-    iodebug <hexval>\n\
-        Set I/O port debug flags to hexval: 1=port input, 2=port output.\n\
-    (zbx)i(nfo)\n\
-        Display information about this debugger.\n\
-    h(elp)\n\
-    ?\n\
-        Print this message.\n\
-    q(uit)\n\
-        Exit from xtrs.");
+\nRunning:\n\
+  r(un) ................. Hard reset Z80 and devices and commence execution\n\
+  c(ont) | g(o) <addr> .. Continue execution at current or hex address for PC\n\
+  s(tep) ................ Execute one instruction (one iteration/no interrupt)\n\
+  s(tep)i(nt) ........... Execute one instruction (one iteration/interrupt)\n\
+  n(ext) ................ Execute one instruction (interrupt allowed)\n\
+  n(ext)i(nt) ........... Execute one instruction (interrupt allowed afterwards)\n\
+  re(set) ............... Hard reset Z80 and devices\n\
+  s(oft)r(eset) ......... Press system reset button\n\
+\nPrinting:\n\
+  (dum)p ................ Print Z80 registers\n\
+  l(ist) ................ Disassemble 10 instructions at current PC\n\
+  l(ist) <addr> ......... Disassemble 10 instructions at specified hex address\n\
+  l(ist) <start> , <end>  Disassemble instructions in the range of hex addresses\n\
+  <start> , <end> ....... Print memory values in specified address range\n\
+  <start> / <num bytes> . Print number of memory values starting at hex address\n\
+  <addr> = .............. Print memory value at specified hex address\n\
+  tr(ace)on ............. Enable tracing of all instructions\n\
+  tr(ace)off ............ Disable tracing\n\
+  d(isk)d(ump) .......... Print state of floppy disk controller emulation\n\
+\nTraps:\n\
+  st(atus) .............. Show all traps (breakpoints, tracepoints, watchpoints)\n\
+  cl(ear) ............... Delete trap at current address\n\
+  d(elete) <n> | * ...... Delete trap <n> or all traps\n\
+  b(reak) <addr> ........ Set breakpoint at specified hex address\n\
+  t(race) <addr> ........ Set trap to trace execution at specified hex address\n\
+  tron <addr> ........... Set trap to enable tracing at specified hex address\n\
+  troff <addr> .......... Set trap to disable tracing at specified hex address\n\
+  w(atch) <addr> ........ Set trap to watch specified hex address for changes\n\
+\nMiscellaneous:\n\
+  a(ssign) | set\n\
+    $<reg> = <value> .... Change value of register\n\
+    <addr> = <value> .... Change value of memory byte\n\
+  rom <addr> = <value> .. Change byte in ROM\n\
+  in <port> ............. Input from given I/O port\n\
+  out <port> = <value> .. Output to given I/O port\n\
+  load <start> <file> ... Load memory from file to specified hex address\n\
+  save <start> , <end> <file> ........ Save memory in range of specified\n\
+  save <start> / <num bytes> <file>    hex addresses to file\n\
+  state load <file> ..... Load emulator state from file\n\
+  state save <file> ..... Save current emulator state to file\n\
+  timeroff / timeron .... Disable / enable TRS-80 real time clock interrupt\n\
+  halt <action> ......... Show / change Z80 HALT action: debugger, halt or reset\n\
+  diskdebug <hexval> .... Set floppy disk controller debug flags to hexval:\n\
+                             1=FDC register I/O       2=FDC commands\n\
+                             4=VTOS 3.0 JV3 kludges   8=Gaps\n\
+                            10=Phys sector sizes     20=Readadr timing\n\
+                            40=DMK                   80=IOCTL errors\n\
+  iodebug <hexval> ...... Set I/O port debug flags: 1=port input, 2=port output\n\
+  (zbx)i(nfo) ........... Display information about this debugger\n\
+  h(elp) | ? ............ Print this help message\n\
+  q(uit) ................ Exit from SDLTRS");
 }
 
 static char *trap_name(int flag)
