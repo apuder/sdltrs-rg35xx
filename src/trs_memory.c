@@ -643,10 +643,10 @@ static int trs80_model1_mmio(int address)
   if (address == TRSDISK_STATUS) return trs_disk_status_read();
   if (address == TRSDISK_TRACK) return trs_disk_track_read();
   if (address == TRSDISK_SECTOR) return trs_disk_sector_read();
-  if (address == PRINTER_ADDRESS) return trs_printer_read();
   /* With a selector 768 bytes poke through the hole */
   if (address >= 0x3900 && selector) return trs80_model1_ram(address);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
+  if (address == PRINTER_ADDRESS) return trs_printer_read();
   return 0xFF;
 }
 
@@ -977,10 +977,10 @@ static void trs80_model1_write_mmio(int address, int value)
     trs_disk_sector_write(value);
   } else if (TRSDISK_SELECT(address)) {
     trs_disk_select_write(value);
-  } else if (address == PRINTER_ADDRESS) {
-    trs_printer_write(value);
-  } else if (address >= 0x3900 && selector)
+  } else if (address >= 0x3900 && selector) {
     trs80_model1_write_mem(address, value);
+  } else if (address == PRINTER_ADDRESS)
+    trs_printer_write(value);
 }
 
 void trs80_model3_mem_write(int address, int value)
