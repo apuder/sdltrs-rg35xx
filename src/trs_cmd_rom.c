@@ -656,7 +656,10 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
         int const v = getc(f);
 
         if (v == EOF) return LOAD_CMD_EOF;
-        memory[addr++] = v;
+        if (memory)
+          memory[addr++] = v;
+        else
+          mem_write(addr++, v);
       }
       break;
 
@@ -842,7 +845,6 @@ static int trs_load_rom(const char *filename)
 int trs_load_cmd(const char *filename)
 {
   FILE *program;
-  extern Uint8 memory[];
   int entry;
 
   if ((program = fopen(filename, "rb")) == NULL) {
@@ -850,7 +852,7 @@ int trs_load_cmd(const char *filename)
     return -1;
   }
 
-  if (load_cmd(program, memory, &entry) == LOAD_CMD_OK) {
+  if (load_cmd(program, NULL, &entry) == LOAD_CMD_OK) {
     debug("entry point of '%s': 0x%x (%d) ...\n", filename, entry, entry);
     if (entry >= 0)
       Z80_PC = entry;
