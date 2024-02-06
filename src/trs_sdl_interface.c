@@ -2000,7 +2000,7 @@ void trs_screen_refresh(void)
       trs_screen_write_char(i, trs_screen[i]);
 
     /* Redraw HRG screen */
-    if (hrg_enable == 2) {
+    if (hrg_enable) {
       memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
 
       grafyx_overlay = 0;
