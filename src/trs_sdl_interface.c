@@ -736,6 +736,22 @@ void trs_screen_init(int resize)
   trs_screen_refresh();
 }
 
+void trs_get_window(int *x, int *y, int *w, int *h)
+{
+  *x = window_x;
+  *y = window_y;
+  *w = window_w;
+  *h = window_h;
+}
+
+void trs_set_window(int x, int y, int w, int h)
+{
+  window_x = x;
+  window_y = y;
+  window_w = w;
+  window_h = h;
+}
+
 static void DrawRectangle(int orig_x, int orig_y, int copy_x, int copy_y)
 {
   int const bpp   = screen->format->BytesPerPixel;

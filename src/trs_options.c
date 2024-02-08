@@ -123,6 +123,7 @@ static void trs_opt_speedup(char *arg, int intarg, int *stringarg);
 static void trs_opt_switches(char *arg, int intarg, int *stringarg);
 static void trs_opt_value(char *arg, int intarg, int *variable);
 static void trs_opt_wafer(char *arg, int intarg, int *stringarg);
+static void trs_opt_window(char *arg, int intarg, int *stringarg);
 
 /* Option handling */
 static const struct {
@@ -328,6 +329,7 @@ static const struct {
   { "wafer5",          trs_opt_wafer,         1, 5, NULL                  },
   { "wafer6",          trs_opt_wafer,         1, 6, NULL                  },
   { "wafer7",          trs_opt_wafer,         1, 7, NULL                  },
+  { "window",          trs_opt_window,        1, 0, NULL                  },
   { "y",               trs_opt_intval,        1, 7, NULL                  },
   { "year",            trs_opt_intval,        1, 7, NULL                  },
 };
@@ -790,6 +792,15 @@ static void trs_opt_wafer(char *arg, int intarg, int *stringarg)
     stringy_remove(intarg);
 }
 
+static void trs_opt_window(char *arg, int intarg, int *stringag)
+{
+  int x, y, w, h;
+
+  sscanf(arg, "%d,%d,%d,%d", &x, &y, &w, &h);
+  trs_set_window(x, y, w, h);
+}
+
+
 static void trs_disk_setsizes(void)
 {
   int i;
@@ -1022,6 +1033,7 @@ int trs_write_config_file(const char *filename)
 {
   FILE *config_file;
   int i;
+  int x, y, w, h;
 
   if ((config_file = fopen(filename, "w")) == NULL) {
     file_error("write configuration '%s'", filename);
@@ -1144,6 +1156,8 @@ int trs_write_config_file(const char *filename)
   for (i = 0; i < 8; i++)
     fprintf(config_file, "wafer%d=%s\n", i, stringy_get_name(i));
 
+  trs_get_window(&x, &y, &w, &h);
+  fprintf(config_file, "window=%d,%d,%d,%d\n", x, y, w, h);
   fprintf(config_file, "year=%d\n", trs_year);
 
   fclose(config_file);

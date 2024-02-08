@@ -101,6 +101,8 @@ extern void trs_screen_80x24(int flag);
 extern void trs_screen_inverse(int flag);
 extern void trs_screen_refresh(void);
 extern void trs_screen_caption(void);
+extern void trs_get_window(int *x, int *y, int *w, int *h);
+extern void trs_set_window(int x, int y, int w, int h);
 
 extern void trs_disk_led(int drive, int on_off);
 extern void trs_hard_led(int drive, int on_off);
