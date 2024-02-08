@@ -571,7 +571,7 @@ void trs_screen_caption(void)
              timer_overclock ? "Turbo " : "",
              trs_clones.name ? trs_clones.name : trs_name[trs_model - 1],
              z80_state.clockMHz,
-             trs_paused ? " PAUSED " : "",
+             trs_paused ? " PAUSED" : "",
              trs_sound ? "" : " (Mute)");
   }
 
