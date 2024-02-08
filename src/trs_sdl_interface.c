@@ -695,6 +695,8 @@ void trs_screen_init(int resize)
 
   if (aspect_ratio)
     SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
+  else
+    SDL_RenderSetLogicalSize(render, 0, 0); /* Disable aspect */
 
   if (resize && fullscreen == 0) {
     SDL_SetWindowPosition(window, window_x, window_y);
