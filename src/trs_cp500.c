@@ -212,8 +212,8 @@ void cp500_mem_write(int address, Uint8 value, int mem_map, Uint8 *ram)
       return;
   }
 #ifdef DEBUG_CP500
-  error("Invalid write of address %04x [PC=%04x, mem_map=%02x]",
-      address, Z80_PC, mem_map);
+  error("Invalid write of %02x to address %04x [PC=%04x, mem_map=%02x]",
+      value, address, Z80_PC, mem_map);
 #endif
 }
 

@@ -137,7 +137,8 @@ static int mem_video_write(int vaddr, Uint8 value)
     }
   } else { /* emulator bug, should never happen */
 #if MEMDEBUG
-    error("Writing video address %04X out of range [%04X]", vaddr, MAX_VIDEO_SIZE);
+    error("Writing %02X to video address %04X out of range [%04X]",
+        value, vaddr, MAX_VIDEO_SIZE);
 #endif
     return 0;
   }
@@ -996,8 +997,8 @@ void trs80_model3_mem_write(int address, int value)
     trs_printer_write(value);
 #if MEMDEBUG
   } else {
-    error("Invalid write of address %04x [PC=%04x, mem_map=%02x]",
-        address, Z80_PC, memory_map);
+    error("Invalid write of %02x to address %04x [PC=%04x, mem_map=%02x]",
+        value, address, Z80_PC, memory_map);
 #endif
   }
 }
