@@ -883,9 +883,9 @@ int mem_read(int address)
 	    return memory[address + bank_offset[address >> 15]];
 	}
 	if (address >= VIDEO_START) return mem_video_page_read(address);
-	if (address < trs_rom_size) return rom[address];
-	if (TRS_PRINTER(address)) return trs_printer_read();
 	if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
+	if (TRS_PRINTER(address)) return trs_printer_read();
+	if (address < trs_rom_size) return rom[address];
 	break;
 
       case 0x54: /* Model 4P map 0, boot ROM in */
