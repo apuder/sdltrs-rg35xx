@@ -65,12 +65,12 @@ extern int scanshade;
 extern int turbo_paste;
 
 void call_function(int function);
-void trs_gui_display_pause(void);
-int  trs_gui_exit_sdltrs(void);
-int  trs_gui_file_browse(const char *path, char *filename, const char *mask,
-                         int browse_dir, const char *type);
-void trs_gui_clear_rect(int x, int y, int w, int h, int frame);
-void trs_gui_write_char(int col, int row, Uint8 character, int invert);
+void gui_display_pause(void);
+int  gui_exit_sdltrs(void);
+int  gui_file_browse(const char *path, char *filename, const char *mask,
+                     int browse_dir, const char *type);
+void gui_clear_rect(int x, int y, int w, int h, int frame);
+void gui_write_char(int col, int row, Uint8 character, int invert);
 int  trs_sdl_savebmp(const char *name);
 
 #endif /* _TRS_SDL_GUI_H */
