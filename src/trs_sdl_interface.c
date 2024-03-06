@@ -82,8 +82,8 @@ static Uint8 *blitMap;
 static Uint16 screen_chars = 1024;
 static int trs_charset;
 static int cpu_panel;
-static int row_chars = 64;
-static int col_chars = 16;
+static int cols = 64;
+static int rows = 16;
 static int border_width = 2;
 static int scale_factor = 2;
 static int m6845_raster = 12;
@@ -95,8 +95,8 @@ static int left_margin;
 static int screen_height;
 static int currentmode;
 static int OrigHeight, OrigWidth;
-static int cur_char_width = TRS_CHAR_WIDTH;
-static int cur_char_height = TRS_CHAR_HEIGHT * 2;
+static int char_width = TRS_CHAR_WIDTH;
+static int char_height = TRS_CHAR_HEIGHT * 2;
 static int mouse_x_size = 640, mouse_y_size = 240;
 static int mouse_sens = 3;
 static int mouse_last_x = -1, mouse_last_y = -1;
@@ -185,8 +185,8 @@ static Uint8 le18_x, le18_y, le18_on;
 
 /* Private routines */
 static void bitmap_init(int ram);
-static void bitmap_char(int char_index, int ram);
-static void bitmap_free(int char_index, int start, int end);
+static void bitmap_char(int character, int ram);
+static void bitmap_free(int character, int start, int end);
 
 static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
@@ -542,8 +542,8 @@ void trs_screen_reset(void)
   text80x24 = 0;
   screen640x240 = 0;
   screen_chars = 1024;
-  row_chars = 64;
-  col_chars = 16;
+  cols = 64;
+  rows = 16;
   scale_factor = 2;
 
   /* initially, screen is blank (i.e. full of spaces) */
@@ -586,9 +586,9 @@ void trs_screen_init(int resize)
   SDL_RendererInfo renderinfo = { 0 };
 #endif
 
-  border_width    = fullscreen ? 0 : window_border_width;
-  cur_char_width  = TRS_CHAR_WIDTH;
-  cur_char_height = TRS_CHAR_HEIGHT * 2;
+  border_width = fullscreen ? 0 : window_border_width;
+  char_width   = TRS_CHAR_WIDTH;
+  char_height  = TRS_CHAR_HEIGHT * 2;
 
   if (trs_model == 1) {
     switch (trs_clones.model) {
@@ -597,15 +597,15 @@ void trs_screen_init(int resize)
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
         break;
       case GENIE3S:
-        cur_char_height = m6845_raster * scale_factor;
+        char_height = m6845_raster * scale_factor;
         break;
       default:
         currentmode = NORMAL;
         trs_charset = trs_charset1;
         if (trs_charset < 3)
-          cur_char_width = 6;
+          char_width = 6;
         else if (trs_charset == 13)
-          cur_char_height = 14 * scale_factor;
+          char_height = 14 * scale_factor;
         break;
     }
   } else {
@@ -619,19 +619,19 @@ void trs_screen_init(int resize)
     }
 
     if (screen640x240 || text80x24)
-      cur_char_height = TRS_CHAR_HEIGHT4 * 2;
+      char_height = TRS_CHAR_HEIGHT4 * 2;
   }
 
   if (trs_model >= 3 && !trs_resize) {
-    OrigWidth = cur_char_width * 80 + 2 * border_width;
-    left_margin = cur_char_width * (80 - row_chars) / 2 + border_width;
+    OrigWidth = char_width * 80 + 2 * border_width;
+    left_margin = char_width * (80 - cols) / 2 + border_width;
     OrigHeight = TRS_CHAR_HEIGHT4 * 2 * 24 + 2 * border_width + led_height;
-    top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 - cur_char_height * col_chars)
+    top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 - char_height * rows)
                / 2 + border_width;
   } else {
-    OrigWidth = cur_char_width * (hrg_enable == 2 ? 80 : row_chars) + 2 * border_width;
+    OrigWidth = char_width * (hrg_enable == 2 ? 80 : cols) + 2 * border_width;
     left_margin = border_width;
-    OrigHeight = cur_char_height * col_chars + 2 * border_width + led_height;
+    OrigHeight = char_height * rows + 2 * border_width + led_height;
     top_margin = border_width;
   }
 
@@ -971,34 +971,34 @@ static char *GetSelection(void)
   if (selection_y1 < 0)
     selection_y1 = 0;
 
-  if (selection_x1 % cur_char_width == 0)
-    start_col = selection_x1 / cur_char_width;
+  if (selection_x1 % char_width == 0)
+    start_col = selection_x1 / char_width;
   else
-    start_col = selection_x1 / cur_char_width + 1;
+    start_col = selection_x1 / char_width + 1;
 
-  if (selection_x2 % cur_char_width == cur_char_width - 1)
-    end_col = selection_x2 / cur_char_width;
+  if (selection_x2 % char_width == char_width - 1)
+    end_col = selection_x2 / char_width;
   else
-    end_col = selection_x2 / cur_char_width - 1;
+    end_col = selection_x2 / char_width - 1;
 
-  if (selection_y1 % cur_char_height == 0)
-    start_row = selection_y1 / cur_char_height;
+  if (selection_y1 % char_height == 0)
+    start_row = selection_y1 / char_height;
   else
-    start_row = selection_y1 / cur_char_height + 1;
+    start_row = selection_y1 / char_height + 1;
 
-  if (selection_y2 % cur_char_height >= cur_char_height / 2)
-    end_row = selection_y2 / cur_char_height;
+  if (selection_y2 % char_height >= char_height / 2)
+    end_row = selection_y2 / char_height;
   else
-    end_row = selection_y2 / cur_char_height - 1;
+    end_row = selection_y2 / char_height - 1;
 
-  if (end_col >= row_chars)
-    end_col = row_chars - 1;
+  if (end_col >= cols)
+    end_col = cols - 1;
 
-  if (end_row >= col_chars)
-    end_row = col_chars - 1;
+  if (end_row >= rows)
+    end_row = rows - 1;
 
   for (row = start_row; row <= end_row; row++) {
-    Uint8 const *screen_ptr = &trs_screen[row * row_chars + start_col];
+    Uint8 const *screen_ptr = &trs_screen[row * cols + start_col];
 
     for (col = start_col; col <= end_col; col++, screen_ptr++) {
       Uint8 const data = *screen_ptr;
@@ -1775,23 +1775,23 @@ static void trs_screen_640x240(int flag)
   screen640x240 = flag;
 
   if (flag) {
-    row_chars = 80;
-    col_chars = 24;
-    cur_char_height = TRS_CHAR_HEIGHT4 * 2;
+    cols = 80;
+    rows = 24;
+    char_height = TRS_CHAR_HEIGHT4 * 2;
   } else {
-    row_chars = 64;
-    col_chars = 16;
-    cur_char_height = TRS_CHAR_HEIGHT * 2;
+    cols = 64;
+    rows = 16;
+    char_height = TRS_CHAR_HEIGHT * 2;
   }
 
-  screen_chars = row_chars * col_chars;
+  screen_chars = cols * rows;
 
   if (trs_resize)
     trs_screen_init(1);
   else {
-    left_margin = cur_char_width * (80 - row_chars) / 2 + border_width;
+    left_margin = char_width * (80 - cols) / 2 + border_width;
     top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 -
-        cur_char_height * col_chars) / 2 + border_width;
+        char_height * rows) / 2 + border_width;
     trs_screen_refresh();
   }
 }
@@ -1906,7 +1906,7 @@ bitmap_init(int ram)
   int const height = (trs_clones.model == CP500_M80)
       /* Adjust block graphics in CP-500/M80 80x24 video mode */
       ? MAX_CHAR_HEIGHT * 2
-      : cur_char_height;
+      : char_height;
   int i;
 
   for (i = 0; i < MAX_CHARS; i++) {
@@ -1921,42 +1921,42 @@ bitmap_init(int ram)
         trs_char_data[gui][i], gui_background, gui_foreground, 1);
   }
 
-  boxes_init(foreground, background, cur_char_width, height, 0);
-  boxes_init(foreground, background, cur_char_width * 2, height, 1);
+  boxes_init(foreground, background, char_width, height, 0);
+  boxes_init(foreground, background, char_width * 2, height, 1);
 }
 
 static void
-bitmap_char(int char_index, int ram)
+bitmap_char(int character, int ram)
 {
   Uint8 const *char_data = ram ?
-      char_ram[char_index] : trs_char_data[trs_charset][char_index];
+      char_ram[character] : trs_char_data[trs_charset][character];
 
-  bitmap_free(char_index, 0, 3);
+  bitmap_free(character, 0, 3);
 
   /* Normal */
-  trs_char[0][char_index] = CreateSurfaceFromDataScale(
+  trs_char[0][character] = CreateSurfaceFromDataScale(
       char_data, foreground, background, 1);
   /* Expanded */
-  trs_char[1][char_index] = CreateSurfaceFromDataScale(
+  trs_char[1][character] = CreateSurfaceFromDataScale(
       char_data, foreground, background, 2);
   /* Inverse */
-  trs_char[2][char_index] = CreateSurfaceFromDataScale(
+  trs_char[2][character] = CreateSurfaceFromDataScale(
       char_data, background, foreground, 1);
   /* Expanded + Inverse */
-  trs_char[3][char_index] = CreateSurfaceFromDataScale(
+  trs_char[3][character] = CreateSurfaceFromDataScale(
       char_data, background, foreground, 2);
 }
 
 static void
-bitmap_free(int char_index, int start, int end)
+bitmap_free(int character, int start, int end)
 {
   int i;
 
   /* Free all surface pixels */
   for (i = start; i <= end; i++) {
-    if (trs_char[i][char_index]) {
-      free(trs_char[i][char_index]->pixels);
-      SDL_FreeSurface(trs_char[i][char_index]);
+    if (trs_char[i][character]) {
+      free(trs_char[i][character]->pixels);
+      SDL_FreeSurface(trs_char[i][character]);
     }
   }
 }
@@ -1970,12 +1970,12 @@ void trs_screen_refresh(void)
   SDL_FillRect(screen, NULL, back_color);
 
   if (grafyx_enable && !grafyx_overlay) {
-    int const srcx   = cur_char_width * grafyx_xoffset;
+    int const srcx   = char_width * grafyx_xoffset;
     int const srcy   = grafyx_yoffset * 2;
     int const dunx   = G_XSIZE * 8 - srcx;
     int const duny   = G_YSIZE * 2 - srcy;
-    int const height = cur_char_height * col_chars;
-    int const width  = cur_char_width  * row_chars;
+    int const height = char_height * rows;
+    int const width  = char_width  * cols;
     SDL_Rect srcRect, dstRect;
 
     srcRect.x = srcx;
@@ -2049,7 +2049,7 @@ void trs_screen_refresh(void)
       z80_out(0xD1, 0xFF);
       break;
     case 0x27: /* Aster CT-80 */
-      if (row_chars == 80) {
+      if (cols == 80) {
         z80_out(0xFC, 0x09);
         z80_out(0xFD, 0xFF);
       }
@@ -2168,7 +2168,7 @@ void trs_turbo_led(void)
   drawnRectCount = MAX_RECTS;
 }
 
-void trs_screen_write_char(unsigned int position, Uint8 char_index)
+void trs_screen_write_char(unsigned int position, Uint8 character)
 {
   unsigned int row, col;
   int expanded = (currentmode & EXPANDED) != 0;
@@ -2177,7 +2177,7 @@ void trs_screen_write_char(unsigned int position, Uint8 char_index)
   if (position >= screen_chars)
     return;
 
-  trs_screen[position] = char_index;
+  trs_screen[position] = character;
 
   if (expanded && (position & 1))
     return;
@@ -2185,7 +2185,7 @@ void trs_screen_write_char(unsigned int position, Uint8 char_index)
   if (grafyx_enable && !grafyx_overlay)
     return;
 
-  if (row_chars == 64) {
+  if (cols == 64) {
     row = position / 64;
     col = position - (row * 64);
   } else {
@@ -2195,8 +2195,8 @@ void trs_screen_write_char(unsigned int position, Uint8 char_index)
 
   srcRect.x = 0;
   srcRect.y = 0;
-  srcRect.w = cur_char_width;
-  srcRect.h = cur_char_height;
+  srcRect.w = char_width;
+  srcRect.h = char_height;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.h * row + top_margin;
 
@@ -2204,33 +2204,33 @@ void trs_screen_write_char(unsigned int position, Uint8 char_index)
     srcRect.w *= 2;
 
   if (genie3s) {
-    SDL_BlitSurface(trs_char[expanded][char_index], &srcRect, screen, &dstRect);
+    SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
   } else {
     if (trs_model == 1 && (trs_clones.model & (CT80 | EG3200)) == 0) {
       /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */
-      if (char_index >= 0xc0)
-        char_index -= 0x40;
+      if (character >= 0xc0)
+        character -= 0x40;
     }
-    if (!(currentmode & INVERSE) && char_index >= 0x80 && char_index <= 0xbf) {
-      SDL_BlitSurface(trs_box[expanded][char_index - 0x80], &srcRect, screen, &dstRect);
+    if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
+      SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
     } else {
-      if (trs_model > 1 && char_index >= 0xc0 &&
+      if (trs_model > 1 && character >= 0xc0 &&
           (currentmode & (ALTERNATE + INVERSE)) == 0) {
-        char_index -= 0x40;
+        character -= 0x40;
       }
-      if ((currentmode & INVERSE) && (char_index & 0x80)) {
+      if ((currentmode & INVERSE) && (character & 0x80)) {
         expanded += 2;
-        char_index &= 0x7f;
+        character &= 0x7f;
       }
-      SDL_BlitSurface(trs_char[expanded][char_index], &srcRect, screen, &dstRect);
+      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
     }
   }
 
   /* Overlay grafyx on character */
   if (grafyx_enable) {
     /* assert(grafyx_overlay); */
-    int const srcx = ((col + grafyx_xoffset) % G_XSIZE) * cur_char_width;
-    int const srcy = (row * cur_char_height + grafyx_yoffset * scale_factor)
+    int const srcx = ((col + grafyx_xoffset) % G_XSIZE) * char_width;
+    int const srcy = (row * char_height + grafyx_yoffset * scale_factor)
         % (G_YSIZE * scale_factor);
     int const duny = (G_YSIZE * scale_factor) - srcy;
 
@@ -2239,7 +2239,7 @@ void trs_screen_write_char(unsigned int position, Uint8 char_index)
     TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
 
     /* Draw wrapped portion if any */
-    if (duny < cur_char_height) {
+    if (duny < char_height) {
       srcRect.y = 0;
       srcRect.h -= duny;
       dstRect.y += duny;
@@ -2282,17 +2282,17 @@ static void trs_screen_rect(int x, int y, int w, int h, int color)
 void trs_gui_clear_rect(int x, int y, int w, int h, int frame)
 {
   /* Add offsets to center */
-  if (col_chars != 16) {
-    x += (row_chars - 64) / 2;
-    y += (col_chars - 16) / 2;
+  if (rows != 16) {
+    x += (cols - 64) / 2;
+    y += (rows - 16) / 2;
   } else if (hrg_enable == 2) {
     x += 8;
   }
 
-  x = x * cur_char_width + left_margin;
-  y = y * cur_char_height + top_margin;
-  w = w * cur_char_width;
-  h = h * cur_char_height;
+  x = x * char_width + left_margin;
+  y = y * char_height + top_margin;
+  w = w * char_width;
+  h = h * char_height;
 
 
   if (frame) {
@@ -2306,26 +2306,26 @@ void trs_gui_clear_rect(int x, int y, int w, int h, int frame)
   trs_screen_rect(x, y, w, h, gui_background);
 }
 
-void trs_gui_write_char(int col, int row, Uint8 char_index, int invert)
+void trs_gui_write_char(int col, int row, Uint8 character, int invert)
 {
   SDL_Rect srcRect, dstRect;
 
   /* Add offsets to center */
-  if (col_chars != 16) {
-    col += (row_chars - 64) / 2;
-    row += (col_chars - 16) / 2;
+  if (rows != 16) {
+    col += (cols - 64) / 2;
+    row += (rows - 16) / 2;
   } else if (hrg_enable == 2) {
     col += 8;
   }
 
   srcRect.x = 0;
   srcRect.y = 0;
-  srcRect.w = cur_char_width;
-  srcRect.h = cur_char_height;
+  srcRect.w = char_width;
+  srcRect.h = char_height;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.h * row + top_margin;
 
-  SDL_BlitSurface(trs_char[invert ? 5 : 4][char_index], &srcRect, screen, &dstRect);
+  SDL_BlitSurface(trs_char[invert ? 5 : 4][character], &srcRect, screen, &dstRect);
 }
 
 static void grafyx_write_byte(int x, int y, Uint8 byte)
@@ -2333,12 +2333,12 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
   if (grafyx_unscaled[y][x] != byte) {
     int const screen_x = ((x - grafyx_xoffset + G_XSIZE) % G_XSIZE);
     int const screen_y = ((y - grafyx_yoffset + G_YSIZE) % G_YSIZE);
-    int const on_screen = (screen_x < row_chars && screen_y < col_chars
-        * cur_char_height / scale_factor) || (hrg_enable == 2 && y < 192);
+    int const on_screen = (screen_x < cols && screen_y < rows
+        * char_height / scale_factor) || (hrg_enable == 2 && y < 192);
     int const position = (y * scale_factor) * G_XSIZE + x;
     SDL_Rect srcRect, dstRect;
 
-    srcRect.w = cur_char_width;
+    srcRect.w = char_width;
     srcRect.h = scale_factor;
     srcRect.x = srcRect.w * x;
     srcRect.y = srcRect.h * y;
@@ -2717,7 +2717,7 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
     return;
   }
 
-  if (row_chars == 64) {
+  if (cols == 64) {
     row = position / 64;
     col = position - (row * 64);
   } else {
@@ -2727,10 +2727,10 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
 
   srcRect.x = 0;
   srcRect.y = start * scale_factor;
-  srcRect.w = cur_char_width;
+  srcRect.w = char_width;
   srcRect.h = (end - start) * scale_factor + scale_factor;
   dstRect.x = srcRect.w * col + left_margin;
-  dstRect.y = srcRect.y + row * cur_char_height + top_margin;
+  dstRect.y = srcRect.y + row * char_height + top_margin;
 
   if (expanded)
     srcRect.w *= 2;
@@ -2745,11 +2745,11 @@ void m6845_screen(int chars, int lines, int raster, int factor)
 {
   int changed = 0;
 
-  if (chars && (changed = (chars != row_chars)))
-    row_chars = chars;
+  if (chars && (changed = (chars != cols)))
+    cols = chars;
 
-  if (lines && (changed = (lines != col_chars)))
-    col_chars = lines;
+  if (lines && (changed = (lines != rows)))
+    rows = lines;
 
   if (raster && (changed = (raster != m6845_raster)))
     m6845_raster = raster;
@@ -2761,7 +2761,7 @@ void m6845_screen(int chars, int lines, int raster, int factor)
     if (screen_chars < SCREEN_SIZE)
       memset(&trs_screen[screen_chars], ' ', SCREEN_SIZE - screen_chars - 1);
 
-    screen_chars = row_chars * col_chars;
+    screen_chars = cols * rows;
     if (screen_chars > SCREEN_SIZE)
       screen_chars = SCREEN_SIZE;
 
@@ -2769,12 +2769,12 @@ void m6845_screen(int chars, int lines, int raster, int factor)
   }
 }
 
-void genie3s_char(int char_index, int scanline, int byte)
+void genie3s_char(int character, int scanline, int byte)
 {
-  char_ram[char_index][scanline] = eg3200 ? mirror_bits(byte) : byte;
+  char_ram[character][scanline] = eg3200 ? mirror_bits(byte) : byte;
 
   if (scanline == (m6845_raster - 1)) {
-    bitmap_char(char_index, 1);
+    bitmap_char(character, 1);
 
     if (eg3200)
       trs_screen_refresh();
@@ -2797,7 +2797,7 @@ void genie3s_hrg_write(unsigned int position, int byte)
 
   if ((currentmode & EXPANDED) && (position & 1)) return;
 
-  if (row_chars == 64) {
+  if (cols == 64) {
     pos = position & (screen_chars - 1);
     row = pos / 64;
     col = pos - (row * 64);
@@ -2815,7 +2815,7 @@ Uint8 genie3s_hrg_read(unsigned int position)
 {
   unsigned int pos, row, col;
 
-  if (row_chars == 64) {
+  if (cols == 64) {
     pos = position & (screen_chars - 1);
     row = pos / 64;
     col = pos - (row * 64);
@@ -2912,8 +2912,8 @@ void trs_main_save(FILE *file)
 
   trs_save_uint8(file, trs_screen, SCREEN_SIZE);
   trs_save_uint16(file, &screen_chars, 1);
-  trs_save_int(file, &col_chars, 1);
-  trs_save_int(file, &row_chars, 1);
+  trs_save_int(file, &rows, 1);
+  trs_save_int(file, &cols, 1);
   trs_save_int(file, &currentmode, 1);
   trs_save_int(file, &m6845_raster, 1);
   trs_save_int(file, &scale_factor, 1);
@@ -2952,8 +2952,8 @@ void trs_main_load(FILE *file)
 
   trs_load_uint8(file, trs_screen, SCREEN_SIZE);
   trs_load_uint16(file, &screen_chars, 1);
-  trs_load_int(file, &col_chars, 1);
-  trs_load_int(file, &row_chars, 1);
+  trs_load_int(file, &rows, 1);
+  trs_load_int(file, &cols, 1);
   trs_load_int(file, &currentmode, 1);
   trs_load_int(file, &m6845_raster, 1);
   trs_load_int(file, &scale_factor, 1);
