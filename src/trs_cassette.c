@@ -313,9 +313,9 @@ get_fourbyte(Uint32 *pp, FILE* f)
 static void
 put_sample(Uint8 sample, int convert, FILE* f)
 {
-  Uint16 two_byte;
-
   if (convert) {
+    Uint16 two_byte;
+
     SDL_LockAudio();
     switch (cassette_afmt) {
       case AUDIO_U8:

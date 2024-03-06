@@ -2925,13 +2925,14 @@ int z80_run(int continuous)
       *  1 = continuous
       */
 {
-    Uint8 instruction;
-    Uint16 address; /* generic temps */
     int ret = 0;
     trs_continuous = continuous;
 
     /* loop to do a z80 instruction */
     do {
+	Uint8  instruction;
+	Uint16 address; /* generic temps */
+
 	/* Speed control */
 	tstate_t t_delta;
 

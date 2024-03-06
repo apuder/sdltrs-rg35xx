@@ -1439,7 +1439,6 @@ Uint8
 trs_disk_data_read(void)
 {
   DiskState *d = &disk[state.curdrive];
-  SectorId *sid;
 
   if (trs_show_led)
     trs_disk_led(state.curdrive, 1);
@@ -1523,7 +1522,7 @@ trs_disk_data_read(void)
 	  break;
 	}
       } else if (d->emutype == JV3) {
-	sid = &d->u.jv3.id[d->u.jv3.sorted_id[state.last_readadr]];
+	SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[state.last_readadr]];
 	switch (state.bytecount) {
 	case 6:
 	  state.data = sid->track;

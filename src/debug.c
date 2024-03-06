@@ -382,7 +382,6 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 static void debug_run(void)
 {
     Uint8 t;
-    Uint8 byte;
     int continuous;
     int watch_triggered = 0;
 
@@ -443,7 +442,7 @@ static void debug_run(void)
 		if (trap_table[i].valid &&
 		    trap_table[i].flag == WATCHPOINT_FLAG)
 		{
-		    byte = mem_read(trap_table[i].address);
+		    Uint8 byte = mem_read(trap_table[i].address);
 		    if (byte != trap_table[i].byte)
 		    {
 			/*
@@ -478,7 +477,6 @@ void debug_shell(void)
     int done = 0;
 
 #ifdef READLINE
-    char *line;
     char history_file[MAXLINE];
     const char *home = (char *)getenv ("HOME");
     if (!home) home = ".";
@@ -500,7 +498,7 @@ void debug_shell(void)
          */
         {
 
-	    line = readline("(zbx) ");
+	    char *line = readline("(zbx) ");
 	    if(line)
 	    {
 		if(strlen(line) > 0)
