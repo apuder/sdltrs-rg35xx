@@ -1084,7 +1084,7 @@ void trs_exit(int confirm)
 
     recursion = 1;
 
-    if (!gui_exit_sdltrs() && buffer) {
+    if (!gui_exit() && buffer) {
       SDL_BlitSurface(buffer, NULL, screen, NULL);
       SDL_FreeSurface(buffer);
       trs_screen_update();
@@ -1437,7 +1437,7 @@ void trs_get_event(int wait)
                 } else {
                   char filename[FILENAME_MAX];
 
-                  if (gui_file_browse(trs_disk_dir, filename, NULL, 0,
+                  if (gui_file(trs_disk_dir, filename, NULL, 0,
                         "Floppy Disk Image") != -1)
                     trs_disk_insert(keysym.sym, filename);
                   trs_screen_refresh();
@@ -1728,7 +1728,7 @@ done:
     }
 
     if (trs_paused && fullscreen)
-      gui_display_pause();
+      gui_pause();
 
   } while (!wait);
   SDL_StopTextInput();
@@ -2279,7 +2279,7 @@ static void trs_screen_rect(int x, int y, int w, int h, int color)
 #endif
 }
 
-void gui_clear_rect(int x, int y, int w, int h, int frame)
+void gui_rect(int x, int y, int w, int h, int frame)
 {
   /* Add offsets to center */
   if (rows != 16) {
@@ -2306,7 +2306,7 @@ void gui_clear_rect(int x, int y, int w, int h, int frame)
   trs_screen_rect(x, y, w, h, gui_background);
 }
 
-void gui_write_char(int col, int row, Uint8 character, int invert)
+void gui_char(int col, int row, Uint8 character, int invert)
 {
   SDL_Rect srcRect, dstRect;
 
