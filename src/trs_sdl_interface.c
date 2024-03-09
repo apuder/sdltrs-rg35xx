@@ -188,7 +188,7 @@ static void bitmap_char(int character, int ram);
 static void bitmap_free(int character, int start, int end);
 static void bitmap_init(int ram);
 
-static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
+static void CopyBlitImage1(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -213,7 +213,7 @@ static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImageTo2Byte(int width, int height, const Uint8 *src,
+static void CopyBlitImage2(int width, int height, const Uint8 *src,
     int srcskip, Uint16 *dst, int dstskip, const Uint16 *map)
 {
   while (height--) {
@@ -238,7 +238,7 @@ static void CopyBlitImageTo2Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImageTo3Byte(int width, int height, const Uint8 *src,
+static void CopyBlitImage3(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -268,7 +268,7 @@ static void CopyBlitImageTo3Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImageTo4Byte(int width, int height, const Uint8 *src,
+static void CopyBlitImage4(int width, int height, const Uint8 *src,
     int srcskip, Uint32 *dst, int dstskip, const Uint32 *map)
 {
   while (height--) {
@@ -293,7 +293,7 @@ static void CopyBlitImageTo4Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImageTo1Byte(int width, int height, const Uint8 *src,
+static void XorBlitImage1(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -320,7 +320,7 @@ static void XorBlitImageTo1Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImageTo2Byte(int width, int height, const Uint8 *src,
+static void XorBlitImage2(int width, int height, const Uint8 *src,
     int srcskip, Uint16 *dst, int dstskip, const Uint16 *map)
 {
   while (height--) {
@@ -347,7 +347,7 @@ static void XorBlitImageTo2Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImageTo3Byte(int width, int height, const Uint8 *src,
+static void XorBlitImage3(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -379,7 +379,7 @@ static void XorBlitImageTo3Byte(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImageTo4Byte(int width, int height, const Uint8 *src,
+static void XorBlitImage4(int width, int height, const Uint8 *src,
     int srcskip, Uint32 *dst, int dstskip, const Uint32 *map)
 {
   while (height--) {
@@ -483,34 +483,34 @@ static void TrsSoftBlit(const SDL_Surface *src, const SDL_Rect *srcrect,
   switch (bpp) {
     case 1:
       if (xor)
-        XorBlitImageTo1Byte(rect_w, rect_h, srcpix, srcskip,
+        XorBlitImage1(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImageTo1Byte(rect_w, rect_h, srcpix, srcskip,
+        CopyBlitImage1(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 2:
       if (xor)
-        XorBlitImageTo2Byte(rect_w, rect_h, srcpix, srcskip,
+        XorBlitImage2(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       else
-        CopyBlitImageTo2Byte(rect_w, rect_h, srcpix, srcskip,
+        CopyBlitImage2(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       break;
     case 3:
       if (xor)
-        XorBlitImageTo3Byte(rect_w, rect_h, srcpix, srcskip,
+        XorBlitImage3(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImageTo3Byte(rect_w, rect_h, srcpix, srcskip,
+        CopyBlitImage3(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 4:
       if (xor)
-        XorBlitImageTo4Byte(rect_w, rect_h, srcpix, srcskip,
+        XorBlitImage4(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       else
-        CopyBlitImageTo4Byte(rect_w, rect_h, srcpix, srcskip,
+        CopyBlitImage4(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       break;
     default:
@@ -1854,7 +1854,7 @@ boxes_init(int fg_color, int bg_color, int width, int height, int expanded)
   }
 }
 
-static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
+static SDL_Surface *bitmap_surface(const Uint8 *data,
     int fg_color, int bg_color, int scale_x)
 {
   /*
@@ -1908,16 +1908,16 @@ bitmap_char(int character, int ram)
   bitmap_free(character, 0, 3);
 
   /* Normal */
-  trs_char[0][character] = CreateSurfaceFromDataScale(
+  trs_char[0][character] = bitmap_surface(
       char_data, foreground, background, 1);
   /* Expanded */
-  trs_char[1][character] = CreateSurfaceFromDataScale(
+  trs_char[1][character] = bitmap_surface(
       char_data, foreground, background, 2);
   /* Inverse */
-  trs_char[2][character] = CreateSurfaceFromDataScale(
+  trs_char[2][character] = bitmap_surface(
       char_data, background, foreground, 1);
   /* Expanded + Inverse */
-  trs_char[3][character] = CreateSurfaceFromDataScale(
+  trs_char[3][character] = bitmap_surface(
       char_data, background, foreground, 2);
 }
 
@@ -1951,9 +1951,9 @@ bitmap_init(int ram)
 
     /* GUI Normal + Inverse */
     bitmap_free(i, 4, 5);
-    trs_char[4][i] = CreateSurfaceFromDataScale(
+    trs_char[4][i] = bitmap_surface(
         trs_char_data[gui][i], gui_foreground, gui_background, 1);
-    trs_char[5][i] = CreateSurfaceFromDataScale(
+    trs_char[5][i] = bitmap_surface(
         trs_char_data[gui][i], gui_background, gui_foreground, 1);
   }
 
