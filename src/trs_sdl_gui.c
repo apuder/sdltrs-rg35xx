@@ -70,7 +70,7 @@ static char **filelist;
 static int filelistcount;
 static int filelistsize;
 
-typedef struct menu_entry_type {
+typedef struct menu_entry {
   char text[64];
   int const type;
 } MENU;
