@@ -2708,7 +2708,7 @@ void gui_main_menu(void)
         gui_emulator_menu();
         break;
       case 5:
-        gui_main_menu();
+        gui_display_menu();
         break;
       case 6:
         gui_misc_menu();
