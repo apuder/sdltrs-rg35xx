@@ -381,13 +381,12 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 
 static void debug_run(void)
 {
-    Uint8 t;
+    Uint8 t = traps[Z80_PC];
     int continuous;
     int watch_triggered = 0;
 
     stop_signaled = 0;
 
-    t = traps[Z80_PC];
 
     while(!stop_signaled)
     {
