@@ -2702,9 +2702,8 @@ hrg_read_data(void)
 
 void m6845_cursor(unsigned int position, int start, int end, int visible)
 {
-  int expanded = (currentmode & EXPANDED) != 0;
   unsigned int row, col;
-  int cur_char;
+  int cur_char, expanded;
   SDL_Rect srcRect, dstRect;
 
   if (position >= screen_chars)
@@ -2731,6 +2730,8 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
   srcRect.h = (end - start) * scale_factor + scale_factor;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.y + row * char_height + top_margin;
+
+  expanded = (currentmode & EXPANDED) != 0;
 
   if (expanded)
     srcRect.w *= 2;
