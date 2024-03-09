@@ -1541,7 +1541,7 @@ void trs_get_event(int wait)
 
         /* Convert uppercase and special chars */
         if (SDL_GetModState() & (KMOD_SHIFT | KMOD_RALT)) {
-          if ((keysym.sym >= 0x21 && keysym.sym <= 0x7F) || keysym.sym == 0xDF) {
+          if (keysym.sym >= 0x21 && keysym.sym <= 0xDF) {
             if (SDL_PeepEvents(&event, 1, SDL_PEEKEVENT,
                 SDL_FIRSTEVENT, SDL_LASTEVENT) == 1 && event.type == SDL_TEXTINPUT)
               keysym.sym = event.text.text[0] & 0xFF;
