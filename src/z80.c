@@ -2563,8 +2563,8 @@ static void do_indexed_instruction(Uint16 *ixp)
  */
 static int do_ED_instruction(void)
 {
-    Uint8 instruction = mem_read(Z80_PC++);
     int debug = 0;
+    Uint8 instruction = mem_read(Z80_PC++);
 
     switch(instruction)
     {
@@ -4270,9 +4270,9 @@ int z80_run(int continuous)
 
 void z80_reset(void)
 {
-    Z80_PC = 0;
     Z80_A = 0xFF;
     Z80_F = 0xFF;
+    Z80_PC = 0;
     Z80_SP = 0xFFFF;
     z80_state.i = 0;
     z80_state.r = 0;

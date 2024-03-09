@@ -129,9 +129,9 @@ Uint8 cp500_switch_mode(int mode)
     case 0x05: /* 64K RAM, 80x24, video lines 1-8 mapped to RAM */
     case 0x45: /* 64K RAM, 80x24, video lines 9-15 mapped to RAM */
     case 0x85: /* 64K RAM, 80x24, video lines 15-24 mapped to RAM */
-      mem_map(3);
       /* Precalculate now to avoid doing on every memory access: */
       cp500_m80_video_first_row = mode >> 3;
+      mem_map(3);
       mem_video_page((mode >> 6) * 1024);
       trs_clones_model(CP500_M80);
       trs_screen_80x24(1);

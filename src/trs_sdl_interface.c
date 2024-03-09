@@ -80,19 +80,19 @@ static Uint8 trs_screen[SCREEN_SIZE];
 static Uint8 char_ram[MAX_CHARS][MAX_CHAR_HEIGHT];
 static Uint8 *blitMap;
 static Uint16 screen_chars = 1024;
-static int trs_charset;
-static int cpu_panel;
 static int cols = 64;
 static int rows = 16;
 static int border_width = 2;
 static int scale_factor = 2;
 static int m6845_raster = 12;
+static int trs_charset;
 static int trs_resize;
 static int text80x24, screen640x240;
 static int drawnRectCount;
 static int top_margin;
 static int left_margin;
 static int screen_height;
+static int cpu_panel;
 static int currentmode;
 static int OrigHeight, OrigWidth;
 static int char_width = TRS_CHAR_WIDTH;
@@ -184,9 +184,9 @@ static int hrg_addr;
 static Uint8 le18_x, le18_y, le18_on;
 
 /* Private routines */
-static void bitmap_init(int ram);
 static void bitmap_char(int character, int ram);
 static void bitmap_free(int character, int start, int end);
+static void bitmap_init(int ram);
 
 static void CopyBlitImageTo1Byte(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
@@ -1900,32 +1900,6 @@ static SDL_Surface *CreateSurfaceFromDataScale(const Uint8 *data,
 }
 
 static void
-bitmap_init(int ram)
-{
-  int const gui = trs_charset <= 2 ? 2 : 7;
-  int const height = (trs_clones.model == CP500_M80)
-      /* Adjust block graphics in CP-500/M80 80x24 video mode */
-      ? MAX_CHAR_HEIGHT * 2
-      : char_height;
-  int i;
-
-  for (i = 0; i < MAX_CHARS; i++) {
-    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA Card */
-    bitmap_char(i, (i > 191 && eg3200) ? 1 : ram);
-
-    /* GUI Normal + Inverse */
-    bitmap_free(i, 4, 5);
-    trs_char[4][i] = CreateSurfaceFromDataScale(
-        trs_char_data[gui][i], gui_foreground, gui_background, 1);
-    trs_char[5][i] = CreateSurfaceFromDataScale(
-        trs_char_data[gui][i], gui_background, gui_foreground, 1);
-  }
-
-  boxes_init(foreground, background, char_width, height, 0);
-  boxes_init(foreground, background, char_width * 2, height, 1);
-}
-
-static void
 bitmap_char(int character, int ram)
 {
   Uint8 const *char_data = ram ?
@@ -1959,6 +1933,32 @@ bitmap_free(int character, int start, int end)
       SDL_FreeSurface(trs_char[i][character]);
     }
   }
+}
+
+static void
+bitmap_init(int ram)
+{
+  int const gui = trs_charset <= 2 ? 2 : 7;
+  int const height = (trs_clones.model == CP500_M80)
+      /* Adjust block graphics in CP-500/M80 80x24 video mode */
+      ? MAX_CHAR_HEIGHT * 2
+      : char_height;
+  int i;
+
+  for (i = 0; i < MAX_CHARS; i++) {
+    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA Card */
+    bitmap_char(i, (i > 191 && eg3200) ? 1 : ram);
+
+    /* GUI Normal + Inverse */
+    bitmap_free(i, 4, 5);
+    trs_char[4][i] = CreateSurfaceFromDataScale(
+        trs_char_data[gui][i], gui_foreground, gui_background, 1);
+    trs_char[5][i] = CreateSurfaceFromDataScale(
+        trs_char_data[gui][i], gui_background, gui_foreground, 1);
+  }
+
+  boxes_init(foreground, background, char_width, height, 0);
+  boxes_init(foreground, background, char_width * 2, height, 1);
 }
 
 

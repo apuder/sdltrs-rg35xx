@@ -80,9 +80,9 @@
 /* Check address in video memory */
 #define VIDEO_ADDR(vaddr)  (Uint16)vaddr < MAX_VIDEO_SIZE
 
+int lowercase = 1;
 int trs_model = 1;
 int trs_rom_size;
-int lowercase = 1;
 int eg3200;   /* EACA EG 3200 Genie III */
 int genie3s;  /* TCS Genie IIIs */
 int huffman;  /* Dave Huffman (4/4P) */
@@ -102,8 +102,8 @@ static Uint8 rom[MAX_ROM_SIZE + 1];
    confusing when combining with other stuff */
 static Uint8 supermem_ram[MAX_SUPERMEM_SIZE + 1];
 static int memory_map;
-static int bank_offset[2];
 static int video_addr = -VIDEO_START;
+static int bank_offset[2];
 static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
@@ -369,6 +369,8 @@ void genie3s_bank_out(int value)
 	if ((value & (1 << 1)) == 0 && (genie3s & (1 << 1)))
 		trs_screen_refresh();
 
+	genie3s = value;
+
 	/* Bit 7 : Bit 6 : Bank# : Memory
 	 *   0   :   0   :   0   :    64K
 	 *   0   :   1   :   1   :   128K
@@ -376,8 +378,6 @@ void genie3s_bank_out(int value)
 	 *   1   :   1   :   3   :   256K
 	 */
 	bank_base = (value & 0xC0) << 10;
-
-	genie3s = value;
 }
 
 void genie3s_init_out(int value)
