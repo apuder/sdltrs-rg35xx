@@ -2325,7 +2325,7 @@ void gui_char(int col, int row, Uint8 character, int invert)
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.h * row + top_margin;
 
-  SDL_BlitSurface(trs_char[invert ? 5 : 4][character], &srcRect, screen, &dstRect);
+  SDL_BlitSurface(trs_char[invert + 4][character], &srcRect, screen, &dstRect);
 }
 
 static void grafyx_write_byte(int x, int y, Uint8 byte)
