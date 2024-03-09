@@ -188,7 +188,7 @@ static void bitmap_char(int character, int ram);
 static void bitmap_free(int character, int start, int end);
 static void bitmap_init(int ram);
 
-static void CopyBlitImage1(int width, int height, const Uint8 *src,
+static void CopyBlit1(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -213,7 +213,7 @@ static void CopyBlitImage1(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImage2(int width, int height, const Uint8 *src,
+static void CopyBlit2(int width, int height, const Uint8 *src,
     int srcskip, Uint16 *dst, int dstskip, const Uint16 *map)
 {
   while (height--) {
@@ -238,7 +238,7 @@ static void CopyBlitImage2(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImage3(int width, int height, const Uint8 *src,
+static void CopyBlit3(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -268,7 +268,7 @@ static void CopyBlitImage3(int width, int height, const Uint8 *src,
   }
 }
 
-static void CopyBlitImage4(int width, int height, const Uint8 *src,
+static void CopyBlit4(int width, int height, const Uint8 *src,
     int srcskip, Uint32 *dst, int dstskip, const Uint32 *map)
 {
   while (height--) {
@@ -293,7 +293,7 @@ static void CopyBlitImage4(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImage1(int width, int height, const Uint8 *src,
+static void XorBlit1(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -320,7 +320,7 @@ static void XorBlitImage1(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImage2(int width, int height, const Uint8 *src,
+static void XorBlit2(int width, int height, const Uint8 *src,
     int srcskip, Uint16 *dst, int dstskip, const Uint16 *map)
 {
   while (height--) {
@@ -347,7 +347,7 @@ static void XorBlitImage2(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImage3(int width, int height, const Uint8 *src,
+static void XorBlit3(int width, int height, const Uint8 *src,
     int srcskip, Uint8 *dst, int dstskip, const Uint8 *map)
 {
   while (height--) {
@@ -379,7 +379,7 @@ static void XorBlitImage3(int width, int height, const Uint8 *src,
   }
 }
 
-static void XorBlitImage4(int width, int height, const Uint8 *src,
+static void XorBlit4(int width, int height, const Uint8 *src,
     int srcskip, Uint32 *dst, int dstskip, const Uint32 *map)
 {
   while (height--) {
@@ -406,7 +406,7 @@ static void XorBlitImage4(int width, int height, const Uint8 *src,
   }
 }
 
-static void TrsBlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
+static void BlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
 {
   Uint8 *map;
   int i;
@@ -451,7 +451,7 @@ static void TrsBlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
   blitMap = map;
 }
 
-static void TrsSoftBlit(const SDL_Surface *src, const SDL_Rect *srcrect,
+static void Blit(const SDL_Surface *src, const SDL_Rect *srcrect,
     SDL_Surface *dst, SDL_Rect *dstrect, int xor)
 {
   /* Set up the blit information */
@@ -483,34 +483,34 @@ static void TrsSoftBlit(const SDL_Surface *src, const SDL_Rect *srcrect,
   switch (bpp) {
     case 1:
       if (xor)
-        XorBlitImage1(rect_w, rect_h, srcpix, srcskip,
+        XorBlit1(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImage1(rect_w, rect_h, srcpix, srcskip,
+        CopyBlit1(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 2:
       if (xor)
-        XorBlitImage2(rect_w, rect_h, srcpix, srcskip,
+        XorBlit2(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       else
-        CopyBlitImage2(rect_w, rect_h, srcpix, srcskip,
+        CopyBlit2(rect_w, rect_h, srcpix, srcskip,
             (Uint16 *)dstpix, dstskip / 2, (Uint16 *)blitMap);
       break;
     case 3:
       if (xor)
-        XorBlitImage3(rect_w, rect_h, srcpix, srcskip,
+        XorBlit3(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       else
-        CopyBlitImage3(rect_w, rect_h, srcpix, srcskip,
+        CopyBlit3(rect_w, rect_h, srcpix, srcskip,
             dstpix, dstskip, blitMap);
       break;
     case 4:
       if (xor)
-        XorBlitImage4(rect_w, rect_h, srcpix, srcskip,
+        XorBlit4(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       else
-        CopyBlitImage4(rect_w, rect_h, srcpix, srcskip,
+        CopyBlit4(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       break;
     default:
@@ -737,7 +737,7 @@ void trs_screen_init(int resize)
   SDL_RenderFillRect(render, NULL);
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
 
-  TrsBlitMap(image->format->palette, screen->format);
+  BlitMap(image->format->palette, screen->format);
 
   bitmap_init(genie3s);
   trs_screen_refresh();
@@ -2236,14 +2236,14 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
 
     srcRect.x = srcx;
     srcRect.y = srcy;
-    TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
+    Blit(image, &srcRect, screen, &dstRect, 1);
 
     /* Draw wrapped portion if any */
     if (duny < char_height) {
       srcRect.y = 0;
       srcRect.h -= duny;
       dstRect.y += duny;
-      TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
+      Blit(image, &srcRect, screen, &dstRect, 1);
     }
   }
 
@@ -2347,7 +2347,7 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
 
     if (grafyx_enable && grafyx_overlay && on_screen)
      /* Erase old byte, preserving text */
-      TrsSoftBlit(image, &srcRect, screen, &dstRect, 1);
+      Blit(image, &srcRect, screen, &dstRect, 1);
 
     /* Save new byte in local memory */
     grafyx_unscaled[y][x] = byte;
@@ -2358,7 +2358,7 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
 
     if (grafyx_enable && on_screen) {
       /* Draw new byte */
-      TrsSoftBlit(image, &srcRect, screen, &dstRect, grafyx_overlay);
+      Blit(image, &srcRect, screen, &dstRect, grafyx_overlay);
       drawnRectCount = MAX_RECTS;
     }
   }
