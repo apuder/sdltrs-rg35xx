@@ -16,6 +16,12 @@ option('READLINE',
 	value		: true
 )
 
+option('ROM_PATH',
+	description	: 'Set path prefix for ROM files',
+	type		: 'string',
+	value		: '""'
+)
+
 option('ZBX',
 	description	: 'Build with integrated Z80 debugger',
 	type		: 'boolean',

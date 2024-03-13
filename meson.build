@@ -6,6 +6,7 @@ project('sdl2trs', 'c',
 )
 
 add_project_arguments('-Wno-unused-parameter', '-Wno-unused-result', language: 'c')
+add_project_arguments('-DROM_PATH=' + get_option('ROM_PATH'), language: 'c')
 
 sources = files([
 	'src/debug.c',
