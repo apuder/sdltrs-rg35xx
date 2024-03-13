@@ -32,7 +32,7 @@ ENDIAN	!= echo; echo "ab" | od -x | grep "6261" > /dev/null || echo "-Dbig_endia
 LIBS	+= -lcurses -lreadline
 SDL_INC	!= sdl2-config --cflags
 SDL_LIB	!= sdl2-config --libs
-MACROS	+= -DREADLINE -DZBX
+MACROS	+= -DREADLINE -DZBX -DROM_PATH='"${ROM_PATH}"'
 CFLAGS	?= -g -Wall
 CFLAGS	+= ${SDL_INC} ${ENDIAN} ${MACROS}
 

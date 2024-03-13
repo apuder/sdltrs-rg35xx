@@ -48,6 +48,10 @@
 #define GREEN       0x344843
 #define WHITE       0xe0e0ff
 
+#ifndef ROM_PATH
+#define ROM_PATH    ""
+#endif
+
 /* Public data */
 int foreground;
 int background;
@@ -890,9 +894,9 @@ int trs_load_config_file(void)
   scanlines = 0;
   scanshade = 127;
   selector = 0;
-  strcpy(romfile1, "level2.rom");
-  strcpy(romfile3, "model3.rom");
-  strcpy(romfile4p, "model4p.rom");
+  snprintf(romfile1, FILENAME_MAX, "%slevel2.rom", ROM_PATH);
+  snprintf(romfile3, FILENAME_MAX, "%smodel3.rom", ROM_PATH);
+  snprintf(romfile4p, FILENAME_MAX, "%smodel4p.rom", ROM_PATH);
   stringy = 0;
   speedup = 1;
   sprintf(trs_cass_dir, "%c%c", '.', DIR_SLASH);

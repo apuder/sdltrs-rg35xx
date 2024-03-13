@@ -69,6 +69,7 @@ win64:	${PROG}
 MSYS		:=$(if $(findstring Msys, $(shell uname -a)), Msys)
 SSPLIB		:=$(if ${MSYS},-lssp,)
 READLINELIBS	 =$(if ${READLINE},-lreadline,)
+MACROS		+= -DROM_PATH='"${ROM_PATH}"'
 ZBX		?= -DZBX
 CFLAGS		?= -g -O2 -Wall
 CFLAGS		+= ${SDL_INC} ${ENDIAN} ${MACROS} ${READLINE} ${ZBX}
