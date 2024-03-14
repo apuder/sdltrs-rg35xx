@@ -33,7 +33,7 @@ AC_ARG_ENABLE([zbx],
   [AS_HELP_STRING([--enable-zbx], [build with integrated Z80 debugger zbx])],
   [AC_DEFINE([ZBX])])
 
-CFLAGS="$CFLAGS $( sdl2-config --cflags )"
+CFLAGS="$CFLAGS $( sdl2-config --cflags ) -DROM_PATH='\"$ROM_PATH\"'"
 LIBS="$LIBS $( sdl2-config --libs )"
 
 AS_IF([test "x$enable_zbx" = "xyes"],
