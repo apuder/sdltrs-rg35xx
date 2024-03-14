@@ -39,6 +39,9 @@ set(SOURCES
 
 add_executable(sdl2trs ${SOURCES})
 
+add_definitions(-DROM_PATH="${ROM_PATH}")
+message("-- ROM path set to: '${ROM_PATH}'")
+
 test_big_endian(BIGENDIAN)
 if (${BIGENDIAN})
 	add_definitions(-Dbig_endian)
