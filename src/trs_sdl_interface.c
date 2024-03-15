@@ -2321,7 +2321,7 @@ void gui_char(int col, int row, Uint8 character, int invert)
   srcRect.x = 0;
   srcRect.y = 0;
   srcRect.w = char_width;
-  srcRect.h = char_height - 2;
+  srcRect.h = TRS_CHAR_HEIGHT4 * 2;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = char_height * row + top_margin;
 
