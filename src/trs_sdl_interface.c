@@ -128,9 +128,9 @@ static Uint32 last_key[256];
 #define PASTE_KEYUP   3
 static int  paste_state;
 static int  paste_lastkey;
-extern int  PasteManagerStartPaste(void);
-extern void PasteManagerStartCopy(const char *string);
-extern int  PasteManagerGetChar(Uint8 *character);
+extern int  PasteStart(void);
+extern void PasteCopy(const char *string);
+extern int  PasteChar(Uint8 *character);
 
 #define COPY_IDLE     0
 #define COPY_STARTED  1
@@ -1138,7 +1138,7 @@ void trs_get_event(int wait)
 
     switch (paste_state) {
       case PASTE_GETNEXT:
-        paste_lastkey = !PasteManagerGetChar(&paste_key);
+        paste_lastkey = !PasteChar(&paste_key);
 #ifndef _WIN32
         if (paste_key == 0xa)
           paste_key = 0xd;
@@ -1280,7 +1280,7 @@ void trs_get_event(int wait)
         if (SDL_GetModState() & KMOD_LALT) {
           switch (keysym.sym) {
             case SDLK_c:
-              PasteManagerStartCopy(GetSelection());
+              PasteCopy(GetSelection());
               copyStatus = COPY_IDLE;
               break;
             case SDLK_v:
@@ -1290,7 +1290,7 @@ void trs_get_event(int wait)
               }
               cycles_saved = cycles_per_timer;
               cycles_per_timer *= 4;
-              PasteManagerStartPaste();
+              PasteStart();
               paste_state = PASTE_GETNEXT;
               break;
             case SDLK_a:
