@@ -2355,7 +2355,7 @@ trs_disk_command_write(Uint8 cmd)
   state.currcommand = cmd;
 
   /* Select Disk Density for some clones */
-  if (trs_clones.model & (EG3200 | GENIE3S | LNW80 | SPEEDMASTER)) {
+  if (trs_clones.model & (CT80 | EG3200 | GENIE3S | LNW80 | SPEEDMASTER)) {
     if ((cmd & 0xF8) == 0xF8) {
       state.density = cmd & 1;
       state.controller = state.density ? TRSDISK_P1791 : TRSDISK_P1771;
