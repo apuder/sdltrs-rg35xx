@@ -134,7 +134,7 @@ static void help_message(void)
   quit .................. Exit from SDLTRS");
 }
 
-static char *trap_name(int flag)
+static const char *trap_name(int flag)
 {
     switch(flag)
     {
@@ -312,7 +312,7 @@ static void print_memory(Uint16 address, int num_bytes)
 {
     while(num_bytes > 0)
     {
-	int bytes_to_print = num_bytes < 16 ? num_bytes : 16;
+	int const bytes_to_print = num_bytes < 16 ? num_bytes : 16;
 	int i;
 
 	printf("%.4x:\t", address);
@@ -330,7 +330,7 @@ static void print_memory(Uint16 address, int num_bytes)
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    int byte = mem_read(address + i);
+	    int const byte = mem_read(address + i);
 
 	    if(isprint(byte))
 	    {

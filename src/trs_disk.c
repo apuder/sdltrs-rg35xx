@@ -310,7 +310,7 @@ static void real_readadr(void);
 static void real_readtrk(void);
 static void real_writetrk(void);
 #ifdef __linux
-static int  real_rate(DiskState *d);
+static int  real_rate(const DiskState *d);
 static void real_error(DiskState *d, unsigned int flags, const char *msg);
 static void real_ok(DiskState *d);
 #endif
@@ -342,7 +342,7 @@ trs_disk_debug(void)
   printf("  debug flags: %#x\n", trs_disk_debug_flags);
 
   for (i = 0; i < NDRIVES; i++) {
-    DiskState *d = &disk[i];
+    const DiskState *d = &disk[i];
 
     printf("Drive %d state: "
 	   "writeprot %d, phytrack %d (0x%02x), inches %d, step %d, type ",
@@ -523,7 +523,7 @@ trs_disk_unimpl(Uint8 cmd, const char *more)
 static int
 jv3_id_compare(const void* p1, const void* p2)
 {
-  DiskState *d = &disk[state.curdrive];
+  const DiskState *d = &disk[state.curdrive];
   int const i1 = *(int*)p1;
   int const i2 = *(int*)p2;
   int r = d->u.jv3.id[i1].track - d->u.jv3.id[i2].track;
@@ -556,7 +556,8 @@ jv3_sort_ids(int drive)
   }
   track = side = -1;
   for (i = 0; i < JV3_SECSMAX; i++) {
-    SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+    const SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+
     if (sid->track != track ||
 	(sid->flags & JV3_SIDE ? 1 : 0) != side) {
       track = sid->track;
@@ -571,7 +572,7 @@ jv3_sort_ids(int drive)
 
 /* JV3 only */
 static int
-id_index_to_size_code(DiskState *d, int id_index)
+id_index_to_size_code(const DiskState *d, int id_index)
 {
   return (d->u.jv3.id[id_index].flags & JV3_SIZE) ^
     ((d->u.jv3.id[id_index].track == JV3_FREE) ? 2 : 1);
@@ -586,7 +587,7 @@ size_code_to_size(int code)
 
 /* JV3 only */
 static int
-id_index_to_size(DiskState *d, int id_index)
+id_index_to_size(const DiskState *d, int id_index)
 {
   return 128 << id_index_to_size_code(d, id_index);
 }
@@ -594,7 +595,7 @@ id_index_to_size(DiskState *d, int id_index)
 /* Return the offset of the data block for the id_index'th sector
    in an emulated-disk file.  Not used for DMK. */
 static off_t
-offset(DiskState *d, int id_index)
+offset(const DiskState *d, int id_index)
 {
   if (d->emutype == JV1) {
     return id_index * JV1_SECSIZE;
@@ -618,7 +619,7 @@ idoffset(DiskState *d, int id_index)
     if (id_index < JV3_SECSPERBLK) {
       return JV3_IDSTART + id_index * sizeof(SectorId);
     } else {
-      int idstart2 = d->u.jv3.offset[JV3_SECSPERBLK-1] +
+      int const idstart2 = d->u.jv3.offset[JV3_SECSPERBLK-1] +
 	id_index_to_size(d, JV3_SECSPERBLK-1);
 
       if (d->u.jv3.nblocks == 1) {
@@ -1010,7 +1011,6 @@ search(int sector, int side)
     return JV1_SECPERTRK * d->phytrack + (sector < 0 ? 0 : sector);
   } else if (d->emutype == JV3) {
     int i;
-    SectorId *sid;
 
     if (d->phytrack < 0 || d->phytrack >= MAXTRACKS ||
 	state.curside >= JV3_SIDES ||
@@ -1023,7 +1023,8 @@ search(int sector, int side)
     i = d->u.jv3.track_start[d->phytrack][state.curside];
     if (i != -1) {
       for (;;) {
-	sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+	const SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+
 	if (sid->track != d->phytrack ||
 	    (sid->flags & JV3_SIDE ? 1 : 0) != state.curside) break;
 	if ((sector == -1 || sid->sector == sector) &&
@@ -1128,7 +1129,7 @@ search(int sector, int side)
 static int
 search_adr(void)
 {
-  DiskState *d = &disk[state.curdrive];
+  const DiskState *d = &disk[state.curdrive];
 
   if (d->file == NULL) {
     return -1;
@@ -1154,7 +1155,7 @@ static void
 verify(void)
 {
   /* Verify that head is on the expected track */
-  DiskState *d = &disk[state.curdrive];
+  const DiskState *d = &disk[state.curdrive];
 
   if (d->emutype == REAL) {
     real_verify();
@@ -1176,7 +1177,7 @@ verify(void)
 static float
 angle(void)
 {
-  DiskState *d = &disk[state.curdrive];
+  const DiskState *d = &disk[state.curdrive];
   /* Set revus to number of microseconds per revolution */
   int const revus = d->inches == 5 ? 200000 /* 300 RPM */ : 166666 /* 360 RPM */;
 #if TSTATEREV
@@ -1198,7 +1199,7 @@ angle(void)
 static void
 type1_status(void)
 {
-  DiskState *d = &disk[state.curdrive];
+  const DiskState *d = &disk[state.curdrive];
 
   switch (cmd_type(state.currcommand)) {
   case 1:
@@ -2949,8 +2950,8 @@ trs_disk_command_write(Uint8 cmd)
 	totbyt = 0;
 	denok = 0;
 	for (;;) {
-	  SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
-	  int dden = (sid->flags & JV3_DENSITY) != 0;
+	  const SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+	  int const dden = (sid->flags & JV3_DENSITY) != 0;
 
 	  if (sid->track != d->phytrack ||
 	      (sid->flags & JV3_SIDE ? 1 : 0) != state.curside) break;
@@ -3008,8 +3009,8 @@ trs_disk_command_write(Uint8 cmd)
 #endif
     } else /* d->emutype == DMK */ {
       /* Compute how far it will be to the next ID in the correct density */
-      float a = angle();
-      int ia = a * (d->inches ? TRKSIZE_DD : TRKSIZE_8DD);
+      float const a = angle();
+      int const ia = a * (d->inches ? TRKSIZE_DD : TRKSIZE_8DD);
       int ib = 0;
       int i, j, idamp, dden, prev_idamp, prev_dden, ts;
 
@@ -3200,7 +3201,7 @@ trs_disk_command_write(Uint8 cmd)
 #ifdef __linux
 /* Interface to real floppy drive */
 int
-real_rate(DiskState *d)
+real_rate(const DiskState *d)
 {
   if (d->inches == 5) {
     if (d->u.real.rps == 5) {
@@ -3218,7 +3219,7 @@ real_rate(DiskState *d)
 void
 real_error(DiskState *d, unsigned int flags, const char *msg)
 {
-  time_t now = time(NULL);
+  const time_t now = time(NULL);
 
   if (now > d->u.real.empty_timeout) {
     d->u.real.empty_timeout = time(NULL) + EMPTY_TIMEOUT;

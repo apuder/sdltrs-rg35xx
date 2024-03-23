@@ -504,7 +504,7 @@ fail:
  */
 static int find_sector(int newstatus)
 {
-  Drive *d = &state.d[state.drive];
+  const Drive *d = &state.d[state.drive];
 
   if (d->cyls == 0 && open_drive(state.drive) < 0) return 0;
 
@@ -531,7 +531,7 @@ static int find_sector(int newstatus)
 
 static int hard_data_in(void)
 {
-  Drive *d = &state.d[state.drive];
+  const Drive *d = &state.d[state.drive];
 
   if (trs_show_led)
     trs_hard_led(state.drive, 1);
@@ -548,7 +548,7 @@ static int hard_data_in(void)
 
 static void hard_data_out(int value)
 {
-  Drive *d = &state.d[state.drive];
+  const Drive *d = &state.d[state.drive];
   int res = 0;
 
   if (trs_show_led)
@@ -584,7 +584,7 @@ static void hard_data_out(int value)
    have to know about it. */
 static void set_dir_cyl(int cyl)
 {
-  Drive *d = &state.d[state.drive];
+  const Drive *d = &state.d[state.drive];
   long where = ftell(d->file);
 
   fseek(d->file, 31, 0);

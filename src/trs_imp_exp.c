@@ -381,12 +381,12 @@ void do_emt_time(void)
 
   if (Z80_A == 1) {
 #if __alpha
-    struct tm *loctm = localtime(&now);
+    const struct tm *loctm = localtime(&now);
     now += loctm->tm_gmtoff;
 #else
-    struct tm loctm = *(localtime(&now));
-    struct tm gmtm = *(gmtime(&now));
-    int daydiff = loctm.tm_mday - gmtm.tm_mday;
+    const struct tm loctm = *(localtime(&now));
+    const struct tm gmtm = *(gmtime(&now));
+    const int daydiff = loctm.tm_mday - gmtm.tm_mday;
     now += (loctm.tm_sec - gmtm.tm_sec)
       + (loctm.tm_min - gmtm.tm_min) * 60
       + (loctm.tm_hour - gmtm.tm_hour) * 3600;

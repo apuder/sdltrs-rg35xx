@@ -160,7 +160,7 @@ static void do_add_flags(int a, int b, int result)
      * Undocumented flags in bit 3, 5 of F come from the result.
      */
 
-    int index = ((a & 0x88) >> 1) | ((b & 0x88) >> 2) |
+    int const index = ((a & 0x88) >> 1) | ((b & 0x88) >> 2) |
       ((result & 0x88) >> 3);
 
     int f = half_carry_table[index & 7] |
@@ -182,7 +182,7 @@ static void do_sub_flags(int a, int b, int result)
      * Undocumented flags in bit 3, 5 of F come from the result.
      */
 
-    int index = ((a & 0x88) >> 1) | ((b & 0x88) >> 2) |
+    int const index = ((a & 0x88) >> 1) | ((b & 0x88) >> 2) |
       ((result & 0x88) >> 3);
 
     int f = SUBTRACT_MASK | subtract_half_carry_table[index & 7] |
@@ -205,7 +205,7 @@ static void do_adc_word_flags(int a, int b, int result)
      * Undocumented flags in bit 3, 5 of F come from the result high byte.
      */
 
-    int index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
+    int const index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
       ((result & 0x8800) >> 11);
 
     int f = half_carry_table[index & 7] |
@@ -227,7 +227,7 @@ static void do_add_word_flags(int a, int b, int result)
      * Undocumented flags in bit 3, 5 of F come from the result high byte.
      */
 
-    int index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
+    int const index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
       ((result & 0x8800) >> 11);
 
     int f = half_carry_table[index & 7] |
@@ -248,7 +248,7 @@ static void do_sbc_word_flags(int a, int b, int result)
      * Undocumented flags in bit 3, 5 of F come from the result high byte.
      */
 
-    int index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
+    int const index = ((a & 0x8800) >> 9) | ((b & 0x8800) >> 10) |
       ((result & 0x8800) >> 11);
 
     int f = SUBTRACT_MASK | subtract_half_carry_table[index & 7] |
@@ -300,7 +300,7 @@ static void do_flags_inc_byte(int value)
  */
 static void do_and_byte(int value)
 {
-    int result = (Z80_A &= value);
+    int const result = (Z80_A &= value);
     Uint8 set  = HALF_CARRY_MASK;
 
     if(parity(result))
@@ -315,7 +315,7 @@ static void do_and_byte(int value)
 
 static void do_or_byte(int value)
 {
-    int result = (Z80_A |= value);  /* the result of the or operation */
+    int const result = (Z80_A |= value);  /* the result of the or operation */
     Uint8 set  = 0;
 
     if(parity(result))
@@ -330,7 +330,7 @@ static void do_or_byte(int value)
 
 static void do_xor_byte(int value)
 {
-    int result = (Z80_A ^= value);  /* the result of the xor operation */
+    int const result = (Z80_A ^= value);  /* the result of the xor operation */
     Uint8 set  = 0;
 
     if(parity(result))
@@ -345,7 +345,7 @@ static void do_xor_byte(int value)
 
 static void do_add_byte(int value)
 {
-    int a = Z80_A;
+    int const a = Z80_A;
 
     Z80_A = Z80_A + value;
     do_add_flags(a, value, Z80_A);
@@ -353,7 +353,7 @@ static void do_add_byte(int value)
 
 static void do_adc_byte(int value)
 {
-    int a = Z80_A;
+    int const a = Z80_A;
 
     Z80_A = Z80_A + value + CARRY_FLAG;
     do_add_flags(a, value, Z80_A);
@@ -361,7 +361,7 @@ static void do_adc_byte(int value)
 
 static void do_sub_byte(int value)
 {
-    int a = Z80_A;
+    int const a = Z80_A;
 
     Z80_A = Z80_A - value;
     do_sub_flags(a, value, Z80_A);
@@ -369,7 +369,7 @@ static void do_sub_byte(int value)
 
 static void do_negate(void)
 {
-    int a = Z80_A;
+    int const a = Z80_A;
 
     Z80_A = - Z80_A;
     do_sub_flags(0, a, Z80_A);
@@ -377,7 +377,7 @@ static void do_negate(void)
 
 static void do_sbc_byte(int value)
 {
-    int a = Z80_A;
+    int const a = Z80_A;
 
     Z80_A = Z80_A - (value + CARRY_FLAG);
     do_sub_flags(a, value, Z80_A);
@@ -385,7 +385,7 @@ static void do_sbc_byte(int value)
 
 static void do_add_word(int value)
 {
-    int a = Z80_HL;
+    int const a = Z80_HL;
 
     Z80_HL = Z80_HL + value;
 
@@ -394,7 +394,7 @@ static void do_add_word(int value)
 
 static void do_adc_word(int value)
 {
-    int a = Z80_HL;
+    int const a = Z80_HL;
 
     Z80_HL = Z80_HL + value + CARRY_FLAG;
 
@@ -403,7 +403,7 @@ static void do_adc_word(int value)
 
 static void do_sbc_word(int value)
 {
-    int a = Z80_HL;
+    int const a = Z80_HL;
 
     Z80_HL = Z80_HL - (value + CARRY_FLAG);
 
@@ -412,8 +412,8 @@ static void do_sbc_word(int value)
 
 static void do_add_word_index(Uint16 *regp, int value)
 {
-    int a = *regp;
-    int result = a + value;
+    int const a = *regp;
+    int const result = a + value;
 
     *regp = result;
 
@@ -431,9 +431,9 @@ static void do_cp(int value)
      * Undocumented flags in bit 3, 5 of F come from the second operand.
      */
 
-    int a = Z80_A;
-    int result = a - value;
-    int index = ((a & 0x88) >> 1) | ((value & 0x88) >> 2) |
+    int const a = Z80_A;
+    int const result = a - value;
+    int const index = ((a & 0x88) >> 1) | ((value & 0x88) >> 2) |
       ((result & 0x88) >> 3);
     int f = SUBTRACT_MASK | subtract_half_carry_table[index & 7] |
       subtract_sign_carry_overflow_table[index >> 4] |
@@ -446,10 +446,10 @@ static void do_cp(int value)
 
 static void do_cpd(void)
 {
-    int oldcarry = Z80_F & CARRY_MASK;
-    int a = Z80_A;
-    int value = mem_read(Z80_HL);
-    int result = a - value;
+    int const oldcarry = Z80_F & CARRY_MASK;
+    int const a = Z80_A;
+    int const value = mem_read(Z80_HL);
+    int const result = a - value;
 
     Z80_HL--;
     Z80_BC--;
@@ -467,10 +467,10 @@ static void do_cpd(void)
 
 static void do_cpi(void)
 {
-    int oldcarry = Z80_F & CARRY_MASK;
-    int a = Z80_A;
-    int value = mem_read(Z80_HL);
-    int result = a - value;
+    int const oldcarry = Z80_F & CARRY_MASK;
+    int const a = Z80_A;
+    int const value = mem_read(Z80_HL);
+    int const result = a - value;
 
     Z80_HL++;
     Z80_BC--;
@@ -489,8 +489,10 @@ static void do_cpi(void)
 #ifdef FAST_MOVE
 static void do_cpdr(void)
 {
-    int oldcarry = Z80_F & CARRY_MASK;
-    int a = Z80_A, value, result;
+    int const oldcarry = Z80_F & CARRY_MASK;
+    int const a = Z80_A;
+    int value, result;
+
     do
     {
         result = a - (value = mem_read(Z80_HL));
@@ -514,8 +516,10 @@ static void do_cpdr(void)
 
 static void do_cpir(void)
 {
-    int oldcarry = Z80_F & CARRY_MASK;
-    int a = Z80_A, value, result;
+    int const oldcarry = Z80_F & CARRY_MASK;
+    int const a = Z80_A;
+    int value, result;
+
     do
     {
         result = a - (value = mem_read(Z80_HL));
@@ -562,7 +566,8 @@ static void do_cpir(void)
    It remains to be seen which (if either) is really right. */
 static void do_test_bit(int op, int value, int bit)
 {
-    int result = value & (1 << bit);
+    int const result = value & (1 << bit);
+
     Z80_F = (Z80_F & CARRY_MASK) | HALF_CARRY_MASK | (result & SIGN_MASK)
       | (result ? 0 : (OVERFLOW_MASK | ZERO_MASK))
       | (((op & 7) == 6) ? 0 : (value & (UNDOC3_MASK | UNDOC5_MASK)));
@@ -577,7 +582,8 @@ static void do_test_bit(int op, int value, int bit)
    against a real Z80, I suppose.  Ugh. */
 static void do_test_bit(int op, int value, int bit)
 {
-    int result = value & (1 << bit);
+    int const result = value & (1 << bit);
+
     Z80_F = (Z80_F & CARRY_MASK) | HALF_CARRY_MASK
       | (result & (UNDOC3_MASK | UNDOC5_MASK | SIGN_MASK))
       | (result ? 0 : (OVERFLOW_MASK | ZERO_MASK));
@@ -592,7 +598,7 @@ static int rl_byte(int value)
      */
 
     Uint8 set = 0;
-    int result = ((value << 1) & 0xFF) | CARRY_FLAG;
+    int const result = ((value << 1) & 0xFF) | CARRY_FLAG;
 
     if(result & 0x80)
       set |= SIGN_MASK;
@@ -616,7 +622,7 @@ static int rr_byte(int value)
      */
 
     Uint8 set = 0;
-    int result = (value >> 1) | (CARRY_FLAG ? 0x80 : 0);
+    int const result = (value >> 1) | (CARRY_FLAG ? 0x80 : 0);
 
     if(result & 0x80)
       set |= SIGN_MASK;
@@ -758,7 +764,7 @@ static void do_rrca(void)
 static int sla_byte(int value)
 {
     Uint8 set = 0;
-    int result = (value << 1) & 0xFF;
+    int const result = (value << 1) & 0xFF;
 
     if(result & 0x80)
       set |= SIGN_MASK;
@@ -805,7 +811,7 @@ static int sra_byte(int value)
 static int slia_byte(int value)
 {
     Uint8 set = 0;
-    int result = ((value << 1) & 0xFF) | 1;
+    int const result = ((value << 1) & 0xFF) | 1;
 
     if(result & 0x80)
       set |= SIGN_MASK;
@@ -824,7 +830,7 @@ static int slia_byte(int value)
 static int srl_byte(int value)
 {
     Uint8 set = 0;
-    int result = value >> 1;
+    int const result = value >> 1;
 
     if(result & 0x80)
       set |= SIGN_MASK;
@@ -970,12 +976,15 @@ static void do_ld_a_r(void)
    The old one was very wrong. */
 static void do_daa(void)
 {
-  int a = Z80_A, f = Z80_F;
-  int alow = a & 0xf;
+  int a = Z80_A;
+  int const f = Z80_F;
+  int const alow = a & 0xf;
   int carry = f & CARRY_MASK;
   int hcarry = f & HALF_CARRY_MASK;
+
   if (f & SUBTRACT_MASK) {
-    int hd = carry || a > 0x99;
+    int const hd = carry || a > 0x99;
+
     if (hcarry || alow > 9) {
        if (alow > 5) hcarry = 0;
        a = (a - 6) & 0xff;
@@ -1006,10 +1015,10 @@ static void do_rld(void)
      * Rotate-left-decimal.
      */
     Uint8 set = 0;
-    int old_value = mem_read(Z80_HL);
+    int const old_value = mem_read(Z80_HL);
 
     /* left-shift old value, add lower bits of a */
-    int new_value = ((old_value << 4) | (Z80_A & 0x0f)) & 0xff;
+    int const new_value = ((old_value << 4) | (Z80_A & 0x0f)) & 0xff;
 
     /* rotate high bits of old value into low bits of a */
     Z80_A = (Z80_A & 0xf0) | (old_value >> 4);
@@ -1031,10 +1040,10 @@ static void do_rrd(void)
      * Rotate-right-decimal.
      */
     Uint8 set = 0;
-    int old_value = mem_read(Z80_HL);
+    int const old_value = mem_read(Z80_HL);
 
     /* right-shift old value, add lower bits of a */
-    int new_value = (old_value >> 4) | ((Z80_A & 0x0f) << 4);
+    int const new_value = (old_value >> 4) | ((Z80_A & 0x0f) << 4);
 
     /* rotate low bits of old value into low bits of a */
     Z80_A = (Z80_A & 0xf0) | (old_value & 0x0f);
@@ -1144,7 +1153,7 @@ static int in_with_flags(int port)
      * which compute the flags.  Return the input value.
      */
 
-    int value = z80_in(port);
+    int const value = z80_in(port);
     Uint8 clear = (Uint8) ~(SIGN_MASK | ZERO_MASK | HALF_CARRY_MASK |
 			    PARITY_MASK | SUBTRACT_MASK);
     Uint8 set = 0;
@@ -1291,7 +1300,7 @@ static void do_nmi(void)
  */
 static void do_CB_instruction(void)
 {
-    Uint8 instruction = mem_read(Z80_PC++);
+    Uint8 const instruction = mem_read(Z80_PC++);
 
     switch(instruction)
     {
@@ -2085,7 +2094,7 @@ static void do_CB_instruction(void)
  */
 static void do_indexed_instruction(Uint16 *ixp)
 {
-    Uint8 instruction = mem_read(Z80_PC++);
+    Uint8 const instruction = mem_read(Z80_PC++);
 
     switch(instruction)
     {
@@ -2126,8 +2135,8 @@ static void do_indexed_instruction(Uint16 *ixp)
 
       case 0x35:	/* dec (ix + offset) */
         {
-	  Uint16 address = *ixp + (signed char) mem_read(Z80_PC++);
-	  Uint8 value = mem_read(address) - 1;
+	  Uint16 const address = *ixp + (signed char) mem_read(Z80_PC++);
+	  Uint8 const value = mem_read(address) - 1;
 	  mem_write(address, value);
 	  do_flags_dec_byte(value);
         }
@@ -2150,8 +2159,8 @@ static void do_indexed_instruction(Uint16 *ixp)
 
       case 0x34:	/* inc (ix + offset) */
         {
-	  Uint16 address = *ixp + (signed char) mem_read(Z80_PC++);
-	  Uint8 value = mem_read(address) + 1;
+	  Uint16 const address = *ixp + (signed char) mem_read(Z80_PC++);
+	  Uint8 const value = mem_read(address) + 1;
 	  mem_write(address, value);
 	  do_flags_inc_byte(value);
         }
@@ -2291,7 +2300,7 @@ static void do_indexed_instruction(Uint16 *ixp)
         {
 	  signed char offset = (signed char) mem_read(Z80_PC++);
 	  signed char result = 0;
-	  Uint8 sub_instruction = mem_read(Z80_PC++);
+	  Uint8 const sub_instruction = mem_read(Z80_PC++);
 
 	  /* Instructions with (sub_instruction & 7) != 6 are undocumented;
 	     their extra effect is handled after this switch */
@@ -2564,7 +2573,7 @@ static void do_indexed_instruction(Uint16 *ixp)
 static int do_ED_instruction(void)
 {
     int debug = 0;
-    Uint8 instruction = mem_read(Z80_PC++);
+    Uint8 const instruction = mem_read(Z80_PC++);
 
     switch(instruction)
     {
