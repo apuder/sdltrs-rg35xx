@@ -1,6 +1,6 @@
-project(sdl2trs C)
-
 cmake_minimum_required(VERSION 2.8.5...3.13)
+
+project(sdl2trs C)
 
 include(GNUInstallDirs)
 include(TestBigEndian)
@@ -96,8 +96,12 @@ find_program(SDL "sdl2-config")
 if (NOT SDL)
 	message(FATAL_ERROR "sdl2-config NOT FOUND")
 else ()
-	exec_program(sh ARGS "${SDL} --cflags" OUTPUT_VARIABLE SDL_CFLAGS)
-	exec_program(sh ARGS "${SDL} --libs"   OUTPUT_VARIABLE SDL_LIBS)
+	execute_process(COMMAND ${SDL} --cflags
+			OUTPUT_VARIABLE SDL_CFLAGS
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+	execute_process(COMMAND ${SDL} --libs
+			OUTPUT_VARIABLE SDL_LIBS
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SDL_CFLAGS}")
 	if (ZBX)
 		add_definitions(-DZBX)
