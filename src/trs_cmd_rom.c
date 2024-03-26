@@ -844,10 +844,10 @@ static int trs_load_rom(const char *filename)
 
 int trs_load_cmd(const char *filename)
 {
-  FILE *program;
   int entry;
+  FILE *program = fopen(filename, "rb");
 
-  if ((program = fopen(filename, "rb")) == NULL) {
+  if (program == NULL) {
     file_error("load CMD file '%s'", filename);
     return -1;
   }

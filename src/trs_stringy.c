@@ -141,11 +141,10 @@ stringy_create_with(const char *name,
 		    Uint32 eotCells,    /* leader length in bit cells */
 		    int writeProt)
 {
-  FILE *f;
   int ires;
   size_t sres;
+  FILE *f = fopen(name, "w");
 
-  f = fopen(name, "w");
   if (f == NULL) {
     file_error("create Wafer Image '%s'", name);
     return errno;

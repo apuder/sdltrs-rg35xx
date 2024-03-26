@@ -1035,11 +1035,11 @@ int trs_parse_command_line(int argc, char **argv)
 
 int trs_write_config_file(const char *filename)
 {
-  FILE *config_file;
   int i;
   int x, y, w, h;
+  FILE *config_file = fopen(filename, "w");
 
-  if ((config_file = fopen(filename, "w")) == NULL) {
+  if (config_file == NULL) {
     file_error("write configuration '%s'", filename);
     return -1;
   }
