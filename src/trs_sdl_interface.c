@@ -406,49 +406,45 @@ static void XorBlit4(int width, int height, const Uint8 *src,
   }
 }
 
-static void BlitMap(const SDL_Palette *src, SDL_PixelFormat *dst)
+static void BlitMap(const SDL_Palette *src, const SDL_PixelFormat *dst)
 {
   Uint8 *map;
-  int i;
-  Uint32 alpha;
-  Uint32 mapValue;
 
   if (blitMap != NULL)
     free(blitMap);
 
   map = (Uint8 *)malloc(src->ncolors * dst->BytesPerPixel);
-  if (map == NULL) {
-    return;
-  }
+  if (map) {
+    Uint32 const alpha = dst->Amask ? SDL_ALPHA_OPAQUE : 0;
+    int i;
 
-  alpha = dst->Amask ? SDL_ALPHA_OPAQUE : 0;
-  for (i = 0; i < src->ncolors; ++i) {
+    for (i = 0; i < src->ncolors; ++i) {
+      Uint32 const mapValue = SDL_MapRGBA(dst,
+          src->colors[i].r,
+          src->colors[i].g,
+          src->colors[i].b,
+          alpha);
 
-    mapValue = SDL_MapRGBA(dst,
-        src->colors[i].r,
-        src->colors[i].g,
-        src->colors[i].b,
-        alpha);
-
-    switch (dst->BytesPerPixel) {
-      case 1:
-        map[i] = (Uint8)mapValue;
-        break;
-      case 2:
-        *((Uint16 *)(&map[i * 2])) = (Uint16)mapValue;
-        break;
-      case 3:
-        map[i * 3] = mapValue >> 16;
-        map[i * 3 + 1] = mapValue >> 8;
-        map[i * 3 + 2] = mapValue & 0xFF;
-        break;
-      case 4:
-        *((Uint32 *)(&map[i * 4])) = (Uint32)mapValue;
-        break;
+      switch (dst->BytesPerPixel) {
+        case 1:
+          map[i] = (Uint8)mapValue;
+          break;
+        case 2:
+          *((Uint16 *)(&map[i * 2])) = (Uint16)mapValue;
+          break;
+        case 3:
+          map[i * 3]     = mapValue >> 16;
+          map[i * 3 + 1] = mapValue >> 8;
+          map[i * 3 + 2] = mapValue & 0xFF;
+          break;
+        case 4:
+          *((Uint32 *)(&map[i * 4])) = (Uint32)mapValue;
+          break;
+      }
     }
-  }
 
-  blitMap = map;
+    blitMap = map;
+  }
 }
 
 static void Blit(const SDL_Surface *src, const SDL_Rect *srcrect,

@@ -471,8 +471,6 @@ static void debug_run(void)
 
 void debug_shell(void)
 {
-    char input[MAXLINE];
-    char command[MAXLINE];
     int done = 0;
 
 #ifdef READLINE
@@ -487,6 +485,9 @@ void debug_shell(void)
 
     while(!done)
     {
+	char input[MAXLINE];
+	char command[MAXLINE];
+
 	putchar('\n');
 	disassemble(Z80_PC);
 
@@ -567,7 +568,7 @@ void debug_shell(void)
 	    else if(!strcmp(command, "list") || !strcmp(command, "l"))
 	    {
 		unsigned int x, y;
-		Uint16 start, old_start;
+		Uint16 start;
 		int bytes = 0;
 		int lines = 0;
 
@@ -597,7 +598,9 @@ void debug_shell(void)
 		else
 		{
 		    while (bytes >= 0) {
-			start = disassemble(old_start = start);
+			Uint16 const old_start = start;
+
+			start = disassemble(old_start);
 			bytes -= (start - old_start) & 0xffff;
 		    }
 		}
