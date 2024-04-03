@@ -1199,7 +1199,7 @@ void trs_get_event(int wait)
       case SDL_KEYDOWN:
         keysym = event.key.keysym;
 #if SDLDEBUG
-        debug("KeyDown: mod 0x%x, scancode 0x%x keycode 0x%x\n",
+        debug("KeyDown: mod 0x%X, scancode 0x%X keycode 0x%X\n",
             keysym.mod, keysym.scancode, keysym.sym);
 #endif
         if (keysym.sym != SDLK_LALT) {
@@ -1554,7 +1554,7 @@ done:
       case SDL_KEYUP:
         keysym = event.key.keysym;
 #if SDLDEBUG
-        debug("KeyUp: mod 0x%x, scancode 0x%x keycode 0x%x\n",
+        debug("KeyUp: mod 0x%X, scancode 0x%X keycode 0x%X\n",
             keysym.mod, keysym.scancode, keysym.sym);
 #endif
         if (SDL_GetModState() & KMOD_LALT)
@@ -2832,7 +2832,7 @@ void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)
   Uint8 const mask = SDL_GetMouseState(&win_x, &win_y);
 
 #if MOUSEDEBUG
-  debug("get_mouse %d %d 0x%x ->", win_x, win_y, mask);
+  debug("get_mouse %d %d 0x%X ->", win_x, win_y, mask);
 #endif
   if (win_x >= 0 && win_x < OrigWidth &&
       win_y >= 0 && win_y < OrigHeight) {
@@ -2858,7 +2858,7 @@ void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)
   *y = mouse_last_y;
   *buttons = mouse_last_buttons;
 #if MOUSEDEBUG
-  debug("%d %d 0x%x\n",
+  debug("%d %d 0x%X\n",
       mouse_last_x, mouse_last_y, mouse_last_buttons);
 #endif
 }

@@ -659,7 +659,7 @@ int trs80_model3_mem_read(int address)
   if (TRS_PRINTER(address)) return trs_printer_read();
   if (address < trs_rom_size) return rom[address];
 #if MEMDEBUG
-  error("Invalid read of address %04x, returning FF [PC=%04x, mem_map=%02x]",
+  error("Invalid read of address %04X, returning FF [PC=%04X, mem_map=%02X]",
       address, Z80_PC, memory_map);
 #endif
   return 0xFF;
@@ -997,7 +997,7 @@ void trs80_model3_mem_write(int address, int value)
     trs_printer_write(value);
 #if MEMDEBUG
   } else {
-    error("Invalid write of %02x to address %04x [PC=%04x, mem_map=%02x]",
+    error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
         value, address, Z80_PC, memory_map);
 #endif
   }

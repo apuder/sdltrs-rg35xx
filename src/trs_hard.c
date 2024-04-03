@@ -227,7 +227,7 @@ int trs_hard_in(int port)
     }
   }
 #if HARDDEBUG1
-  debug("%02x -> %02x\n", port, v);
+  debug("%02X -> %02X\n", port, v);
 #endif
   return v;
 }
@@ -236,7 +236,7 @@ int trs_hard_in(int port)
 void trs_hard_out(int port, int value)
 {
 #if HARDDEBUG1
-  debug("%02x <- %02x\n", port, value);
+  debug("%02X <- %02X\n", port, value);
 #endif
   switch (port) {
   case TRS_HARD_WP:
@@ -288,7 +288,7 @@ void trs_hard_out(int port, int value)
     state.command = value;
     switch (value & TRS_HARD_CMDMASK) {
     default:
-      error("trs_hard: unknown command 0x%02x", value);
+      error("trs_hard: unknown command 0x%02X", value);
       break;
     case TRS_HARD_RESTORE:
       hard_restore(value);
@@ -336,7 +336,7 @@ static void hard_read(int cmd)
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
-    error("trs_hard: multi-sector read not supported (0x%02x)", cmd);
+    error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_ABRTERR;
     return;
@@ -351,7 +351,7 @@ static void hard_write(int cmd)
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
-    error("trs_hard: multi-sector write not supported (0x%02x)", cmd);
+    error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_ABRTERR;
     return;
@@ -385,7 +385,7 @@ static void hard_init(int cmd)
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   /* I don't know what this command does */
-  error("trs_hard: init command (0x%02x) not implemented", cmd);
+  error("trs_hard: init command (0x%02X) not implemented", cmd);
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
 }
 

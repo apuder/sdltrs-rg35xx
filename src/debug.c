@@ -160,7 +160,7 @@ static void show_zbxinfo(void)
     puts("zbx: Z80 debugger by David Gingold, Alex Wolman, and Timothy"
          " Mann\n");
     printf("Traps set: %d (maximum %d)\n", num_traps, MAX_TRAPS);
-    printf("Size of address space: 0x%x\n", ADDRESS_SPACE);
+    printf("Size of address space: 0x%X\n", ADDRESS_SPACE);
     printf("Maximum length of command line: %d\n", MAXLINE);
 #ifdef READLINE
     puts("GNU Readline library support enabled.");

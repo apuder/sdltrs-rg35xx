@@ -345,7 +345,7 @@ put_sample(Uint8 sample, int convert, FILE* f)
         sound_ring_count += 2;
         break;
       default:
-        error("sample format 0x%x not supported", cassette_afmt);
+        error("sample format 0x%X not supported", cassette_afmt);
         break;
     }
     SDL_UnlockAudio();
@@ -518,7 +518,7 @@ set_audio_format(int state)
 #else
       obtained.format != AUDIO_S16) {
 #endif
-    error("requested audio format 0x%x, got 0x%x",
+    error("requested audio format 0x%X, got 0x%X",
           desired.format, obtained.format);
     errno = EINVAL;
     return -1;

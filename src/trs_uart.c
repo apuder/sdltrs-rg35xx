@@ -209,7 +209,7 @@ trs_uart_modem_in(void)
   if (initialized == 0) trs_uart_init(0);
   if (initialized == -1) return 0xff;
 #if UARTDEBUG2
-  debug("trs_uart_modem_in returns 0x%02x\n", uart.modem);
+  debug("trs_uart_modem_in returns 0x%02X\n", uart.modem);
 #endif
   return uart.modem;
 }
@@ -234,7 +234,7 @@ trs_uart_switches_in(void)
   if (initialized == 0) trs_uart_init(0);
   if (initialized == -1) return 0xff;
 #if UARTDEBUG
-  debug("trs_uart_switches_in returns 0x%02x\n", uart.switches);
+  debug("trs_uart_switches_in returns 0x%02X\n", uart.switches);
 #endif
   return uart.switches;
 }
@@ -247,7 +247,7 @@ trs_uart_baud_out(int value)
   int bits;
 #endif
 #if UARTDEBUG
-  debug("trs_uart_baud_out 0x%02x\n", value);
+  debug("trs_uart_baud_out 0x%02X\n", value);
 #endif
 #ifdef _WIN32
   return;
@@ -348,7 +348,7 @@ trs_uart_status_in(void)
   trs_uart_check_avail();
 #if UARTDEBUG
   if (uart.status != oldstatus) {
-    debug("trs_uart_status_in returns 0x%02x\n", uart.status);
+    debug("trs_uart_status_in returns 0x%02X\n", uart.status);
     oldstatus = uart.status;
   }
 #endif
@@ -364,7 +364,7 @@ trs_uart_control_out(int value)
   int err;
   int cflag = HUPCL|CREAD|CLOCAL;
 #if UARTDEBUG
-  debug("trs_uart_control_out 0x%02x\n", value);
+  debug("trs_uart_control_out 0x%02X\n", value);
 #endif
   if (initialized == 1 && uart.control == value) return;
   if (initialized == 0) trs_uart_init(0);
@@ -420,7 +420,7 @@ trs_uart_data_in(void)
     }
   }
 #if UARTDEBUG
-  debug("trs_uart_data_in returns 0x%02x\n", uart.idata);
+  debug("trs_uart_data_in returns 0x%02X\n", uart.idata);
 #endif
   return uart.idata;
 }
@@ -434,7 +434,7 @@ trs_uart_data_out(int value)
   int err;
 
 #if UARTDEBUG
-  debug("trs_uart_data_out 0x%02x\n", value);
+  debug("trs_uart_data_out 0x%02X\n", value);
 #endif
   if (initialized == 0) trs_uart_init(0);
   if (initialized == -1) return;

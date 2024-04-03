@@ -325,15 +325,15 @@ trs_disk_debug(void)
   int i;
 
   puts("Floppy disk controller state:");
-  printf("  status 0x%02x, track %d (0x%02x), sector %d (0x%02x), "
-	 "data 0x%02x\n", state.status, state.track, state.track,
+  printf("  status 0x%02X, track %d (0x%02X), sector %d (0x%02X), "
+	 "data 0x%02X\n", state.status, state.track, state.track,
 	 state.sector, state.sector, state.data);
-  printf("  currcommand 0x%02x, bytecount left %d, last step direction %d\n",
+  printf("  currcommand 0x%02X, bytecount left %d, last step direction %d\n",
 	 state.currcommand, state.bytecount, state.lastdirection);
   printf("  curdrive %d, curside %d, density %d, controller %s\n",
 	 state.curdrive, state.curside, state.density,
 	 state.controller == TRSDISK_P1771 ? "WD1771" : "WD1791/93");
-  printf("  crc state 0x%04x, last_readadr %d, motor timeout %ld\n",
+  printf("  crc state 0x%04X, last_readadr %d, motor timeout %ld\n",
 	 state.crc, state.last_readadr,
 	 (long) (state.motor_timeout - z80_state.t_count));
   printf("  last (non-DMK) format gaps %d %d %d %d %d\n",
@@ -345,7 +345,7 @@ trs_disk_debug(void)
     const DiskState *d = &disk[i];
 
     printf("Drive %d state: "
-	   "writeprot %d, phytrack %d (0x%02x), inches %d, step %d, type ",
+	   "writeprot %d, phytrack %d (0x%02X), inches %d, step %d, type ",
 	   i, d->writeprot, d->phytrack, d->phytrack, d->inches, d->real_step);
     if (d->file == NULL) {
       puts("EMPTY");
@@ -361,7 +361,7 @@ trs_disk_debug(void)
 	break;
       case DMK:
 	puts("DMK");
-	printf("  ntracks %d (0x%02x), tracklen 0x%04x, nsides %d, sden %d, "
+	printf("  ntracks %d (0x%02X), tracklen 0x%04X, nsides %d, sden %d, "
 	       "ignden %d\n", d->u.dmk.ntracks, d->u.dmk.ntracks,
 	       d->u.dmk.tracklen, d->u.dmk.nsides, d->u.dmk.sden,
 	       d->u.dmk.ignden);
@@ -371,7 +371,7 @@ trs_disk_debug(void)
 	break;
       case REAL:
 	puts("REAL");
-	printf("  rpm %d, empty %d, last size code %d, last fmt fill 0x%02x\n",
+	printf("  rpm %d, empty %d, last size code %d, last fmt fill 0x%02X\n",
 	       d->u.real.rps * 60, d->u.real.empty, d->u.real.size_code,
 	       d->u.real.fmt_fill);
 	break;
@@ -515,7 +515,7 @@ trs_disk_unimpl(Uint8 cmd, const char *more)
   state.format = FMT_DONE;
   trs_disk_drq_interrupt(0);
   trs_schedule_event(trs_disk_done, 0, 0);
-  error("trs_disk_command(0x%02x) not implemented - %s", cmd, more);
+  error("trs_disk_command(0x%02X) not implemented - %s", cmd, more);
 }
 
 /* Sort first by track, second by side, third by position in emulated-disk
@@ -903,7 +903,7 @@ trs_disk_insert(int drive, const char *diskname)
 
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_DMK) {
-      debug("DMK drv=%d wp=%d #tk=%d tklen=0x%x nsides=%d sden=%d ignden=%d\n",
+      debug("DMK drv=%d wp=%d #tk=%d tklen=0x%X nsides=%d sden=%d ignden=%d\n",
 	    drive, d->writeprot, d->u.dmk.ntracks, d->u.dmk.tracklen,
 	    d->u.dmk.nsides, d->u.dmk.sden, d->u.dmk.ignden);
     }
@@ -1243,7 +1243,7 @@ trs_disk_select_write(Uint8 data)
   static int old_data = -1;
 
   if ((trs_disk_debug_flags & DISKDEBUG_FDCREG) && data != old_data) {
-    debug("select_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
+    debug("select_write(0x%02X) [PC=%04X]\n", data, Z80_PC);
     old_data = data;
   }
 #endif
@@ -1340,7 +1340,7 @@ trs_disk_track_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("track_read() => 0x%02x [PC=%04x]\n", state.track, Z80_PC);
+    debug("track_read() => 0x%02X [PC=%04X]\n", state.track, Z80_PC);
   }
 #endif
   return state.track;
@@ -1351,7 +1351,7 @@ trs_disk_track_write(Uint8 data)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("track_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
+    debug("track_write(0x%02X) [PC=%04X]\n", data, Z80_PC);
   }
 #endif
   state.track = data;
@@ -1362,7 +1362,7 @@ trs_disk_sector_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("sector_read() => 0x%02x [PC=%04x]\n", state.sector, Z80_PC);
+    debug("sector_read() => 0x%02X [PC=%04X]\n", state.sector, Z80_PC);
   }
 #endif
   return state.sector;
@@ -1399,7 +1399,7 @@ trs_disk_sector_write(Uint8 data)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("sector_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
+    debug("sector_write(0x%02X) [PC=%04X]\n", data, Z80_PC);
   }
 #endif
   if (trs_model == 1) {
@@ -1608,7 +1608,7 @@ trs_disk_data_read(void)
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("data_read() => 0x%02x [PC=%04x]\n", state.data, Z80_PC);
+    debug("data_read() => 0x%02X [PC=%04X]\n", state.data, Z80_PC);
   }
 #endif
   return state.data;
@@ -1625,7 +1625,7 @@ trs_disk_data_write(Uint8 data)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("data_write(0x%02x) [PC=%04x]\n", data, Z80_PC);
+    debug("data_write(0x%02X) [PC=%04X]\n", data, Z80_PC);
   }
 #endif
   switch (state.currcommand & TRSDISK_CMDMASK) {
@@ -2144,8 +2144,8 @@ trs_disk_data_write(Uint8 data)
 	  d->u.jv3.id[state.format_sec].flags |= JV3_NONIBM | JV3_ERROR;
 #ifdef ZBX
 	  if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
-	    debug("non-IBM sector: drv 0x%02x, sid %d,"
-		  " trk 0x%02x, sec 0x%02x\n",
+	    debug("non-IBM sector: drv 0x%02X, sid %d,"
+		  " trk 0x%02X, sec 0x%02X\n",
 		  state.curdrive, state.curside,
 		  d->u.jv3.id[state.format_sec].track,
 		  d->u.jv3.id[state.format_sec].sector);
@@ -2227,7 +2227,7 @@ trs_disk_status_read(void)
 #ifdef ZBX
   if ((trs_disk_debug_flags & DISKDEBUG_FDCREG) &&
       state.status != last_status) {
-    debug("status_read() => 0x%02x [PC=%04x]\n", state.status, Z80_PC);
+    debug("status_read() => 0x%02X [PC=%04X]\n", state.status, Z80_PC);
     last_status = state.status;
   }
 #endif
@@ -2266,7 +2266,7 @@ trs_disk_command_write(Uint8 cmd)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("command_write(0x%02x) [PC=%04x]\n", cmd, Z80_PC);
+    debug("command_write(0x%02X) [PC=%04X]\n", cmd, Z80_PC);
   }
 #endif
 
@@ -2369,7 +2369,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_RESTORE:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("restore 0x%02x drv %d\n", cmd, state.curdrive);
+      debug("restore 0x%02X drv %d\n", cmd, state.curdrive);
     }
 #endif
     state.last_readadr = -1;
@@ -2385,7 +2385,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_SEEK:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("seek 0x%02x drv %d ptk %d otk %d ntk %d\n",
+      debug("seek 0x%02X drv %d ptk %d otk %d ntk %d\n",
 	    cmd, state.curdrive, d->phytrack, state.track, state.data);
     }
 #endif
@@ -2409,7 +2409,7 @@ trs_disk_command_write(Uint8 cmd)
   step:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("step%s %s 0x%02x drv %d ptk %d otk %d\n",
+      debug("step%s %s 0x%02X drv %d ptk %d otk %d\n",
 	    (cmd & TRSDISK_UBIT) ? "u" : "",
 	    (state.lastdirection < 0) ? "out" : "in", cmd,
 	    state.curdrive, d->phytrack, state.track);
@@ -2444,7 +2444,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_READ:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("read 0x%02x drv %d sid %d ptk %d tk %d sec %d %sden\n", cmd,
+      debug("read 0x%02X drv %d sid %d ptk %d tk %d sec %d %sden\n", cmd,
 	    state.curdrive, state.curside, d->phytrack,
 	    state.track, state.sector, state.density ? "d" : "s");
     }
@@ -2458,7 +2458,7 @@ trs_disk_command_write(Uint8 cmd)
       if (!(cmd & TRSDISK_BBIT)) {
 #ifdef ZBX
 	if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
-	  debug("non-IBM read: drv 0x%02x, sid %d, trk 0x%02x, sec 0x%02x\n",
+	  debug("non-IBM read: drv 0x%02X, sid %d, trk 0x%02X, sec 0x%02X\n",
 		state.curdrive, state.curside, state.track, state.sector);
 	}
 #endif
@@ -2470,7 +2470,7 @@ trs_disk_command_write(Uint8 cmd)
 #ifdef ZBX
 	if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
 	  if (state.sector >= 0x7c) {
-	    debug("IBM read: drv 0x%02x, sid %d, trk 0x%02x, sec 0x%02x\n",
+	    debug("IBM read: drv 0x%02X, sid %d, trk 0x%02X, sec 0x%02X\n",
 		  state.curdrive, state.curside, state.track, state.sector);
 	  }
 	}
@@ -2653,7 +2653,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_WRITE:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("write 0x%02x drv %d sid %d ptk %d tk %d sec %d %sden\n",
+      debug("write 0x%02X drv %d sid %d ptk %d tk %d sec %d %sden\n",
 	    cmd, state.curdrive, state.curside, d->phytrack,
 	    state.track, state.sector, state.density ? "d" : "s");
     }
@@ -2666,7 +2666,7 @@ trs_disk_command_write(Uint8 cmd)
       if (!(cmd & TRSDISK_BBIT)) {
 #ifdef ZBX
 	if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
-	  debug("non-IBM write drv 0x%02x, sid %d, trk 0x%02x, sec 0x%02x\n",
+	  debug("non-IBM write drv 0x%02X, sid %d, trk 0x%02X, sec 0x%02X\n",
 		state.curdrive, state.curside, state.track, state.sector);
 	}
 #endif
@@ -2678,7 +2678,7 @@ trs_disk_command_write(Uint8 cmd)
 #ifdef ZBX
 	if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
 	  if (state.sector >= 0x7c) {
-	    debug("IBM write: drv 0x%02x, sid %d, trk 0x%02x, sec 0x%02x\n",
+	    debug("IBM write: drv 0x%02X, sid %d, trk 0x%02X, sec 0x%02X\n",
 		  state.curdrive, state.curside, state.track, state.sector);
 	  }
 	}
@@ -2803,7 +2803,7 @@ trs_disk_command_write(Uint8 cmd)
 	    if (j != -1) {
 #ifdef ZBX
 	      if (trs_disk_debug_flags & DISKDEBUG_VTOS3) {
-		debug("smashing tk %d sector 0x%02x id_index %d\n",
+		debug("smashing tk %d sector 0x%02X id_index %d\n",
 		      state.track, i, j);
 	      }
 #endif
@@ -2892,7 +2892,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_READADR:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("readadr 0x%02x drv %d sid %d ptk %d tk %d last %d %sden\n",
+      debug("readadr 0x%02X drv %d sid %d ptk %d tk %d last %d %sden\n",
 	    cmd, state.curdrive, state.curside, d->phytrack, state.track,
 	    state.last_readadr, state.density ? "d" : "s");
     }
@@ -3069,7 +3069,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_READTRK:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("readtrk 0x%02x drv %d sid %d ptk %d tk %d %sden\n",
+      debug("readtrk 0x%02X drv %d sid %d ptk %d tk %d %sden\n",
 	    cmd, state.curdrive, state.curside, d->phytrack, state.track,
 	    state.density ? "d" : "s");
     }
@@ -3116,7 +3116,7 @@ trs_disk_command_write(Uint8 cmd)
     } else {
 #ifdef ZBX
       if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-	debug("writetrk 0x%02x drv %d sid %d ptk %d tk %d %sden\n",
+	debug("writetrk 0x%02X drv %d sid %d ptk %d tk %d %sden\n",
 	      cmd, state.curdrive, state.curside, d->phytrack, state.track,
 	      state.density ? "d" : "s");
       }
@@ -3178,7 +3178,7 @@ trs_disk_command_write(Uint8 cmd)
   case TRSDISK_FORCEINT:
 #ifdef ZBX
     if (trs_disk_debug_flags & DISKDEBUG_FDCCMD) {
-      debug("forceint 0x%02x\n", cmd);
+      debug("forceint 0x%02X\n", cmd);
     }
 #endif
     /* Stop whatever is going on and forget it */
@@ -3644,11 +3644,11 @@ real_writetrk(void)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_GAPS) {
-    debug("real_writetrk size 0%d secs %d gap3 %d fill 0x%02x hex data ",
+    debug("real_writetrk size 0%d secs %d gap3 %d fill 0x%02X hex data ",
 	  d->u.real.size_code, d->u.real.fmt_nbytes/4, gap3,
 	  d->u.real.fmt_fill);
     for (i = 0; i < d->u.real.fmt_nbytes; i += 4) {
-      debug("%02x%02x%02x%02x ", d->u.real.buf[i], d->u.real.buf[i + 1],
+      debug("%02X%02X%02X%02X ", d->u.real.buf[i], d->u.real.buf[i + 1],
 	    d->u.real.buf[i + 2], d->u.real.buf[i + 3]);
     }
     debug("\n");

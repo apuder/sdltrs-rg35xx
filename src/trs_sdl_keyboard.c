@@ -692,7 +692,7 @@ void trs_joy_axis(Uint8 axis, short value, int bounce)
 int trs_joystick_in(void)
 {
 #if JOYDEBUG
-  debug("joy %02x ", joystate);
+  debug("joy %02X ", joystate);
 #endif
   return ~joystate;
 }
@@ -740,7 +740,7 @@ static void change_keystate(int action)
 {
   int i;
 #ifdef KBDEBUG
-  debug("change_keystate: action 0x%x\n", action);
+  debug("change_keystate: action 0x%X\n", action);
 #endif
 
   switch (action) {
@@ -863,7 +863,7 @@ void queue_key(int state)
 {
   key_queue[(key_queue_head + key_queue_entries) % KEY_QUEUE_SIZE] = state;
 #if QDEBUG
-  debug("queue_key 0x%x\n", state);
+  debug("queue_key 0x%X\n", state);
 #endif
   if (key_queue_entries < KEY_QUEUE_SIZE) {
     key_queue_entries++;
@@ -883,7 +883,7 @@ int dequeue_key(void)
     key_queue_head = (key_queue_head + 1) % KEY_QUEUE_SIZE;
     key_queue_entries--;
 #if QDEBUG
-    debug("dequeue_key 0x%x\n", rval);
+    debug("dequeue_key 0x%X\n", rval);
 #endif
   }
 

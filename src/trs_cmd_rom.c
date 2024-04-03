@@ -853,7 +853,7 @@ int trs_load_cmd(const char *filename)
   }
 
   if (load_cmd(program, NULL, &entry) == LOAD_CMD_OK) {
-    debug("entry point of '%s': 0x%x (%d) ...\n", filename, entry, entry);
+    debug("entry point of '%s': 0x%X (%d) ...\n", filename, entry, entry);
     if (entry >= 0)
       Z80_PC = entry;
   } else {

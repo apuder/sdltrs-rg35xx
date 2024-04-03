@@ -138,12 +138,12 @@ Uint8 cp500_switch_mode(int mode)
       break;
 
     default:
-      error("CP-500: port=0xF4 A=0x%02x: unimplemented PC=%04x\n",
+      error("CP-500: port=0xF4 A=0x%02X: unimplemented PC=%04X\n",
           Z80_A, Z80_PC - 2);
   }
 
 #ifdef DEBUG_CP500
-  debug("CP-500: switched to mode A=%02x [PC=%04x]\n", Z80_A, Z80_PC);
+  debug("CP-500: switched to mode A=%02X [PC=%04X]\n", Z80_A, Z80_PC);
 #endif
 
   return 0; /* TODO: unknown what the hardware actually returns */
@@ -171,7 +171,7 @@ Uint8 cp500_mem_read(int address, int mem_map, const Uint8 *rom, const Uint8 *ra
       }
   }
 #ifdef DEBUG_CP500
-  error("Invalid read of address %04x, returning FF [PC=%04x, mem_map=%02x]",
+  error("Invalid read of address %04X, returning FF [PC=%04X, mem_map=%02X]",
       address, Z80_PC, mem_map);
 #endif
   return 0xFF;
@@ -212,7 +212,7 @@ void cp500_mem_write(int address, Uint8 value, int mem_map, Uint8 *ram)
       return;
   }
 #ifdef DEBUG_CP500
-  error("Invalid write of %02x to address %04x [PC=%04x, mem_map=%02x]",
+  error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
       value, address, Z80_PC, mem_map);
 #endif
 }
