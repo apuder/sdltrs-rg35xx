@@ -1048,7 +1048,7 @@ search(int sector, int side)
 
     /* loop through IDAMs in track */
     for (i = 0; i < DMK_TKHDR_SIZE; i += 2) {
-      Uint8 *p;
+      Uint8 const *p;
 
       /* fetch index of next IDAM */
       int idamp = d->u.dmk.buf[i] + (d->u.dmk.buf[i + 1] << 8);

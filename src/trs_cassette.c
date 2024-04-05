@@ -240,7 +240,7 @@ int
 put_twobyte(Uint16 n, FILE* f)
 {
   int c;
-  struct twobyte *p = (struct twobyte *) &n;
+  const struct twobyte *p = (struct twobyte *) &n;
 
   c = putc(p->low, f);
   if (c == -1) return c;
@@ -255,7 +255,7 @@ int
 put_fourbyte(Uint32 n, FILE* f)
 {
   int c;
-  struct fourbyte *p = (struct fourbyte *) &n;
+  const struct fourbyte *p = (struct fourbyte *) &n;
 
   c = putc(p->byte0, f);
   if (c == -1) return c;

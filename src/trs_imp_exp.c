@@ -191,9 +191,9 @@ void do_emt_setddir(void)
 
 void do_emt_open(void)
 {
-  int fd, oflag, eoflag;
+  int fd, oflag;
+  int const eoflag = Z80_BC;
 
-  eoflag = Z80_BC;
   switch (eoflag & EO_ACCMODE) {
   case EO_RDONLY:
   default:

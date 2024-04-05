@@ -2150,7 +2150,7 @@ static void do_indexed_instruction(Uint16 *ixp)
 
       case 0xE3:	/* ex (sp), ix */
         {
-	  Uint16 temp = mem_read_word(Z80_SP);
+	  Uint16 const temp = mem_read_word(Z80_SP);
 	  mem_write_word(Z80_SP, *ixp);
 	  *ixp = temp;
         }
@@ -2298,7 +2298,7 @@ static void do_indexed_instruction(Uint16 *ixp)
 
       case 0xCB:
         {
-	  signed char offset = (signed char) mem_read(Z80_PC++);
+	  signed char const offset = (signed char) mem_read(Z80_PC++);
 	  signed char result = 0;
 	  Uint8 const sub_instruction = mem_read(Z80_PC++);
 
@@ -3282,7 +3282,7 @@ int z80_run(int continuous)
 
 	  case 0x35:	/* dec (hl) */
 	    {
-	      Uint8 value = mem_read(Z80_HL) - 1;
+	      Uint8 const value = mem_read(Z80_HL) - 1;
 	      mem_write(Z80_HL, value);
 	      do_flags_dec_byte(value);
 	    }
@@ -3332,7 +3332,7 @@ int z80_run(int continuous)
 
 	  case 0x08:	/* ex af, af' */
 	  {
-	      Uint16 temp = Z80_AF;
+	      Uint16 const temp = Z80_AF;
 	      Z80_AF = Z80_AF_PRIME;
 	      Z80_AF_PRIME = temp;
 	  }
@@ -3341,7 +3341,7 @@ int z80_run(int continuous)
 
 	  case 0xEB:	/* ex de, hl */
 	  {
-	      Uint16 temp = Z80_DE;
+	      Uint16 const temp = Z80_DE;
 	      Z80_DE = Z80_HL;
 	      Z80_HL = temp;
 	  }
@@ -3350,7 +3350,7 @@ int z80_run(int continuous)
 
 	  case 0xE3:	/* ex (sp), hl */
 	  {
-	      Uint16 temp = mem_read_word(Z80_SP);
+	      Uint16 const temp = mem_read_word(Z80_SP);
 	      mem_write_word(Z80_SP, Z80_HL);
 	      Z80_HL = temp;
 	  }
@@ -3443,7 +3443,7 @@ int z80_run(int continuous)
 
 	  case 0x34:	/* inc (hl) */
 	  {
-	      Uint8 value = mem_read(Z80_HL) + 1;
+	      Uint8 const value = mem_read(Z80_HL) + 1;
 	      mem_write(Z80_HL, value);
 	      do_flags_inc_byte(value);
 	  }
