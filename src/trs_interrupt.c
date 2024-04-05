@@ -339,7 +339,7 @@ trs_nmi_mask_write(Uint8 value)
   z80_state.nmi = (nmi_latch & nmi_mask) != 0;
 #if IDEBUG2
   if (z80_state.nmi && !z80_state.nmi_seen) {
-    debug("mask write caused nmi, mask %02X latch %02X\n",
+    debug("mask write caused nmi, mask %02X, latch %02X\n",
           nmi_mask, nmi_latch);
   }
 #endif

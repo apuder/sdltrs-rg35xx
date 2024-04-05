@@ -332,7 +332,7 @@ static void hard_restore(int cmd)
 static void hard_read(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_read drive %d cyl %d hd %d sec %d\n",
+  debug("hard_read drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -347,7 +347,7 @@ static void hard_read(int cmd)
 static void hard_write(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_write drive %d cyl %d hd %d sec %d\n",
+  debug("hard_write drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -362,7 +362,7 @@ static void hard_write(int cmd)
 static void hard_verify(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_verify drive %d cyl %d hd %d sec %d\n",
+  debug("hard_verify drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
@@ -371,7 +371,7 @@ static void hard_verify(int cmd)
 static void hard_format(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_format drive %d cyl %d hd %d\n",
+  debug("hard_format drive %d, cyl %d, hd %d\n",
 	state.drive, state.cyl, state.head);
 #endif
   /* !!should probably set up to read skew table here */
@@ -381,7 +381,7 @@ static void hard_format(int cmd)
 static void hard_init(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_init drive %d cyl %d hd %d sec %d\n",
+  debug("hard_init drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   /* I don't know what this command does */
@@ -392,7 +392,7 @@ static void hard_init(int cmd)
 static void hard_seek(int cmd)
 {
 #if HARDDEBUG2
-  debug("hard_seek drive %d cyl %d hd %d sec %d\n",
+  debug("hard_seek drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
@@ -472,7 +472,7 @@ static int open_drive(int drive)
   }
 
 #if HARDDEBUG2
-  debug("open_drive %d cyls %d heads %d secs %d\n",
+  debug("open_drive %d, cyls %d, heads %d, secs %d\n",
 	drive, d->cyls, d->heads, d->secs);
 #endif
 
