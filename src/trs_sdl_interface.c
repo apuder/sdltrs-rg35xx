@@ -2671,11 +2671,7 @@ hrg_write_data(int data)
   if (!hrg_enable) return;
   if ((currentmode & EXPANDED) && (hrg_addr & 1)) return;
 
-  /* Finer HRG font on "boosted" LNW80 */
-  if (hrg_enable == 2 && selector)
-    data = mirror_bits(data);
-  else
-    data = mirror_bits(expand6to8(data));
+  data = mirror_bits(expand6to8(data));
 
   /* Check for 96*192 extension region */
   if ((hrg_addr & 0x3000) == 0x3000) {
