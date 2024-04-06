@@ -270,7 +270,7 @@ void mem_bank_base(int card, int bits)
 				/* External RAM enabled */
 				/* Effectively the selector bits << 15 */
 				/* Low 64K is the base memory */
-				bank_base = 32768 + ((selector_reg & 0x30) << 11);
+				bank_base = 32768 + ((selector_reg & 0xF0) << 11);
 				/* Now are we mapping it high or low */
 				if (selector_reg & 1) /* Low */
 					bank_base += 32768;
