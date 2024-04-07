@@ -46,6 +46,7 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Character sets of Aster CT-80, HT-1080Z and Meritum I
   * Support 5" / 8" disk size switch commands of Percom doubler
   * Select action for Z80 HALT instruction
+  * Support 1024 KB memory for TCS Genie IIIs
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the

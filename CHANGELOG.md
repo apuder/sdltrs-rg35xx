@@ -1,3 +1,17 @@
+## Version 1.2.29 Release 04-07-2024:
+
+ * Added 1024 KB memory support for TCS Genie IIIs.
+ * Added 512 KB memory support for TRS-80 Model I Selector.
+ * Added 2nd printer MMIO for TRS-80 Model III/4/4P.
+ * Added more shortcuts for command line options.
+ * Added SDL2 aspect ratio option in GUI.
+ * Added debugger command to change Z80 HALT action.
+ * Fixed TRS-80 Model 4 MMIO in map 0.
+ * Fixed redraw of HRG1B screen.
+ * Fixed IMPORT.COM utility for CP/M 3.0.
+ * Fixed debugger alternate register set assignment by Nick Andrew.
+ * Fixed some bugs and other improvements.
+
 ## Version 1.2.28 Release 08-19-2023:
 
  * Added XTRS feature to fake year for TRS-80 time-of-day clock.
