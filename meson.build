@@ -46,6 +46,8 @@ if endian == 'big'
 	add_project_arguments('-Dbig_endian', language : 'c')
 endif
 
+message('ROM path set to: ' + get_option('ROM_PATH'))
+
 if get_option('FASTMOVE')
 	add_project_arguments('-DFAST_MOVE', language : 'c')
 	message('Fast inaccurate Z80 block moves')
