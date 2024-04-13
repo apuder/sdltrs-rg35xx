@@ -408,12 +408,8 @@ static void XorBlit4(int width, int height, const Uint8 *src,
 
 static void BlitMap(const SDL_Palette *src, const SDL_PixelFormat *dst)
 {
-  Uint8 *map;
+  Uint8 *map = (Uint8 *)malloc(src->ncolors * dst->BytesPerPixel);
 
-  if (blitMap != NULL)
-    free(blitMap);
-
-  map = (Uint8 *)malloc(src->ncolors * dst->BytesPerPixel);
   if (map) {
     Uint32 const alpha = dst->Amask ? SDL_ALPHA_OPAQUE : 0;
     int i;
@@ -442,9 +438,12 @@ static void BlitMap(const SDL_Palette *src, const SDL_PixelFormat *dst)
           break;
       }
     }
+    if (blitMap != NULL)
+      free(blitMap);
 
     blitMap = map;
-  }
+  } else
+    fatal("failed to allocate BlitMap");
 }
 
 static void Blit(const SDL_Surface *src, const SDL_Rect *srcrect,
