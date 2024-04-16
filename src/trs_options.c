@@ -835,7 +835,6 @@ static void trs_disk_setsteps(void)
 int trs_load_config_file(void)
 {
   char line[FILENAME_MAX];
-  char *arg;
   FILE *config_file;
   int i;
 
@@ -951,7 +950,8 @@ int trs_load_config_file(void)
   }
 
   while (fgets(line, sizeof(line), config_file)) {
-    arg = strchr(line, '=');
+    char *arg = strchr(line, '=');
+
     if (arg != NULL) {
       *arg++ = '\0';
       strip(arg);
@@ -977,7 +977,7 @@ int trs_load_config_file(void)
 
 int trs_parse_command_line(int argc, char **argv)
 {
-  int i, j, len;
+  int i, j;
 
   /* Check for config or state files and CMD file on the command line */
   trs_config_file[0] = 0;
@@ -993,14 +993,17 @@ int trs_parse_command_line(int argc, char **argv)
           break;
         }
       }
-    }
-    else if ((len = strlen(argv[i]) - 4) > 0) {
-      if (strcasecmp(&argv[i][len], ".t8c") == 0)
-        snprintf(trs_config_file, FILENAME_MAX, "%s", argv[i]);
-      else if (strcasecmp(&argv[i][len], ".t8s") == 0)
-        snprintf(trs_state_file, FILENAME_MAX, "%s", argv[i]);
-      else if (strcasecmp(&argv[i][len], ".cmd") == 0)
-        snprintf(trs_cmd_file, FILENAME_MAX, "%s", argv[i]);
+    } else {
+      int const len = strlen(argv[i]) - 4;
+
+      if (len > 0) {
+        if (strcasecmp(&argv[i][len], ".t8c") == 0)
+          snprintf(trs_config_file, FILENAME_MAX, "%s", argv[i]);
+        else if (strcasecmp(&argv[i][len], ".t8s") == 0)
+          snprintf(trs_state_file, FILENAME_MAX, "%s", argv[i]);
+        else if (strcasecmp(&argv[i][len], ".cmd") == 0)
+          snprintf(trs_cmd_file, FILENAME_MAX, "%s", argv[i]);
+      }
     }
   }
 
