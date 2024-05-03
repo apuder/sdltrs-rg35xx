@@ -787,7 +787,7 @@ static int trs_load_rom(const char *filename)
     return -1;
 
   if ((program = fopen(filename, "rb")) == NULL) {
-    file_error("load ROM file '%s'", filename);
+    file_error("load ROM file: '%s'", filename);
     return -1;
   }
 
@@ -848,7 +848,7 @@ int trs_load_cmd(const char *filename)
   FILE *program = fopen(filename, "rb");
 
   if (program == NULL) {
-    file_error("load CMD file '%s'", filename);
+    file_error("load CMD file: '%s'", filename);
     return -1;
   }
 

@@ -944,7 +944,7 @@ int trs_load_config_file(void)
     }
   } else {
     if ((config_file = fopen(trs_config_file, "r")) == NULL) {
-      file_error("read configuration '%s'", trs_config_file);
+      file_error("read configuration: '%s'", trs_config_file);
       return -1;
     }
   }
@@ -1026,7 +1026,7 @@ int trs_parse_command_line(int argc, char **argv)
     }
 
     if (j == num_options && argv[i][0] == '-')
-      error("unrecognized option '%s'", argv[i]);
+      error("unrecognized option: '%s'", argv[i]);
   }
 
   trs_disk_setsizes();
@@ -1043,7 +1043,7 @@ int trs_write_config_file(const char *filename)
   FILE *config_file = fopen(filename, "w");
 
   if (config_file == NULL) {
-    file_error("write configuration '%s'", filename);
+    file_error("write configuration: '%s'", filename);
     return -1;
   }
 

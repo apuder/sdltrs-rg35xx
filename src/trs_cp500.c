@@ -138,7 +138,7 @@ Uint8 cp500_switch_mode(int mode)
       break;
 
     default:
-      error("CP-500: port=0xF4 A=0x%02X: unimplemented PC=%04X\n",
+      error("CP-500: port=0xF4 A=0x%02X unimplemented [PC=%04X]\n",
           Z80_A, Z80_PC - 2);
   }
 

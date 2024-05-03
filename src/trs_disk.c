@@ -806,7 +806,7 @@ trs_disk_insert(int drive, const char *diskname)
 
     fd = open(diskname, O_ACCMODE|O_NDELAY);
     if (fd == -1) {
-      file_error("open real '%s'", diskname);
+      file_error("open real: '%s'", diskname);
       d->file = NULL;
       d->filename[0] = 0;
       d->emutype = JV3;
@@ -814,7 +814,7 @@ trs_disk_insert(int drive, const char *diskname)
     }
     d->file = fdopen(fd, "r+");
     if (d->file == NULL) {
-      file_error("open real '%s'", diskname);
+      file_error("open real: '%s'", diskname);
       d->filename[0] = 0;
       d->emutype = JV3;
       return;
@@ -3690,7 +3690,7 @@ int trs_diskset_save(const char *filename)
   FILE *f = fopen(filename, "w");
 
   if (f == NULL) {
-    file_error("save Disk Set '%s'", filename);
+    file_error("save Disk Set: '%s'", filename);
     return -1;
   }
 
@@ -3714,7 +3714,7 @@ int trs_diskset_load(const char *filename)
   FILE *f = fopen(filename, "r");
 
   if (f == NULL) {
-    file_error("load Disk Set '%s'", filename);
+    file_error("load Disk Set: '%s'", filename);
     return -1;
   }
 

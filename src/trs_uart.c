@@ -161,14 +161,14 @@ trs_uart_init(int reset_button)
   initialized = 1;
   uart.fd = open(trs_uart_name, O_RDWR|O_NOCTTY|O_NONBLOCK);
   if (uart.fd == -1) {
-    file_error("open '%s'", trs_uart_name);
+    file_error("open UART: '%s'", trs_uart_name);
     initialized = -1;
     return;
   } else {
     uart.fdflags = FNONBLOCK;
     err = tcgetattr(uart.fd, &uart.t);
     if (err < 0) {
-      file_error("get attributes '%s'", trs_uart_name);
+      file_error("get UART attributes: '%s'", trs_uart_name);
       close(uart.fd);
       initialized = uart.fd = -1;
       return;
@@ -272,7 +272,7 @@ trs_uart_baud_out(int value)
   if (uart.fd != -1) {
     err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
     if (err == -1) {
-      file_error("set attributes '%s'", trs_uart_name);
+      file_error("set UART attributes: '%s'", trs_uart_name);
     }
   }
 #endif
@@ -319,7 +319,7 @@ trs_uart_check_avail(void)
 #endif
     if (rc < 0) {
       if (errno != EAGAIN) {
-	file_error("read '%s'", trs_uart_name);
+	file_error("read UART: '%s'", trs_uart_name);
       }
       rc = 0;
     }
@@ -391,14 +391,14 @@ trs_uart_control_out(int value)
   if (uart.fd != -1) {
     err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
     if (err == -1) {
-      file_error("set attributes '%s'", trs_uart_name);
+      file_error("set UART attributes: '%s'", trs_uart_name);
     }
   }
 
   if (!(value & TRS_UART_NOTBREAK) && uart.fd != -1) {
     err = tcsendbreak(uart.fd, 0);
     if (err == -1) {
-      file_error("send break on '%s'", trs_uart_name);
+      file_error("send break on UART: '%s'", trs_uart_name);
     }
   }
 #endif
@@ -444,7 +444,7 @@ trs_uart_data_out(int value)
       err = write(uart.fd, &uart.odata, 1);
       if (err >= 0) return;
       if (errno != EAGAIN) {
-	file_error("read '%s'", trs_uart_name);
+	file_error("read UART: '%s'", trs_uart_name);
 	return;
       }
       /* Oops, here we didn't really want nonblocking i/o */

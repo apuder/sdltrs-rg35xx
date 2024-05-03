@@ -554,7 +554,7 @@ trs_cassette_insert(const char *filename)
    struct stat st = { 0 };
 
    if (stat(filename, &st) == -1) {
-     file_error("open cassette '%s'", filename);
+     file_error("open cassette: '%s'", filename);
      return;
    }
 
@@ -673,12 +673,12 @@ static int assert_state(int state)
     }
     cassette_file = fopen(cassette_filename, "rb");
     if (cassette_file == NULL) {
-      file_error("read cassette '%s'", cassette_filename);
+      file_error("read cassette: '%s'", cassette_filename);
       cassette_state = FAILED;
       return -1;
     }
     if (cassette_format == WAV_FORMAT && parse_wav_header(cassette_file) < 0) {
-      error("removed unusable wav file '%s'", cassette_filename);
+      error("removed unusable wav file: '%s'", cassette_filename);
       cassette_filename[0] = 0;
       cassette_state = FAILED;
       fclose(cassette_file);
@@ -728,7 +728,7 @@ static int assert_state(int state)
         fseek(cassette_file, cassette_position, 0);
       }
       if (cassette_file == NULL) {
-        file_error("write cassette '%s'", cassette_filename);
+        file_error("write cassette: '%s'", cassette_filename);
         cassette_state = FAILED;
         return -1;
         }

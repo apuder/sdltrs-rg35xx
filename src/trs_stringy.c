@@ -146,7 +146,7 @@ stringy_create_with(const char *name,
   FILE *f = fopen(name, "w");
 
   if (f == NULL) {
-    file_error("create Wafer Image '%s'", name);
+    file_error("create Wafer Image: '%s'", name);
     return errno;
   }
 

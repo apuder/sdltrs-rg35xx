@@ -359,7 +359,7 @@ static void load_memory(Uint16 address, const char *filename)
 	    mem_write(address++, c);
 	fclose(file);
     } else {
-	file_error("load memory '%s'", filename);
+	file_error("load memory: '%s'", filename);
     }
 }
 
@@ -375,7 +375,7 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 
 	fclose(file);
     } else {
-	file_error("save memory '%s'", filename);
+	file_error("save memory: '%s'", filename);
     }
 }
 

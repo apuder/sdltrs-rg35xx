@@ -61,7 +61,7 @@ int trs_state_save(const char *filename)
     return 0;
   }
 
-  file_error("save State '%s'", filename);
+  file_error("save State: '%s'", filename);
   return -1;
 }
 
@@ -108,7 +108,7 @@ int trs_state_load(const char *filename)
     return 0;
   }
 
-  file_error("load State '%s'", filename);
+  file_error("load State: '%s'", filename);
   return -1;
 }
 
