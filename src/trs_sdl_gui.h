@@ -64,12 +64,12 @@ extern int scanlines;
 extern int scanshade;
 extern int turbo_paste;
 
-void call_function(int function);
-void gui_pause(void);
+void gui_char(int col, int row, Uint8 character, int invert);
 int  gui_exit(void);
 int  gui_file(const char *path, char *filename, const char *mask, int dir, const char *type);
+void gui_function(int function);
+void gui_pause(void);
 void gui_rect(int x, int y, int w, int h, int frame);
-void gui_char(int col, int row, Uint8 character, int invert);
 int  trs_sdl_savebmp(const char *name);
 
 #endif /* _TRS_SDL_GUI_H */

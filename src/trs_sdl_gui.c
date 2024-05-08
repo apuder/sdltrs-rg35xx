@@ -2741,7 +2741,7 @@ void gui_main_menu(void)
   }
 }
 
-void call_function(int function)
+void gui_function(int function)
 {
   SDL_PauseAudio(1);
 

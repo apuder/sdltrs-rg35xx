@@ -1213,9 +1213,9 @@ void trs_get_event(int wait)
           case SDLK_F7:
             if ((trs_clones.model & (EG3200 | GENIE3S)) == 0) {
               if (SDL_GetModState() & KMOD_SHIFT)
-                call_function(EMULATOR);
+                gui_function(EMULATOR);
               else
-                call_function(GUI);
+                gui_function(GUI);
               continue;
             }
             break;
@@ -1244,9 +1244,9 @@ void trs_get_event(int wait)
             continue;
           case SDLK_F11:
             if (SDL_GetModState() & KMOD_SHIFT)
-              call_function(SAVE_BMP);
+              gui_function(SAVE_BMP);
             else
-              call_function(KEYS);
+              gui_function(KEYS);
             continue;
           case SDLK_F12:
             if (SDL_GetModState() & KMOD_SHIFT)
@@ -1262,7 +1262,7 @@ void trs_get_event(int wait)
             }
             break;
           case SDLK_PAUSE:
-            call_function(PAUSE);
+            gui_function(PAUSE);
             continue;
           case SDLK_NUMLOCKCLEAR:
             trs_keypad_joystick = !trs_keypad_joystick;
@@ -1296,7 +1296,7 @@ void trs_get_event(int wait)
               trs_reset(0);
               break;
             case SDLK_INSERT:
-              call_function(KEYBRD);
+              gui_function(KEYBRD);
               break;
             case SDLK_RETURN:
               trs_flip_fullscreen();
@@ -1348,41 +1348,41 @@ void trs_get_event(int wait)
               break;
             case SDLK_d:
             case SDLK_f:
-              call_function(DISK);
+              gui_function(DISK);
               break;
             case SDLK_e:
-              call_function(EMULATOR);
+              gui_function(EMULATOR);
               break;
             case SDLK_g:
-              call_function(STRINGY);
+              gui_function(STRINGY);
               break;
             case SDLK_h:
-              call_function(HARD);
+              gui_function(HARD);
               break;
             case SDLK_i:
-              call_function(INTERFACE);
+              gui_function(INTERFACE);
               break;
             case SDLK_j:
-              call_function(JOYGUI);
+              gui_function(JOYGUI);
               break;
             case SDLK_k:
-              call_function(KEYS);
+              gui_function(KEYS);
               break;
             case SDLK_l:
-              call_function(LOAD);
+              gui_function(LOAD);
               break;
             case SDLK_m:
             case SDLK_COMMA:
-              call_function(GUI);
+              gui_function(GUI);
               break;
             case SDLK_n:
               trs_timer_mode(!timer_overclock);
               break;
             case SDLK_o:
-              call_function(OTHER);
+              gui_function(OTHER);
               break;
             case SDLK_p:
-              call_function(PAUSE);
+              gui_function(PAUSE);
               break;
 #if defined(__OS2__) || defined(_WIN32)
             case SDLK_F4:
@@ -1392,23 +1392,23 @@ void trs_get_event(int wait)
               trs_exit(1);
               break;
             case SDLK_r:
-              call_function(READ);
+              gui_function(READ);
               break;
             case SDLK_s:
-              call_function(SAVE);
+              gui_function(SAVE);
               break;
             case SDLK_t:
-              call_function(TAPE);
+              gui_function(TAPE);
               break;
             case SDLK_u:
               trs_sound = !trs_sound;
               trs_screen_caption();
               break;
             case SDLK_w:
-              call_function(WRITE);
+              gui_function(WRITE);
               break;
             case SDLK_x:
-              call_function(EXEC);
+              gui_function(EXEC);
               break;
             case SDLK_y:
               scanlines = !scanlines;
@@ -1657,7 +1657,7 @@ done:
                 copyStatus = COPY_CLEAR;
                 trs_screen_flush();
               }
-              call_function(GUI);
+              gui_function(GUI);
             }
             break;
           }
@@ -1673,7 +1673,7 @@ done:
           else if (key == -1)
             trs_joy_button_down();
           else
-            call_function(key);
+            gui_function(key);
         }
         else
           trs_joy_button_down();
