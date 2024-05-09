@@ -73,7 +73,7 @@
 
 /* Model I printer addresses 0x37E8 to 0x37EB */
 #define PRINTER_1(addr)    (((addr) &~ 3) == 0x37E8)
-/* Model III/4/4P printer addresses 0x37E8 and 0x37E9 */
+/* Model III/4/4P printer addresses 0x37E8 and 0x37E9: Read-Only */
 #define PRINTER_3(addr)    (((addr) &~ 1) == 0x37E8)
 
 /* Interrupt latch register in EI (Model I) */
@@ -1005,8 +1005,6 @@ void trs80_model3_mem_write(int address, int value)
       return;
     else
       trs80_screen_write_char(address - VIDEO_START, value);
-  } else if (PRINTER_3(address)) {
-    trs_printer_write(value);
 #if MEMDEBUG
   } else {
     error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
@@ -1279,8 +1277,6 @@ void mem_write(int address, int value)
 	} else if (address >= VIDEO_START) {
 	    if (mem_video_page_write(address, value))
 	      trs_screen_write_char(address + video_addr, value);
-	} else if (PRINTER_3(address)) {
-	    trs_printer_write(value);
 	}
 	break;
 
