@@ -650,6 +650,10 @@ static int trs80_model1_mmio(int address)
   if (address >= 0x3900 && selector) return trs80_model1_ram(address);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_1(address)) return trs_printer_read();
+#if MEMDEBUG
+  error("Invalid read of address %04X, returning FF [PC=%04X, mem_map=%02X]",
+      address, Z80_PC, memory_map);
+#endif
   return 0xFF;
 }
 
@@ -982,8 +986,14 @@ static void trs80_model1_write_mmio(int address, int value)
     trs_disk_select_write(value);
   } else if (address >= 0x3900 && selector) {
     trs80_model1_write_mem(address, value);
-  } else if (PRINTER_1(address))
+  } else if (PRINTER_1(address)) {
     trs_printer_write(value);
+#if MEMDEBUG
+  } else {
+    error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
+        value, address, Z80_PC, memory_map);
+#endif
+  }
 }
 
 void trs80_model3_mem_write(int address, int value)
