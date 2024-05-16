@@ -382,14 +382,13 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 static void debug_run(void)
 {
     Uint8 t = traps[Z80_PC];
-    int continuous;
-    int watch_triggered = 0;
 
     stop_signaled = 0;
 
-
     while(!stop_signaled)
     {
+	int continuous;
+
 	if(t)
 	{
 	    if(t & TRACE_FLAG)
@@ -434,6 +433,7 @@ static void debug_run(void)
 	 */
 	if (num_watchpoints)
 	{
+	    int watch_triggered = 0;
 	    int i;
 
 	    for (i = 0; i < MAX_TRAPS; ++i)
@@ -441,7 +441,7 @@ static void debug_run(void)
 		if (trap_table[i].valid &&
 		    trap_table[i].flag == WATCHPOINT_FLAG)
 		{
-		    Uint8 byte = mem_read(trap_table[i].address);
+		    Uint8 const byte = mem_read(trap_table[i].address);
 		    if (byte != trap_table[i].byte)
 		    {
 			/*
