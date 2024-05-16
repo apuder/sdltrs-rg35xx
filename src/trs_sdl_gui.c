@@ -540,7 +540,7 @@ int gui_read_dir(const char *path, const char *mask, int dir)
 #endif
     return 0;
   } else {
-    file_error("open directory '%s'", path);
+    file_error("open directory: '%s'", path);
     return -1;
   }
 }
