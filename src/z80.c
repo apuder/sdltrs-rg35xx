@@ -1268,18 +1268,17 @@ static void do_int(void)
     Z80_R++;
     switch (z80_state.interrupt_mode) {
     case 0:
-      /* Z80_PC = get_irq_vector() & 0x38; */
-      T_COUNT(13);
-      error("interrupt in im0 not supported");
-      break;
+      /* Should take a one-byte instruction from the data bus (usually some RST).
+         We don't have a data bus, so always pick RST 38h. */
     case 1:
       Z80_PC = 0x38;
       T_COUNT(13);
       break;
     case 2:
-      /* Z80_PC = Z80_I << 8 + get_irq_vector(); */
+      /* The LSB here is taken from the data bus, so it's unpredictable.
+         We use 0xFF but any value would do. */
+      Z80_PC = mem_read_word((Z80_I << 8) + 0xFF);
       T_COUNT(19);
-      error("interrupt in im2 not supported");
       break;
     }
 }
