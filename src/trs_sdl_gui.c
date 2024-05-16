@@ -547,10 +547,10 @@ int gui_read_dir(const char *path, const char *mask, int dir)
 
 int gui_file(const char *path, char *name, const char *mask, int dir, const char *type)
 {
-  char current_dir[FILENAME_MAX];
+  char directory[FILENAME_MAX];
   char text[64];
   struct stat st = { 0 };
-  const char *cur_entry;
+  const char *dir_entry;
   int i;
   int cnt;
   int num;
@@ -571,30 +571,30 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
 
   gui_write(text, 2, 0, 0);
 
-  i = snprintf(current_dir, FILENAME_MAX, "%s", path);
+  i = snprintf(directory, FILENAME_MAX, "%s", path);
   for (; i > 0; i--) {
-    if (current_dir[i] == DIR_SLASH) {
-      current_dir[i + 1] = 0;
+    if (directory[i] == DIR_SLASH) {
+      directory[i + 1] = 0;
       break;
     }
   }
 
-  stat(current_dir, &st);
-  if (S_ISDIR(st.st_mode) == 0 || current_dir[1] == DIR_SLASH) {
-    if (getcwd(current_dir, FILENAME_MAX) == NULL)
-      current_dir[0] = 0;
+  stat(directory, &st);
+  if (S_ISDIR(st.st_mode) == 0 || directory[1] == DIR_SLASH) {
+    if (getcwd(directory, FILENAME_MAX) == NULL)
+      directory[0] = 0;
 
-    snprintf(current_dir + strlen(current_dir), FILENAME_MAX - strlen(current_dir),
+    snprintf(directory + strlen(directory), FILENAME_MAX - strlen(directory),
         "%c", DIR_SLASH);
   }
 
 read_dir:
   gui_delete_filelist();
 
-  if (gui_read_dir(current_dir, mask, dir) != 0)
+  if (gui_read_dir(directory, mask, dir) != 0)
     return -1;
 
-  gui_limit(current_dir, text, 58);
+  gui_limit(directory, text, 58);
   gui_rect(2, 1, 60, 1, 0);
   gui_center(text, 1, 0);
 
@@ -616,9 +616,9 @@ read_dir:
     }
 
     selection = row + top;
-    cur_entry = filelist[selection];
+    dir_entry = filelist[selection];
 
-    key = gui_select(cur_entry, 2, row + 2);
+    key = gui_select(dir_entry, 2, row + 2);
     if (key >= ' ' && key <= 'Z') {
       int sel = selection;
 
@@ -686,31 +686,31 @@ read_dir:
         case SDLK_INSERT:
         case SDLK_TAB:
           if (dir)
-            if (cur_entry[1] != '.' && cur_entry[2] != '.')
+            if (dir_entry[1] != '.' && dir_entry[2] != '.')
               goto done;
           /* Fall through */
         case SDLK_RETURN:
         case SDLK_SPACE:
-          if (cur_entry[0] == '<') {
-            int const len = strlen(current_dir);
+          if (dir_entry[0] == '<') {
+            int const len = strlen(directory);
 
-            if (cur_entry[1] == '.' && cur_entry[2] == '.') {
+            if (dir_entry[1] == '.' && dir_entry[2] == '.') {
               for (i = len - 2; i >= 0; i--) {
-                if (current_dir[i] == DIR_SLASH) {
-                  current_dir[i + 1] = 0;
+                if (directory[i] == DIR_SLASH) {
+                  directory[i + 1] = 0;
                   break;
                 }
               }
             } else {
-              i = snprintf(current_dir + len, FILENAME_MAX - len, "%s", &cur_entry[1]);
-              current_dir[i + len - 1] = DIR_SLASH;
+              i = snprintf(directory + len, FILENAME_MAX - len, "%s", &dir_entry[1]);
+              directory[i + len - 1] = DIR_SLASH;
             }
             goto read_dir;
           }
 #if defined(__OS2__) || defined(_WIN32)
           /* Select a new drive */
-          else if (cur_entry[0] == '[') {
-            sprintf(current_dir, "%c:\\", cur_entry[1]);
+          else if (dir_entry[0] == '[') {
+            sprintf(directory, "%c:\\", dir_entry[1]);
             goto read_dir;
           }
 #endif
@@ -727,11 +727,11 @@ read_dir:
 
 done:
 #if defined(__OS2__) || defined(_WIN32)
-  if (dir && cur_entry[0] == '[')
-    sprintf(name, "%c: ", cur_entry[1]);
+  if (dir && dir_entry[0] == '[')
+    sprintf(name, "%c: ", dir_entry[1]);
   else
 #endif
-  snprintf(name, FILENAME_MAX, "%s%s", current_dir, &cur_entry[1]);
+  snprintf(name, FILENAME_MAX, "%s%s", directory, &dir_entry[1]);
   if (dir)
     name[strlen(name) - 1] = DIR_SLASH;
 
