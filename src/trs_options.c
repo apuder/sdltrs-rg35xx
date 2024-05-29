@@ -666,14 +666,18 @@ static void opt_memory(char *arg, int intarg, int *variable)
   switch (intarg) {
     case HUFFMAN:
       hypermem = 0;
+      supermem = 0;
       break;
     case HYPERMEM:
       huffman  = 0;
+      supermem = 0;
       break;
     case SELECTOR:
       supermem = 0;
       break;
     case SUPERMEM:
+      huffman  = 0;
+      hypermem = 0;
       selector = 0;
       break;
   }

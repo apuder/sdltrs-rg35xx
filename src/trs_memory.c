@@ -92,7 +92,7 @@ int hypermem; /* Anitek HyperMem (4/4P) */
 int lubomir;  /* Lubomir Soft Banker */
 int megamem;  /* Anitek MegaMem (III/4/4P) */
 int selector; /* Selector (Model I / LNW80) */
-int supermem; /* AlphaTech SuperMem (I/III) */
+int supermem; /* Alpha Technology SuperMem */
 
 /* private data */
 
@@ -687,7 +687,7 @@ int mem_read(int address)
     }
 
     /* The SuperMem sits between the system and the Z80 */
-    if (supermem) {
+    if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000))
         return supermem_ram[supermem_base + (address & 0x7FFF)];
       /* Otherwise the request comes from the system */
@@ -1026,7 +1026,7 @@ void mem_write(int address, int value)
     }
 
     /* The SuperMem sits between the system and the Z80 */
-    if (supermem) {
+    if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000)) {
         supermem_ram[supermem_base + (address & 0x7FFF)] = value;
         return;
@@ -1387,7 +1387,7 @@ Uint8 *mem_pointer(int address, int writing)
     }
 
     /* The SuperMem sits between the system and the Z80 */
-    if (supermem) {
+    if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000))
         return &supermem_ram[supermem_base + (address & 0x7FFF)];
       /* Otherwise the request comes from the system */

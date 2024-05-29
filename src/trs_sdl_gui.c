@@ -1699,7 +1699,7 @@ void gui_emulator_menu(void)
    {"Lowercase Modification for Model I                ", NORMAL},
    {"Lubomir Soft Banker Emulation for Model I         ", NORMAL},
    {"TRS-80 Users Society Selector I Memory Expansion  ", NORMAL},
-   {"SuperMem (Alpha Technology) I/III Memory Expansion", NORMAL},
+   {"SuperMem (Alpha Technology) I/III/4/4P Memory     ", NORMAL},
    {"Grafyx Solution (Micro-Labs) III/4/4P Graphics    ", NORMAL},
    {"MegaMem (Anitek Software) III/4/4P Memory Board   ", NORMAL},
    {"Dave Huffman (and other) 4/4P Memory Expansion    ", NORMAL},
@@ -1797,7 +1797,7 @@ void gui_emulator_menu(void)
       case 8:
         supermem = gui_popup("SuperMem", yes_no, 2, supermem);
         if (supermem)
-          selector = 0;
+          huffman = hypermem = selector = 0;
         break;
       case 9:
         grafyx_microlabs = gui_popup("Micro-Labs", yes_no, 2,
@@ -1809,12 +1809,12 @@ void gui_emulator_menu(void)
       case 11:
         huffman = gui_popup("Huffman", yes_no, 2, huffman);
         if (huffman)
-          hypermem = 0;
+          hypermem = supermem = 0;
         break;
       case 12:
         hypermem = gui_popup("HyperMem", yes_no, 2, hypermem);
         if (hypermem)
-          huffman = 0;
+          huffman = supermem = 0;
         break;
       case -1:
         model_selection = (model_selection == 0 ? 1 : model_selection + 2);

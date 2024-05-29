@@ -141,11 +141,11 @@ Hide disk activity and Turbo LED.
 .TP
 .B \-huff[man]
 Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
-.B Disables "HyperMem"
+.B Disables "HyperMem" and "SuperMem".
 .TP
 .B \-hyper[mem]
 Enable HyperMem (Anitek) memory expansion for Model 4/4P.
-.B Disables "Dave Huffman memory expansion"
+.B Disables "Dave Huffman memory expansion" and "SuperMem".
 .TP
 .B \-iodebug \fIhexval\fP
 Set I/O port debug flags: \fI01\fP = port input | \fI02\fP = port output.
@@ -335,7 +335,7 @@ Default: \fI127\fP
 .TP
 .B \-selector
 Enable TRS-80 Users Society Selector memory expansion for Model I.
-.B Disables "SuperMem"
+.B Disables "SuperMem".
 .TP
 .B \-serial \fIttyname\fP
 Set tty device to be used for I/O to TRS-80's serial port.
@@ -372,8 +372,8 @@ Selectively set double-step mode for individual real floppy drives.
 Emulate Exatron Stringy Floppy Drive for Model I.
 .TP
 .B \-super[mem]
-Enable SuperMem (Alpha Technology) memory expansion for Model I/III.
-.B Disables "TRS-80 Users Society Selector"
+Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P.
+.B Disables "Huffman", "HyperMem" and "Selector".
 .TP
 .B \-sw[itches] \fIvalue\fP
 Set sense switches on Model I serial port card.
