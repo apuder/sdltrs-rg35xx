@@ -139,11 +139,11 @@ Patch Level II ROM for auto-boot from hard disk (Model I only).
 \fB\-hideled\fP | \fB\-noled\fP
 Hide disk activity and Turbo LED.
 .TP
-.B \-huffman
+.B \-huff[man]
 Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
 .B Disables "HyperMem"
 .TP
-.B \-hypermem
+.B \-hyper[mem]
 Enable HyperMem (Anitek) memory expansion for Model 4/4P.
 .B Disables "Dave Huffman memory expansion"
 .TP
@@ -167,13 +167,13 @@ Emulate Lowe Electronics LE18 384x192 graphics adapter for Model I.
 \fB\-lower[case]\fP | \fB\-lc\fP
 "Lower Case Modification Kit" for TRS-80 Model I (Default).
 .TP
-.B \-lubomir
+\fB\-lubomir\fP | \fB\-lsb\fP
 Enable Lubomir Soft Banker for Model I.
 .TP
-.B \-megamem
+.B \-mega[mem]
 Enable MegaMem (Anitek) memory expansion for Model III and 4/4P.
 .TP
-.B \-microlabs
+.B \-micro[labs]
 Model III or 4/4P: emulate Micro-Labs Grafyx Solution Hi-Res
 graphics card.
 .TP
@@ -218,10 +218,10 @@ Run in windowed mode (Default).
 .B \-nohdboot
 Do not patch Level II ROM for auto-boot from hard disk (Default).
 .TP
-.B \-nohuffman
+.B \-nohuff[man]
 Disable "Dave Huffman (and other)" memory expansion (Default).
 .TP
-.B \-nohypermem
+.B \-nohyper[mem]
 Disable HyperMem memory expansion (Default).
 .TP
 \fB\-nokeypadjoy\fP | \fB\-nokp\fP
@@ -233,13 +233,13 @@ No emulation of LE18 graphic adapter (Default).
 \fB\-nolower[case]\fP | \fB\-nolc\fP
 No lower case characters for TRS-80 Model I.
 .TP
-.B \-nolubomir
+\fB\-nolubomir | \fB\-nolsb\fP
 Disable Lubomir Soft Banker for Model I (Default).
 .TP
-.B \-nomegamem
+.B \-nomega[mem]
 Disable MegaMem memory expansion for Model III and 4/4P (Default).
 .TP
-.B \-nomicrolabs
+.B \-nomicro[labs]
 Model III or Model 4/4P: emulate Radio Shack Hi-Res card (Default).
 .RE
 .TP
@@ -271,7 +271,7 @@ Disable Sound Output at startup.
 .B \-nostringy
 Do not emulate Exatron Stringy Floppy Drive for Model I (Default).
 .TP
-.B \-nosupermem
+.B \-nosuper[mem]
 Disable SuperMem memory expansion (Default).
 .TP
 .B \-notruedam
@@ -329,7 +329,7 @@ Default: \fI1\fP
 .B \-scan[lines]
 Display scanlines to simulate an old CRT monitor resolution.
 .TP
-.B \-scanshade \fIbrightness\fP
+.B \-[scan]shade \fIbrightness\fP
 Set brightness of scanlines (0 = dark - 255 = light).
 Default: \fI127\fP
 .TP
@@ -371,7 +371,7 @@ Selectively set double-step mode for individual real floppy drives.
 .B \-stringy
 Emulate Exatron Stringy Floppy Drive for Model I.
 .TP
-.B \-supermem
+.B \-super[mem]
 Enable SuperMem (Alpha Technology) memory expansion for Model I/III.
 .B Disables "TRS-80 Users Society Selector"
 .TP
