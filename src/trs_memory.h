@@ -11,10 +11,11 @@
 #define GENIEPLUS       (1) /* EACA EG 3200 Genie III 384 KB */
 #define HUFFMAN         (2) /* Dave Huffman (and other) 2 MB (4/4P) */
 #define HYPERMEM        (3) /* Anitek HyperMem 1 MB (4/4P) */
-#define RAM192B         (4) /* TCS Genie IIs/SpeedMaster 768 KB */
-#define SELECTOR        (5) /* Selector Card for TRS-80 Model I */
-#define SUPERMEM        (6) /* AlphaTech SuperMem 512 KB (I/III) */
-#define TCS_GENIE3S     (7) /* TCS Genie IIIs 1024 KB */
+#define MEGAMEM         (4) /* Anitek MegaMem  3 MB (III/4/4P) */
+#define RAM192B         (5) /* TCS Genie IIs/SpeedMaster 768 KB */
+#define SELECTOR        (6) /* Selector Card for TRS-80 Model I */
+#define SUPERMEM        (7) /* AlphaTech SuperMem 512 KB (I/III) */
+#define TCS_GENIE3S     (8) /* TCS Genie IIIs 1024 KB */
 
 int    trs80_model3_mem_read(int address);
 void   trs80_model3_mem_write(int address, int value);
