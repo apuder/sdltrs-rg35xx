@@ -3376,6 +3376,7 @@ int z80_run(int continuous)
 	    if (z80_halt == 'd') {
 		trs_debug();
 	    }
+	    else
 #endif
 	    if (z80_halt == 'r') {
 		trs_reset(0);
