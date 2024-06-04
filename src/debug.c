@@ -352,13 +352,16 @@ static void load_memory(Uint16 address, const char *filename)
 {
     FILE *file = fopen(filename, "rb");
 
-    if(file) {
+    if(file)
+    {
 	int c;
 
 	while((c = getc(file)) != EOF)
 	    mem_write(address++, c);
 	fclose(file);
-    } else {
+    }
+    else
+    {
 	file_error("load memory: '%s'", filename);
     }
 }
@@ -367,14 +370,17 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
 {
     FILE *file = fopen(filename, "wb");
 
-    if(file) {
+    if(file)
+    {
 	int i;
 
 	for(i = 0; i < num_bytes; ++i)
 	    putc(mem_read(address + i), file);
 
 	fclose(file);
-    } else {
+    }
+    else
+    {
 	file_error("save memory: '%s'", filename);
     }
 }
