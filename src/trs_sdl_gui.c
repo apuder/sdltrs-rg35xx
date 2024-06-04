@@ -1805,11 +1805,13 @@ void gui_emulator_menu(void)
         break;
       case 10:
         megamem = gui_popup("MegaMem", yes_no, 2, megamem);
+        if (megamem)
+          huffman = 0;
         break;
       case 11:
         huffman = gui_popup("Huffman", yes_no, 2, huffman);
         if (huffman)
-          hypermem = supermem = 0;
+          megamem = hypermem = supermem = 0;
         break;
       case 12:
         hypermem = gui_popup("HyperMem", yes_no, 2, hypermem);
