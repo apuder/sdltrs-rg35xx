@@ -62,11 +62,6 @@
 #define MAX_ROM_SIZE       (16384)  /* 16K for CP-300/500 */
 #define MAX_VIDEO_SIZE     (3072)   /* CP-500 M80 has 3K */
 #define MAX_MEMORY_SIZE    (4 * 1024 * 1024) + 65536
-
-/* 1024 KB memory for Alpha Technology SuperMem.
-   How the mapping register worked for > 1MB is not known */
-#define MAX_SUPERMEM_SIZE  (1024 * 1024)
-
 /* Start MegaMem > 1MB to leave space for SuperMem or HyperMem */
 #define MEGAMEM_START      (1 * 1024 * 1024) + 65536
 
@@ -99,9 +94,6 @@ int supermem; /* Alpha Technology SuperMem */
 static Uint8 memory[MAX_MEMORY_SIZE + 1];
 static Uint8 video[MAX_VIDEO_SIZE + 1];
 static Uint8 rom[MAX_ROM_SIZE + 1];
-/* We map the SuperMem separately, otherwise it can get really
-   confusing when combining with other stuff */
-static Uint8 supermem_ram[MAX_SUPERMEM_SIZE + 1];
 static int memory_map;
 static int video_addr = -VIDEO_START;
 static int bank_offset[2];
@@ -470,7 +462,6 @@ static void mem_init(void)
 {
     /* Initialize RAM & ROM */
     memset(&memory, 0xC9, MAX_MEMORY_SIZE);
-    memset(&supermem_ram, 0xC9, MAX_SUPERMEM_SIZE);
     memset(&rom, 0xFF, MAX_ROM_SIZE);
 
     mem_map(0);
@@ -685,7 +676,7 @@ int mem_read(int address)
     /* The SuperMem sits between the system and the Z80 */
     if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000))
-        return supermem_ram[supermem_base + (address & 0x7FFF)];
+        return memory[supermem_base + (address & 0x7FFF)];
       /* Otherwise the request comes from the system */
     }
 
@@ -1024,7 +1015,7 @@ void mem_write(int address, int value)
     /* The SuperMem sits between the system and the Z80 */
     if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000)) {
-        supermem_ram[supermem_base + (address & 0x7FFF)] = value;
+        memory[supermem_base + (address & 0x7FFF)] = value;
         return;
       }
       /* Otherwise the request comes from the system */
@@ -1385,7 +1376,7 @@ Uint8 *mem_pointer(int address, int writing)
     /* The SuperMem sits between the system and the Z80 */
     if (supermem && supermem_base) {
       if (!((address ^ supermem_hi) & 0x8000))
-        return &supermem_ram[supermem_base + (address & 0x7FFF)];
+        return &memory[supermem_base + (address & 0x7FFF)];
       /* Otherwise the request comes from the system */
     }
 
@@ -1629,7 +1620,6 @@ Uint8 *mem_pointer(int address, int writing)
 void trs_mem_save(FILE *file)
 {
   trs_save_uint8(file, memory, MAX_MEMORY_SIZE + 1);
-  trs_save_uint8(file, supermem_ram, MAX_SUPERMEM_SIZE + 1);
   trs_save_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_save_uint8(file, video, MAX_VIDEO_SIZE + 1);
   trs_save_int(file, &trs_model, 1);
@@ -1660,7 +1650,6 @@ void trs_mem_save(FILE *file)
 void trs_mem_load(FILE *file)
 {
   trs_load_uint8(file, memory, MAX_MEMORY_SIZE + 1);
-  trs_load_uint8(file, supermem_ram, MAX_SUPERMEM_SIZE + 1);
   trs_load_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_load_uint8(file, video, MAX_VIDEO_SIZE + 1);
   trs_load_int(file, &trs_model, 1);
