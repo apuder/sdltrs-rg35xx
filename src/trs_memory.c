@@ -63,10 +63,9 @@
 #define MAX_VIDEO_SIZE     (3072)   /* CP-500 M80 has 3K */
 #define MAX_MEMORY_SIZE    (4 * 1024 * 1024) + 65536
 
-/* 512K is the largest we support. There were it seems 1MByte
-   options at some point which is the full range of the mapping.
+/* 1024 KB memory for Alpha Technology SuperMem.
    How the mapping register worked for > 1MB is not known */
-#define MAX_SUPERMEM_SIZE  (512 * 1024)
+#define MAX_SUPERMEM_SIZE  (1024 * 1024)
 
 /* Start MegaMem > 1MB to leave space for SuperMem or HyperMem */
 #define MEGAMEM_START      (1 * 1024 * 1024) + 65536
@@ -280,10 +279,7 @@ void mem_bank_base(int card, int bits)
 				bank_base = 0;
 			break;
 		case SUPERMEM:
-			/* Emulate a 512Kb system. A standard model 1 SuperMEM
-			   is 256K or 512K with double stacked chips
-			   15 bits of address + 4bits logical */
-			supermem_base = (bits & 0x0F) << 15;
+			supermem_base = bits << 15;
 			/* The supermem can flip the low or high 32K.
 			   Set bit 5 to map low */
 			supermem_hi = (bits & 0x20) ? 0x0000 : 0x8000;
