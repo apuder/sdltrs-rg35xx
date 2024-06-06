@@ -14,7 +14,7 @@
 #define MEGAMEM         (4) /* Anitek MegaMem  3 MB (III/4/4P) */
 #define RAM192B         (5) /* TCS Genie IIs/SpeedMaster 768 KB */
 #define SELECTOR        (6) /* Selector Card for TRS-80 Model I */
-#define SUPERMEM        (7) /* AlphaTech SuperMem 512 KB (I/III) */
+#define SUPERMEM        (7) /* Alpha Technology SuperMem 1024 KB */
 #define TCS_GENIE3S     (8) /* TCS Genie IIIs 1024 KB */
 
 int    trs80_model3_mem_read(int address);
