@@ -461,7 +461,9 @@ void s80z_out(int value)
 static void mem_init(void)
 {
     /* Initialize RAM & ROM */
-    memset(&memory, 0xC9, MAX_MEMORY_SIZE);
+    Uint8 const fill = trs_model >= 4 ? 0xFF : 0xC9;
+
+    memset(&memory, fill, MAX_MEMORY_SIZE);
     memset(&rom, 0xFF, MAX_ROM_SIZE);
 
     mem_map(0);
