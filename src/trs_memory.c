@@ -1363,8 +1363,6 @@ Uint8 *trs80_model3_mem_addr(int address, int writing)
  * whether the next virtual address is physically contiguous.  The
  * caller is responsible for making sure his strings don't span
  * memory map boundaries.
- *
- * Needs to die...
  */
 Uint8 *mem_pointer(int address, int writing)
 {
