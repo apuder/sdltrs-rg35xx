@@ -271,7 +271,8 @@ void mem_bank_base(int card, int bits)
 				bank_base = 0;
 			break;
 		case SUPERMEM:
-			supermem_base = bits << 15;
+			/* Support 1024 KB which is the full range of the mapping. */
+			supermem_base = (bits & 0x1F) << 15;
 			/* The supermem can flip the low or high 32K.
 			   Set bit 5 to map low */
 			supermem_hi = (bits & 0x20) ? 0x0000 : 0x8000;
