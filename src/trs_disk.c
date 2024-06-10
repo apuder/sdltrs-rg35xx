@@ -3227,7 +3227,7 @@ real_error(DiskState *d, unsigned int flags, const char *msg)
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_REALERR) {
-    file_error("real_%s", msg);
+    file_error("real_%s (flags 0x%02X)", flags, msg);
   }
 #endif
 }
