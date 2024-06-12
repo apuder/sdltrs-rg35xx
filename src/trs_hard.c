@@ -86,13 +86,13 @@ static State state;
 /* Forward */
 static int  hard_data_in(void);
 static void hard_data_out(int value);
-static void hard_restore(int cmd);
+static void hard_restore(void);
 static void hard_read(int cmd);
 static void hard_write(int cmd);
-static void hard_verify(int cmd);
-static void hard_format(int cmd);
+static void hard_verify(void);
+static void hard_format(void);
 static void hard_init(int cmd);
-static void hard_seek(int cmd);
+static void hard_seek(void);
 static int  open_drive(int drive);
 static int  find_sector(int newstatus);
 static int  open_drive(int n);
@@ -291,7 +291,7 @@ void trs_hard_out(int port, int value)
       error("trs_hard: unknown command 0x%02X", value);
       break;
     case TRS_HARD_RESTORE:
-      hard_restore(value);
+      hard_restore();
       break;
     case TRS_HARD_READ:
       hard_read(value);
@@ -300,16 +300,16 @@ void trs_hard_out(int port, int value)
       hard_write(value);
       break;
     case TRS_HARD_VERIFY:
-      hard_verify(value);
+      hard_verify();
       break;
     case TRS_HARD_FORMAT:
-      hard_format(value);
+      hard_format();
       break;
     case TRS_HARD_INIT:
       hard_init(value);
       break;
     case TRS_HARD_SEEK:
-      hard_seek(value);
+      hard_seek();
       break;
     }
     break;
@@ -319,7 +319,7 @@ void trs_hard_out(int port, int value)
   }
 }
 
-static void hard_restore(int cmd)
+static void hard_restore(void)
 {
 #if HARDDEBUG2
   debug("hard_restore drive %d\n", state.drive);
@@ -359,7 +359,7 @@ static void hard_write(int cmd)
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
 }
 
-static void hard_verify(int cmd)
+static void hard_verify(void)
 {
 #if HARDDEBUG2
   debug("hard_verify drive %d, cyl %d, hd %d, sec %d\n",
@@ -368,7 +368,7 @@ static void hard_verify(int cmd)
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
 
-static void hard_format(int cmd)
+static void hard_format(void)
 {
 #if HARDDEBUG2
   debug("hard_format drive %d, cyl %d, hd %d\n",
@@ -389,7 +389,7 @@ static void hard_init(int cmd)
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
 }
 
-static void hard_seek(int cmd)
+static void hard_seek(void)
 {
 #if HARDDEBUG2
   debug("hard_seek drive %d, cyl %d, hd %d, sec %d\n",

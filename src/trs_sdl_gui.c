@@ -2101,7 +2101,7 @@ void gui_misc_menu(void)
         if (gui_input("Enter Serial Port Name", trs_uart_name,
             filename, FILENAME_MAX, 0) >= 0) {
           snprintf(trs_uart_name, FILENAME_MAX, "%s", filename);
-          trs_uart_init(0);
+          trs_uart_init();
         }
         break;
       case 7:
@@ -2109,7 +2109,7 @@ void gui_misc_menu(void)
         if (gui_input("Enter Serial Switches (Hex, XX)",
             input, input, 2, 0) > 0) {
           trs_uart_switches = strtol(input, NULL, 16);
-          trs_uart_init(0);
+          trs_uart_init();
         }
         break;
       case 8:

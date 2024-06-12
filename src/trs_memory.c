@@ -495,7 +495,7 @@ void trs_reset(int poweron)
     /* Reset devices (Model I SYSRES, Model III/4 RESET) */
     trs_cassette_reset();
     trs_disk_init(poweron); /* also inits trs_hard and trs_stringy */
-    trs_uart_init(poweron);
+    trs_uart_init();
 
     trs_kb_reset();    /* Part of keyboard stretch kludge */
     trs_cancel_event();

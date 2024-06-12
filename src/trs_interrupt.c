@@ -231,7 +231,7 @@ trs_disk_motoroff_interrupt(int state)
 }
 
 void
-trs_disk_drq_interrupt(int state)
+trs_disk_drq_interrupt(void)
 {
   /* no effect */
 }

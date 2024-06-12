@@ -502,7 +502,7 @@ void
 trs_disk_firstdrq(int bits)
 {
   state.status |= TRSDISK_DRQ | bits;
-  trs_disk_drq_interrupt(1);
+  trs_disk_drq_interrupt();
   trs_schedule_event(trs_disk_lostdata, state.currcommand,
 		     500000 * z80_state.clockMHz);
 }
@@ -513,7 +513,7 @@ trs_disk_unimpl(Uint8 cmd, const char *more)
   state.status = TRSDISK_NOTRDY|TRSDISK_WRITEFLT|TRSDISK_NOTFOUND;
   state.bytecount = state.format_bytecount = 0;
   state.format = FMT_DONE;
-  trs_disk_drq_interrupt(0);
+  trs_disk_drq_interrupt();
   trs_schedule_event(trs_disk_done, 0, 0);
   error("trs_disk_command(0x%02X) not implemented - %s", cmd, more);
 }
@@ -1481,7 +1481,7 @@ trs_disk_data_read(void)
 	}
 	state.bytecount = 0;
 	state.status &= ~TRSDISK_DRQ;
-        trs_disk_drq_interrupt(0);
+        trs_disk_drq_interrupt();
 	if (trs_event_scheduled() == trs_disk_lostdata) {
 	  trs_cancel_event();
 	}
@@ -1576,7 +1576,7 @@ trs_disk_data_read(void)
       }
       state.bytecount = 0;
       state.status &= ~TRSDISK_DRQ;
-      trs_disk_drq_interrupt(0);
+      trs_disk_drq_interrupt();
       if (trs_event_scheduled() == trs_disk_lostdata) {
 	trs_cancel_event();
       }
@@ -1595,7 +1595,7 @@ trs_disk_data_read(void)
     if (state.bytecount <= 0) {
       state.bytecount = 0;
       state.status &= ~TRSDISK_DRQ;
-      trs_disk_drq_interrupt(0);
+      trs_disk_drq_interrupt();
       if (trs_event_scheduled() == trs_disk_lostdata) {
 	trs_cancel_event();
       }
@@ -1711,7 +1711,7 @@ trs_disk_data_write(Uint8 data)
 	}
 	state.bytecount = 0;
 	state.status &= ~TRSDISK_DRQ;
-        trs_disk_drq_interrupt(0);
+        trs_disk_drq_interrupt();
 	if (trs_event_scheduled() == trs_disk_lostdata) {
 	  trs_cancel_event();
 	}
@@ -1747,7 +1747,7 @@ trs_disk_data_write(Uint8 data)
 	  }
 	  c = fflush(d->file);
 	  if (c == EOF) state.status |= TRSDISK_WRITEFLT;
-	  trs_disk_drq_interrupt(0);
+	  trs_disk_drq_interrupt();
 	  if (trs_event_scheduled() == trs_disk_lostdata) {
 	    trs_cancel_event();
 	  }
@@ -1892,7 +1892,7 @@ trs_disk_data_write(Uint8 data)
 	c = fflush(d->file);
 	if (c == EOF) state.status |= TRSDISK_WRITEFLT;
       }
-      trs_disk_drq_interrupt(0);
+      trs_disk_drq_interrupt();
       if (trs_event_scheduled() == trs_disk_lostdata) {
 	trs_cancel_event();
       }
@@ -2691,7 +2691,7 @@ trs_disk_command_write(Uint8 cmd)
     }
     if (d->emutype == REAL) {
       state.status = TRSDISK_BUSY|TRSDISK_DRQ;
-      trs_disk_drq_interrupt(1);
+      trs_disk_drq_interrupt();
       trs_schedule_event(trs_disk_lostdata, state.currcommand,
 			 500000 * z80_state.clockMHz);
       state.bytecount = size_code_to_size(d->u.real.size_code);
@@ -2874,7 +2874,7 @@ trs_disk_command_write(Uint8 cmd)
       } /* end if (d->emutype == ...) */
 
       state.status |= TRSDISK_BUSY|TRSDISK_DRQ;
-      trs_disk_drq_interrupt(1);
+      trs_disk_drq_interrupt();
       trs_schedule_event(trs_disk_lostdata, state.currcommand,
 			 500000 * z80_state.clockMHz);
     }
@@ -3097,7 +3097,7 @@ trs_disk_command_write(Uint8 cmd)
       state.bytecount = TRKSIZE_8DD; /* decrement by 2's if SD */
     }
     state.status = TRSDISK_BUSY|TRSDISK_DRQ;
-    trs_disk_drq_interrupt(1);
+    trs_disk_drq_interrupt();
     trs_schedule_event(trs_disk_lostdata, state.currcommand,
 		       500000 * z80_state.clockMHz);
     break;
@@ -3162,7 +3162,7 @@ trs_disk_command_write(Uint8 cmd)
 	d->u.dmk.nextidam = 0;
       }
       state.status |= TRSDISK_BUSY|TRSDISK_DRQ;
-      trs_disk_drq_interrupt(1);
+      trs_disk_drq_interrupt();
       trs_schedule_event(trs_disk_lostdata, state.currcommand,
 			 500000 * z80_state.clockMHz);
       state.format = FMT_GAP0;
@@ -3509,7 +3509,7 @@ real_write(void)
     if (raw_cmd.reply[2] & 0x13) state.status |= TRSDISK_NOTFOUND;
   }
   state.bytecount = 0;
-  trs_disk_drq_interrupt(0);
+  trs_disk_drq_interrupt();
   state.status |= TRSDISK_BUSY;
   if (trs_event_scheduled() == trs_disk_lostdata) {
     trs_cancel_event();
@@ -3673,7 +3673,7 @@ real_writetrk(void)
     if (raw_cmd.reply[2] & 0x13) state.status |= TRSDISK_NOTFOUND;
   }
   state.bytecount = 0;
-  trs_disk_drq_interrupt(0);
+  trs_disk_drq_interrupt();
   state.status |= TRSDISK_BUSY;
   if (trs_event_scheduled() == trs_disk_lostdata) {
     trs_cancel_event();

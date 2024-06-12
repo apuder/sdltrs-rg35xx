@@ -622,7 +622,7 @@ void z80_out(int port, int value)
     trs_hard_out(port, value);
     break;
   case TRS_UART_RESET:    /* 0xE8 */
-    trs_uart_reset_out(value);
+    trs_uart_reset_out();
     break;
   case TRS_UART_BAUD:     /* 0xE9 */
     trs_uart_baud_out(value);

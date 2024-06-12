@@ -157,7 +157,7 @@ extern void  trs_interrupt_mask_write(Uint8);
 extern void  trs_nmi_mask_write(Uint8);
 extern void  trs_reset_button_interrupt(int state);
 extern void  trs_disk_intrq_interrupt(int state);
-extern void  trs_disk_drq_interrupt(int state);
+extern void  trs_disk_drq_interrupt(void);
 extern void  trs_disk_motoroff_interrupt(int state);
 /* extern void trs_uart_err_interrupt(int state); */
 extern void trs_uart_rcv_interrupt(int state);
