@@ -925,7 +925,6 @@ int z80_in(int port)
   if ((port >= 0x70 && port <= 0x7C) ||
       (port >= 0xB0 && port <= 0xBC)) {
     value = rtc_read(port);
-    goto done;
   } else {
     /* Ports in David Keil's TRS-80 Emulator */
     if (port >= 0x68 && port <= 0x6D) {
