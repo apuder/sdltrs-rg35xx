@@ -418,13 +418,13 @@ static int open_drive(int drive)
   int err = 0;
   int secs;
 
+  if (d->filename[0] == 0)
+    goto fail;
+
   if (d->file != NULL) {
     fclose(d->file);
     d->file = NULL;
   }
-  if (d->filename[0] == 0)
-    goto fail;
-
   /* First try opening for reading and writing */
   d->file = fopen(d->filename, "rb+");
   if (d->file == NULL) {
