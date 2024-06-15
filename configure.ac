@@ -10,8 +10,12 @@ AC_CANONICAL_HOST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_FUNC_ERROR_AT_LINE
-AC_CHECK_HEADERS([fcntl.h limits.h sys/file.h sys/ioctl.h sys/time.h termios.h])
-AC_CHECK_FUNCS([ftruncate getcwd gettimeofday memmove memset putenv strcasecmp strchr strdup strerror strncasecmp strrchr strtol])
+AC_FUNC_MALLOC
+AC_FUNC_MKTIME
+AC_FUNC_REALLOC
+AC_CHECK_HEADERS([fcntl.h limits.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h])
+AC_CHECK_FUNCS([atexit ftruncate getcwd gettimeofday localtime_r memmove memset putenv \
+                strcasecmp strchr strdup strerror strncasecmp strrchr strstr strtol])
 
 AC_ARG_ENABLE([fastmove],
   [AS_HELP_STRING([--enable-fastmove], [faster but not accurate Z80 block moves])],
