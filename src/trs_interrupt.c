@@ -423,22 +423,26 @@ trs_timer_init(void)
   switch (trs_model) {
     case 1:
       timer_hz = TIMER_HZ_1;
-      if (eg3200) {
-        z80_state.clockMHz = EG_3200_MHZ;
-      } else if (genie3s) {
-        z80_state.clockMHz = TCS_G3S_MHZ;
-      } else {
-        switch (speedup) {
-          case 6: /* LNW80 */
-            z80_state.clockMHz = CLOCK_4_MHZ;
-            break;
-          case 7: /* TCS SpeedMaster 5.3 */
-            z80_state.clockMHz = TCS_SPM_MHZ;
-            break;
-          default:
-            z80_state.clockMHz = clock_mhz_1;
-            break;
-        }
+      switch (trs_clones.model) {
+        case EG3200:
+          z80_state.clockMHz = EG_3200_MHZ;
+          break;
+        case GENIE3S:
+          z80_state.clockMHz = TCS_G3S_MHZ;
+          break;
+        default:
+          switch (speedup) {
+            case 6: /* LNW80 */
+              z80_state.clockMHz = CLOCK_4_MHZ;
+              break;
+            case 7: /* TCS SpeedMaster 5.3 */
+              z80_state.clockMHz = TCS_SPM_MHZ;
+              break;
+            default:
+              z80_state.clockMHz = clock_mhz_1;
+              break;
+          }
+          break;
       }
       break;
     case 3:
@@ -532,28 +536,31 @@ trs_timer_speed(int fast)
   } else {
     switch (trs_model) {
       case 1:
-        if (eg3200)
-          z80_state.clockMHz = (fast & 1) ? EG_3200_MHZ : CLOCK_1_MHZ;
-        else
-        if (genie3s)
-          z80_state.clockMHz = (fast & 1) ? TCS_G3S_MHZ : CLOCK_1_MHZ;
-        else
-        switch (speedup) {
-        case 1: /* Archbold */
-        case 5: /* CT-80 */
-          z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
-          break;
-        case 2: /* Holmes Sprinter II */
-          z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
-          break;
-        case 6: /* LNW80 */
-          z80_state.clockMHz = (fast & 1) ? CLOCK_4_MHZ : CLOCK_1_MHZ;
-          break;
-        case 7: /* TCS SpeedMaster */
-          z80_state.clockMHz = (fast & 1) ? TCS_SPM_MHZ : CLOCK_1_MHZ;
-          break;
-        default:
-          break;
+        switch (trs_clones.model) {
+          case EG3200:
+            z80_state.clockMHz = (fast & 1) ? EG_3200_MHZ : CLOCK_1_MHZ;
+            break;
+          case GENIE3S:
+            z80_state.clockMHz = (fast & 1) ? TCS_G3S_MHZ : CLOCK_1_MHZ;
+            break;
+          default:
+            switch (speedup) {
+              case 1: /* Archbold */
+              case 5: /* CT-80 */
+                z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
+                break;
+              case 2: /* Holmes Sprinter II */
+                z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
+                break;
+              case 6: /* LNW80 */
+                z80_state.clockMHz = (fast & 1) ? CLOCK_4_MHZ : CLOCK_1_MHZ;
+                break;
+              case 7: /* TCS SpeedMaster */
+                z80_state.clockMHz = (fast & 1) ? TCS_SPM_MHZ : CLOCK_1_MHZ;
+                break;
+              default:
+                break;
+            }
         }
         break;
       case 3:
