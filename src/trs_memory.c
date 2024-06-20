@@ -79,7 +79,6 @@
 int lowercase = 1;
 int trs_model = 1;
 int trs_rom_size;
-int eg3200;   /* EACA EG 3200 Genie III */
 int genie3s;  /* TCS Genie IIIs */
 int huffman;  /* Dave Huffman (4/4P) */
 int hypermem; /* Anitek HyperMem (4/4P) */
@@ -323,10 +322,15 @@ void megamem_out(int mem_slot, Uint8 value)
 	}
 }
 
+void eg3200_bank_out(int value)
+{
+	sys_byte = value & 0x0F;
+}
+
 void eg3200_init_out(int value)
 {
-	eg3200 = value;
 	memory_map = 0x23;
+	sys_byte = value;
 	trs_clones_model(EG3200);
 	trs_timer_init();
 	trs_screen_inverse(0);
@@ -481,7 +485,6 @@ void trs_reset(int poweron)
     bank_base = 0x10000;
     bank_offset[0] = 0;
     bank_offset[1] = 0;
-    eg3200 = 0;
     megamem_addr = 0;
     megamem_base = 0;
     mem_command = 0;
@@ -753,20 +756,20 @@ int mem_read(int address)
 
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
 	/* Bit 0 - Bank 1: ROM/EPROM */
-	if ((eg3200 & (1 << 0)) == 0 && address < trs_rom_size)
+	if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
 	  return rom[address];
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
-	if ((eg3200 & (1 << 1)) == 0) {
+	if ((sys_byte & (1 << 1)) == 0) {
 	  if (address >= VIDEO_START && address <= 0x3FFF)
 	    return video[address - VIDEO_START];
 	}
 	/* Bit 2 - Bank 3: Video Memory 1 (additional 1k for 80x24 video mode) */
-	if ((eg3200 & (1 << 2)) == 0) {
+	if ((sys_byte & (1 << 2)) == 0) {
 	  if (address >= 0x4000 && address <= 0x43FF)
 	    return video[address - VIDEO_START];
 	}
 	/* Bit 3 - Bank 4: Disk I/O and Keyboard */
-	if ((eg3200 & (1 << 3)) == 0) {
+	if ((sys_byte & (1 << 3)) == 0) {
 	  if (address >= 0x37E0 && address <= 0x37EF)
 	    return trs80_model1_mmio(address);
 	  if (address >= KEYBOARD_START && address <= 0x3BFF)
@@ -1107,7 +1110,7 @@ void mem_write(int address, int value)
 
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
-	if ((eg3200 & (1 << 1)) == 0) {
+	if ((sys_byte & (1 << 1)) == 0) {
 	  if (address >= VIDEO_START && address <= 0x3FFF) {
 	    trs80_screen_write_char(address - VIDEO_START, value);
 	    return;
@@ -1115,7 +1118,7 @@ void mem_write(int address, int value)
 	}
 	/* Bit 2 - Bank 3: Video Memory 1 (additional 1k for 80x24 video mode)
 	 *                 Video Memory 2 (EG 3210: Programmable Graphics Adaptor) */
-	if ((eg3200 & (1 << 2)) == 0) {
+	if ((sys_byte & (1 << 2)) == 0) {
 	  if (address >= 0x4000 && address <= 0x43FF) {
 	    trs80_screen_write_char(address - VIDEO_START, value);
 	    return;
@@ -1127,7 +1130,7 @@ void mem_write(int address, int value)
 	  }
 	}
 	/* Bit 3 - Bank 4: Disk I/O */
-	if ((eg3200 & (1 << 3)) == 0) {
+	if ((sys_byte & (1 << 3)) == 0) {
 	  if (address >= 0x37E0 && address <= 0x37EF) {
 	    trs80_model1_write_mmio(address, value);
 	    return;
@@ -1454,15 +1457,15 @@ Uint8 *mem_pointer(int address, int writing)
       case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       case 0x2B:
 	/* Bit 0 - Bank 1: ROM/EPROM */
-	if ((eg3200 & (1 << 0)) == 0 && address < trs_rom_size)
+	if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
 	  return writing ? NULL : &rom[address];
 	/* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
-	if ((eg3200 & (1 << 1)) == 0) {
+	if ((sys_byte & (1 << 1)) == 0) {
 	  if (address >= VIDEO_START && address <= 0x3FFF)
 	    return &video[address - VIDEO_START];
 	}
 	/* Bit 2 - Bank 3: Video Memory 1 (additional 1k for 80x24 video mode) */
-	if ((eg3200 & (1 << 2)) == 0) {
+	if ((sys_byte & (1 << 2)) == 0) {
 	  if (address >= 0x4000 && address <= 0x43FF)
 	    return &video[address - VIDEO_START];
 	}
@@ -1637,7 +1640,6 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &megamem, 1);
   trs_save_int(file, &megamem_addr, 1);
   trs_save_uint32(file, &megamem_base, 1);
-  trs_save_int(file, &eg3200, 1);
   trs_save_int(file, &genie3s, 1);
   trs_save_int(file, &sys_byte, 1);
 }
@@ -1667,7 +1669,6 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &megamem, 1);
   trs_load_int(file, &megamem_addr, 1);
   trs_load_uint32(file, &megamem_base, 1);
-  trs_load_int(file, &eg3200, 1);
   trs_load_int(file, &genie3s, 1);
   trs_load_int(file, &sys_byte, 1);
 }

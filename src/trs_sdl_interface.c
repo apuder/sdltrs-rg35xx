@@ -1942,7 +1942,7 @@ bitmap_init(int ram)
 
   for (i = 0; i < MAX_CHARS; i++) {
     /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA Card */
-    bitmap_char(i, (i > 191 && eg3200) ? 1 : ram);
+    bitmap_char(i, (i > 191 && trs_clones.model == EG3200) ? 1 : ram);
 
     /* GUI Normal + Inverse */
     bitmap_free(i, 4, 5);
@@ -2367,7 +2367,7 @@ void grafyx_write_x(int value)
 void grafyx_write_y(int value)
 {
   /* Genie III VideoExtension HRG */
-  if (eg3200 && grafyx_x & 0x80)
+  if (trs_clones.model == EG3200 && grafyx_x & 0x80)
     value |= 1 << 8; /* Y MSB in X-Reg */
 
   grafyx_y = value;
@@ -2421,7 +2421,7 @@ void grafyx_write_mode(int value)
   grafyx_mode = value;
   grafyx_enable = value & G_ENABLE;
 
-  if (eg3200) /* Genie III VideoExtension HRG */
+  if (trs_clones.model == EG3200) /* Genie III VideoExtension HRG */
     grafyx_overlay = grafyx_enable;
   else if (grafyx_microlabs)
     grafyx_overlay = (value & G_UL_NOTEXT) == 0;
@@ -2763,12 +2763,13 @@ void m6845_screen(int chars, int lines, int raster, int factor)
 
 void genie3s_char(int character, int scanline, int byte)
 {
-  char_ram[character][scanline] = eg3200 ? mirror_bits(byte) : byte;
+  char_ram[character][scanline] =
+      trs_clones.model == EG3200 ? mirror_bits(byte) : byte;
 
   if (scanline == (m6845_raster - 1)) {
     bitmap_char(character, 1);
 
-    if (eg3200)
+    if (trs_clones.model == EG3200)
       trs_screen_refresh();
   }
 }

@@ -234,7 +234,7 @@ void z80_out(int port, int value)
             m6845_crtc(value);
             break;
           case 0xFA:
-            eg3200 = value;
+            eg3200_bank_out(value);
             break;
           case 0xFD:
             trs_printer_write(value);
