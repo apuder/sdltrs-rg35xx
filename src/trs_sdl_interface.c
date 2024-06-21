@@ -529,7 +529,6 @@ void trs_screen_reset(void)
 {
   currentmode = NORMAL;
   hrg_enable = 0;
-  genie3s = 0;
   grafyx_enable = 0;
   grafyx_mode = 0;
   grafyx_overlay = 0;
@@ -733,8 +732,7 @@ void trs_screen_init(int resize)
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
 
   BlitMap(image->format->palette, screen->format);
-
-  bitmap_init(genie3s);
+  bitmap_init(trs_clones.model == GENIE3S);
   trs_screen_refresh();
 }
 
@@ -2198,7 +2196,7 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
   if (expanded)
     srcRect.w *= 2;
 
-  if (genie3s) {
+  if (trs_clones.model == GENIE3S) {
     SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
   } else {
     if (trs_model == 1 && (trs_clones.model & (CT80 | EG3200)) == 0) {

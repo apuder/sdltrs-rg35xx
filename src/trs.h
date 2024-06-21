@@ -67,7 +67,6 @@ extern char trs_config_file[];
 extern char trs_state_file[];
 
 extern int trs_model; /* 1, 3, 4, 5(=4p) */
-extern int genie3s;   /* TCS Genie IIIs */
 extern int foreground;
 extern int background;
 extern int gui_foreground;
@@ -208,6 +207,7 @@ extern int stringy;
 
 extern void  eg3200_bank_out(int value);
 extern void  eg3200_init_out(int value);
+extern int   genie3s_bank_in(void);
 extern void  genie3s_bank_out(int value);
 extern void  genie3s_init_out(int value);
 extern void  genie3s_sys_out(int value);

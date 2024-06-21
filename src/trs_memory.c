@@ -79,7 +79,6 @@
 int lowercase = 1;
 int trs_model = 1;
 int trs_rom_size;
-int genie3s;  /* TCS Genie IIIs */
 int huffman;  /* Dave Huffman (4/4P) */
 int hypermem; /* Anitek HyperMem (4/4P) */
 int lubomir;  /* Lubomir Soft Banker */
@@ -105,6 +104,7 @@ static int supermem_base;
 static Uint32 supermem_hi;
 static int selector_reg;
 static int sys_byte;
+static int genie3s; /* TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -355,6 +355,11 @@ void eg64_mba_out(int value)
 	memory_map = 0x21;
 }
 
+int genie3s_bank_in(void)
+{
+	return genie3s;
+}
+
 void genie3s_bank_out(int value)
 {
 	if (value == genie3s)
@@ -504,7 +509,7 @@ void trs_reset(int poweron)
     trs_cancel_event();
     trs_timer_interrupt(0);
 
-    if (poweron || genie3s || trs_model >= 4) {
+    if (poweron || trs_model >= 4 || trs_clones.model == GENIE3S) {
 	if (poweron || trs_model >= 4)
 		mem_init();
 	trs_rom_init();

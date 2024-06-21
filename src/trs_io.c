@@ -127,7 +127,7 @@ static void m6845_crtc(int value)
       return;
     case 0x0D: /* Start Address MSB */
       start_addr = ((value & 0xFF) << 0) | (start_addr & 0xFF00);
-      if (genie3s)
+      if (trs_clones.model == GENIE3S)
         mem_video_page(1024 - start_addr);
       return;
     case 0x0E: /* Cursor LSB */
@@ -293,7 +293,7 @@ void z80_out(int port, int value)
             m6845_crtc(value);
             break;
           case 0xF9:
-            genie3s_bank_out(0x100 | value);
+            genie3s_bank_out(value);
             break;
           case 0xFA:
             genie3s_sys_out(value);
@@ -738,7 +738,7 @@ int z80_in(int port)
             }
             break;
           case 0xF9:
-            value = genie3s & 0xFF;
+            value = genie3s_bank_in();
             break;
           case 0xFA:
             value = sys_byte_in();
