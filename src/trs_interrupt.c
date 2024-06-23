@@ -121,7 +121,8 @@ float clock_mhz_4 = CLOCK_4_MHZ;
 #define NEWDOS3_MIN                 0x42cd
 #define NEWDOS3_SEC                 0x42cc
 
-static Uint32 deltatime = 25;
+static Uint32 deltatime1;
+static Uint32 deltatime2;
 static int timer_on = 1;
 #ifdef IDEBUG
 static long lost_timer_interrupts;
@@ -399,14 +400,15 @@ void trs_timer_sync_with_host(void)
 {
   static Uint32 lasttime;
   Uint32 curtime = SDL_GetTicks();
+  Uint32 deltime = z80_state.keypress ? deltatime1 : deltatime2;
 
-  if (lasttime + deltatime > curtime)
-    SDL_Delay(lasttime + deltatime - curtime);
+  if (lasttime + deltime > curtime)
+    SDL_Delay(lasttime + deltime - curtime);
 
   curtime = SDL_GetTicks();
 
-  lasttime += deltatime;
-  if ((lasttime + deltatime) < curtime)
+  lasttime += deltime;
+  if ((lasttime + deltime) < curtime)
     lasttime = curtime;
 
   if (trs_show_led) {
@@ -588,12 +590,14 @@ trs_timer_speed(int fast)
 void
 trs_timer_mode(int mode)
 {
-  if (mode != -1) {
+  if (mode >= 0) {
     timer_overclock = mode;
+    deltatime1 = 1000 / timer_hz;
+
     if (timer_overclock)
-      deltatime = 1000 / (timer_overclock_rate * timer_hz);
+      deltatime2 = 1000 / (timer_overclock_rate * timer_hz);
     else
-      deltatime = 1000 / timer_hz;
+      deltatime2 = deltatime1;
 
     if (trs_show_led)
       trs_turbo_led();

@@ -132,6 +132,9 @@ struct z80_state_struct
      */
     int nmi, nmi_seen;
 
+    /* Disable turbo while any keys are pressed */
+    int keypress;
+
     /* Cyclic T-state counter */
     tstate_t t_count;
 

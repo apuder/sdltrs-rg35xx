@@ -500,6 +500,7 @@ static KeyTable ascii_key_table[] = {
 static int keystate[9];
 static int force_shift = TK_Neutral;
 static int joystate;
+static int keys_down;
 static int key_heartbeat;
 int trs_joystick;
 int trs_keypad_joystick = 1;
@@ -738,6 +739,7 @@ void trs_xlate_keysym(int keysym)
 
 static void change_keystate(int action)
 {
+  int key_down, was_down;
   int i;
 #ifdef KBDEBUG
   debug("change_keystate: action 0x%X\n", action);
@@ -750,6 +752,8 @@ static void change_keystate(int action)
         keystate[i] = 0;
       }
       force_shift = TK_Neutral;
+      keys_down = 0;
+      z80_state.keypress = 0;
       break;
 
     case TK_Neutral:
@@ -760,10 +764,17 @@ static void change_keystate(int action)
       break;
 
     default:
-      if (TK_DOWN(action)) {
-        keystate[TK_ADDR(action)] |= (1 << TK_DATA(action));
-      } else {
-        keystate[TK_ADDR(action)] &= ~(1 << TK_DATA(action));
+      key_down = TK_DOWN(action);
+      was_down = (keystate[TK_ADDR(action)] & (1 << TK_DATA(action))) != 0;
+      if (key_down != was_down) {
+        if (key_down) {
+          keystate[TK_ADDR(action)] |= (1 << TK_DATA(action));
+          keys_down++;
+        } else {
+          keystate[TK_ADDR(action)] &= ~(1 << TK_DATA(action));
+          keys_down--;
+        }
+        z80_state.keypress = keys_down ? timer_overclock : 0;
       }
   }
 }
