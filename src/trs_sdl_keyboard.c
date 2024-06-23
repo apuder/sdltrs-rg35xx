@@ -774,7 +774,7 @@ static void change_keystate(int action)
           keystate[TK_ADDR(action)] &= ~(1 << TK_DATA(action));
           keys_down--;
         }
-        z80_state.keypress = keys_down ? timer_overclock : 0;
+        z80_state.keypress = keys_down ? turbo_mode : 0;
       }
   }
 }

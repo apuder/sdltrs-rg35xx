@@ -562,7 +562,7 @@ void trs_screen_caption(void)
         "TRS-80 Model I", "", "TRS-80 Model III", "TRS-80 Model 4", "TRS-80 Model 4P" };
 
     snprintf(title, 79, "%s%s (%.2f MHz)%s%s",
-             timer_overclock ? "Turbo " : "",
+             turbo_mode ? "Turbo " : "",
              trs_clones.name ? trs_clones.name : trs_name[trs_model - 1],
              z80_state.clockMHz,
              trs_paused ? " PAUSED" : "",
@@ -1250,7 +1250,7 @@ void trs_get_event(int wait)
             if (SDL_GetModState() & KMOD_SHIFT)
               trs_timer_init();
             else
-              trs_timer_mode(!timer_overclock);
+              trs_timer_mode(!turbo_mode);
             continue;
           case SDLK_PAGEDOWN:
           case SDLK_PAGEUP:
@@ -1278,7 +1278,7 @@ void trs_get_event(int wait)
               break;
             case SDLK_v:
               if (turbo_paste) {
-                timer_saved = timer_overclock;
+                timer_saved = turbo_mode;
                 trs_timer_mode(1);
               }
               cycles_saved = cycles_per_timer;
@@ -1374,7 +1374,7 @@ void trs_get_event(int wait)
               gui_function(GUI);
               break;
             case SDLK_n:
-              trs_timer_mode(!timer_overclock);
+              trs_timer_mode(!turbo_mode);
               break;
             case SDLK_o:
               gui_function(OTHER);
@@ -2157,7 +2157,7 @@ void trs_turbo_led(void)
   rect.x = (OrigWidth - border_width) / 2 - 8;
   rect.y = OrigHeight - rect.h;
 
-  SDL_FillRect(screen, &rect, timer_overclock ? bright_orange : light_orange);
+  SDL_FillRect(screen, &rect, turbo_mode ? bright_orange : light_orange);
   drawnRectCount = MAX_RECTS;
 }
 

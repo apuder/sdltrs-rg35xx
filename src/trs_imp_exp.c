@@ -605,11 +605,11 @@ void do_emt_misc(void)
     break;
   case 12:
     Z80_HL = 0;
-    Z80_BC = !timer_overclock;
+    Z80_BC = !turbo_mode;
     break;
   case 13:
-    timer_overclock = !Z80_BC;
-    trs_timer_mode(timer_overclock);
+    turbo_mode = !Z80_BC;
+    trs_timer_mode(turbo_mode);
     break;
   case 14:
     Z80_HL = stretch_amount;

@@ -2853,8 +2853,8 @@ static int do_ED_instruction(void)
 	do_emt_setddir();
 	break;
       case 0x2e:        /* SSPD A (David Keil) */
-	timer_overclock = ((Z80_A & (1 << 2)) != 0);
-	trs_timer_mode(timer_overclock);
+	turbo_mode = ((Z80_A & (1 << 2)) != 0);
+	trs_timer_mode(turbo_mode);
 	break;
       case 0x2f:        /* emt_debug */
 	if (trs_continuous > 0) trs_continuous = 0;

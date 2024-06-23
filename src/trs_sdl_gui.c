@@ -2059,8 +2059,8 @@ void gui_misc_menu(void)
     snprintf(&menu[7].text[56], 5, "0x%02X", trs_uart_switches);
     snprintf(&menu[8].text[50], 11, "%s", yes_no[trs_kb_bracket_state]);
     snprintf(&menu[9].text[50], 11, "%s", yes_no[trs_sound]);
-    snprintf(&menu[10].text[50], 11, "%s", yes_no[timer_overclock]);
-    snprintf(&menu[11].text[50], 11, "%10d", timer_overclock_rate);
+    snprintf(&menu[10].text[50], 11, "%s", yes_no[turbo_mode]);
+    snprintf(&menu[11].text[50], 11, "%10d", turbo_rate);
     snprintf(&menu[12].text[50], 11, "%s", yes_no[turbo_paste]);
     gui_clear();
 
@@ -2122,17 +2122,17 @@ void gui_misc_menu(void)
         trs_screen_caption();
         break;
       case 10:
-        timer_overclock = gui_popup("Turbo", yes_no, 2, timer_overclock);
-        trs_timer_mode(timer_overclock);
+        turbo_mode = gui_popup("Turbo", yes_no, 2, turbo_mode);
+        trs_timer_mode(turbo_mode);
         break;
       case 11:
-        snprintf(input, 11, "%d", timer_overclock_rate);
+        snprintf(input, 11, "%d", turbo_rate);
         if (gui_input("Enter Turbo Rate Multiplier",
             input, input, 10, 0) > 0) {
-          timer_overclock_rate = atoi(input);
-          if (timer_overclock_rate <= 0)
-            timer_overclock_rate = 1;
-          trs_timer_mode(timer_overclock);
+          turbo_rate = atoi(input);
+          if (turbo_rate <= 0)
+            turbo_rate = 1;
+          trs_timer_mode(turbo_mode);
         }
         break;
       case 12:

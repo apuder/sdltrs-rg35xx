@@ -61,8 +61,8 @@ static Uint8 nmi_mask = M3_RESET_BIT;
 #define TIMER_HZ_3 30
 #define TIMER_HZ_4 60
 int timer_hz = TIMER_HZ_1;
-int timer_overclock;
-int timer_overclock_rate = 5;
+int turbo_mode;
+int turbo_rate = 5;
 int speedup = 1;
 unsigned int cycles_per_timer;
 
@@ -458,7 +458,7 @@ trs_timer_init(void)
 
   trs_inityear();
   trs_timer_event();
-  trs_timer_mode(timer_overclock);
+  trs_timer_mode(turbo_mode);
 
   if ((trs_clones.model & (EG3200 | GENIE3S)) == 0) {
     /* Also initialize the clock in memory - hack */
@@ -591,11 +591,11 @@ void
 trs_timer_mode(int mode)
 {
   if (mode >= 0) {
-    timer_overclock = mode;
+    turbo_mode = mode;
     deltatime1 = 1000 / timer_hz;
 
-    if (timer_overclock)
-      deltatime2 = 1000 / (timer_overclock_rate * timer_hz);
+    if (turbo_mode)
+      deltatime2 = 1000 / (turbo_rate * timer_hz);
     else
       deltatime2 = deltatime1;
 

@@ -259,8 +259,8 @@ extern void trs_get_mouse_max(int *x, int *y, unsigned int *sens);
 extern void trs_set_mouse_max(int x, int y, unsigned int sens);
 
 extern int timer_hz;
-extern int timer_overclock_rate;
-extern int timer_overclock;
+extern int turbo_rate;
+extern int turbo_mode;
 extern int speedup;
 extern float clock_mhz_1;
 extern float clock_mhz_3;

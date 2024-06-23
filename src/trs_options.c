@@ -287,7 +287,7 @@ static const struct {
   { "nosuper",         opt_value,         0, 0, &supermem             },
   { "nosupermem",      opt_value,         0, 0, &supermem             },
   { "notruedam",       opt_value,         0, 0, &trs_disk_truedam     },
-  { "noturbo",         opt_value,         0, 0, &timer_overclock      },
+  { "noturbo",         opt_value,         0, 0, &turbo_mode           },
   { "pause",           opt_value,         0, 1, &trs_paused           },
   { "printer",         opt_printer,       1, 0, NULL                  },
   { "printerdir",      opt_dirname,       1, 0, trs_printer_dir       },
@@ -327,7 +327,7 @@ static const struct {
   { "switches",        opt_switches,      1, 0, &trs_uart_switches    },
   { "tr",              opt_intval,        1, 6, NULL                  },
   { "truedam",         opt_value,         0, 1, &trs_disk_truedam     },
-  { "turbo",           opt_value,         0, 1, &timer_overclock      },
+  { "turbo",           opt_value,         0, 1, &turbo_mode           },
   { "turbopaste",      opt_value,         0, 1, &turbo_paste          },
   { "noturbopaste",    opt_value,         0, 0, &turbo_paste          },
   { "turborate",       opt_intval,        1, 6, NULL                  },
@@ -622,7 +622,7 @@ static void opt_intval(char *arg, int intarg, int *stringarg)
       if (value <= 0)
         value = 1;
 
-      timer_overclock_rate = value;
+      turbo_rate = value;
       break;
     case 7: /* year */
       if (value >= 0)
@@ -928,8 +928,8 @@ int trs_load_config_file(void)
   sprintf(trs_state_dir, "%c%c", '.', DIR_SLASH);
   stretch_amount = STRETCH_AMOUNT;
   supermem = 0;
-  timer_overclock = 0;
-  timer_overclock_rate = 5;
+  turbo_mode = 0;
+  turbo_rate = 5;
   trs_charset1 = 3;
   trs_charset3 = 4;
   trs_charset4 = 8;
@@ -1178,9 +1178,9 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%ssupermem\n", option(supermem));
   fprintf(config_file, "switches=0x%x\n", trs_uart_switches);
   fprintf(config_file, "%struedam\n", option(trs_disk_truedam));
-  fprintf(config_file, "%sturbo\n", option(timer_overclock));
+  fprintf(config_file, "%sturbo\n", option(turbo_mode));
   fprintf(config_file, "%sturbopaste\n", option(turbo_paste));
-  fprintf(config_file, "turborate=%d\n", timer_overclock_rate);
+  fprintf(config_file, "turborate=%d\n", turbo_rate);
 
   for (i = 0; i < 8; i++)
     fprintf(config_file, "wafer%d=%s\n", i, stringy_get_name(i));
