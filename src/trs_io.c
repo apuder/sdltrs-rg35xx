@@ -462,15 +462,19 @@ void z80_out(int port, int value)
       trs_orch90_out(1, value);
       return;
     case 0x80:
+      if (trs_model == 3 && grafyx_microlabs) return;
       grafyx_write_x(value);
       return;
     case 0x81:
+      if (trs_model == 3 && grafyx_microlabs) return;
       grafyx_write_y(value);
       return;
     case 0x82:
+      if (trs_model == 3 && grafyx_microlabs) return;
       grafyx_write_data(value);
       return;
     case 0x83:
+      if (trs_model == 3 && grafyx_microlabs) return;
       grafyx_write_mode(value);
       return;
     case 0x84:
