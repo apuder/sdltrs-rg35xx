@@ -318,329 +318,329 @@ void z80_out(int port, int value)
       default:
         /* Next, Model I only */
         switch (port) {
-        case 0x00: /* HRG off */
-        case 0x01: /* HRG on */
-          hrg_onoff(port);
-          return;
-        case 0x02: /* HRG write address low byte */
-          hrg_write_addr(value, 0xFF);
-          return;
-        case 0x03: /* HRG write address high byte */
-          hrg_write_addr(value << 8, 0x3F00);
-          return;
-        case 0x05: /* HRG write data byte */
-          hrg_write_data(value);
-          return;
-          /* Selector doesn't decode A5 */
-        case 0x1F:
-        case 0x3F:
-          if (selector)
-            mem_bank_base(SELECTOR, value);
-          return;
-        case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-          if (speedup == 7)
-            mem_bank_base(RAM192B, value);
-          return;
-        case 0xB5: /* Orchestra-85 right channel */
-          trs_orch90_out(2, value);
-          return;
-        case 0xB9: /* Orchestra-85 left channel */
-          trs_orch90_out(1, value);
-          return;
-        case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
-          if (lubomir)
-            lsb_bank_out(value);
-          return;
-        case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
-        case 0x10: /* Homebrew 80*22 SYS80.SYS */
-          if (speedup <= 4)
-            ctrlimage = value;
-          return;
-        case 0xD1: /* Schmidtke 80-Z Card: 6845 CRTC */
-        case 0x11: /* Homebrew 80*22 SYS80.SYS */
-          if (speedup <= 4)
-            m6845_crtc(value);
-          return;
-        case 0xD2: /* Schmidtke 80-Z Card: Banking */
-          if (speedup <= 4)
-            s80z_out(value);
-          return;
-        case 0xDF:
-          if (speedup <= 3 && lubomir == 0)
-            eg64_mba_out(value);
-          return;
-        case 0xEC:
-          if (lowe_le18)
-            lowe_le18_write_data(value);
-          else if (speedup == 3) /* Seatronics Super Speed-Up */
-            trs_timer_speed(value);
-          return;
-        case 0xED:
-          lowe_le18_write_x(value);
-          return;
-        case 0xEE:
-          lowe_le18_write_y(value);
-          return;
-        case 0xEF:
-          lowe_le18_write_control(value);
-          return;
-        case 0xF0:
-        case 0xF1:
-        case 0xF2:
-        case 0xF3:
-        case 0xF4:
-        case 0xF5:
-        case 0xF6:
-        case 0xF7:
-          if (stringy)
-            stringy_out(port & 7, value);
-          return;
-        case 0xF9:
-          if (speedup < 4 && trs_rom_size <= 0x2000)
-            genie3s_init_out(value);
-          return;
-        case 0xFA:
-          if (speedup < 4 && trs_rom_size <= 0x2000)
-            eg3200_init_out(value);
-          return;
-        case 0xFC:
-          if (speedup == 5) /* 6845 CRTC Aster CT-80 */
-            ctrlimage = value;
-          return;
-        case 0xFD:
-          if (speedup == 5) /* 6845 CRTC Aster CT-80 */
-            m6845_crtc(value);
-          else
-            /* Printer port of EACA Genie/System 80 */
-            trs_printer_write(value);
-          return;
-        case 0xFE:
-          /* Speedup kit or Banking/LNW80/TCS Genie IIs and SpeedMaster */
-          if (speedup) {
-            if (speedup < 4)
+          case 0x00: /* HRG off */
+          case 0x01: /* HRG on */
+            hrg_onoff(port);
+            return;
+          case 0x02: /* HRG write address low byte */
+            hrg_write_addr(value, 0xFF);
+            return;
+          case 0x03: /* HRG write address high byte */
+            hrg_write_addr(value << 8, 0x3F00);
+            return;
+          case 0x05: /* HRG write data byte */
+            hrg_write_data(value);
+            return;
+            /* Selector doesn't decode A5 */
+          case 0x1F:
+          case 0x3F:
+            if (selector)
+              mem_bank_base(SELECTOR, value);
+            return;
+          case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
+            if (speedup == 7)
+              mem_bank_base(RAM192B, value);
+            return;
+          case 0xB5: /* Orchestra-85 right channel */
+            trs_orch90_out(2, value);
+            return;
+          case 0xB9: /* Orchestra-85 left channel */
+            trs_orch90_out(1, value);
+            return;
+          case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
+            if (lubomir)
+              lsb_bank_out(value);
+            return;
+          case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
+          case 0x10: /* Homebrew 80*22 SYS80.SYS */
+            if (speedup <= 4)
+              ctrlimage = value;
+            return;
+          case 0xD1: /* Schmidtke 80-Z Card: 6845 CRTC */
+          case 0x11: /* Homebrew 80*22 SYS80.SYS */
+            if (speedup <= 4)
+              m6845_crtc(value);
+            return;
+          case 0xD2: /* Schmidtke 80-Z Card: Banking */
+            if (speedup <= 4)
+              s80z_out(value);
+            return;
+          case 0xDF:
+            if (speedup <= 3 && lubomir == 0)
+              eg64_mba_out(value);
+            return;
+          case 0xEC:
+            if (lowe_le18)
+              lowe_le18_write_data(value);
+            else if (speedup == 3) /* Seatronics Super Speed-Up */
               trs_timer_speed(value);
+            return;
+          case 0xED:
+            lowe_le18_write_x(value);
+            return;
+          case 0xEE:
+            lowe_le18_write_y(value);
+            return;
+          case 0xEF:
+            lowe_le18_write_control(value);
+            return;
+          case 0xF0:
+          case 0xF1:
+          case 0xF2:
+          case 0xF3:
+          case 0xF4:
+          case 0xF5:
+          case 0xF6:
+          case 0xF7:
+            if (stringy)
+              stringy_out(port & 7, value);
+            return;
+          case 0xF9:
+            if (speedup < 4 && trs_rom_size <= 0x2000)
+              genie3s_init_out(value);
+            return;
+          case 0xFA:
+            if (speedup < 4 && trs_rom_size <= 0x2000)
+              eg3200_init_out(value);
+            return;
+          case 0xFC:
+            if (speedup == 5) /* 6845 CRTC Aster CT-80 */
+              ctrlimage = value;
+            return;
+          case 0xFD:
+            if (speedup == 5) /* 6845 CRTC Aster CT-80 */
+              m6845_crtc(value);
             else
-              sys_byte_out(value);
-          }
-          return;
-        case 0xFF:
-          /* screen mode select is on D3 line */
-          modesel = (value >> 3) & 1;
-          trs_screen_expanded(modesel);
-          /* do cassette emulation */
-          trs_cassette_motor((value >> 2) & 1);
-          trs_cassette_out(value & 0x3);
-          /* Lubomir Bits 7 - 5 for EG 64.1 */
-          if (lubomir)
-            lsb_bank_out(value & 0xE0);
-          return;
-        default:
-          break;
+              /* Printer port of EACA Genie/System 80 */
+              trs_printer_write(value);
+            return;
+          case 0xFE:
+            /* Speedup kit or Banking/LNW80/TCS Genie IIs and SpeedMaster */
+            if (speedup) {
+              if (speedup < 4)
+                trs_timer_speed(value);
+              else
+                sys_byte_out(value);
+            }
+            return;
+          case 0xFF:
+            /* screen mode select is on D3 line */
+            modesel = (value >> 3) & 1;
+            trs_screen_expanded(modesel);
+            /* do cassette emulation */
+            trs_cassette_motor((value >> 2) & 1);
+            trs_cassette_out(value & 0x3);
+            /* Lubomir Bits 7 - 5 for EG 64.1 */
+            if (lubomir)
+              lsb_bank_out(value & 0xE0);
+            return;
+          default:
+            break;
         }
     }
 
   } else {
     /* Next, Models III/4/4P only */
     switch (port) {
-    case 0x50: /* MegaMem memory slot */
-    case 0x51:
-    case 0x52:
-    case 0x60:
-    case 0x61:
-    case 0x62:
-      if (megamem)
-        megamem_out(port & 0x0F, value);
-      return;
-    case 0x5f: /* Sprinter III */
-      if (trs_model == 3)
-        trs_timer_speed(value);
-      return;
-    case 0x75: /* Orchestra-90 right channel */
-      trs_orch90_out(2, value);
-      return;
-    case 0x79: /* Orchestra-90 left channel */
-      trs_orch90_out(1, value);
-      return;
-    case 0x80:
-      if (trs_model == 3 && grafyx_microlabs) return;
-      grafyx_write_x(value);
-      return;
-    case 0x81:
-      if (trs_model == 3 && grafyx_microlabs) return;
-      grafyx_write_y(value);
-      return;
-    case 0x82:
-      if (trs_model == 3 && grafyx_microlabs) return;
-      grafyx_write_data(value);
-      return;
-    case 0x83:
-      if (trs_model == 3 && grafyx_microlabs) return;
-      grafyx_write_mode(value);
-      return;
-    case 0x84:
-    case 0x85:
-    case 0x86:
-    case 0x87:
-      if (trs_model >= 4) {
-	int const changes = value ^ ctrlimage;
+      case 0x50: /* MegaMem memory slot */
+      case 0x51:
+      case 0x52:
+      case 0x60:
+      case 0x61:
+      case 0x62:
+        if (megamem)
+          megamem_out(port & 0x0F, value);
+        return;
+      case 0x5f: /* Sprinter III */
+        if (trs_model == 3)
+          trs_timer_speed(value);
+        return;
+      case 0x75: /* Orchestra-90 right channel */
+        trs_orch90_out(2, value);
+        return;
+      case 0x79: /* Orchestra-90 left channel */
+        trs_orch90_out(1, value);
+        return;
+      case 0x80:
+        if (trs_model == 3 && grafyx_microlabs) return;
+        grafyx_write_x(value);
+        return;
+      case 0x81:
+        if (trs_model == 3 && grafyx_microlabs) return;
+        grafyx_write_y(value);
+        return;
+      case 0x82:
+        if (trs_model == 3 && grafyx_microlabs) return;
+        grafyx_write_data(value);
+        return;
+      case 0x83:
+        if (trs_model == 3 && grafyx_microlabs) return;
+        grafyx_write_mode(value);
+        return;
+      case 0x84:
+      case 0x85:
+      case 0x86:
+      case 0x87:
+        if (trs_model >= 4) {
+          int const changes = value ^ ctrlimage;
 
-	if (changes & 0x80)
-	  mem_video_page((value & 0x80) ? 1024 : 0);
+          if (changes & 0x80)
+            mem_video_page((value & 0x80) ? 1024 : 0);
 
-	if (changes & 0x70)
-	  mem_bank((value & 0x70) >> 4);
+          if (changes & 0x70)
+            mem_bank((value & 0x70) >> 4);
 
-	if (changes & 0x08)
-	  trs_screen_inverse((value & 0x08) >> 3);
+          if (changes & 0x08)
+            trs_screen_inverse((value & 0x08) >> 3);
 
-	if (changes & 0x04)
-	  trs_screen_80x24((value & 0x04) >> 2);
+          if (changes & 0x04)
+            trs_screen_80x24((value & 0x04) >> 2);
 
-	if (changes & 0x03)
-	  mem_map(value & 0x03);
+          if (changes & 0x03)
+            mem_map(value & 0x03);
 
-	ctrlimage = value;
-      }
-      return;
-    case 0x8C:
-      if (trs_model >= 4) grafyx_write_xoffset(value);
-      return;
-    case 0x8D:
-      if (trs_model >= 4) grafyx_write_yoffset(value);
-      return;
-    case 0x8E:
-      if (trs_model >= 4) grafyx_write_overlay(value);
-      return;
-    case 0x90:
-      /* HyperMem uses bits 4-1 of this port, 0 is the existing
-         sound */
-      if (trs_model >= 4 && hypermem)
-        mem_bank_base(HYPERMEM, value);
-      /* Fall through - we affect the sound as well */
-    case 0x91:
-    case 0x92:
-    case 0x93:
-      trs_sound_out(value & 1);
-      return;
-    case 0x94:			/* Huffman memory expansion */
-      if (trs_model >= 4 && huffman)
-        mem_bank_base(HUFFMAN, value);
-      return;
-    case 0x9C:
-    case 0x9D:
-    case 0x9E:
-    case 0x9F:
-      if (trs_model == 5 /*4p*/)
-	mem_romin(value);
-      return;
-    case 0xE0:
-    case 0xE1:
-    case 0xE2:
-    case 0xE3:
-      trs_interrupt_mask_write(value);
-      return;
-    case TRSDISK3_INTERRUPT: /* 0xE4 */
-    case 0xE5:
-    case 0xE7:
-      trs_nmi_mask_write(value);
-      return;
-    case 0xE6:
-      /* RTC of Holmes FDC DX-3D board */
-      if (trs_model == 3)
-        rtc_reg = value >> 4;
-      else
+          ctrlimage = value;
+        }
+        return;
+      case 0x8C:
+        if (trs_model >= 4) grafyx_write_xoffset(value);
+        return;
+      case 0x8D:
+        if (trs_model >= 4) grafyx_write_yoffset(value);
+        return;
+      case 0x8E:
+        if (trs_model >= 4) grafyx_write_overlay(value);
+        return;
+      case 0x90:
+        /* HyperMem uses bits 4-1 of this port, 0 is the existing
+           sound */
+        if (trs_model >= 4 && hypermem)
+          mem_bank_base(HYPERMEM, value);
+        /* Fall through - we affect the sound as well */
+      case 0x91:
+      case 0x92:
+      case 0x93:
+        trs_sound_out(value & 1);
+        return;
+      case 0x94: /* Huffman memory expansion */
+        if (trs_model >= 4 && huffman)
+          mem_bank_base(HUFFMAN, value);
+        return;
+      case 0x9C:
+      case 0x9D:
+      case 0x9E:
+      case 0x9F:
+        if (trs_model == 5 /*4p*/)
+          mem_romin(value);
+        return;
+      case 0xE0:
+      case 0xE1:
+      case 0xE2:
+      case 0xE3:
+        trs_interrupt_mask_write(value);
+        return;
+      case TRSDISK3_INTERRUPT: /* 0xE4 */
+      case 0xE5:
+      case 0xE7:
         trs_nmi_mask_write(value);
-      return;
-    case 0xEC:
-    case 0xED:
-    case 0xEE:
-    case 0xEF:
-      modeimage = value;
-      /* cassette motor is on D1 */
-      trs_cassette_motor((modeimage & 0x02) >> 1);
-      /* screen mode select is on D2 */
-      trs_screen_expanded((modeimage & 0x04) >> 2);
-      /* alternate char set is on D3 */
-      trs_screen_alternate(!((modeimage & 0x08) >> 3));
-      /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
-      if (trs_model == 3) {
-        if (speedup == 2 || trs_clones.model == CP500_M80)
-          return;
-      }
-      /* clock speed is on D6; it affects timer HZ too */
-      trs_timer_speed(modeimage & 0xC0); /* D6/D7 for Seatronic */
-      return;
-    case TRSDISK3_COMMAND: /* 0xF0 */
-      trs_disk_command_write(value);
-      return;
-    case TRSDISK3_TRACK: /* 0xF1 */
-      trs_disk_track_write(value);
-      return;
-    case TRSDISK3_SECTOR: /* 0xF2 */
-      trs_disk_sector_write(value);
-      return;
-    case TRSDISK3_DATA: /* 0xF3 */
-      trs_disk_data_write(value);
-      return;
-    case TRSDISK3_SELECT: /* 0xF4 */
-    case 0xF5:
-    case 0xF6:
-    case 0xF7:
-      /* This should cause a 1-2us wait in T states... */
-      trs_disk_select_write(value);
-      return;
-    case 0xF8:
-    case 0xF9:
-    case 0xFA:
-    case 0xFB:
-      trs_printer_write(value);
-      return;
-    case 0xFC:
-    case 0xFD:
-    case 0xFE:
-    case 0xFF:
-      if (trs_model == 3 && (value & 0x20) && grafyx_microlabs)
-	/* do Model III Micro-Labs graphics card */
-	grafyx_m3_write_mode(value);
-      else
-	/* do cassette emulation */
-	trs_cassette_out(value & 3);
-      return;
-    default:
-      break;
+        return;
+      case 0xE6:
+        /* RTC of Holmes FDC DX-3D board */
+        if (trs_model == 3)
+          rtc_reg = value >> 4;
+        else
+          trs_nmi_mask_write(value);
+        return;
+      case 0xEC:
+      case 0xED:
+      case 0xEE:
+      case 0xEF:
+        modeimage = value;
+        /* cassette motor is on D1 */
+        trs_cassette_motor((modeimage & 0x02) >> 1);
+        /* screen mode select is on D2 */
+        trs_screen_expanded((modeimage & 0x04) >> 2);
+        /* alternate char set is on D3 */
+        trs_screen_alternate(!((modeimage & 0x08) >> 3));
+        /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
+        if (trs_model == 3) {
+          if (speedup == 2 || trs_clones.model == CP500_M80)
+            return;
+        }
+        /* clock speed is on D6; it affects timer HZ too */
+        trs_timer_speed(modeimage & 0xC0); /* D6/D7 for Seatronic */
+        return;
+      case TRSDISK3_COMMAND: /* 0xF0 */
+        trs_disk_command_write(value);
+        return;
+      case TRSDISK3_TRACK: /* 0xF1 */
+        trs_disk_track_write(value);
+        return;
+      case TRSDISK3_SECTOR: /* 0xF2 */
+        trs_disk_sector_write(value);
+        return;
+      case TRSDISK3_DATA: /* 0xF3 */
+        trs_disk_data_write(value);
+        return;
+      case TRSDISK3_SELECT: /* 0xF4 */
+      case 0xF5:
+      case 0xF6:
+      case 0xF7:
+        /* This should cause a 1-2us wait in T states... */
+        trs_disk_select_write(value);
+        return;
+      case 0xF8:
+      case 0xF9:
+      case 0xFA:
+      case 0xFB:
+        trs_printer_write(value);
+        return;
+      case 0xFC:
+      case 0xFD:
+      case 0xFE:
+      case 0xFF:
+        if (trs_model == 3 && (value & 0x20) && grafyx_microlabs)
+          /* do Model III Micro-Labs graphics card */
+          grafyx_m3_write_mode(value);
+        else
+          /* do cassette emulation */
+          trs_cassette_out(value & 3);
+        return;
+      default:
+        break;
     }
   }
 
   /* Ports common to all TRS-80 models */
   switch (port) {
-  case TRS_HARD_WP:       /* 0xC0 */
-  case TRS_HARD_CONTROL:  /* 0xC1 */
-  case TRS_HARD_DATA:     /* 0xC8 */
-  case TRS_HARD_PRECOMP:  /* 0xC9 */
-  case TRS_HARD_SECCNT:   /* 0xCA */
-  case TRS_HARD_SECNUM:   /* 0xCB */
-  case TRS_HARD_CYLLO:    /* 0xCC */
-  case TRS_HARD_CYLHI:    /* 0xCD */
-  case TRS_HARD_SDH:      /* 0xCE */
-  case TRS_HARD_COMMAND:  /* 0xCF */
-    trs_hard_out(port, value);
-    break;
-  case TRS_UART_RESET:    /* 0xE8 */
-    trs_uart_reset_out();
-    break;
-  case TRS_UART_BAUD:     /* 0xE9 */
-    trs_uart_baud_out(value);
-    break;
-  case TRS_UART_CONTROL:  /* 0xEA */
-    trs_uart_control_out(value);
-    break;
-  case TRS_UART_DATA:     /* 0xEB */
-    trs_uart_data_out(value);
-    break;
-  case 0x43: /* Alpha Technologies SuperMem */
-    if (supermem)
-      mem_bank_base(SUPERMEM, value);
-    break;
+    case TRS_HARD_WP:       /* 0xC0 */
+    case TRS_HARD_CONTROL:  /* 0xC1 */
+    case TRS_HARD_DATA:     /* 0xC8 */
+    case TRS_HARD_PRECOMP:  /* 0xC9 */
+    case TRS_HARD_SECCNT:   /* 0xCA */
+    case TRS_HARD_SECNUM:   /* 0xCB */
+    case TRS_HARD_CYLLO:    /* 0xCC */
+    case TRS_HARD_CYLHI:    /* 0xCD */
+    case TRS_HARD_SDH:      /* 0xCE */
+    case TRS_HARD_COMMAND:  /* 0xCF */
+      trs_hard_out(port, value);
+      break;
+    case TRS_UART_RESET:    /* 0xE8 */
+      trs_uart_reset_out();
+      break;
+    case TRS_UART_BAUD:     /* 0xE9 */
+      trs_uart_baud_out(value);
+      break;
+    case TRS_UART_CONTROL:  /* 0xEA */
+      trs_uart_control_out(value);
+      break;
+    case TRS_UART_DATA:     /* 0xEB */
+      trs_uart_data_out(value);
+      break;
+    case 0x43: /* Alpha Technologies SuperMem */
+      if (supermem)
+        mem_bank_base(SUPERMEM, value);
+      break;
   }
 }
 
@@ -766,146 +766,146 @@ int z80_in(int port)
         /* Model I only */
         switch (port) {
 #if 0 /* Conflicts with joystick port */
-        case 0x00: /* HRG off (undocumented) */
+          case 0x00: /* HRG off (undocumented) */
 #endif
-        case 0x01: /* HRG on (undocumented) */
-          hrg_onoff(port);
-          goto done;
-        case 0x04: /* HRG read data byte */
-          value = hrg_read_data();
-          goto done;
-        case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-          if (speedup == 7)
-            value = mem_read_bank_base(RAM192B);
-          goto done;
-        case 0xDF:
-          if (speedup <= 3 && lubomir == 0) {
-            eg64_mba_out(7);
-            value = 0;
-          }
-          goto done;
-        case 0xEC:
-          value = lowe_le18_read();
-          goto done;
-        case 0xF0:
-        case 0xF1:
-        case 0xF2:
-        case 0xF3:
-        case 0xF4:
-        case 0xF5:
-        case 0xF6:
-        case 0xF7:
-          if (stringy)
-            value = stringy_in(port & 7);
-          goto done;
-        case 0xFD:
-          /* GENIE location of printer port */
-          value = trs_printer_read();
-          goto done;
-        case 0xFE:
-          if (speedup >= 4)
-            value = sys_byte_in();
-          goto done;
-        case 0xFF:
-          value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
-          goto done;
+          case 0x01: /* HRG on (undocumented) */
+            hrg_onoff(port);
+            goto done;
+          case 0x04: /* HRG read data byte */
+            value = hrg_read_data();
+            goto done;
+          case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
+            if (speedup == 7)
+              value = mem_read_bank_base(RAM192B);
+            goto done;
+          case 0xDF:
+            if (speedup <= 3 && lubomir == 0) {
+              eg64_mba_out(7);
+              value = 0;
+            }
+            goto done;
+          case 0xEC:
+            value = lowe_le18_read();
+            goto done;
+          case 0xF0:
+          case 0xF1:
+          case 0xF2:
+          case 0xF3:
+          case 0xF4:
+          case 0xF5:
+          case 0xF6:
+          case 0xF7:
+            if (stringy)
+              value = stringy_in(port & 7);
+            goto done;
+          case 0xFD:
+            /* GENIE location of printer port */
+            value = trs_printer_read();
+            goto done;
+          case 0xFE:
+            if (speedup >= 4)
+              value = sys_byte_in();
+            goto done;
+          case 0xFF:
+            value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
+            goto done;
         }
     }
 
   } else {
     /* Models III/4/4P only */
     switch (port) {
-    case 0x82:
-      value = grafyx_read_data();
-      goto done;
-    case 0x94: /* Huffman memory expansion */
-      if (trs_model >= 4 && huffman)
-        value = mem_read_bank_base(HUFFMAN);
-      goto done;
-    case 0xE0:
-    case 0xE1:
-    case 0xE2:
-    case 0xE3:
-      value = trs_interrupt_latch_read();
-      goto done;
-    case 0xE7:
-      /* RTC of Holmes FDC DX-3D board */
-      if (trs_model == 3)
-        value = rtc_read(rtc_reg);
-      goto done;
-    case 0xEC:
-    case 0xED:
-    case 0xEE:
-    case 0xEF:
-      trs_timer_interrupt(0); /* acknowledge */
-      value = 0xFF;
-      goto done;
-    case TRSDISK3_INTERRUPT: /* 0xE4 */
-      value = trs_nmi_latch_read();
-      goto done;
-    case TRSDISK3_STATUS: /* 0xF0 */
-      value = trs_disk_status_read();
-      goto done;
-    case TRSDISK3_TRACK: /* 0xF1 */
-      value = trs_disk_track_read();
-      goto done;
-    case TRSDISK3_SECTOR: /* 0xF2 */
-      value = trs_disk_sector_read();
-      goto done;
-    case TRSDISK3_DATA: /* 0xF3 */
-      value = trs_disk_data_read();
-      goto done;
-    case 0xF4:
-      value = cp500_switch_mode(Z80_A);
-      goto done;
-    case 0xF8:
-    case 0xF9:
-    case 0xFA:
-    case 0xFB:
-      value = trs_printer_read() | (ctrlimage & 0x0F);
-      goto done;
-    case 0xFC:
-    case 0xFD:
-    case 0xFF:
-      value = (modeimage & 0x7E) | trs_cassette_in();
-      goto done;
+      case 0x82:
+        value = grafyx_read_data();
+        goto done;
+      case 0x94: /* Huffman memory expansion */
+        if (trs_model >= 4 && huffman)
+          value = mem_read_bank_base(HUFFMAN);
+        goto done;
+      case 0xE0:
+      case 0xE1:
+      case 0xE2:
+      case 0xE3:
+        value = trs_interrupt_latch_read();
+        goto done;
+      case 0xE7:
+        /* RTC of Holmes FDC DX-3D board */
+        if (trs_model == 3)
+          value = rtc_read(rtc_reg);
+        goto done;
+      case 0xEC:
+      case 0xED:
+      case 0xEE:
+      case 0xEF:
+        trs_timer_interrupt(0); /* acknowledge */
+        value = 0xFF;
+        goto done;
+      case TRSDISK3_INTERRUPT: /* 0xE4 */
+        value = trs_nmi_latch_read();
+        goto done;
+      case TRSDISK3_STATUS: /* 0xF0 */
+        value = trs_disk_status_read();
+        goto done;
+      case TRSDISK3_TRACK: /* 0xF1 */
+        value = trs_disk_track_read();
+        goto done;
+      case TRSDISK3_SECTOR: /* 0xF2 */
+        value = trs_disk_sector_read();
+        goto done;
+      case TRSDISK3_DATA: /* 0xF3 */
+        value = trs_disk_data_read();
+        goto done;
+      case 0xF4:
+        value = cp500_switch_mode(Z80_A);
+        goto done;
+      case 0xF8:
+      case 0xF9:
+      case 0xFA:
+      case 0xFB:
+        value = trs_printer_read() | (ctrlimage & 0x0F);
+        goto done;
+      case 0xFC:
+      case 0xFD:
+      case 0xFF:
+        value = (modeimage & 0x7E) | trs_cassette_in();
+        goto done;
     }
   }
 
   /* Ports common to all TRS-80 models */
   switch (port) {
-  case 0x00:
-    value = trs_joystick_in();
-    goto done;
-  case TRS_HARD_WP:       /* 0xC0 */
-  case TRS_HARD_CONTROL:  /* 0xC1 */
-  case TRS_HARD_DATA:     /* 0xC8 */
-  case TRS_HARD_ERROR:    /* 0xC9 */
-  case TRS_HARD_SECCNT:   /* 0xCA */
-  case TRS_HARD_SECNUM:   /* 0xCB */
-  case TRS_HARD_CYLLO:    /* 0xCC */
-  case TRS_HARD_CYLHI:    /* 0xCD */
-  case TRS_HARD_SDH:      /* 0xCE */
-  case TRS_HARD_STATUS:   /* 0xCF */
-    value = trs_hard_in(port);
-    goto done;
-  case TRS_UART_MODEM:    /* 0xE8 */
-    value = trs_uart_modem_in();
-    goto done;
-  case TRS_UART_SWITCHES: /* 0xE9 */
-    value = trs_uart_switches_in();
-    goto done;
-  case TRS_UART_STATUS:   /* 0xEA */
-    value = trs_uart_status_in();
-    goto done;
-  case TRS_UART_DATA:     /* 0xEB */
-    value = trs_uart_data_in();
-    goto done;
-  case 0x43: /* Supermem memory expansion */
-    if (supermem) {
-      value = mem_read_bank_base(SUPERMEM);
+    case 0x00:
+      value = trs_joystick_in();
       goto done;
-    }
+    case TRS_HARD_WP:       /* 0xC0 */
+    case TRS_HARD_CONTROL:  /* 0xC1 */
+    case TRS_HARD_DATA:     /* 0xC8 */
+    case TRS_HARD_ERROR:    /* 0xC9 */
+    case TRS_HARD_SECCNT:   /* 0xCA */
+    case TRS_HARD_SECNUM:   /* 0xCB */
+    case TRS_HARD_CYLLO:    /* 0xCC */
+    case TRS_HARD_CYLHI:    /* 0xCD */
+    case TRS_HARD_SDH:      /* 0xCE */
+    case TRS_HARD_STATUS:   /* 0xCF */
+      value = trs_hard_in(port);
+      goto done;
+    case TRS_UART_MODEM:    /* 0xE8 */
+      value = trs_uart_modem_in();
+      goto done;
+    case TRS_UART_SWITCHES: /* 0xE9 */
+      value = trs_uart_switches_in();
+      goto done;
+    case TRS_UART_STATUS:   /* 0xEA */
+      value = trs_uart_status_in();
+      goto done;
+    case TRS_UART_DATA:     /* 0xEB */
+      value = trs_uart_data_in();
+      goto done;
+    case 0x43: /* Supermem memory expansion */
+      if (supermem) {
+        value = mem_read_bank_base(SUPERMEM);
+        goto done;
+      }
   }
 
   /* Support for a special HW real-time clock (TimeDate80?)
