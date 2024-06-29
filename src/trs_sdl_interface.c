@@ -103,7 +103,7 @@ static int mouse_last_x = -1, mouse_last_y = -1;
 static int mouse_old_style;
 static unsigned int mouse_last_buttons;
 static SDL_Surface *trs_char[6][MAX_CHARS];
-static SDL_Surface *trs_box[2][64];
+static SDL_Surface *trs_box[4][64];
 static SDL_Surface *image;
 static SDL_Surface *screen;
 static SDL_Window *window;
@@ -1741,10 +1741,8 @@ void trs_screen_inverse(int flag)
 
   if ((currentmode ^ (flag ? INVERSE : 0)) & INVERSE) {
     currentmode ^= INVERSE;
-    for (i = 0; i < screen_chars; i++) {
-      if (trs_screen[i] & 0x80)
-        trs_screen_write_char(i, trs_screen[i]);
-    }
+    for (i = 0; i < screen_chars; i++)
+      trs_screen_write_char(i, trs_screen[i]);
   }
 }
 
@@ -1952,6 +1950,8 @@ bitmap_init(int ram)
 
   boxes_init(foreground, background, char_width, height, 0);
   boxes_init(foreground, background, char_width * 2, height, 1);
+  boxes_init(background, foreground, char_width, height, 2);
+  boxes_init(background, foreground, char_width * 2, height, 3);
 }
 
 
@@ -2204,18 +2204,26 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
       if (character >= 0xc0)
         character -= 0x40;
     }
-    if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
-      SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+    if (trs_clones.model == LNW80) {
+      if (currentmode == INVERSE) expanded += 2;
+      if (character >= 0x80 && character <= 0xbf)
+        SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+      else
+        SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
     } else {
-      if (trs_model > 1 && character >= 0xc0 &&
-          (currentmode & (ALTERNATE + INVERSE)) == 0) {
-        character -= 0x40;
+      if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
+        SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+      } else {
+        if (trs_model > 1 && character >= 0xc0 &&
+            (currentmode & (ALTERNATE + INVERSE)) == 0) {
+          character -= 0x40;
+        }
+        if ((currentmode & INVERSE) && (character & 0x80)) {
+          expanded += 2;
+          character &= 0x7f;
+        }
+        SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
       }
-      if ((currentmode & INVERSE) && (character & 0x80)) {
-        expanded += 2;
-        character &= 0x7f;
-      }
-      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
     }
   }
 
