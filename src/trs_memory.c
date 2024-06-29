@@ -333,7 +333,6 @@ void eg3200_init_out(int value)
   sys_byte = value;
   trs_clones_model(EG3200);
   trs_timer_init();
-  trs_screen_inverse(0);
 }
 
 void eg64_mba_out(int value)
@@ -571,6 +570,7 @@ void trs_reset(int poweron)
     selector_reg = 0;
     sys_byte = 0;
     trs_interrupt_latch_clear();
+    trs_screen_inverse(0);
 
     switch (speedup) {
       case 5: /* Aster CT-80 */
