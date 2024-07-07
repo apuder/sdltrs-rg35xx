@@ -433,7 +433,7 @@ void sys_byte_out(int value)
         trs_timer_speed(value & (1 << 0));
       break;
     case 6: /* LNW80: HRG in low 16 kB */
-      memory_map = (value & (1 << 3)) ? 0x20 : 0x10;
+      memory_map = (value & (1 << 3)) ? 0x20 : 0x10 + (selector_reg & 0x07);
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_screen_inverse(value & 1);
       /* Fall through - HRG on/off bit is identical */
