@@ -253,7 +253,7 @@ void mem_bank_base(int card, int bits)
     case SELECTOR:
       /* Not all bits are necessarily really present but hey what
          you can't read back you can't tell */
-      selector_reg = bits;
+      selector_reg = speedup == 6 ? bits & 7 /* Modes 0-7 for LNW80 */ : bits;
       /* Always Model I */
       memory_map = 0x10 + (selector_reg & 7);
       /* 0x10 is already the default tandy map we add 11-17 in the style
