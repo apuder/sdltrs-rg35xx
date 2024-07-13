@@ -407,7 +407,7 @@ void genie3s_sys_out(int value)
 void lsb_bank_out(int value)
 {
   sys_byte = value;
-  memory_map = 0x22;
+  memory_map = sys_byte ? 0x22 : 0x10;
 }
 
 void sys_byte_out(int value)
