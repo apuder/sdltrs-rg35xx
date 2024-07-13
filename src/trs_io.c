@@ -348,7 +348,7 @@ void z80_out(int port, int value)
             return;
           case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
             if (lubomir)
-              lsb_bank_out(value);
+              mem_bank_base(LUBOMIR, value);
             return;
           case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x10: /* Homebrew 80*22 SYS80.SYS */

@@ -11,11 +11,12 @@
 #define GENIEPLUS       (1) /* EACA EG 3200 Genie III 384 KB */
 #define HUFFMAN         (2) /* Dave Huffman (and other) 2 MB (4/4P) */
 #define HYPERMEM        (3) /* Anitek HyperMem 1 MB (4/4P) */
-#define MEGAMEM         (4) /* Anitek MegaMem  3 MB (III/4/4P) */
-#define RAM192B         (5) /* TCS Genie IIs/SpeedMaster 768 KB */
-#define SELECTOR        (6) /* Selector Card for TRS-80 Model I */
-#define SUPERMEM        (7) /* Alpha Technology SuperMem 1024 KB */
-#define TCS_GENIE3S     (8) /* TCS Genie IIIs 1024 KB */
+#define LUBOMIR         (4) /* Lubomir Soft Banker TRS-80 Model I */
+#define MEGAMEM         (5) /* Anitek MegaMem  3 MB (III/4/4P) */
+#define RAM192B         (6) /* TCS Genie IIs/SpeedMaster 768 KB */
+#define SELECTOR        (7) /* Selector Card for TRS-80 Model I */
+#define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
+#define TCS_GENIE3S     (9) /* TCS Genie IIIs 1024 KB */
 
 int    trs80_model3_mem_read(int address);
 void   trs80_model3_mem_write(int address, int value);
@@ -36,7 +37,6 @@ extern void mem_romin(int state);
 extern void megamem_out(int mem_slot, Uint8 value);
 
 extern void eg64_mba_out(int value);
-extern void lsb_bank_out(int value);
 extern void s80z_out(int value);
 extern void sys_byte_out(int value);
 extern int  sys_byte_in(void);

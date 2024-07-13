@@ -243,6 +243,10 @@ void mem_bank_base(int card, int bits)
       bank_base = ((bits & 0x1E) + 2) << 15;
       mem_bank(mem_command);
       break;
+    case LUBOMIR:
+      memory_map = bits ? 0x22 : 0x10;
+      sys_byte = bits;
+      break;
     case RAM192B:
       /* TCS Genie IIs/SpeedMaster RAM 192 B */
       bank_base = ((bits & 0x0C) * 192) /* card */
@@ -402,12 +406,6 @@ void genie3s_sys_out(int value)
     trs_timer_speed((value & (1 << 2)) != 0);
 
   sys_byte = value;
-}
-
-void lsb_bank_out(int value)
-{
-  sys_byte = value;
-  memory_map = sys_byte ? 0x22 : 0x10;
 }
 
 void sys_byte_out(int value)
