@@ -101,7 +101,7 @@ static Uint32 megamem_base;
 static Uint8 mem_command;
 static int romin; /* Model 4p */
 static int supermem_base;
-static Uint32 supermem_hi;
+static Uint32 supermem_high;
 static int selector_reg;
 static int sys_byte;
 static int genie3s; /* TCS Genie IIIs */
@@ -274,7 +274,7 @@ void mem_bank_base(int card, int bits)
       supermem_base = (bits & 0x1F) << 15;
       /* The supermem can flip the low or high 32K.
          Set bit 5 to map low */
-      supermem_hi = (bits & 0x20) ? 0x0000 : 0x8000;
+      supermem_high = (bits & 0x20) ? 0x0000 : 0x8000;
       break;
     case TCS_GENIE3S:
       if (bits == mem_command)
@@ -302,7 +302,7 @@ int mem_read_bank_base(int card)
       return (mem_command);
     case SUPERMEM:
       return (supermem_base >> 15) |
-             ((supermem_hi == 0) ? 0x20 : 0);
+             ((supermem_high == 0) ? 0x20 : 0);
     default:
       /* And the HyperMem appears to be write-only */
       return 0xFF;
@@ -496,7 +496,7 @@ void trs_reset(int poweron)
   mem_command = 0;
   romin = 0;
   supermem_base = 0;
-  supermem_hi = 0x8000;
+  supermem_high = 0x8000;
   trs_emu_mouse = 0;
 
   /* Close disks opened by Z80 programs */
@@ -686,7 +686,7 @@ int mem_read(int address)
 
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
-    if (!((address ^ supermem_hi) & 0x8000))
+    if (!((address ^ supermem_high) & 0x8000))
       return memory[supermem_base + (address & 0x7FFF)];
     /* Otherwise the request comes from the system */
   }
@@ -1023,7 +1023,7 @@ void mem_write(int address, int value)
 
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
-    if (!((address ^ supermem_hi) & 0x8000)) {
+    if (!((address ^ supermem_high) & 0x8000)) {
       memory[supermem_base + (address & 0x7FFF)] = value;
       return;
     }
@@ -1380,7 +1380,7 @@ Uint8 *mem_pointer(int address, int writing)
 
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
-    if (!((address ^ supermem_hi) & 0x8000))
+    if (!((address ^ supermem_high) & 0x8000))
       return &memory[supermem_base + (address & 0x7FFF)];
     /* Otherwise the request comes from the system */
   }
@@ -1640,7 +1640,7 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &hypermem, 1);
   trs_save_int(file, &supermem, 1);
   trs_save_int(file, &supermem_base, 1);
-  trs_save_uint32(file, &supermem_hi, 1);
+  trs_save_uint32(file, &supermem_high, 1);
   trs_save_int(file, &selector, 1);
   trs_save_int(file, &selector_reg, 1);
   trs_save_int(file, &lubomir, 1);
@@ -1669,7 +1669,7 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &hypermem, 1);
   trs_load_int(file, &supermem, 1);
   trs_load_int(file, &supermem_base, 1);
-  trs_load_uint32(file, &supermem_hi, 1);
+  trs_load_uint32(file, &supermem_high, 1);
   trs_load_int(file, &selector, 1);
   trs_load_int(file, &selector_reg, 1);
   trs_load_int(file, &lubomir, 1);
