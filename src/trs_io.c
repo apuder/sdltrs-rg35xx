@@ -196,7 +196,7 @@ void z80_out(int port, int value)
       case EG3200:
         switch (port) {
           case 0x28: /* Genieplus Memory Card */
-            mem_bank_base(GENIEPLUS, value);
+            mem_card_out(GENIEPLUS, value);
             break;
           case 0x48: /* TRS_HARD_DATA */
           case 0x49: /* TRS_HARD_PRECOMP */
@@ -298,7 +298,7 @@ void z80_out(int port, int value)
             genie3s_sys_out(value);
             break;
           case 0xFB:
-            mem_bank_base(TCS_GENIE3S, value);
+            mem_card_out(TCS_GENIE3S, value);
             break;
           case 0xFD:
             trs_printer_write(value);
@@ -334,11 +334,11 @@ void z80_out(int port, int value)
           case 0x1F:
           case 0x3F:
             if (selector)
-              mem_bank_base(SELECTOR, value);
+              mem_card_out(SELECTOR, value);
             return;
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
-              mem_bank_base(RAM192B, value);
+              mem_card_out(RAM192B, value);
             return;
           case 0xB5: /* Orchestra-85 right channel */
             trs_orch90_out(2, value);
@@ -348,7 +348,7 @@ void z80_out(int port, int value)
             return;
           case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
             if (lubomir)
-              mem_bank_base(LUBOMIR, value);
+              mem_card_out(LUBOMIR, value);
             return;
           case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x10: /* Homebrew 80*22 SYS80.SYS */
@@ -511,7 +511,7 @@ void z80_out(int port, int value)
         /* HyperMem uses bits 4-1 of this port, 0 is the existing
            sound */
         if (trs_model >= 4 && hypermem)
-          mem_bank_base(HYPERMEM, value);
+          mem_card_out(HYPERMEM, value);
         /* Fall through - we affect the sound as well */
       case 0x91:
       case 0x92:
@@ -520,7 +520,7 @@ void z80_out(int port, int value)
         return;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
-          mem_bank_base(HUFFMAN, value);
+          mem_card_out(HUFFMAN, value);
         return;
       case 0x9C:
       case 0x9D:
@@ -635,7 +635,7 @@ void z80_out(int port, int value)
       break;
     case 0x43: /* Alpha Technologies SuperMem */
       if (supermem)
-        mem_bank_base(SUPERMEM, value);
+        mem_card_out(SUPERMEM, value);
       break;
   }
 }
@@ -744,7 +744,7 @@ int z80_in(int port)
             value = sys_byte_in();
             break;
           case 0xFB:
-            value = mem_read_bank_base(TCS_GENIE3S);
+            value = mem_card_in(TCS_GENIE3S);
             break;
           case 0xFD:
             value = trs_printer_read();
@@ -772,7 +772,7 @@ int z80_in(int port)
             goto done;
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
-              value = mem_read_bank_base(RAM192B);
+              value = mem_card_in(RAM192B);
             goto done;
           case 0xDF:
             if (speedup <= 3 && lubomir == 0) {
@@ -816,7 +816,7 @@ int z80_in(int port)
         goto done;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
-          value = mem_read_bank_base(HUFFMAN);
+          value = mem_card_in(HUFFMAN);
         goto done;
       case 0xE0:
       case 0xE1:
@@ -899,7 +899,7 @@ int z80_in(int port)
       goto done;
     case 0x43: /* Supermem memory expansion */
       if (supermem) {
-        value = mem_read_bank_base(SUPERMEM);
+        value = mem_card_in(SUPERMEM);
         goto done;
       }
   }

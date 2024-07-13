@@ -220,7 +220,7 @@ void mem_bank(int command)
  * must take great care.
  */
 
-void mem_bank_base(int card, int bits)
+void mem_card_out(int card, int bits)
 {
   switch (card) {
     case GENIEPLUS:
@@ -296,7 +296,7 @@ void mem_bank_base(int card, int bits)
   }
 }
 
-int mem_read_bank_base(int card)
+int mem_card_in(int card)
 {
   switch (card) {
     case HUFFMAN:
