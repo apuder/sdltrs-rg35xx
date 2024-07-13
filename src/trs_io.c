@@ -114,9 +114,8 @@ static void m6845_crtc(int value)
       break;
     case 0x0A: /* Cursor visible / Cursor Start Raster */
       cursor_vis = (value & 0x60) != 0x20;
-      cursor_csr = (value & 0x1F);
-      if (cursor_csr > cursor_cer || cursor_csr > max_raster)
-        cursor_vis = 0;
+      value &= 0x1F;
+      cursor_csr = value > max_raster ? max_raster : value;
       break;
     case 0x0B: /* Cursor End Raster */
       value &= 0x1F;
