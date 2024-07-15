@@ -490,7 +490,7 @@ static void trs_sdl_sound_update(void *userdata, Uint8 * stream, int len)
 static int
 set_audio_format(int state)
 {
-  SDL_AudioSpec desired, obtained;
+  SDL_AudioSpec desired;
 
   SDL_CloseAudio();
   soundDeviceOpen = 0;
@@ -506,40 +506,16 @@ set_audio_format(int state)
   desired.userdata = NULL;
   desired.channels = (state == ORCH90) ? 2 : 1;
 
-  if (SDL_OpenAudio(&desired, &obtained) < 0) {
+  if (SDL_OpenAudio(&desired, NULL) < 0) {
     error("couldn't open cassette sound device");
     cassette_state = FAILED;
     return -1;
   }
   soundDeviceOpen = 1;
-  if (obtained.format != AUDIO_U8 &&
-#ifdef big_endian
-      obtained.format != AUDIO_S16MSB) {
-#else
-      obtained.format != AUDIO_S16) {
-#endif
-    error("requested audio format 0x%X, got 0x%X",
-          desired.format, obtained.format);
-    errno = EINVAL;
-    return -1;
-  }
 
-  if (obtained.channels == 1 && desired.channels == 2) {
-    error("requested stereo, got mono");
-    errno = EINVAL;
-    return -1;
-  }
-
-  if (abs(obtained.freq - desired.freq) > desired.freq / 20) {
-    error("requested sample rate %d Hz, got %d Hz",
-          desired.freq, obtained.freq);
-    errno = EINVAL;
-    return -1;
-  }
-
-  cassette_afmt = obtained.format;
-  cassette_stereo = (obtained.channels == 2);
-  cassette_silence = obtained.silence;
+  cassette_afmt = desired.format;
+  cassette_stereo = (desired.channels == 2);
+  cassette_silence = desired.silence;
 
   SDL_PauseAudio(0);
 
