@@ -1440,7 +1440,7 @@ Uint8 *mem_pointer(int address, int writing)
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
             ((sys_byte & (1 << 6)) && address >= 0x3C00))
           return &memory[address];
-        if (address <= 0x35FF) return &rom[address];
+        if (address <= 0x35FF) return writing ? NULL : &rom[address];
         return trs80_model1_mmio_addr(address, writing);
       }
       return &memory[address];
@@ -1546,7 +1546,7 @@ Uint8 *mem_pointer(int address, int writing)
             return &video[address - 0xF800];
           /* Boot-ROM */
           if (address >= 0xEC00 && address <= 0xF3FF)
-            return &rom[address - 0xBC00];
+            return writing ? NULL : &rom[address - 0xBC00];
         }
       }
       return &memory[address];
