@@ -507,7 +507,7 @@ set_audio_format(int state)
   desired.channels = (state == ORCH90) ? 2 : 1;
 
   if (SDL_OpenAudio(&desired, NULL) < 0) {
-    error("couldn't open cassette sound device");
+    error("couldn't open cassette sound device: %s", SDL_GetError());
     cassette_state = FAILED;
     return -1;
   }
