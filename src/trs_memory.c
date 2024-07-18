@@ -1383,39 +1383,32 @@ Uint8 *mem_pointer(int address, int writing)
     /* Otherwise the request comes from the system */
   }
 
-  switch (memory_map + (writing << 3)) {
+  switch (memory_map) {
     case 0x10: /* Model I */
-    case 0x18:
       if (address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       else
         return trs80_model1_ram_addr(address);
 
     case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
-    case 0x19:
       return trs80_model1_ram_addr(address);
 
     case 0x12: /* Model I: selector mode 2 (ROM disabled) */
-    case 0x1A:
       if (address >= 0x37E0 && address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       else
         return trs80_model1_ram_addr(address);
 
     case 0x13: /* Model I: selector mode 3 (CP/M mode) */
-    case 0x1B:
       if (address >= 0xF7E0)
         return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       /* Fall through */
 
     case 0x14: /* Model I: All RAM banking high */
-    case 0x1C:
     case 0x15: /* Model I: All RAM banking low */
-    case 0x1D:
       return trs80_model1_ram_addr(address);
 
     case 0x16: /* Model I: Low 16K in top 16K */
-    case 0x1E:
       if (address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       else
@@ -1425,14 +1418,12 @@ Uint8 *mem_pointer(int address, int writing)
       break;   /* Not clear what really happens */
 
     case 0x20: /* LNW80: HRG in low 16K */
-    case 0x28:
       if (address < RAM_START)
         return NULL;
       else
         return trs80_model1_ram_addr(address);
 
     case 0x21: /* EG-64 Memory-Banking-Adaptor */
-    case 0x29:
       if (address < RAM_START) {
         if (((sys_byte & (1 << 0)) && address <= 0x2FFF) ||
             ((sys_byte & (1 << 2)) && address >= 0x3000 && address <= 0x35FF) ||
@@ -1446,7 +1437,6 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address];
 
     case 0x22: /* Lubomir Soft Banker */
-    case 0x2A:
       if (address < RAM_START) {
         if (((sys_byte & (1 << 6)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
@@ -1460,7 +1450,6 @@ Uint8 *mem_pointer(int address, int writing)
         return &memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
-    case 0x2B:
       /* Bit 0 - Bank 1: ROM/EPROM */
       if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
         return writing ? NULL : &rom[address];
@@ -1481,7 +1470,6 @@ Uint8 *mem_pointer(int address, int writing)
         return &memory[address];
 
     case 0x24: /* TCS Genie IIIs */
-    case 0x2C:
       if ((sys_byte & (1 << 0)) == 0) {
         if (sys_byte & (1 << 4)) {
           /* 2K Video RAM */
@@ -1503,7 +1491,6 @@ Uint8 *mem_pointer(int address, int writing)
         return &memory[address + bank_offset[0] + bank_base];
 
     case 0x25: /* Schmidtke 80-Z Video Card */
-    case 0x2D:
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF)
           return &video[((address - video_addr) & 0x7FF)];
@@ -1514,7 +1501,6 @@ Uint8 *mem_pointer(int address, int writing)
         return trs80_model1_mmio_addr(address, writing);
 
     case 0x26: /* TCS Genie IIs/SpeedMaster */
-    case 0x2E:
       /* Expansions bit (RAM 192 B) */
       if ((sys_byte & (1 << 7)) && address <= 0xBFFF)
         return &memory[address + bank_base];
@@ -1528,7 +1514,6 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address];
 
     case 0x27: /* Aster CT-80 */
-    case 0x2F:
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
         /* Boot-ROM */
         if ((sys_byte & (1 << 1)) && address <= 0x7FF)
@@ -1552,68 +1537,46 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address];
 
     case 0x30: /* Model III reading */
-    case 0x38: /* Model III writing */
       return trs80_model3_mem_addr(address, writing);
 
-    case 0x31: /* CP-500 reading */
-    case 0x32: /* CP-500 64K RAM, reading */
-    case 0x33: /* CP-500 80x24 video, reading */
-    case 0x39: /* CP-500 writing */
-    case 0x3A: /* CP-500 64K RAM, writing */
-    case 0x3B: /* CP-500 80x24 video, writing */
+    case 0x31: /* CP-500 */
+    case 0x32: /* CP-500 64K RAM */
+    case 0x33: /* CP-500 80x24 video */
       return cp500_mem_addr(address, memory_map, rom, memory, writing);
 
-    case 0x40: /* Model 4 map 0 reading */
+    case 0x40: /* Model 4 map 0 */
       if (address >= RAM_START) {
         return &memory[address + bank_offset[address >> 15]];
       }
       if (address >= VIDEO_START) return mem_video_page_addr(address);
-      if (address < trs_rom_size) return &rom[address];
+      if (address < trs_rom_size && writing == 0) return &rom[address];
       break;
 
-    case 0x48: /* Model 4 map 0 writing */
-    case 0x58: /* Model 4P map 0, boot ROM out, writing */
-    case 0x5C: /* Model 4P map 0, boot ROM in, writing */
-      if (address >= RAM_START) {
-        return &memory[address + bank_offset[address >> 15]];
-      }
-      if (address >= VIDEO_START) return mem_video_page_addr(address);
-      break;
-
-    case 0x54: /* Model 4P map 0, boot ROM in, reading */
-    case 0x55: /* Model 4P map 1, boot ROM in, reading */
-      if (address < trs_rom_size) return &rom[address];
+    case 0x54: /* Model 4P map 0, boot ROM in */
+    case 0x55: /* Model 4P map 1, boot ROM in */
+      if (address < trs_rom_size && writing == 0) return &rom[address];
       /* else fall thru */
-    case 0x41: /* Model 4 map 1 reading */
-    case 0x49: /* Model 4 map 1 writing */
-    case 0x50: /* Model 4P map 0, boot ROM out, reading */
-    case 0x51: /* Model 4P map 1, boot ROM out, reading */
-    case 0x59: /* Model 4P map 1, boot ROM out, writing */
-    case 0x5D: /* Model 4P map 1, boot ROM in, writing */
+    case 0x41: /* Model 4 map 1 */
+    case 0x50: /* Model 4P map 0, boot ROM out */
+    case 0x51: /* Model 4P map 1, boot ROM out */
       if (address >= RAM_START || address < KEYBOARD_START) {
         return &memory[address + bank_offset[address >> 15]];
       }
       if (address >= VIDEO_START) return mem_video_page_addr(address);
       break;
 
-    case 0x42: /* Model 4 map 1, reading */
-    case 0x4A: /* Model 4 map 1, writing */
-    case 0x52: /* Model 4P map 2, boot ROM out, reading */
-    case 0x5A: /* Model 4P map 2, boot ROM out, writing */
-    case 0x56: /* Model 4P map 2, boot ROM in, reading */
-    case 0x5E: /* Model 4P map 2, boot ROM in, writing */
+    case 0x42: /* Model 4 map 2 */
+    case 0x52: /* Model 4P map 2, boot ROM out */
+    case 0x56: /* Model 4P map 2, boot ROM in */
       if (address < 0xF400) {
         return &memory[address + bank_offset[address >> 15]];
       }
       if (address >= 0xF800) return &video[address - 0xF800];
       break;
 
-    case 0x43: /* Model 4 map 3, reading */
-    case 0x4B: /* Model 4 map 3, writing */
-    case 0x53: /* Model 4P map 3, boot ROM out, reading */
-    case 0x5B: /* Model 4P map 3, boot ROM out, writing */
-    case 0x57: /* Model 4P map 3, boot ROM in, reading */
-    case 0x5F: /* Model 4P map 3, boot ROM in, writing */
+    case 0x43: /* Model 4 map 3 */
+    case 0x53: /* Model 4P map 3, boot ROM out */
+    case 0x57: /* Model 4P map 3, boot ROM in */
       return &memory[address + bank_offset[address >> 15]];
   }
 
