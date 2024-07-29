@@ -104,7 +104,7 @@ static int supermem_base;
 static Uint32 supermem_high;
 static int selector_reg;
 static int sys_byte;
-static int genie3s; /* TCS Genie IIIs */
+static int sys_byte_2; /* TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -358,21 +358,16 @@ void eg64_mba_out(int value)
   memory_map = 0x21;
 }
 
-int genie3s_bank_in(void)
-{
-  return genie3s;
-}
-
 void genie3s_bank_out(int value)
 {
-  if (value == genie3s)
+  if (value == sys_byte_2)
     return;
 
   /* Redraw if Font-SRAM is disabled */
-  if ((value & (1 << 1)) == 0 && (genie3s & (1 << 1)))
+  if ((value & (1 << 1)) == 0 && (sys_byte_2 & (1 << 1)))
     trs_screen_refresh();
 
-  genie3s = value;
+  sys_byte_2 = value;
 
   /* Bit 7 : Bit 6 : Bank# : Memory
    *   0   :   0   :   0   :    64K
@@ -447,6 +442,11 @@ void sys_byte_out(int value)
 int sys_byte_in(void)
 {
   return sys_byte;
+}
+
+int sys_byte_2_in(void)
+{
+  return sys_byte_2;
 }
 
 void s80z_out(int value)
@@ -812,8 +812,8 @@ int mem_read(int address)
       if ((sys_byte & (1 << 3)) && address >= 0x8000)
         return genie3s_hrg_read(address - 0x8000);
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (genie3s & (1 << 0))))
+      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
+          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
         return memory[address + bank_offset[1]];
       else
         return memory[address + bank_offset[0] + bank_base];
@@ -1178,14 +1178,14 @@ void mem_write(int address, int value)
       if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
         return;
       /* Write to Font-SRAM */
-      if (genie3s & (1 << 1) && address >= 0x8000) {
+      if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
         genie3s_char(video[(VIDEO_START + video_addr)],
                      (address - 0x8000) >> 11, value);
         return;
       }
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (genie3s & (1 << 0))))
+      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
+          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
         memory[address + bank_offset[1]] = value;
       else
         memory[address + bank_offset[0] + bank_base] = value;
@@ -1488,8 +1488,8 @@ Uint8 *mem_pointer(int address, int writing)
       if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
         return writing ? NULL : &rom[address];
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (genie3s & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (genie3s & (1 << 0))))
+      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
+          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
         return &memory[address + bank_offset[1]];
       else
         return &memory[address + bank_offset[0] + bank_base];
@@ -1612,8 +1612,8 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &megamem, 1);
   trs_save_int(file, &megamem_addr, 1);
   trs_save_uint32(file, &megamem_base, 1);
-  trs_save_int(file, &genie3s, 1);
   trs_save_int(file, &sys_byte, 1);
+  trs_save_int(file, &sys_byte_2, 1);
 }
 
 void trs_mem_load(FILE *file)
@@ -1641,6 +1641,6 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &megamem, 1);
   trs_load_int(file, &megamem_addr, 1);
   trs_load_uint32(file, &megamem_base, 1);
-  trs_load_int(file, &genie3s, 1);
   trs_load_int(file, &sys_byte, 1);
+  trs_load_int(file, &sys_byte_2, 1);
 }

@@ -207,7 +207,6 @@ extern int stringy;
 
 extern void  eg3200_bank_out(int value);
 extern void  eg3200_init_out(int value);
-extern int   genie3s_bank_in(void);
 extern void  genie3s_bank_out(int value);
 extern void  genie3s_init_out(int value);
 extern void  genie3s_sys_out(int value);

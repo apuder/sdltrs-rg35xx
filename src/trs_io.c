@@ -738,7 +738,7 @@ int z80_in(int port)
             }
             break;
           case 0xF9:
-            value = genie3s_bank_in();
+            value = sys_byte_2_in();
             break;
           case 0xFA:
             value = sys_byte_in();

@@ -40,5 +40,6 @@ extern void eg64_mba_out(int value);
 extern void s80z_out(int value);
 extern void sys_byte_out(int value);
 extern int  sys_byte_in(void);
+extern int  sys_byte_2_in(void);
 
 #endif /* _TRS_MEMORY_H */
