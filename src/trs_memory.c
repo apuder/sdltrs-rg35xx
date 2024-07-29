@@ -741,8 +741,10 @@ int mem_read(int address)
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
             ((sys_byte & (1 << 6)) && address >= 0x3C00))
           return memory[address];
-        if (address <= 0x35FF) return rom[address];
-        return trs80_model1_mmio(address);
+        if (address <= 0x35FF)
+          return rom[address];
+        else
+          return trs80_model1_mmio(address);
       }
       return memory[address];
 
@@ -751,7 +753,8 @@ int mem_read(int address)
         if (((sys_byte & (1 << 6)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
           return memory[address];
-        return trs80_model1_mmio(address);
+        else
+          return trs80_model1_mmio(address);
       }
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
         /* Read from "Expander RAM" */
@@ -957,7 +960,7 @@ static void trs80_model1_write_mem(int address, int value)
 static void trs80_model1_write_mmio(int address, int value)
 {
   if (address >= VIDEO_START) {
-    if (!lowercase) {
+    if (lowercase == 0) {
       /*
        * Video write.  Hack here to make up for the missing bit 6
        * video ram, emulating the gate in Z30.
@@ -1086,11 +1089,10 @@ void mem_write(int address, int value)
             ((sys_byte & (1 << 3)) && address >= 0x3000 && address <= 0x35FF) ||
             ((sys_byte & (1 << 4)) && address >= 0x3600 && address <= 0x37FF) ||
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
-            ((sys_byte & (1 << 6)) && address >= 0x3C00)) {
+            ((sys_byte & (1 << 6)) && address >= 0x3C00))
           memory[address] = value;
-          return;
-        }
-        trs80_model1_write_mmio(address, value);
+        else
+          trs80_model1_write_mmio(address, value);
         return;
       }
       memory[address] = value;
@@ -1099,11 +1101,10 @@ void mem_write(int address, int value)
     case 0x22: /* Lubomir Soft Banker */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 7)) && address <= 0x37DF) ||
-            ((sys_byte & (1 << 5)) && address >= 0x37E0)) {
+            ((sys_byte & (1 << 5)) && address >= 0x37E0))
           memory[address] = value;
-          return;
-        }
-        trs80_model1_write_mmio(address, value);
+        else
+          trs80_model1_write_mmio(address, value);
         return;
       }
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
@@ -1345,7 +1346,7 @@ static Uint8 *trs80_model1_ram_addr(int address)
 static Uint8 *trs80_model1_mmio_addr(int address, int writing)
 {
   if (address >= VIDEO_START) return &video[address - VIDEO_START];
-  if (address < trs_rom_size && !writing) return &rom[address];
+  if (address < trs_rom_size && writing == 0) return &rom[address];
   /* With a selector 768 bytes poke through the hole */
   if (address >= 0x3900 && selector)
     return trs80_model1_ram_addr(address);
@@ -1356,7 +1357,7 @@ Uint8 *trs80_model3_mem_addr(int address, int writing)
 {
   if (address >= RAM_START) return &memory[address];
   if (address >= VIDEO_START) return &video[address - VIDEO_START];
-  if (address < trs_rom_size && !writing) return &rom[address];
+  if (address < trs_rom_size && writing == 0) return &rom[address];
   return NULL;
 }
 
@@ -1431,8 +1432,10 @@ Uint8 *mem_pointer(int address, int writing)
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
             ((sys_byte & (1 << 6)) && address >= 0x3C00))
           return &memory[address];
-        if (address <= 0x35FF) return writing ? NULL : &rom[address];
-        return trs80_model1_mmio_addr(address, writing);
+        if (address <= 0x35FF)
+          return writing ? NULL : &rom[address];
+        else
+          return trs80_model1_mmio_addr(address, writing);
       }
       return &memory[address];
 
@@ -1441,7 +1444,8 @@ Uint8 *mem_pointer(int address, int writing)
         if (((sys_byte & (1 << 6)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
           return &memory[address];
-        return trs80_model1_mmio_addr(address, writing);
+        else
+          return trs80_model1_mmio_addr(address, writing);
       }
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
         /* Read from "Expander RAM" */
