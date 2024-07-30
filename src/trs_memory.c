@@ -741,8 +741,6 @@ int mem_read(int address)
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
             ((sys_byte & (1 << 6)) && address >= 0x3C00))
           return memory[address];
-        if (address <= 0x35FF)
-          return rom[address];
         else
           return trs80_model1_mmio(address);
       }
@@ -1432,8 +1430,6 @@ Uint8 *mem_pointer(int address, int writing)
             ((sys_byte & (1 << 5)) && address >= 0x3800 && address <= 0x3BFF) ||
             ((sys_byte & (1 << 6)) && address >= 0x3C00))
           return &memory[address];
-        if (address <= 0x35FF)
-          return writing ? NULL : &rom[address];
         else
           return trs80_model1_mmio_addr(address, writing);
       }
