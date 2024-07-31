@@ -366,7 +366,8 @@ stringy_remove(int drive)
 void
 stringy_init(void)
 {
-  stringy_change_all();
+  if (stringy)
+    stringy_change_all();
 }
 
 /* Stringy controller hardware reset */
