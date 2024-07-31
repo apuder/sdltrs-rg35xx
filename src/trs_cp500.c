@@ -221,18 +221,15 @@ Uint8 *cp500_mem_addr(int address, int mem_map, Uint8 *rom, Uint8 *ram, int writ
 {
   switch (mem_map) {
     case 0x31: /* 3000-37FF = extra 2K in EPROM 4 */
-    case 0x39:
       if (address >= 0x3000 && address <= 0x37FF && writing == 0) {
         return &rom[address | 0x0800];
       }
       return trs80_model3_mem_addr(address, writing);
 
     case 0x32: /* 64K of RAM, nothing else mapped */
-    case 0x3A:
       return &ram[address];
 
     case 0x33: /* 80x24, 3C00-3FFF = VRAM */
-    case 0x3B:
       if (address >= RAM_START) {
         return &ram[address];
       } else if (address >= VIDEO_START) {
