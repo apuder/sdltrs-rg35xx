@@ -324,7 +324,7 @@ stringy_change(int unit)
   return ires;
 }
 
-void
+static void
 stringy_change_all(void)
 {
   int i;

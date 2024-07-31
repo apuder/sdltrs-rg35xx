@@ -34,6 +34,5 @@ int  stringy_create(const char *name);
 int  stringy_in(int unit);
 void stringy_out(int unit, int value);
 void stringy_reset(void);
-void stringy_change_all(void);
 
 #endif /* _TRS_STRINGY_H */
