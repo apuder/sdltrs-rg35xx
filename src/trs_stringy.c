@@ -370,13 +370,6 @@ stringy_init(void)
     stringy_change_all();
 }
 
-/* Stringy controller hardware reset */
-void
-stringy_reset(void)
-{
-  /* Nothing to do (?) */
-}
-
 static void
 stringy_byte_flush(stringy_info_t *s)
 {
