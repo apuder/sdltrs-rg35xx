@@ -595,6 +595,8 @@ void trs_screen_init(int resize)
         break;
       default:
         currentmode = NORMAL;
+        /* Resize for LNW80 80x24 text mode */
+         trs_resize = speedup == 6;
         trs_charset = trs_charset1;
         if (trs_charset < 3)
           char_width = 6;
@@ -1793,6 +1795,8 @@ void trs_screen_80x24(int flag)
 
   if (!grafyx_enable || grafyx_overlay)
     trs_screen_640x240(flag);
+
+  memset(trs_screen, ' ', SCREEN_SIZE);
 }
 
 static void
@@ -2197,12 +2201,12 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
   if (trs_clones.model == GENIE3S) {
     SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
   } else {
-    if (trs_model == 1 && (trs_clones.model & (CT80 | EG3200)) == 0) {
+    if (trs_model == 1 && (trs_clones.model & (CT80 | LNW80 | EG3200)) == 0) {
       /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */
       if (character >= 0xc0)
         character -= 0x40;
     }
-    if (trs_clones.model == LNW80) {
+    if (trs_clones.model == LNW80 && rows == 16) {
       if (currentmode == INVERSE) expanded += 2;
       if (character >= 0x80 && character <= 0xbf)
         SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);

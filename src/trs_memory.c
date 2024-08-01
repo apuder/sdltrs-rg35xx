@@ -83,7 +83,7 @@ int huffman;  /* Dave Huffman (4/4P) */
 int hypermem; /* Anitek HyperMem (4/4P) */
 int lubomir;  /* Lubomir Soft Banker */
 int megamem;  /* Anitek MegaMem (III/4/4P) */
-int selector; /* Selector (Model I / LNW80) */
+int selector; /* Selector (TRS-80 Model I) */
 int supermem; /* Alpha Technology SuperMem */
 
 /* private data */
@@ -257,7 +257,7 @@ void mem_card_out(int card, int bits)
     case SELECTOR:
       /* Not all bits are necessarily really present but hey what
          you can't read back you can't tell */
-      selector_reg = speedup == 6 ? bits & 7 /* Modes 0-7 for LNW80 */ : bits;
+      selector_reg = bits;
       /* Always Model I */
       memory_map = 0x10 + (selector_reg & 7);
       /* 0x10 is already the default tandy map we add 11-17 in the style
@@ -403,6 +403,16 @@ void genie3s_sys_out(int value)
   sys_byte = value;
 }
 
+void lnw80_bank_out(int value)
+{
+  if (value == sys_byte_2)
+    return;
+
+  sys_byte_2 = value;
+
+  mem_video_page(value & (1 << 3) ? 1024 : 0);
+}
+
 void sys_byte_out(int value)
 {
   /* Hack for Schmidtke-CP/M with Doppelbauer banking */
@@ -425,8 +435,9 @@ void sys_byte_out(int value)
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_timer_speed(value & (1 << 0));
       break;
-    case 6: /* LNW80: HRG in low 16 kB */
-      memory_map = (value & (1 << 3)) ? 0x20 : 0x10 + (selector_reg & 0x07);
+    case 6: /* LNW80 */
+      if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
+        trs_screen_80x24(value & (1 << 7));
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_screen_inverse(value & 1);
       /* Fall through - HRG on/off bit is identical */
@@ -566,9 +577,10 @@ void trs_reset(int poweron)
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     bank_base = 0;
     selector_reg = 0;
-    sys_byte = 0;
+    sys_byte = sys_byte_2 = 0;
     trs_interrupt_latch_clear();
     trs_screen_inverse(0);
+    trs_screen_80x24(0);
 
     switch (speedup) {
       case 5: /* Aster CT-80 */
@@ -576,6 +588,7 @@ void trs_reset(int poweron)
         trs_clones_model(CT80);
         break;
       case 6: /* LNW80 */
+        memory_map = 0x20;
         trs_clones_model(LNW80);
         break;
       case 7: /* TCS SpeedMaster 5.3 */
@@ -643,7 +656,7 @@ static int trs80_model1_mmio(int address)
   if (address == TRSDISK_TRACK) return trs_disk_track_read();
   if (address == TRSDISK_SECTOR) return trs_disk_sector_read();
   /* With a selector 768 bytes poke through the hole */
-  if (address >= 0x3900 && selector) return trs80_model1_ram(address);
+  if (address >= 0x3900) return trs80_model1_ram(address);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_1(address)) return trs_printer_read();
 #if MEMDEBUG
@@ -726,12 +739,24 @@ int mem_read(int address)
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
       break;   /* Not clear what really happens */
 
-    case 0x20: /* LNW80: HRG in low 16K */
-      if (address < RAM_START) {
-        hrg_write_addr(address, 0x3FFF);
-        return hrg_read_data();
+    case 0x20: /* LNW80 */
+      if ((sys_byte_2 & (1 << 0)) == 0) {
+        if (address < RAM_START) {
+          if (sys_byte & (1 << 3)) {
+            /* HRG in low 16K */
+            hrg_write_addr(address, 0x3FFF);
+            return hrg_read_data();
+          }
+          if (sys_byte & (1 << 7) && address >= 0x3C00)
+            return mem_video_page_read(address);
+          else
+            return trs80_model1_mmio(address);
+        }
       }
-      return trs80_model1_ram(address);
+      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
+        return trs80_model1_mmio(address & 0x3FFF);
+      else
+        return memory[address];
 
     case 0x21: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
@@ -924,6 +949,20 @@ int mem_read(int address)
   return 0xFF;
 }
 
+static void lnw80_screen_write_char(int vaddr, int value)
+{
+  if (mem_video_page_write(vaddr, value)) {
+    vaddr = vaddr + video_addr;
+    if (vaddr >= 1536) {
+      int const adr = (vaddr >> 3) & 7;
+      int const row = (vaddr - 1536) / 64 + (adr & 2) * 4 + (adr & 4) * 4;
+      trs_screen_write_char((vaddr & 15) + 64 + (row * 80), value);
+    } else {
+      trs_screen_write_char((vaddr % 64) + ((vaddr / 64) * 80), value);
+    }
+  }
+}
+
 static void trs80_screen_write_char(int vaddr, int value)
 {
   if (mem_video_write(vaddr, value))
@@ -979,7 +1018,7 @@ static void trs80_model1_write_mmio(int address, int value)
     trs_disk_sector_write(value);
   } else if (TRSDISK_SELECT(address)) {
     trs_disk_select_write(value);
-  } else if (address >= 0x3900 && selector) {
+  } else if (address >= 0x3900) {
     trs80_model1_write_mem(address, value);
   } else if (PRINTER_1(address)) {
     trs_printer_write(value);
@@ -1072,13 +1111,26 @@ void mem_write(int address, int value)
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
       break;   /* Not clear what really happens */
 
-    case 0x20: /* LNW80: HRG in low 16K */
-      if (address < RAM_START) {
-        hrg_write_addr(address, 0x3FFF);
-        hrg_write_data(value);
-      } else {
-        trs80_model1_write_mem(address, value);
+    case 0x20: /* LNW80 */
+      if ((sys_byte_2 & (1 << 0)) == 0) {
+        if (address < RAM_START) {
+          if (sys_byte & (1 << 3)) {
+            /* HRG in low 16K */
+            hrg_write_addr(address, 0x3FFF);
+            hrg_write_data(value);
+            return;
+          }
+          if (sys_byte & (1 << 7) && address >= 0x3C00)
+            lnw80_screen_write_char(address, value);
+          else
+            trs80_model1_write_mmio(address, value);
+          return;
+        }
       }
+      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
+        trs80_model1_write_mmio(address & 0x3FFF, value);
+      else
+        memory[address] = value;
       break;
 
     case 0x21: /* EG-64 Memory-Banking-Adaptor */
@@ -1346,8 +1398,7 @@ static Uint8 *trs80_model1_mmio_addr(int address, int writing)
   if (address >= VIDEO_START) return &video[address - VIDEO_START];
   if (address < trs_rom_size && writing == 0) return &rom[address];
   /* With a selector 768 bytes poke through the hole */
-  if (address >= 0x3900 && selector)
-    return trs80_model1_ram_addr(address);
+  if (address >= 0x3900) return trs80_model1_ram_addr(address);
   return NULL;
 }
 
@@ -1416,11 +1467,22 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
       break;   /* Not clear what really happens */
 
-    case 0x20: /* LNW80: HRG in low 16K */
-      if (address < RAM_START)
-        return NULL;
+    case 0x20: /* LNW80 */
+      if ((sys_byte_2 & (1 << 0)) == 0) {
+        if (address < RAM_START) {
+          if (sys_byte & (1 << 3))
+            /* HRG in low 16K */
+            return NULL;
+          if (sys_byte & (1 << 7) && address >= 0x3C00)
+            return mem_video_page_addr(address);
+          else
+            return trs80_model1_mmio_addr(address, writing);
+        }
+      }
+      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
+        return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       else
-        return trs80_model1_ram_addr(address);
+        return &memory[address];
 
     case 0x21: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
