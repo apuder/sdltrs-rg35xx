@@ -408,9 +408,18 @@ void lnw80_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
-  sys_byte_2 = value;
-
+  /* LNW80 II 80x24 text mode video page */
   mem_video_page(value & (1 << 3) ? 1024 : 0);
+
+  /* Disable or enable interrupts */
+  if ((value & (1 << 2)) != (sys_byte_2 & (1 << 2))) {
+    if (value & (1 << 2))
+      z80_state.iff1 = z80_state.iff2 = 0;
+    else
+      z80_state.iff1 = z80_state.iff2 = 1;
+  }
+
+  sys_byte_2 = value;
 }
 
 void sys_byte_out(int value)
@@ -656,7 +665,7 @@ static int trs80_model1_mmio(int address)
   if (address == TRSDISK_TRACK) return trs_disk_track_read();
   if (address == TRSDISK_SECTOR) return trs_disk_sector_read();
   /* With a selector 768 bytes poke through the hole */
-  if (address >= 0x3900) return trs80_model1_ram(address);
+  if (address >= 0x3900 && selector) return trs80_model1_ram(address);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_1(address)) return trs_printer_read();
 #if MEMDEBUG
@@ -740,6 +749,8 @@ int mem_read(int address)
       break;   /* Not clear what really happens */
 
     case 0x20: /* LNW80 */
+      if (sys_byte_2 & (1 << 1) && address <= 0x3700)
+        return memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3)) {
@@ -747,10 +758,16 @@ int mem_read(int address)
             hrg_write_addr(address, 0x3FFF);
             return hrg_read_data();
           }
-          if (sys_byte & (1 << 7) && address >= 0x3C00)
+          if (address >= VIDEO_START)
             return mem_video_page_read(address);
-          else
+          if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio(address);
+          if (address >= KEYBOARD_START && address <= 0x38FF)
+            return trs_kb_mem_read(address);
+          if (PRINTER_1(address))
+            return trs_printer_read();
+          if (address < trs_rom_size)
+            return rom[address];
         }
       }
       if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
@@ -1018,7 +1035,7 @@ static void trs80_model1_write_mmio(int address, int value)
     trs_disk_sector_write(value);
   } else if (TRSDISK_SELECT(address)) {
     trs_disk_select_write(value);
-  } else if (address >= 0x3900) {
+  } else if (address >= 0x3900 && selector) {
     trs80_model1_write_mem(address, value);
   } else if (PRINTER_1(address)) {
     trs_printer_write(value);
@@ -1112,6 +1129,12 @@ void mem_write(int address, int value)
       break;   /* Not clear what really happens */
 
     case 0x20: /* LNW80 */
+      if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
+        return;
+      if (sys_byte_2 & (1 << 1) && address <= 0x3700) {
+        memory[address] = value;
+        return;
+      }
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3)) {
@@ -1120,11 +1143,22 @@ void mem_write(int address, int value)
             hrg_write_data(value);
             return;
           }
-          if (sys_byte & (1 << 7) && address >= 0x3C00)
-            lnw80_screen_write_char(address, value);
-          else
+          if (address >= VIDEO_START) {
+            if (sys_byte & (1 << 7))
+              /* LNW80 II 80x24 text mode */
+              lnw80_screen_write_char(address, value);
+            else
+              trs80_model1_write_mmio(address, value);
+            return;
+          }
+          if (address >= 0x37E0 && address <= 0x37EF) {
             trs80_model1_write_mmio(address, value);
-          return;
+            return;
+          }
+          if (PRINTER_1(address)) {
+            trs_printer_write(value);
+            return;
+          }
         }
       }
       if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
@@ -1398,7 +1432,7 @@ static Uint8 *trs80_model1_mmio_addr(int address, int writing)
   if (address >= VIDEO_START) return &video[address - VIDEO_START];
   if (address < trs_rom_size && writing == 0) return &rom[address];
   /* With a selector 768 bytes poke through the hole */
-  if (address >= 0x3900) return trs80_model1_ram_addr(address);
+  if (address >= 0x3900 && selector) return trs80_model1_ram_addr(address);
   return NULL;
 }
 
@@ -1468,15 +1502,19 @@ Uint8 *mem_pointer(int address, int writing)
       break;   /* Not clear what really happens */
 
     case 0x20: /* LNW80 */
+      if (sys_byte_2 & (1 << 1) && address <= 0x3700)
+        return &memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3))
             /* HRG in low 16K */
             return NULL;
-          if (sys_byte & (1 << 7) && address >= 0x3C00)
+          if (address >= VIDEO_START)
             return mem_video_page_addr(address);
-          else
+          if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio_addr(address, writing);
+          if (address < trs_rom_size && writing == 0)
+            return &rom[address];
         }
       }
       if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
