@@ -969,14 +969,12 @@ int mem_read(int address)
 static void lnw80_screen_write_char(int vaddr, int value)
 {
   if (mem_video_page_write(vaddr, value)) {
-    vaddr = vaddr + video_addr;
-    if (vaddr >= 1536) {
-      int const adr = (vaddr >> 3) & 7;
-      int const row = (vaddr - 1536) / 64 + (adr & 2) * 4 + (adr & 4) * 4;
-      trs_screen_write_char((vaddr & 15) + 64 + (row * 80), value);
-    } else {
+    vaddr += video_addr;
+    if (vaddr >= 1536)
+      trs_screen_write_char((vaddr & 15) + 64 +
+         (((vaddr - 1536) / 64 + ((vaddr >> 4) & 3) * 8) * 80), value);
+    else
       trs_screen_write_char((vaddr % 64) + ((vaddr / 64) * 80), value);
-    }
   }
 }
 
