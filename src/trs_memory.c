@@ -769,9 +769,13 @@ int mem_read(int address)
           if (address < trs_rom_size)
             return rom[address];
         }
+      } else {
+        if (address >= 0xF7E0 && address <= 0xF7EF)
+          return trs80_model1_mmio(address & 0x3FFF);
       }
-      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
-        return trs80_model1_mmio(address & 0x3FFF);
+      /* 32K Expander-RAM without CP/M MMIO area */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
+        return memory[address + 0x8000];
       else
         return memory[address];
 
@@ -1158,9 +1162,15 @@ void mem_write(int address, int value)
             return;
           }
         }
+      } else {
+        if (address >= 0xF7E0 && address <= 0xF7EF) {
+          trs80_model1_write_mmio(address & 0x3FFF, value);
+          return;
+        }
       }
-      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
-        trs80_model1_write_mmio(address & 0x3FFF, value);
+      /* 32K Expander-RAM without CP/M MMIO area */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
+        memory[address + 0x8000] = value;
       else
         memory[address] = value;
       break;
@@ -1514,9 +1524,13 @@ Uint8 *mem_pointer(int address, int writing)
           if (address < trs_rom_size && writing == 0)
             return &rom[address];
         }
+      } else {
+        if (address >= 0xF7E0 && address <= 0xF7EF)
+          return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       }
-      if (sys_byte_2 & (1 << 0) && address >= 0xF7E0 && address <= 0xF7EF)
-        return trs80_model1_mmio_addr(address & 0x3FFF, writing);
+      /* 32K Expander-RAM without CP/M MMIO area */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
+        return &memory[address + 0x8000];
       else
         return &memory[address];
 

@@ -330,9 +330,9 @@ void z80_out(int port, int value)
           case 0x05: /* HRG write data byte */
             hrg_write_data(value);
             return;
+            /* Selector doesn't decode A5 */
           case 0x1F:
           case 0x3F:
-          case 0x5F:
             if (speedup == 6)
               lnw80_bank_out(value);
             else
