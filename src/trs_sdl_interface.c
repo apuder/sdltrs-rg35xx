@@ -2034,16 +2034,16 @@ void trs_screen_refresh(void)
 
   /* Redraw 6845 CRTC cursor */
   switch (get_mem_map()) {
+    case 0x20: /* Schmidtke 80-Z Video Card */
+      z80_out(0xD0, 0x09);
+      z80_out(0xD1, 0xFF);
+      break;
     case 0x23: /* EG 3200 */
     case 0x24: /* Genie IIIs */
       z80_out(0xF6, 0x09);
       z80_out(0xF7, 0xFF);
       break;
-    case 0x25: /* Schmidtke 80-Z Video Card */
-      z80_out(0xD0, 0x09);
-      z80_out(0xD1, 0xFF);
-      break;
-    case 0x27: /* Aster CT-80 */
+    case 0x25: /* Aster CT-80 */
       if (cols == 80) {
         z80_out(0xFC, 0x09);
         z80_out(0xFD, 0xFF);
