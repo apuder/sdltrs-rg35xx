@@ -1477,8 +1477,12 @@ void trs_get_event(int wait)
         } else {
           if (trs_model == 1) {
             switch (keysym.sym) {
-              case SDLK_F1:  keysym.sym = 0x115; goto done; /* _ */
-              case SDLK_F2:  keysym.sym = 0x120; goto done; /* \ */
+              case SDLK_F1: /* [ on LNW80/II or _ */
+                keysym.sym = (speedup == 6) ? 0x120 : 0x115;
+                goto done;
+              case SDLK_F2: /* ] on LWN80/II or \ */
+                keysym.sym = (speedup == 6) ? 0x122 : 0x120;
+                goto done;
               case SDLK_F3:  keysym.sym = 0x121; goto done; /* ] */
               case SDLK_F4:  keysym.sym = 0x122; goto done; /* ^ */
               case SDLK_LCTRL: /* P1 on SpeedMaster or Control */
