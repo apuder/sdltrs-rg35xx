@@ -104,7 +104,7 @@ static int supermem_base;
 static Uint32 supermem_high;
 static int selector_reg;
 static int sys_byte;
-static int sys_byte_2; /* TCS Genie IIIs */
+static int sys_byte_2; /* LWN80 II and TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -444,7 +444,7 @@ void sys_byte_out(int value)
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_timer_speed(value & (1 << 0));
       break;
-    case 6: /* LNW80 */
+    case 6: /* LNW80/II */
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
         trs_screen_80x24(value & (1 << 7));
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
@@ -596,7 +596,7 @@ void trs_reset(int poweron)
         memory_map = 0x25;
         trs_clones_model(CT80);
         break;
-      case 6: /* LNW80 */
+      case 6: /* LNW80/II */
         memory_map = 0x26;
         trs_clones_model(LNW80);
         break;
@@ -870,7 +870,7 @@ int mem_read(int address)
       }
       return memory[address];
 
-    case 0x26: /* LNW80 */
+    case 0x26: /* LNW80/II */
       if (sys_byte_2 & (1 << 1) && address <= 0x3700)
         return memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
@@ -895,7 +895,7 @@ int mem_read(int address)
         if (address >= 0xF7E0 && address <= 0xF7EF)
           return trs80_model1_mmio(address & 0x3FFF);
       }
-      /* 32K Expander-RAM without CP/M MMIO area */
+      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         return memory[address + 0x8000];
       else
@@ -1276,7 +1276,7 @@ void mem_write(int address, int value)
       memory[address] = value;
       break;
 
-    case 0x26: /* LNW80 */
+    case 0x26: /* LNW80/II */
       if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
         return;
       if (sys_byte_2 & (1 << 1) && address <= 0x3700) {
@@ -1314,7 +1314,7 @@ void mem_write(int address, int value)
           return;
         }
       }
-      /* 32K Expander-RAM without CP/M MMIO area */
+      /* LWN80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         memory[address + 0x8000] = value;
       else
@@ -1610,7 +1610,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address];
 
-    case 0x26: /* LNW80 */
+    case 0x26: /* LNW80/II */
       if (sys_byte_2 & (1 << 1) && address <= 0x3700)
         return &memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
@@ -1629,7 +1629,7 @@ Uint8 *mem_pointer(int address, int writing)
         if (address >= 0xF7E0 && address <= 0xF7EF)
           return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       }
-      /* 32K Expander-RAM without CP/M MMIO area */
+      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         return &memory[address + 0x8000];
       else

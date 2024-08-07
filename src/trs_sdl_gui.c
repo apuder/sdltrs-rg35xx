@@ -1715,7 +1715,7 @@ void gui_emulator_menu(void)
                          "     Seatronics",
                          "Banking Model I",
                          "    CT-80 Aster",
-                         "          LNW80",
+                         "       LNW80/II",
                          "TCS SpeedMaster"};
   int selection = 0;
   int model_selection = trs_model == 1 ? 0 : trs_model - 2;

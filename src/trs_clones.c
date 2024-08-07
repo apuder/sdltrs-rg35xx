@@ -14,7 +14,7 @@ static const struct trs_clones clones[] = {
   { CT80,        "Aster CT-80"            },
   { EG3200,      "EACA EG 3200 Genie III" },
   { GENIE3S,     "TCS Genie IIIs"         },
-  { LNW80,       "LNW Research LNW80"     },
+  { LNW80,       "LNW Research LNW80/II"  },
   { SPEEDMASTER, "TCS SpeedMaster"        },
 };
 
