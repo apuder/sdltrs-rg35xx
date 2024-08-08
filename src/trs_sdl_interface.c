@@ -176,7 +176,7 @@ static int grafyx_xoffset, grafyx_yoffset;
 #define G3_COMMAND  0x20
 #define G3_YLOW(v)  (((v) & 0x1e) >> 1)
 
-/* HRG1B, LE18, LWN80 and TCS Genie IIs/SpeedMaster */
+/* HRG1B, LE18, LNW80 and TCS Genie IIs/SpeedMaster */
 #define HRG_MEMSIZE (1024 * 16)        /* 16k * 8 bit graphics memory */
 static Uint8 hrg_screen[HRG_MEMSIZE];
 static int hrg_enable;
@@ -1480,7 +1480,7 @@ void trs_get_event(int wait)
               case SDLK_F1: /* [ on LNW80/II or _ */
                 keysym.sym = (speedup == 6) ? 0x120 : 0x115;
                 goto done;
-              case SDLK_F2: /* ] on LWN80/II or \ */
+              case SDLK_F2: /* ] on LNW80/II or \ */
                 keysym.sym = (speedup == 6) ? 0x122 : 0x120;
                 goto done;
               case SDLK_F3:  keysym.sym = 0x121; goto done; /* ] */

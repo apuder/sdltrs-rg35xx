@@ -104,7 +104,7 @@ static int supermem_base;
 static Uint32 supermem_high;
 static int selector_reg;
 static int sys_byte;
-static int sys_byte_2; /* LWN80 II and TCS Genie IIIs */
+static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -1315,7 +1315,7 @@ void mem_write(int address, int value)
           return;
         }
       }
-      /* LWN80 II 32K Expander-RAM without CP/M MMIO area */
+      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         memory[address + 0x8000] = value;
       else
