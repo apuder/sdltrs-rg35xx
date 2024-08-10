@@ -420,6 +420,9 @@ void lnw80_bank_out(int value)
       z80_state.iff1 = z80_state.iff2 = 1;
   }
 
+  /* LNW80 II Expander RAM */
+  bank_base = (value & (1 << 6)) << 9;
+
   sys_byte_2 = value;
 }
 
@@ -897,8 +900,8 @@ int mem_read(int address)
           return trs80_model1_mmio(address & 0x3FFF);
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        return memory[address + 0x8000];
+      if (address >= 0x8000 && address <= 0xF6FF)
+        return memory[address + bank_base];
       else
         return memory[address];
 
@@ -1316,8 +1319,8 @@ void mem_write(int address, int value)
         }
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        memory[address + 0x8000] = value;
+      if (address >= 0x8000 && address <= 0xF6FF)
+        memory[address + bank_base] = value;
       else
         memory[address] = value;
       break;
@@ -1631,8 +1634,8 @@ Uint8 *mem_pointer(int address, int writing)
           return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        return &memory[address + 0x8000];
+      if (address >= 0x8000 && address <= 0xF6FF)
+        return &memory[address + bank_base];
       else
         return &memory[address];
 
