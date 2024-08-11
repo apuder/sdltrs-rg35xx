@@ -66,10 +66,10 @@ Set clock speed rate in MHz for the specified TRS-80 Model.
 Defaults are: \fI1.77408\fP MHz for Model I, \fI2.02752\fP MHz for
 Model III and \fI4.05504\fP MHz for Model 4/4P.
 .TP
-.B \-debug
+\fB\-debug\fP | \fB-z[bx]\fP
 Enter zbx debugger (Optional).
 .TP
-.B \-diskdebug \fIhexval\fP
+.B \-di[skdebug] \fIhexval\fP
 Set floppy disk controller debug flags to hex value:
 \fI01\fP = FDC register I/O | \fI02\fP = FDC commands | \fI04\fP = VTOS 3.0 JV3
 kludges | \fI08\fP = Gaps | \fI10\fP = Phys sector sizes | \fI20\fP = Readadr
@@ -90,7 +90,7 @@ Loads diskset from \fIfilename\fP into emulator.
 Specify directory containing diskset files.
 Default: current directory.
 .TP
-.B \-doubler \fItype\fP
+.B \-d[oubler] \fItype\fP
 Specify type of double density adaptor to emulate for Model I:
 \fIp(ercom)\fP | \fIt(andy)\fP | \fIb(oth)\fP | \fIn(one)\fP.
 Default: \fIboth\fP
@@ -99,7 +99,7 @@ Default: \fIboth\fP
 Make real floppy drives double-step (35/40-track media in 80 track drive).
 .B Linux only
 .TP
-.B \-emtsafe
+.B \-[emt]safe
 Turn off ability for Emulation traps to write to unexpected places in
 host filesystem (Default).
 .TP
@@ -147,7 +147,7 @@ Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
 Enable HyperMem (Anitek) memory expansion for Model 4/4P.
 .B Disables "Dave Huffman memory expansion" and "SuperMem".
 .TP
-.B \-iodebug \fIhexval\fP
+.B \-io[debug] \fIhexval\fP
 Set I/O port debug flags: \fI01\fP = port input | \fI02\fP = port output.
 .TP
 \fB\-joystick[num]\fP | \fB\-js\fP \fInum\fP
@@ -207,7 +207,7 @@ Opposite of \fB-debug\fP (Optional).
 Turn off double-step mode for all real floppy drives (Default).
 .B Linux only
 .TP
-.B \-noemtsafe
+.B \-no[emt]safe
 Turn on ability for Emulation traps.
 .TP
 \fB\-nofloppy\fP | \fB\-nofdc\fP
@@ -287,7 +287,7 @@ Disable "Turbo" mode temporarily while pasting from clipboard (Default).
 .B \-pause
 Pause the emulator at startup.
 .TP
-.B \-printer \fItype\fP
+.B \-p[rinter] \fItype\fP
 Select printer type: \fI0\fP or \fIn(one)\fP | \fI1\fP
 or \fIt(ext)\fP.
 Default: \fInone\fP
@@ -305,7 +305,7 @@ changes between 64x16 text (512x192) and 80x24 text (640x240).
 Default: \fB\-resize3 \-noresize4\fP
 .RE
 .TP
-.B \-rom[file] \fIfilename\fP
+.B \-r[om][file] \fIfilename\fP
 Use romfile \fIfilename\fP for the selected TRS-80 Model with \fI-model\fP.
 .TP
 .B \-rom[file]1 \fIfilename\fP
@@ -386,7 +386,7 @@ Default: \fI0x6f\fP
 .B \-truedam
 Turn off single density data address mark remapping kludges.
 .TP
-.B \-turbo
+.B \-t[urbo]
 Switch "Turbo" mode on.
 .TP
 \fB\-turbopaste\fP | \fB\-tp\fP

@@ -127,12 +127,12 @@ will be executed upon startup of the emulator.</p>
         <b>CAUTION</b>: overclocking the Z80 CPU leads to timing-errors!</td>
   </tr>
   <tr>
-    <td><code>-debug</code></td>
+    <td><code>-debug | -z[bx]</code></td>
     <td>Enter zbx, the Z80 debugger, at startup of the emulator
         (SDLTRS must be compiled with this feature enabled).</td>
   </tr>
   <tr>
-    <td><code>-diskdebug <u>hexval</u></code></td>
+    <td><code>-di[skdebug] <u>hexval</u></code></td>
     <td>Set floppy disk controller debug flags to hex value:
         <code><b>01</b></code> = FDC register I/O,
         <code><b>02</b></code> = FDC commands,
@@ -166,7 +166,7 @@ will be executed upon startup of the emulator.</p>
         them all at once). Default is the current directory.</td>
   </tr>
   <tr>
-    <td><code>-doubler <u>type</u></code></td>
+    <td><code>-d[oubler] <u>type</u></code></td>
     <td>Specify what type of double density adaptor to emulate (Model I only).
         The <u>type</u> may be <code>percom</code>, <code>radioshack</code>
         (or <code>tandy</code>), <code>both</code>, or <code>none</code>.
@@ -182,7 +182,7 @@ will be executed upon startup of the emulator.</p>
         See the Floppy Disks section of Features for limitations.</td>
   </tr>
   <tr>
-    <td><code>-emtsafe</code></td>
+    <td><code>-[emt]safe</code></td>
     <td>Turn off ability for emts (Emulation traps) to write to unexpected
         places in the host filesystem. This now the default.</td>
   </tr>
@@ -245,7 +245,7 @@ will be executed upon startup of the emulator.</p>
         <b>Disables "Dave Huffman (and other)" and "SuperMem"</b>.</td>
   </tr>
   <tr>
-    <td><code>-iodebug <u>hexval</u></code></td>
+    <td><code>-io[debug] <u>hexval</u></code></td>
     <td>Set I/O port debug flags:
         <code><b>01</b></code> = port input,
         <code><b>02</b></code> = port output.
@@ -333,7 +333,7 @@ will be executed upon startup of the emulator.</p>
         <b>Linux only.</b> This is the default.</td>
   </tr>
   <tr>
-    <td><code>-noemtsafe</code></td>
+    <td><code>-no[emt]safe</code></td>
     <td>Turn on ability for emts (Emulation traps) to write to unexpected
         places in the host filesystem.</td>
   </tr>
@@ -452,7 +452,7 @@ will be executed upon startup of the emulator.</p>
     <td>Pause the emulator at startup.</td>
   </tr>
   <tr>
-    <td><code>-printer <u>type</u></code></td>
+    <td><code>-p[rinter] <u>type</u></code></td>
     <td>Specifies the printer type. Values accepted are <code>0</code> or
         <code>none</code>, <code>1</code> or <code>text</code>.
         The default is <code>none</code>.</td>
@@ -471,7 +471,7 @@ will be executed upon startup of the emulator.</p>
         graphics). Default is <code>-resize3 -noresize4</code>.</td>
   </tr>
   <tr>
-    <td><code>-rom[file] <u>filename</u></code></td>
+    <td><code>-r[om][file] <u>filename</u></code></td>
     <td>Use the romfile specified by <code>filename</code> for the selected
         TRS-80 Model with the <code>-model</code> option above.</td>
   </tr>
@@ -619,7 +619,7 @@ will be executed upon startup of the emulator.</p>
     </td>
   </tr>
   <tr>
-    <td><code>-turbo</code></td>
+    <td><code>-t[urbo]</code></td>
     <td>Switch "Turbo" mode on. The emulator will run faster than a normal
         TRS-80 by the factor specified with <code>-turborate</code> below.
         Turbo Mode can be toggled with <b>F12</b> key or <b>Alt-N</b> in
