@@ -892,7 +892,7 @@ int mem_read(int address)
             return trs_kb_mem_read(address);
           if (PRINTER_1(address))
             return trs_printer_read();
-          if (address < trs_rom_size)
+          if (address <= 0x2FFF)
             return rom[address];
         }
       } else {
@@ -1622,7 +1622,7 @@ Uint8 *mem_pointer(int address, int writing)
             return mem_video_page_addr(address);
           if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio_addr(address, writing);
-          if (address < trs_rom_size && writing == 0)
+          if (address <= 0x2FFF && writing == 0)
             return &rom[address];
         }
       } else {
