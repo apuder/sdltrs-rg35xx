@@ -722,7 +722,7 @@ int mem_read(int address)
       else
         return trs80_model1_ram(address);
 
-    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
+    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high) */
       if (address >= 0xF7E0 && address <= 0xF7FF)
         return trs80_model1_mmio(address & 0x3FFF);
       else
@@ -1099,7 +1099,7 @@ void mem_write(int address, int value)
         trs80_model1_write_mmio(address, value);
       break;
 
-    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
+    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high) */
       if (address >= 0xF7E0 && address <= 0xF7FF)
         trs80_model1_write_mmio(address & 0x3FFF, value);
       else
@@ -1482,7 +1482,7 @@ Uint8 *mem_pointer(int address, int writing)
       else
         return trs80_model1_ram_addr(address);
 
-    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high */
+    case 0x11: /* Model I: selector mode 1 (all RAM except I/O high) */
       return trs80_model1_ram_addr(address);
 
     case 0x12: /* Model I: selector mode 2 (ROM disabled) */
