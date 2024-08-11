@@ -594,7 +594,6 @@ void trs_screen_init(int resize)
         char_height = m6845_raster * scale_factor;
         break;
       default:
-        currentmode = NORMAL;
         /* Resize for LNW80 80x24 text mode */
          trs_resize = speedup == 6;
         trs_charset = trs_charset1;
@@ -604,7 +603,6 @@ void trs_screen_init(int resize)
     }
   } else {
     if (trs_model == 3) {
-      currentmode = NORMAL;
       trs_charset = trs_charset3;
        trs_resize = resize3;
     } else {
