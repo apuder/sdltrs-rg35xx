@@ -896,7 +896,7 @@ int mem_read(int address)
             return rom[address];
         }
       } else {
-        if (address >= 0xF7E0 && address <= 0xF7EF)
+        if (address >= 0xF7E0 && address <= 0xF8FF)
           return trs80_model1_mmio(address & 0x3FFF);
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
