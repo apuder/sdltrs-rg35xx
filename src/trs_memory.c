@@ -875,8 +875,6 @@ int mem_read(int address)
       return memory[address];
 
     case 0x26: /* LNW80/II */
-      if (sys_byte_2 & (1 << 1) && address <= 0x3700)
-        return memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3)) {
@@ -884,6 +882,8 @@ int mem_read(int address)
             hrg_write_addr(address, 0x3FFF);
             return hrg_read_data();
           }
+          if (sys_byte_2 & (1 << 1) && address <= 0x3700)
+            return memory[address];
           if (address >= VIDEO_START)
             return mem_video_page_read(address);
           if (address >= 0x37E0 && address <= 0x37EF)
@@ -1281,12 +1281,6 @@ void mem_write(int address, int value)
       break;
 
     case 0x26: /* LNW80/II */
-      if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
-        return;
-      if (sys_byte_2 & (1 << 1) && address <= 0x3700) {
-        memory[address] = value;
-        return;
-      }
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3)) {
@@ -1295,6 +1289,8 @@ void mem_write(int address, int value)
             hrg_write_data(value);
             return;
           }
+          if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
+            return;
           if (address >= VIDEO_START) {
             if (sys_byte & (1 << 7))
               /* LNW80 II 80x24 text mode */
@@ -1615,13 +1611,13 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address];
 
     case 0x26: /* LNW80/II */
-      if (sys_byte_2 & (1 << 1) && address <= 0x3700)
-        return &memory[address];
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if (address < RAM_START) {
           if (sys_byte & (1 << 3))
             /* HRG in low 16K */
             return NULL;
+          if (sys_byte_2 & (1 << 1) && address <= 0x3700)
+            return &memory[address];
           if (address >= VIDEO_START)
             return mem_video_page_addr(address);
           if (address >= 0x37E0 && address <= 0x37EF)
