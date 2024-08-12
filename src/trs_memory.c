@@ -886,10 +886,8 @@ int mem_read(int address)
             return memory[address];
           if (address >= VIDEO_START)
             return mem_video_page_read(address);
-          if (address >= 0x37E0 && address <= 0x37EF)
+          if (address >= 0x37E0 && address <= 0x38FF)
             return trs80_model1_mmio(address);
-          if (address >= KEYBOARD_START && address <= 0x38FF)
-            return trs_kb_mem_read(address);
           if (address <= 0x2FFF)
             return rom[address];
         }
