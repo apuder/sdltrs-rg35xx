@@ -1620,14 +1620,9 @@ Uint8 *mem_pointer(int address, int writing)
             return &memory[address];
           if (address >= VIDEO_START)
             return mem_video_page_addr(address);
-          if (address >= 0x37E0 && address <= 0x37EF)
-            return trs80_model1_mmio_addr(address, writing);
           if (address <= 0x2FFF && writing == 0)
             return &rom[address];
         }
-      } else {
-        if (address >= 0xF7E0 && address <= 0xF7EF)
-          return trs80_model1_mmio_addr(address & 0x3FFF, writing);
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (address >= 0x8000 && address <= 0xF6FF)
