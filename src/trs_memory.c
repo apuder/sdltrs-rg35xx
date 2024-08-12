@@ -890,8 +890,6 @@ int mem_read(int address)
             return trs80_model1_mmio(address);
           if (address >= KEYBOARD_START && address <= 0x38FF)
             return trs_kb_mem_read(address);
-          if (PRINTER_1(address))
-            return trs_printer_read();
           if (address <= 0x2FFF)
             return rom[address];
         }
@@ -1301,10 +1299,6 @@ void mem_write(int address, int value)
           }
           if (address >= 0x37E0 && address <= 0x37EF) {
             trs80_model1_write_mmio(address, value);
-            return;
-          }
-          if (PRINTER_1(address)) {
-            trs_printer_write(value);
             return;
           }
         }
