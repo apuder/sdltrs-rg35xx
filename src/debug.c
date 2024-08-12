@@ -124,10 +124,10 @@ static void help_message(void)
   timeroff / timeron .... Disable / enable TRS-80 real time clock interrupt\n\
   halt <action> ......... Show / change Z80 HALT action: debugger, halt or reset\n\
   diskdebug <hexval> .... Set floppy disk controller debug flags to hexval:\n\
-                             1=FDC register I/O       2=FDC commands\n\
-                             4=VTOS 3.0 JV3 kludges   8=Gaps\n\
-                            10=Phys sector sizes     20=Readadr timing\n\
-                            40=DMK                   80=IOCTL errors\n\
+                            1 = FDC register I/O      10 = Phys sector sizes\n\
+                            2 = FDC commands          20 = Readadr timing\n\
+                            4 = VTOS 3.0 JV3 kludges  40 = DMK\n\
+                            8 = Gaps                  80 = IOCTL errors\n\
   iodebug <hexval> ...... Set I/O port debug flags: 1=port input, 2=port output\n\
   (zbx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
