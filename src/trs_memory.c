@@ -892,6 +892,9 @@ int mem_read(int address)
             return rom[address];
         }
       } else {
+        /* CP/M mode: Video RAM, Disk I/O, Printer, Keyboard */
+        if (address >= 0xFC00)
+          return mem_video_page_read(address & 0x3FFF);
         if (address >= 0xF7E0 && address <= 0xF8FF)
           return trs80_model1_mmio(address & 0x3FFF);
       }
@@ -1301,6 +1304,15 @@ void mem_write(int address, int value)
           }
         }
       } else {
+        /* CP/M mode: Video RAM, Disk I/O, Printer */
+        if (address >= 0xFC00) {
+          if (sys_byte & (1 << 7))
+            /* LNW80 II 80x24 text mode */
+            lnw80_screen_write_char(address & 0x3FFF, value);
+          else
+            trs80_model1_write_mmio(address & 0x3FFF, value);
+          return;
+        }
         if (address >= 0xF7E0 && address <= 0xF7EF) {
           trs80_model1_write_mmio(address & 0x3FFF, value);
           return;
@@ -1615,6 +1627,10 @@ Uint8 *mem_pointer(int address, int writing)
           if (address <= 0x2FFF && writing == 0)
             return &rom[address];
         }
+      } else {
+        /* CP/M mode: Video RAM */
+        if (address >= 0xFC00)
+          return mem_video_page_addr(address & 0x3FFF);
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (address >= 0x8000 && address <= 0xF6FF)
