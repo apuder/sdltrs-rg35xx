@@ -123,12 +123,12 @@ static void help_message(void)
   state save <file> ..... Save current emulator state to file\n\
   timeroff / timeron .... Disable / enable TRS-80 real time clock interrupt\n\
   halt <action> ......... Show / change Z80 HALT action: debugger, halt or reset\n\
-  diskdebug <hexval> .... Set floppy disk controller debug flags to hexval:\n\
+  di[skdebug] <hexval> .. Set floppy disk controller debug flags to hexval:\n\
                             1 = FDC register I/O      10 = Phys sector sizes\n\
                             2 = FDC commands          20 = Readadr timing\n\
                             4 = VTOS 3.0 JV3 kludges  40 = DMK\n\
                             8 = Gaps                  80 = IOCTL errors\n\
-  iodebug <hexval> ...... Set I/O port debug flags: 1=port input, 2=port output\n\
+  io[debug] <hexval> .... Set I/O port debug flags: 1=port input, 2=port output\n\
   (zbx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
   quit .................. Exit from SDLTRS");
@@ -915,15 +915,15 @@ void debug_shell(void)
 	    {
 		trs_disk_debug();
 	    }
-	    else if(!strcmp(command, "diskdebug"))
+	    else if(!strcmp(command, "diskdebug") || !strcmp(command, "di"))
 	    {
 		trs_disk_debug_flags = 0;
-		sscanf(input, "diskdebug %x", (unsigned int *)&trs_disk_debug_flags);
+		sscanf(input, "%*s %x", (unsigned int *)&trs_disk_debug_flags);
 	    }
-	    else if(!strcmp(command, "iodebug"))
+	    else if(!strcmp(command, "iodebug") || !strcmp(command, "io"))
 	    {
 		trs_io_debug_flags = 0;
-		sscanf(input, "iodebug %x", (unsigned int *)&trs_io_debug_flags);
+		sscanf(input, "%*s %x", (unsigned int *)&trs_io_debug_flags);
 	    }
 	    else if(!strcmp(command, "load"))
 	    {
