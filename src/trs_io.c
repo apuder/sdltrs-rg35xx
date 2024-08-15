@@ -901,10 +901,9 @@ int z80_in(int port)
       value = trs_uart_data_in();
       goto done;
     case 0x43: /* Supermem memory expansion */
-      if (supermem) {
+      if (supermem)
         value = mem_card_in(SUPERMEM);
-        goto done;
-      }
+      goto done;
   }
 
   /* Support for a special HW real-time clock (TimeDate80?)
