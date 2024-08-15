@@ -197,8 +197,11 @@ static const struct {
   { "dsd",             opt_dirname,       1, 0, trs_disk_set_dir      },
   { "dx",              opt_value,         0, 0, &trs_disk_controller  },
 #ifdef __linux
+  { "double",          opt_doublestep,    0, 2, NULL                  },
   { "doublestep",      opt_doublestep,    0, 2, NULL                  },
+  { "nodouble",        opt_doublestep,    0, 1, NULL                  },
   { "nodoublestep",    opt_doublestep,    0, 1, NULL                  },
+  { "step",            opt_stepmap,       1, 0, NULL                  },
   { "stepmap",         opt_stepmap,       1, 0, NULL                  },
 #endif
   { "emtsafe",         opt_value,         0, 1, &trs_emtsafe          },
@@ -333,6 +336,7 @@ static const struct {
   { "shade",           opt_intval,        1, 5, NULL                  },
   { "shiftbracket",    opt_shiftbracket,  0, 1, NULL                  },
   { "showled",         opt_value,         0, 1, &trs_show_led         },
+  { "size",            opt_sizemap,       1, 0, NULL                  },
   { "sizemap",         opt_sizemap,       1, 0, NULL                  },
   { "sound",           opt_value,         0, 1, &trs_sound            },
   { "speedup",         opt_speedup,       1, 0, NULL                  },

@@ -176,7 +176,7 @@ will be executed upon startup of the emulator.</p>
         cards.</td>
   </tr>
   <tr>
-    <td><code>-doublestep</code></td>
+    <td><code>-double[step]</code></td>
     <td>Make all real floppy drives double-step, allowing access to 35-track or
         40-track media in an 80-track drive. <b>Linux only</b>.
         See the Floppy Disks section of Features for limitations.</td>
@@ -328,7 +328,7 @@ will be executed upon startup of the emulator.</p>
     <td>Do not enter the zbx debugger at startup. This is the default.</td>
   </tr>
   <tr>
-    <td><code>-nodoublestep</code></td>
+    <td><code>-nodouble[step]</code></td>
     <td>Turn off double-step mode for all real floppy drives.
         <b>Linux only.</b> This is the default.</td>
   </tr>
@@ -540,7 +540,7 @@ will be executed upon startup of the emulator.</p>
         This is the default, but can be toggled with <b>Alt-B</b>.</td>
   </tr>
   <tr>
-    <td><code>-sizemap <u>z0,z1,z2,z3,z4,z5,z6,z7</u></code></td>
+    <td><code>-size[map] <u>z0,z1,z2,z3,z4,z5,z6,z7</u></code></td>
     <td>Selectively set whether drives are emulated as 5-inch or 8-inch.
         If <code>zU</code> is 5, the drive will appear to Z80 software as
         5-inch; if 8, as 8-inch. The default setting (as reflected in the
@@ -580,7 +580,7 @@ will be executed upon startup of the emulator.</p>
         Default is the current directory.</td>
   </tr>
   <tr>
-    <td><code>-stepmap <u>s0,s1,s2,s3,s4,s5,s6,s7</u></code></td>
+    <td><code>-step[map] <u>s0,s1,s2,s3,s4,s5,s6,s7</u></code></td>
     <td>Selectively set double-step mode for individual real floppy
         drives. If <code>sU</code> is 2 and the disk is a real drive, the
         drive will be double-stepped; if <code>sU</code> is 1, it will be
