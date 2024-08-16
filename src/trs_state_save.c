@@ -84,7 +84,7 @@ int trs_state_load(const char *filename)
     trs_load_uint32(file, &version, 1);
 
     if (version != stateVersionNumber) {
-      error("unsupported version %d of State file", version);
+      error("unsupported version %d of State file '%s'", version, filename);
       fclose(file);
       return -1;
     }
