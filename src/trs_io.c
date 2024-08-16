@@ -484,7 +484,7 @@ void z80_out(int port, int value)
           int const changes = value ^ ctrlimage;
 
           if (changes & 0x80)
-            mem_video_page((value & 0x80) ? 1024 : 0);
+            mem_video_page((value & 0x80) << 3);
 
           if (changes & 0x70)
             mem_bank((value & 0x70) >> 4);
