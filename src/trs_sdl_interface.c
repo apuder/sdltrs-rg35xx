@@ -1937,7 +1937,7 @@ bitmap_init(int ram)
   int const height = (trs_clones.model == CP500_M80)
       /* Adjust block graphics in CP-500/M80 80x24 video mode */
       ? MAX_CHAR_HEIGHT * 2
-      : char_height;
+      : TRS_CHAR_HEIGHT * 2;
   int i;
 
   for (i = 0; i < MAX_CHARS; i++) {
