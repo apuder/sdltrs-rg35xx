@@ -418,8 +418,10 @@ static int open_drive(int drive)
   int err = 0;
   int secs;
 
-  if (d->filename[0] == 0)
+  if (d->filename[0] == 0) {
+    err = -1;
     goto fail;
+  }
 
   if (d->file != NULL) {
     fclose(d->file);
