@@ -343,6 +343,9 @@ void z80_out(int port, int value)
             if (speedup == 7)
               mem_card_out(RAM192B, value);
             return;
+          case 0x85: /* Real Time Clock/Calendar Card by F.J. Kraan */
+            rtc_reg = value;
+            return;
           case 0xB5: /* Orchestra-85 right channel */
             trs_orch90_out(2, value);
             return;
@@ -776,6 +779,9 @@ int z80_in(int port)
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
               value = mem_card_in(RAM192B);
+            goto done;
+          case 0x84: /* RTCC by F.J. Kraan */
+            value = rtc_read(rtc_reg);
             goto done;
           case 0xDF:
             if (speedup <= 3 && lubomir == 0) {
