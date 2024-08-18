@@ -1,3 +1,16 @@
+## Version 1.2.30 Release 08-18-2024:
+
+ * Added LNW80 Model II banking and 80x24 text mode support.
+ * Added 1024 KB memory support for Alpha Technology SuperMem.
+ * Added Alpha Technology SuperMem for TRS-80 Model 4/4P.
+ * Added Real Time Clock/Calendar Card (RTCC) for TRS-80 Model I.
+ * Added TRS-80 Model I printer address aliases.
+ * Added maskable interrupt in IM0 and IM2.
+ * Added turbo mode deactivation while any keys are pressed.
+ * Fixed scaling of block graphic characters for Model 4/4P.
+ * Fixed Z80 HALT action to run debugger.
+ * Fixed bugs and internal improvements.
+
 ## Version 1.2.29 Release 04-07-2024:
 
  * Added 1024 KB memory support for TCS Genie IIIs.

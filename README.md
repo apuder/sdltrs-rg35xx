@@ -46,6 +46,10 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support 5" / 8" disk size switch commands of Percom doubler
   * Select action for Z80 HALT instruction
   * Support 1024 KB memory for TCS Genie IIIs
+  * Support 1024 KB memory for Alpha Technology SuperMem
+  * Support Alpha Technology SuperMem for TRS-80 Model 4/4P
+  * Emulate LNW80 Model II banking and 80x24 text mode
+  * Emulate Real Time Clock/Calendar Card [RTCC] for TRS-80 Model I
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
@@ -86,6 +90,7 @@ Lupi's fork of [RetroPie-Setup] ...
 [EtchedPixels]: https://www.github.com/EtchedPixels/xtrs
 [RetroPie]: https://github.com/RetroPie
 [RetroPie-Setup]: https://github.com/valerino/RetroPie-Setup
+[RTCC]: https://electrickery.nl/comp/trs80/rtccc/
 [SDL]: https://www.libsdl.org
 [SDLTRS]: http://sdltrs.sourceforge.net
 [SlackBuilds]: http://slackbuilds.org/repository/15.0/system/sdltrs/
