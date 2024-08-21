@@ -1334,15 +1334,15 @@ void mem_write(int address, int value)
         hrg_write_data(value);
         return;
       }
-      /* Write protect "Pseudo-ROM" */
-      if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
-        return;
       /* MMIO */
       if ((sys_byte & (1 << 0)) == 0) {
         if (address >= 0x3400 && address <= 0x3FFF) {
           trs80_model1_write_mmio(address, value);
           return;
         }
+        /* Write protect "Pseudo-ROM" */
+        if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
+          return;
       }
       memory[address] = value;
       break;
