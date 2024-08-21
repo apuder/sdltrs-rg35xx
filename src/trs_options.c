@@ -137,6 +137,7 @@ static const struct {
   int intArg;
   void *strArg;
 } options[] = {
+  { "aspect",          opt_value,         0, 1, &aspect_ratio         },
   { "aspectratio",     opt_value,         0, 1, &aspect_ratio         },
   { "background",      opt_color,         1, 0, &background           },
   { "bg",              opt_color,         1, 0, &background           },
@@ -261,6 +262,7 @@ static const struct {
   { "mouse",           opt_value,         0, 1, &mousepointer         },
   { "mousepointer",    opt_value,         0, 1, &mousepointer         },
   { "mute",            opt_value,         0, 0, &trs_sound            },
+  { "noaspect",        opt_value,         0, 0, &aspect_ratio         },
   { "noaspectratio",   opt_value,         0, 0, &aspect_ratio         },
   { "noemtsafe",       opt_value,         0, 0, &trs_emtsafe          },
   { "nofdc",           opt_value,         0, 0, &trs_disk_controller  },
