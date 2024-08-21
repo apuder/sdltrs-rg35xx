@@ -693,7 +693,6 @@ void trs_screen_init(int resize)
   SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
 
   if (resize && fullscreen == 0) {
-    SDL_SetWindowPosition(window, window_x, window_y);
     if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
       SDL_SetWindowSize(window, window_w, window_h);
     else {
@@ -701,6 +700,7 @@ void trs_screen_init(int resize)
       window_w = OrigWidth * scale;
       window_h = OrigHeight * scale;
     }
+    SDL_SetWindowPosition(window, window_x, window_y);
   }
 
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
