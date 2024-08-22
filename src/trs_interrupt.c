@@ -540,10 +540,10 @@ trs_timer_speed(int fast)
       case 1:
         switch (trs_clones.model) {
           case EG3200:
-            z80_state.clockMHz = (fast & 1) ? EG_3200_MHZ : CLOCK_1_MHZ;
+            z80_state.clockMHz = fast ? EG_3200_MHZ : CLOCK_1_MHZ;
             break;
           case GENIE3S:
-            z80_state.clockMHz = (fast & 1) ? TCS_G3S_MHZ : CLOCK_1_MHZ;
+            z80_state.clockMHz = fast ? TCS_G3S_MHZ : CLOCK_1_MHZ;
             break;
           default:
             switch (speedup) {
@@ -555,10 +555,10 @@ trs_timer_speed(int fast)
                 z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
                 break;
               case 6: /* LNW80/II */
-                z80_state.clockMHz = (fast & 1) ? CLOCK_4_MHZ : CLOCK_1_MHZ;
+                z80_state.clockMHz = fast ? CLOCK_4_MHZ : CLOCK_1_MHZ;
                 break;
               case 7: /* TCS SpeedMaster */
-                z80_state.clockMHz = (fast & 1) ? TCS_SPM_MHZ : CLOCK_1_MHZ;
+                z80_state.clockMHz = fast ? TCS_SPM_MHZ : CLOCK_1_MHZ;
                 break;
               default:
                 break;
@@ -568,7 +568,7 @@ trs_timer_speed(int fast)
       case 3:
         if (speedup == 2)
           /* Switch to fastest possible speed of Sprinter III */
-          z80_state.clockMHz = (fast & 1) ? CLOCK_5_MHZ : clock_mhz_3;
+          z80_state.clockMHz = fast ? CLOCK_5_MHZ : clock_mhz_3;
         else
           z80_state.clockMHz = fast ? CLOCK_4_MHZ : clock_mhz_3;
         break;
