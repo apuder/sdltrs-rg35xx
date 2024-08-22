@@ -394,11 +394,11 @@ void genie3s_sys_out(int value)
 
   /* HRG page */
   if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-    genie3s_hrg((value & (1 << 1)) != 0);
+    genie3s_hrg(value & (1 << 1));
 
   /* Slow-Down on ROM access */
   if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
-    trs_timer_speed((value & (1 << 2)) != 0);
+    trs_timer_speed(value & (1 << 2));
 
   sys_byte = value;
 }
@@ -443,7 +443,7 @@ void sys_byte_out(int value)
       break;
     case 5: /* Aster CT-80 */
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
-        trs_timer_speed(value & (1 << 0));
+        trs_timer_speed(value & 1);
       break;
     case 6: /* LNW80/II */
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
@@ -482,7 +482,7 @@ void s80z_out(int value)
   }
 
   if ((value & (1 << 6)) != (sys_byte & (1 << 6)))
-    trs_screen_inverse((value & (1 << 6)) != 0);
+    trs_screen_inverse(value & (1 << 6));
 
   sys_byte = value;
   memory_map = 0x20;
