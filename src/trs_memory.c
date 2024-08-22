@@ -348,12 +348,12 @@ void eg64_mba_out(int value)
     return;
   }
 
-  if (value & (1 << 4))
-    /* ROM access */
-    sys_byte &= ~(1 << (value & 7));
-  else
+  if (value & (1 << 3))
     /* RAM access */
     sys_byte |=  (1 << (value & 7));
+  else
+    /* ROM access */
+    sys_byte &= ~(1 << (value & 7));
 
   memory_map = 0x21;
 }
