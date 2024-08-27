@@ -692,21 +692,6 @@ void trs_screen_init(int resize)
 
   SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
 
-  if (resize && fullscreen == 0) {
-    if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
-      SDL_SetWindowSize(window, window_w, window_h);
-    else {
-      SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
-      window_w = OrigWidth * scale;
-      window_h = OrigHeight * scale;
-    }
-    SDL_SetWindowPosition(window, window_x, window_y);
-  }
-
-  SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-  SDL_ShowWindow(window);
-  SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
-
 #if defined(big_endian) && !defined(__linux)
   colors[0].r = (background) & 0xFF;
   colors[0].g = (background >> 8) & 0xFF;
@@ -732,6 +717,21 @@ void trs_screen_init(int resize)
   BlitMap(image->format->palette, screen->format);
   bitmap_init(trs_clones.model == GENIE3S);
   trs_screen_refresh();
+
+  if (resize && fullscreen == 0) {
+    if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
+      SDL_SetWindowSize(window, window_w, window_h);
+    else {
+      SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+      window_w = OrigWidth * scale;
+      window_h = OrigHeight * scale;
+    }
+    SDL_SetWindowPosition(window, window_x, window_y);
+  }
+
+  SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  SDL_ShowWindow(window);
+  SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
 }
 
 void trs_get_window(int *x, int *y, int *w, int *h)
