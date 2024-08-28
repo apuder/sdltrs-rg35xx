@@ -18,14 +18,14 @@
 #define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
 #define TCS_GENIE3S     (9) /* TCS Genie IIIs 1024 KB */
 
-int    trs80_model3_mem_read(int address);
-void   trs80_model3_mem_write(int address, int value);
-Uint8 *trs80_model3_mem_addr(int address, int writing);
+extern int    trs80_model3_mem_read(int address);
+extern void   trs80_model3_mem_write(int address, int value);
+extern Uint8 *trs80_model3_mem_addr(int address, int writing);
 
-void   mem_video_page(int offset);
-Uint8  mem_video_page_read(int vaddr);
-int    mem_video_page_write(int vaddr, Uint8 value);
-Uint8 *mem_video_page_addr(int vaddr);
+extern void   mem_video_page(int offset);
+extern Uint8  mem_video_page_read(int vaddr);
+extern int    mem_video_page_write(int vaddr, Uint8 value);
+extern Uint8 *mem_video_page_addr(int vaddr);
 
 extern int  get_mem_map(void);
 extern void mem_bank(int which);
