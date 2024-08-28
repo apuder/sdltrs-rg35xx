@@ -116,6 +116,8 @@ static void help_message(void)
   rom <addr> = <value> .. Change byte in ROM\n\
   in <port> ............. Input from given I/O port\n\
   out <port> = <value> .. Output to given I/O port\n\
+  peek <addr> ........... Show value of specified hex address\n\
+  poke <addr> , <value> . Write value to specified hex address\n\
   load <start> <file> ... Load memory from file to specified hex address\n\
   save <start> , <end> <file> ........ Save memory in range of specified\n\
   save <start> / <num bytes> <file>    hex addresses to file\n\
@@ -716,6 +718,20 @@ void debug_shell(void)
 	    {
 		puts("Pressing reset button.");
 		trs_reset(0);
+	    }
+	    else if(!strcmp(command, "peek"))
+	    {
+		unsigned int addr;
+
+		if (sscanf(input, "%*s %x", &addr) == 1)
+		    printf("%x = %x\n", addr, mem_peek(addr));
+	    }
+	    else if(!strcmp(command, "poke"))
+	    {
+		unsigned int addr, value;
+
+		if (sscanf(input, "%*s %x, %x", &addr, &value) == 2)
+		    mem_poke(addr, value);
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {

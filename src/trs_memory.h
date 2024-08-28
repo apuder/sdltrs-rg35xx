@@ -24,6 +24,8 @@ extern int    trs80_model3_mem_read(int address);
 extern void   trs80_model3_mem_write(int address, int value);
 extern Uint8 *trs80_model3_mem_addr(int address, int writing);
 
+extern int    mem_peek(int address);
+extern void   mem_poke(int address, int value);
 extern int    mem_read(int address);
 extern void   mem_write(int address, int value);
 extern void   rom_write(int address, int value);

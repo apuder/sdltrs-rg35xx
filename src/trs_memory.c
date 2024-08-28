@@ -690,6 +690,20 @@ int trs80_model3_mem_read(int address)
   return 0xFF;
 }
 
+int mem_peek(int address)
+{
+  if (address < MAX_MEMORY_SIZE)
+    return memory[address];
+  else
+    return 0xFF;
+}
+
+void mem_poke(int address, int value)
+{
+  if (address < MAX_MEMORY_SIZE)
+    memory[address] = value;
+}
+
 int mem_read(int address)
 {
   address &= 0xFFFF; /* allow callers to be sloppy */
