@@ -5,7 +5,6 @@
 
 /* Locations for Model I, Model III, and Model 4 map 0 */
 #define VIDEO_START     (0x3C00)
-#define PRINTER_ADDRESS (0x37E8)
 #define KEYBOARD_START  (0x3800)
 #define RAM_START       (0x4000)
 
