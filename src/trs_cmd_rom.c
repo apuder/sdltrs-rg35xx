@@ -43,6 +43,7 @@
 #include "error.h"
 #include "trs.h"
 #include "trs_disk.h"
+#include "trs_memory.h"
 
 #define BUFFER_SIZE 256
 

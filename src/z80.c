@@ -61,6 +61,7 @@
 #include "error.h"
 #include "trs.h"
 #include "trs_imp_exp.h"
+#include "trs_memory.h"
 #include "trs_state_save.h"
 
 unsigned int z80_halt;

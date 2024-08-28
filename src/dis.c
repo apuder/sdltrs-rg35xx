@@ -43,6 +43,7 @@
  */
 
 #ifdef ZBX
+#include "trs_memory.h"
 #include "z80.h"
 
 /* Argument printing */

@@ -1,6 +1,8 @@
 #ifndef _TRS_MEMORY_H
 #define _TRS_MEMORY_H
 
+#include <SDL_types.h>
+
 /* Locations for Model I, Model III, and Model 4 map 0 */
 #define VIDEO_START     (0x3C00)
 #define PRINTER_ADDRESS (0x37E8)
@@ -21,6 +23,13 @@
 extern int    trs80_model3_mem_read(int address);
 extern void   trs80_model3_mem_write(int address, int value);
 extern Uint8 *trs80_model3_mem_addr(int address, int writing);
+
+extern int    mem_read(int address);
+extern void   mem_write(int address, int value);
+extern void   rom_write(int address, int value);
+extern int    mem_read_word(int address);
+extern void   mem_write_word(int address, int value);
+extern Uint8 *mem_pointer(int address, int writing);
 
 extern void   mem_video_page(int offset);
 extern Uint8  mem_video_page_read(int vaddr);
