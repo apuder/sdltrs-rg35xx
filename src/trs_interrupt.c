@@ -467,34 +467,34 @@ trs_timer_init(void)
     const struct tm *lt = localtime(&tt);
 
     if (trs_model == 1) {
-        mem_write(LDOS_MONTH,  (lt->tm_mon + 1) ^ 0x50);
-        mem_write(LDOS_DAY,     lt->tm_mday);
-        mem_write(LDOS_YEAR,    lt->tm_year - 80);
+        mem_poke(LDOS_MONTH,  (lt->tm_mon + 1) ^ 0x50);
+        mem_poke(LDOS_DAY,     lt->tm_mday);
+        mem_poke(LDOS_YEAR,    lt->tm_year - 80);
 
-        mem_write(NEWDOS_DATETIME_VALID_ADDR, NEWDOS_DATETIME_VALID_BYTE);
-        mem_write(NEWDOS_MONTH, lt->tm_mon + 1);
-        mem_write(NEWDOS_DAY,   lt->tm_mday);
-        mem_write(NEWDOS_YEAR,  lt->tm_year % 100);
-        mem_write(NEWDOS_HOUR,  lt->tm_hour);
-        mem_write(NEWDOS_MIN,   lt->tm_min);
-        mem_write(NEWDOS_SEC,   lt->tm_sec);
+        mem_poke(NEWDOS_DATETIME_VALID_ADDR, NEWDOS_DATETIME_VALID_BYTE);
+        mem_poke(NEWDOS_MONTH, lt->tm_mon + 1);
+        mem_poke(NEWDOS_DAY,   lt->tm_mday);
+        mem_poke(NEWDOS_YEAR,  lt->tm_year % 100);
+        mem_poke(NEWDOS_HOUR,  lt->tm_hour);
+        mem_poke(NEWDOS_MIN,   lt->tm_min);
+        mem_poke(NEWDOS_SEC,   lt->tm_sec);
     } else {
-        mem_write(LDOS3_MONTH, (lt->tm_mon + 1) ^ 0x50);
-        mem_write(LDOS3_DAY,    lt->tm_mday);
-        mem_write(LDOS3_YEAR,   lt->tm_year - 80);
+        mem_poke(LDOS3_MONTH, (lt->tm_mon + 1) ^ 0x50);
+        mem_poke(LDOS3_DAY,    lt->tm_mday);
+        mem_poke(LDOS3_YEAR,   lt->tm_year - 80);
 
-        mem_write(NEWDOS3_DATETIME_VALID_ADDR, NEWDOS_DATETIME_VALID_BYTE);
-        mem_write(NEWDOS3_MONTH,lt->tm_mon + 1);
-        mem_write(NEWDOS3_DAY,  lt->tm_mday);
-        mem_write(NEWDOS3_YEAR, lt->tm_year % 100);
-        mem_write(NEWDOS3_HOUR, lt->tm_hour);
-        mem_write(NEWDOS3_MIN,  lt->tm_min);
-        mem_write(NEWDOS3_SEC,  lt->tm_sec);
+        mem_poke(NEWDOS3_DATETIME_VALID_ADDR, NEWDOS_DATETIME_VALID_BYTE);
+        mem_poke(NEWDOS3_MONTH,lt->tm_mon + 1);
+        mem_poke(NEWDOS3_DAY,  lt->tm_mday);
+        mem_poke(NEWDOS3_YEAR, lt->tm_year % 100);
+        mem_poke(NEWDOS3_HOUR, lt->tm_hour);
+        mem_poke(NEWDOS3_MIN,  lt->tm_min);
+        mem_poke(NEWDOS3_SEC,  lt->tm_sec);
 
         if (trs_model >= 4) {
-          mem_write(LDOS4_MONTH,lt->tm_mon + 1);
-          mem_write(LDOS4_DAY,  lt->tm_mday);
-          mem_write(LDOS4_YEAR, lt->tm_year);
+          mem_poke(LDOS4_MONTH,lt->tm_mon + 1);
+          mem_poke(LDOS4_DAY,  lt->tm_mday);
+          mem_poke(LDOS4_YEAR, lt->tm_year);
         }
     }
   }
