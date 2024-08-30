@@ -525,22 +525,15 @@ trs_timer_speed(int fast)
      * of port 0xec to select the Z80 CPU clock rate:
      *
      * Bit 7:  Bit 6:
-     *   1       1     = 8 MHz
-     *   1       0     = 5 MHz
-     *   0       1     = 4 MHz
      *   0       0     = 2 MHz
+     *   0       1     = 4 MHz
+     *   1       0     = 5 MHz
+     *   1       1     = 8 MHz
      */
-    if (fast & 0x80) {
-      if (fast & 0x40)
-        z80_state.clockMHz = CLOCK_8_MHZ;
-      else
-        z80_state.clockMHz = CLOCK_5_MHZ;
-    } else {
-      if (fast & 0x40)
-        z80_state.clockMHz = CLOCK_4_MHZ;
-      else
-        z80_state.clockMHz = CLOCK_2_MHZ;
-    }
+    static const float seatronics_MHz[] =
+        { CLOCK_2_MHZ, CLOCK_4_MHZ, CLOCK_5_MHZ, CLOCK_8_MHZ };
+
+    z80_state.clockMHz = seatronics_MHz[(fast & 0xC0) >> 6];
   } else {
     switch (trs_model) {
       case 1:
