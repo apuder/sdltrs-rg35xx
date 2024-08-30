@@ -377,8 +377,8 @@ void z80_out(int port, int value)
           case 0xEC:
             if (lowe_le18)
               lowe_le18_write_data(value);
-            else if (speedup == 3) /* Seatronics Super Speed-Up */
-              trs_timer_speed(value);
+            if (speedup == 3) /* Seatronics Super Speed-Up */
+              trs_timer_speed(value & 0xC0);
             return;
           case 0xED:
             lowe_le18_write_x(value);
