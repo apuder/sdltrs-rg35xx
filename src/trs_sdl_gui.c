@@ -2076,7 +2076,7 @@ void gui_misc_menu(void)
         trs_emtsafe = gui_popup("Emtsafe", yes_no, 2, trs_emtsafe);
         break;
       case 2:
-        snprintf(input, 5, "%4d", trs_year);
+        snprintf(input, 5, "%d", trs_year);
         if (gui_input("Enter year (0 to disable)",
             input, input, 4, 0) > 0) {
           trs_year = atoi(input);
