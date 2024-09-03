@@ -1344,7 +1344,7 @@ void gui_disk_options(void)
     }
     else switch (selection) {
       case 9:
-        trs_disk_controller = gui_popup("FDC", yes_no, 2, trs_disk_controller);
+        trs_disk_controller = gui_popup("Floppy", yes_no, 2, trs_disk_controller);
         break;
       case 10:
         trs_disk_doubler = gui_popup("Doubler", doubler, 4, trs_disk_doubler);
@@ -1952,7 +1952,7 @@ void gui_display_menu(void)
         }
         break;
       case 6:
-        value = gui_popup("Charset 4/4P", font34, 3, trs_charset4 - 7) + 7;
+        value = gui_popup("Charset 4", font34, 3, trs_charset4 - 7) + 7;
         if (value != trs_charset4) {
           trs_charset4 = value;
           resize = 0;
@@ -2073,7 +2073,7 @@ void gui_misc_menu(void)
           gui_message("Warning", "No Printer Output in File");
         break;
       case 1:
-        trs_emtsafe = gui_popup("Emtsafe", yes_no, 2, trs_emtsafe);
+        trs_emtsafe = gui_popup("Safe", yes_no, 2, trs_emtsafe);
         break;
       case 2:
         snprintf(input, 5, "%d", trs_year);
