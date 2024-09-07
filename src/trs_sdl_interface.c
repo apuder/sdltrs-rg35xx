@@ -120,7 +120,7 @@ static Uint32 bright_red;
 static Uint32 light_orange;
 static Uint32 bright_orange;
 static Uint32 back_color;
-static Uint32 last_key[256];
+static Uint32 last_key[SDL_NUM_SCANCODES];
 
 #define PASTE_IDLE    0
 #define PASTE_GETNEXT 1
