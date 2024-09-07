@@ -522,7 +522,7 @@ void z80_out(int port, int value)
       case 0x91:
       case 0x92:
       case 0x93:
-        trs_sound_out(value & 1);
+        if (trs_model >= 4) trs_sound_out(value & 1);
         return;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
