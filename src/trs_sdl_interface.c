@@ -2143,7 +2143,7 @@ void trs_hard_led(int drive, int on_off)
       if (countdown[i]) {
         countdown[i]--;
         if (countdown[i] == 0) {
-          rect.x = led_pos * i;
+          rect.x = led_pos + 24 * i;
           SDL_FillRect(screen, &rect, light_red);
           drawnRectCount = MAX_RECTS;
         }
