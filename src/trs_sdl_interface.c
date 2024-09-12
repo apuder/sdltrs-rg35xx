@@ -1167,7 +1167,6 @@ void trs_get_event(int wait)
         trs_exit(0);
         break;
       case SDL_WINDOWEVENT:
-        trs_screen_update();
         drawnRectCount = MAX_RECTS;
         if (event.window.event & SDL_WINDOWEVENT_EXPOSED) {
           SDL_FlushEvent(SDL_KEYDOWN);
