@@ -2475,7 +2475,7 @@ void gui_joystick_menu(void)
           jbutton_map[button] = -1;
         break;
       case 6:
-        if (gui_question("Sure?") == 1) {
+        if (gui_question("Sure?")) {
           for (i = 0; i < N_JOYBUTTONS; i++)
             jbutton_map[i] = -1;
          }
