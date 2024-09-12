@@ -952,14 +952,10 @@ int gui_menu(const char *title, MENU *entry, int selection)
             case CASSETTE:
               trs_cassette_remove();
               break;
+            default:
+              continue;
           }
-
-          if (entry[selection].type != NORMAL) {
-            entry[selection].text[0] = ' ';
-            return selection;
-          }
-
-          break;
+          return selection;
         case SDLK_INSERT:
         case SDLK_RETURN:
         case SDLK_TAB:
