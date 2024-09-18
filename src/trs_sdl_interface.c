@@ -807,6 +807,8 @@ static void DrawRectangle(int orig_x, int orig_y, int copy_x, int copy_y)
 
   if (SDL_MUSTLOCK(screen))
     SDL_UnlockSurface(screen);
+
+  drawnRectCount = MAX_RECTS; /* Force redraw */
 }
 
 static void MarkSelection(void)
@@ -830,7 +832,6 @@ static void MarkSelection(void)
     selection_y1 = orig_y;
     selection_x2 = copy_x;
     selection_y2 = copy_y;
-    drawnRectCount = MAX_RECTS;
     copyStatus = COPY_DEFINED;
   } else {
     mouse = SDL_GetMouseState(&copy_x, &copy_y);
@@ -874,14 +875,12 @@ static void MarkSelection(void)
         selection_y1 = orig_y;
         selection_x2 = copy_x;
         selection_y2 = copy_y;
-        drawnRectCount = MAX_RECTS;
         copyStatus = COPY_DEFINED;
       }
       else if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT) ) {
         orig_x = copy_x;
         orig_y = copy_y;
         DrawRectangle(orig_x, orig_y, copy_x, copy_y);
-        drawnRectCount = MAX_RECTS;
         copyStatus = COPY_STARTED;
       }
       end_x = copy_x;
@@ -892,7 +891,6 @@ static void MarkSelection(void)
       if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
         DrawRectangle(orig_x, orig_y, copy_x, copy_y);
 
-      drawnRectCount = MAX_RECTS;
       end_x = copy_x;
       end_y = copy_y;
       if ((mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) == 0) {
@@ -914,13 +912,11 @@ static void MarkSelection(void)
         orig_x = end_x = copy_x;
         orig_y = end_y = copy_y;
         DrawRectangle(orig_x, orig_y, copy_x, copy_y);
-        drawnRectCount = MAX_RECTS;
         copyStatus = COPY_STARTED;
       }
       break;
     case COPY_CLEAR:
       DrawRectangle(orig_x, orig_y, end_x, end_y);
-      drawnRectCount = MAX_RECTS;
       copyStatus = COPY_IDLE;
   }
 }
