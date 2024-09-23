@@ -169,28 +169,28 @@ void mem_bank(int command)
   switch (command) {
     case 0:
       /* L64 Lower / Upper */
-      bank_offset[0] = 0 << 15;
-      bank_offset[1] = 0 << 15;
+      bank_offset[0] = 0;
+      bank_offset[1] = 0;
       break;
     case 2:
       /* L64 Lower / H64 Lower */
-      bank_offset[0] = 0 << 15;
-      bank_offset[1] = bank_base - (1 << 15);
+      bank_offset[0] = 0;
+      bank_offset[1] = bank_base - 32768;
       break;
     case 3:
       /* L64 Lower / H64 upper */
-      bank_offset[0] =  0 << 15;
-      bank_offset[1] = (0 << 15) + bank_base;
+      bank_offset[0] = 0;
+      bank_offset[1] = bank_base;
       break;
     case 6:
       /* H64 Lower / L64 upper */
-      bank_offset[0] = (0 << 15) + bank_base;
-      bank_offset[1] =  0 << 15;
+      bank_offset[0] = bank_base;
+      bank_offset[1] = 0;
       break;
     case 7:
       /* H64 Upper / L64 Upper */
-      bank_offset[0] = (1 << 15) + bank_base;
-      bank_offset[1] =  0 << 15;
+      bank_offset[0] = bank_base + 32768;
+      bank_offset[1] = 0;
       break;
     default:
       error("unknown mem_bank command %d", command);
