@@ -231,6 +231,8 @@ void mem_card_out(int card, int bits)
         if (bits & (1 << 3))
           bank_base += 32768;
       }
+      bank_offset[0] = bank_base; /* Low 32K for banking */
+      bank_offset[1] = 0;
       break;
     case HUFFMAN:
       bank_base = (bits & 0x1F) << 16;
@@ -822,10 +824,7 @@ int mem_read(int address)
           return trs_kb_mem_read(address);
       }
       /* Bank 0: RAM */
-      if (address <= 0x7FFF) /* Low 32 KB for Genieplus Banking */
-        return memory[address + bank_base];
-      else
-        return memory[address];
+      return memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
       if ((sys_byte & (1 << 0)) == 0) {
@@ -1220,10 +1219,7 @@ void mem_write(int address, int value)
         }
       }
       /* Bank 0: RAM */
-      if (address <= 0x7FFF) /* Low 32 KB for Genieplus Banking */
-        memory[address + bank_base] = value;
-      else
-        memory[address] = value;
+      memory[address + bank_offset[address >> 15]] = value;
       break;
 
     case 0x24: /* TCS Genie IIIs */
@@ -1569,10 +1565,7 @@ Uint8 *mem_pointer(int address, int writing)
           return &video[address - VIDEO_START];
       }
       /* Bank 0: RAM */
-      if (address <= 0x7FFF) /* Low 32 KB for Genieplus Banking */
-        return &memory[address + bank_base];
-      else
-        return &memory[address];
+      return &memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
       if ((sys_byte & (1 << 0)) == 0) {
