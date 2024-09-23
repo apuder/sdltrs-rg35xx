@@ -638,7 +638,7 @@ void trs_screen_init(int resize)
     window = SDL_CreateWindow(NULL,
                               window_x, window_y,
                               800, 600,
-                              SDL_WINDOW_HIDDEN|SDL_WINDOW_RESIZABLE);
+                              SDL_WINDOW_RESIZABLE);
     if (window == NULL)
       fatal("SDL_CreateWindow failed: %s", SDL_GetError());
 
@@ -730,7 +730,6 @@ void trs_screen_init(int resize)
   }
 
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-  SDL_ShowWindow(window);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
 }
 
