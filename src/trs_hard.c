@@ -287,9 +287,6 @@ void trs_hard_out(int port, int value)
     state.bytesdone = 0;
     state.command = value;
     switch (value & TRS_HARD_CMDMASK) {
-    default:
-      error("trs_hard: unknown command 0x%02X", value);
-      break;
     case TRS_HARD_RESTORE:
       hard_restore();
       break;
@@ -310,6 +307,9 @@ void trs_hard_out(int port, int value)
       break;
     case TRS_HARD_SEEK:
       hard_seek();
+      break;
+    default:
+      error("trs_hard: unknown command 0x%02X", value);
       break;
     }
     break;
