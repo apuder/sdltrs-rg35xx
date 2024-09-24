@@ -826,13 +826,13 @@ int mem_read(int address)
       return memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0) {
+      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
         if (sys_byte & (1 << 4)) {
           /* 2K Video RAM */
-          if (address >= KEYBOARD_START && address <= 0x3FFF)
+          if (address >= KEYBOARD_START)
             return video[(address + video_addr) & 0x7FF];
         } else {
-          if (address >= VIDEO_START && address <= 0x3FFF)
+          if (address >= VIDEO_START)
             return video[address + video_addr];
           if (address >= KEYBOARD_START && address <= 0x38FF)
             return trs_kb_mem_read(address);
@@ -1222,15 +1222,15 @@ void mem_write(int address, int value)
       break;
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0) {
+      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
         if (sys_byte & (1 << 4)) {
           /* 2K Video RAM */
-          if (address >= KEYBOARD_START && address <= 0x3FFF) {
+          if (address >= KEYBOARD_START) {
             trs80_screen_write_char((address + video_addr) & 0x7FF, value);
             return;
           }
         } else {
-          if (address >= VIDEO_START && address <= 0x3FFF) {
+          if (address >= VIDEO_START) {
             trs80_screen_write_char(address + video_addr, value);
             return;
           }
@@ -1567,13 +1567,13 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0) {
+      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
         if (sys_byte & (1 << 4)) {
           /* 2K Video RAM */
-          if (address >= KEYBOARD_START && address <= 0x3FFF)
+          if (address >= KEYBOARD_START)
             return &video[(address + video_addr) & 0x7FF];
         } else {
-          if (address >= VIDEO_START && address <= 0x3FFF)
+          if (address >= VIDEO_START)
             return &video[address + video_addr];
         }
       }
