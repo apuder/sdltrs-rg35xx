@@ -228,8 +228,7 @@ void mem_card_out(int card, int bits)
       bank_base = (bits & 0x07) << 16;
       if (bank_base) {
         /* Select upper 32K of bank */
-        if (bits & (1 << 3))
-          bank_base += 32768;
+        bank_base += (bits & (1 << 3)) << 12;
       }
       bank_offset[0] = bank_base; /* Low 32K for banking */
       bank_offset[1] = 0;
