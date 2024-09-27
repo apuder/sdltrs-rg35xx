@@ -795,11 +795,10 @@ int mem_read(int address)
         else
           return trs80_model1_mmio(address);
       }
+      /* Read from Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        /* Read from "Expander RAM" */
-        return memory[address + 0x8000];
-      else
-        return memory[address];
+        address += 0x8000;
+      return memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       /* Bit 0 - Bank 1: ROM/EPROM */
@@ -907,9 +906,8 @@ int mem_read(int address)
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        return memory[address + 0x8000];
-      else
-        return memory[address];
+        address += 0x8000;
+      return memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit (RAM 192 B) */
@@ -1182,11 +1180,10 @@ void mem_write(int address, int value)
           trs80_model1_write_mmio(address, value);
         return;
       }
+      /* Write to Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        /* Write to "Expander RAM" */
-        memory[address + 0x8000] = value;
-      else
-        memory[address] = value;
+        address += 0x8000;
+      memory[address] = value;
       break;
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
@@ -1319,9 +1316,8 @@ void mem_write(int address, int value)
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        memory[address + 0x8000] = value;
-      else
-        memory[address] = value;
+        address += 0x8000;
+      memory[address] = value;
       break;
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1543,11 +1539,10 @@ Uint8 *mem_pointer(int address, int writing)
         else
           return trs80_model1_mmio_addr(address, writing);
       }
+      /* Read from Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        /* Read from "Expander RAM" */
-        return &memory[address + 0x8000];
-      else
-        return &memory[address];
+       address += 0x8000;
+      return &memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       /* Bit 0 - Bank 1: ROM/EPROM */
@@ -1628,9 +1623,8 @@ Uint8 *mem_pointer(int address, int writing)
       }
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        return &memory[address + 0x8000];
-      else
-        return &memory[address];
+        address += 0x8000;
+      return &memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit (RAM 192 B) */
