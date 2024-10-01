@@ -658,7 +658,7 @@ void trs_screen_init(int resize)
     if (screen == NULL)
       fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
 
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
     light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
     bright_red    = SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
     light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x40);
@@ -692,7 +692,7 @@ void trs_screen_init(int resize)
 
   SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
 
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
   colors[0].r = (background) & 0xFF;
   colors[0].g = (background >> 8) & 0xFF;
   colors[0].b = (background >> 16) & 0xFF;
@@ -1827,7 +1827,7 @@ boxes_init(int fg_color, int bg_color, int width, int height, int expanded)
 
     trs_box[expanded][graphics_char] =
       SDL_CreateRGBSurface(0, width, height, 32,
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
                            0x000000ff, 0x0000ff00, 0x00ff0000, 0);
 #else
                            0x00ff0000, 0x0000ff00, 0x000000ff, 0);
@@ -1881,7 +1881,7 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
 
   return SDL_CreateRGBSurfaceFrom(fontdata, TRS_CHAR_WIDTH * scale_x,
          MAX_CHAR_HEIGHT * scale_factor, 32, TRS_CHAR_WIDTH * scale_x * 4,
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
          0x000000ff, 0x0000ff00, 0x00ff0000, 0);
 #else
          0x00ff0000, 0x0000ff00, 0x000000ff, 0);
@@ -2267,7 +2267,7 @@ static void trs_screen_rect(int x, int y, int w, int h, int color)
   rect.h = h;
 
   SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format,
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
       (color & 0xFF),
       (color >> 8) & 0xFF,
       (color >> 16) & 0xFF));
@@ -2987,7 +2987,7 @@ int trs_sdl_savebmp(const char *filename)
 {
   SDL_Surface *buffer = SDL_CreateRGBSurface(SDL_SWSURFACE,
       OrigWidth, screen_height, 32,
-#if defined(big_endian) && !defined(__linux)
+#if defined(big_endian) && !defined(__linux__)
       0x000000ff, 0x0000ff00, 0x00ff0000, 0);
 #else
       0x00ff0000, 0x0000ff00, 0x000000ff, 0);

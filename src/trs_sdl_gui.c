@@ -155,7 +155,7 @@ static int  gui_matrix(const char *title, const char **entry, int rows, int cols
 static int  gui_question(const char *text);
 static int  gui_file_overwrite(void);
 static void gui_disk_creation(void);
-#ifdef __linux
+#ifdef __linux__
 static void gui_disk_steps(void);
 #endif
 static void gui_disk_options(void);
@@ -1262,7 +1262,7 @@ void gui_disk_creation(void)
   }
 }
 
-#ifdef __linux
+#ifdef __linux__
 void gui_disk_steps(void)
 {
   MENU menu[] =
@@ -1311,7 +1311,7 @@ void gui_disk_options(void)
    {"Floppy Disk Controller                             ", NORMAL},
    {"Doubler Type                                       ", NORMAL},
    {"True DAM Emulation                                 ", NORMAL},
-#ifdef __linux
+#ifdef __linux__
    {"Set Drive Steps", NORMAL},
 #endif
    {"", 0}};
@@ -1348,7 +1348,7 @@ void gui_disk_options(void)
       case 11:
         trs_disk_truedam = gui_popup("True DAM", yes_no, 2, trs_disk_truedam);
         break;
-#ifdef __linux
+#ifdef __linux__
       case 12:
         gui_disk_steps();
         break;

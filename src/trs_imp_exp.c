@@ -590,7 +590,7 @@ void do_emt_misc(void)
   case 7:
     trs_disk_setsize(Z80_BC, Z80_HL);
     break;
-#ifdef __linux
+#ifdef __linux__
   case 8:
     Z80_HL = trs_disk_getstep(Z80_BC);
     break;

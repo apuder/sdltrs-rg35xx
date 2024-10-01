@@ -49,7 +49,7 @@
 /*#define UARTDEBUG 1*/
 /*#define UARTDEBUG2 1*/
 
-#if __linux
+#if __linux__
 char trs_uart_name[FILENAME_MAX] = "/dev/ttyS0";
 #else
 char trs_uart_name[FILENAME_MAX] = "";

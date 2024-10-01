@@ -94,7 +94,7 @@ extern char scale_quality;
 static int debugger;
 
 static int disksizes[8];
-#ifdef __linux
+#ifdef __linux__
 static int disksteps[8];
 #endif
 
@@ -106,7 +106,7 @@ static void opt_disk(char *arg, int intarg, int *stringarg);
 static void opt_diskset(char *arg, int intarg, int *stringarg);
 static void opt_dirname(char *arg, int intarg, int *stringarg);
 static void opt_doubler(char *arg, int intarg, int *stringarg);
-#ifdef __linux
+#ifdef __linux__
 static void opt_doublestep(char *arg, int intarg, int *stringarg);
 static void opt_stepmap(char *arg, int intarg, int *stringarg);
 #endif
@@ -197,7 +197,7 @@ static const struct {
   { "ds",              opt_diskset,       1, 0, NULL                  },
   { "dsd",             opt_dirname,       1, 0, trs_disk_set_dir      },
   { "dx",              opt_value,         0, 0, &trs_disk_controller  },
-#ifdef __linux
+#ifdef __linux__
   { "double",          opt_doublestep,    0, 2, NULL                  },
   { "doublestep",      opt_doublestep,    0, 2, NULL                  },
   { "nodouble",        opt_doublestep,    0, 1, NULL                  },
@@ -576,7 +576,7 @@ static void opt_doubler(char *arg, int intarg, int *stringarg)
     }
 }
 
-#ifdef __linux
+#ifdef __linux__
 static void opt_doublestep(char *arg, int intarg, int *stringarg)
 {
   int i;
@@ -864,7 +864,7 @@ static void trs_disk_setsizes(void)
   }
 }
 
-#ifdef __linux
+#ifdef __linux__
 static void trs_disk_setsteps(void)
 {
   int i;
@@ -909,7 +909,7 @@ int trs_load_config_file(void)
   disksizes[6] = 8;
   disksizes[7] = 8;
   trs_disk_setsizes();
-#ifdef __linux
+#ifdef __linux__
   /* Disk Steps are 1 for Single Step, 2 for Double Step
      Corrected by Larry Kraemer 08-01-2011 */
   disksteps[0] = 1;
@@ -1077,7 +1077,7 @@ int trs_parse_command_line(int argc, char **argv)
   }
 
   trs_disk_setsizes();
-#ifdef __linux
+#ifdef __linux__
   trs_disk_setsteps();
 #endif
   return debugger;
@@ -1193,7 +1193,7 @@ int trs_write_config_file(const char *filename)
       speedup == 7 ? "tcs-speedmaster" : "none");
 
   fprintf(config_file, "statedir=%s\n", trs_state_dir);
-#ifdef __linux
+#ifdef __linux__
   /* Corrected to trs_disk_getstep vs getsize by Larry Kraemer 08-01-2011 */
   fprintf(config_file, "stepmap=%d,%d,%d,%d,%d,%d,%d,%d\n",
       trs_disk_getstep(0), trs_disk_getstep(1), trs_disk_getstep(2), trs_disk_getstep(3),

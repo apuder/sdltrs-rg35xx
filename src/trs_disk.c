@@ -50,7 +50,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#if __linux
+#if __linux__
 #include <fcntl.h>
 #include <linux/fd.h>
 #include <linux/fdreg.h>
@@ -309,7 +309,7 @@ static void real_write(void);
 static void real_readadr(void);
 static void real_readtrk(void);
 static void real_writetrk(void);
-#ifdef __linux
+#ifdef __linux__
 static int  real_rate(const DiskState *d);
 static void real_error(DiskState *d, unsigned int flags, const char *msg);
 static void real_ok(DiskState *d);
@@ -391,7 +391,7 @@ trs_disk_setsize(int unit, int value)
   disk[unit].inches = (value == 8) ? 8 : 5;
 }
 
-#ifdef __linux
+#ifdef __linux__
 void
 trs_disk_setstep(int unit, int value)
 {
@@ -425,7 +425,7 @@ trs_disk_getwriteprotect(int unit)
   return disk[unit].writeprot;
 }
 
-#ifdef __linux
+#ifdef __linux__
 int
 trs_disk_getstep(int unit)
 {
@@ -797,7 +797,7 @@ trs_disk_insert(int drive, const char *diskname)
         drive, diskname);
     return;
   }
-  #if __linux
+  #if __linux__
   if (S_ISBLK(st.st_mode)) {
     /* Real floppy drive */
     int fd;
@@ -3198,7 +3198,7 @@ trs_disk_command_write(Uint8 cmd)
   }
 }
 
-#ifdef __linux
+#ifdef __linux__
 /* Interface to real floppy drive */
 int
 real_rate(const DiskState *d)
@@ -3243,7 +3243,7 @@ real_ok(DiskState *d)
 int
 real_check_empty(DiskState *d)
 {
-#if __linux
+#if __linux__
   int reset_now = 0;
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3288,7 +3288,7 @@ real_verify(void)
 void
 real_restore(int curdrive)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3310,7 +3310,7 @@ real_restore(int curdrive)
 void
 real_seek(void)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3346,7 +3346,7 @@ real_seek(void)
 void
 real_read(void)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i, retry, new_status;
@@ -3435,7 +3435,7 @@ real_read(void)
 void
 real_write(void)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3523,7 +3523,7 @@ real_write(void)
 void
 real_readadr(void)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i, new_status;
@@ -3585,7 +3585,7 @@ real_readtrk(void)
 void
 real_writetrk(void)
 {
-#if __linux
+#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int gap3;
