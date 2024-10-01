@@ -1284,14 +1284,14 @@ void gui_disk_steps(void)
     for (i = 0; i < 8; i++) {
       snprintf(menu[i].text, 63,
           " %d: Drive Step                                        %s",
-          i, steps[trs_disk_getstep(i) == 1 ? 0 : 1]);
+          i, steps[trs_disk_getstep(i) - 1]);
     }
 
     gui_clear();
     if ((selection = gui_menu("Floppy Disk Step", menu, selection)) == -1)
       return;
     trs_disk_setstep(selection, gui_popup("Step", steps, 2,
-        trs_disk_getstep(selection) == 2) == 0 ? 1 : 2);
+        trs_disk_getstep(selection) - 1) + 1);
   }
 }
 #endif
@@ -1336,7 +1336,7 @@ void gui_disk_options(void)
     selection = gui_menu("Floppy Disk Options", menu, selection);
     if (selection >= 0 && selection < 8) {
       trs_disk_setsize(selection, gui_popup("Size", disk_size, 2,
-          trs_disk_getsize(selection) == 8) == 0 ? 5 : 8);
+          trs_disk_getsize(selection) == 8) ? 8 : 5);
     }
     else switch (selection) {
       case 9:
