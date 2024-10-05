@@ -580,7 +580,7 @@ void debug_shell(void)
 		int bytes = 0;
 		int lines = 0;
 
-		if(sscanf(input, "%*s %x , %x", &x, &y) == 2)
+		if(sscanf(input, "%*s %x %*c %x", &x, &y) == 2)
 		{
 		    start = x;
 		    bytes = (y - x) & 0xffff;
@@ -626,7 +626,7 @@ void debug_shell(void)
 	    {
 		unsigned int port, value;
 
-		if(sscanf(input, "out %x = %x", &port, &value) == 2)
+		if(sscanf(input, "out %x %*c %x", &port, &value) == 2)
 			z80_out(port, value);
 		else
 			puts("A port and a value must be specified.\n");
@@ -730,14 +730,14 @@ void debug_shell(void)
 	    {
 		unsigned int addr, value;
 
-		if (sscanf(input, "%*s %x, %x", &addr, &value) == 2)
+		if (sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
 		    mem_poke(addr, value);
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {
 		unsigned int addr, value;
 
-		if (sscanf(input, "%*s %x = %x", &addr, &value) == 2)
+		if (sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
 		{
 		    if ((int)addr < trs_rom_size)
 			rom_write(addr, value);
@@ -759,7 +759,7 @@ void debug_shell(void)
 		char regname[MAXLINE];
 		unsigned int addr, value;
 
-		if(sscanf(input, "%*s $%[a-zA-Z'] = %x", regname, &value) == 2)
+		if(sscanf(input, "%*s $%[a-zA-Z'] %*c %x", regname, &value) == 2)
 		{
 		    if(!strcasecmp(regname, "a")) {
 			Z80_A = value;
@@ -810,7 +810,7 @@ void debug_shell(void)
 			printf("Unrecognized register name '%s'.\n", regname);
 		    }
 		}
-		else if(sscanf(input, "%*s %x = %x", &addr, &value) == 2)
+		else if(sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
 		{
 			mem_write(addr, value);
 		}
@@ -956,13 +956,13 @@ void debug_shell(void)
 		unsigned int start_address, end_address, num_bytes;
 		char *file = input;
 
-		if(sscanf(input, "save %x, %x %s", &start_address, &end_address, file) == 3)
-		{
-		    save_memory(start_address, end_address - start_address + 1, file);
-		}
-		else if(sscanf(input, "save %x / %x %s", &start_address, &num_bytes, file) == 3)
+		if(sscanf(input, "save %x / %x %s", &start_address, &num_bytes, file) == 3)
 		{
 		    save_memory(start_address, num_bytes, file);
+		}
+		else if(sscanf(input, "save %x %*c %x %s", &start_address, &end_address, file) == 3)
+		{
+		    save_memory(start_address, end_address - start_address + 1, file);
 		}
 	    }
 	    else if(!strcmp(command, "state"))
@@ -982,13 +982,13 @@ void debug_shell(void)
 	    {
 		unsigned int start_address, end_address, num_bytes;
 
-		if(sscanf(input, "%x , %x", &start_address, &end_address) == 2)
-		{
-		    print_memory(start_address, end_address - start_address + 1);
-		}
-		else if(sscanf(input, "%x / %x ", &start_address, &num_bytes) == 2)
+		if(sscanf(input, "%x / %x ", &start_address, &num_bytes) == 2)
 		{
 		    print_memory(start_address, num_bytes);
+		}
+		else if(sscanf(input, "%x %*c %x", &start_address, &end_address) == 2)
+		{
+		    print_memory(start_address, end_address - start_address + 1);
 		}
 		else if(sscanf(input, "%x", &start_address) == 1)
 		{
