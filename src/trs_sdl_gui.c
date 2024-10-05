@@ -303,6 +303,8 @@ int gui_key(void)
               break;
           }
         }
+        else if (event.key.keysym.sym == SDLK_F7)
+          return SDLK_ESCAPE;
         else if (event.key.keysym.sym == SDLK_F8)
           trs_exit(!(event.key.keysym.mod & KMOD_SHIFT));
         else if (event.key.keysym.sym < 0x20 ||
@@ -718,7 +720,6 @@ read_dir:
           break;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
-        case SDLK_F7:
           gui_delete_filelist();
           return -1;
       }
@@ -824,7 +825,6 @@ redraw:
         output[len] = 0;
         return len;
       case SDLK_ESCAPE:
-      case SDLK_F7:
         return -1;
       case SDLK_DOWN:
       case SDLK_TAB:
@@ -1000,7 +1000,6 @@ int gui_menu(const char *title, MENU *entry, int selection)
           return selection;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
-        case SDLK_F7:
           return -1;
       }
     }
@@ -1071,7 +1070,6 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
           return selection;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
-        case SDLK_F7:
           return saved_selection;
       }
     }
@@ -1153,7 +1151,6 @@ int gui_matrix(const char *title, const char **entry, int rows, int cols, int se
         return selection;
       case SDLK_BACKSPACE:
       case SDLK_ESCAPE:
-      case SDLK_F7:
         return -1;
     }
   }
@@ -2349,7 +2346,6 @@ int gui_joystick_button(void)
             break;
           case SDLK_BACKSPACE:
           case SDLK_ESCAPE:
-          case SDLK_F7:
             return -1;
           default:
             break;
