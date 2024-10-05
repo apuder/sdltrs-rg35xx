@@ -77,7 +77,7 @@ static struct
     Uint8 byte; /* used only by watchpoints */
 } trap_table[MAX_TRAPS];
 
-static void help_message(void)
+static void help(void)
 {
     puts("(zbx) commands:\n\
 \nRunning:\n\
@@ -157,7 +157,7 @@ static const char *trap_name(int flag)
     }
 }
 
-static void show_zbxinfo(void)
+static void info(void)
 {
     puts("zbx: Z80 debugger by David Gingold, Alex Wolman, and Timothy"
          " Mann\n");
@@ -274,7 +274,7 @@ static void clear_trap_address(int address, int flag)
     }
 }
 
-static void debug_print_registers(void)
+static void print_registers(void)
 {
     puts("\n       S Z - H - PV N C   IFF1 IFF2 IM");
     printf("Flags: %d %d %d %d %d  %d %d %d     %d    %d   %d\n\n",
@@ -387,7 +387,7 @@ static void save_memory(Uint16 address, int num_bytes, const char *filename)
     }
 }
 
-static void debug_run(void)
+static void run(void)
 {
     Uint8 t = traps[Z80_PC];
 
@@ -532,11 +532,11 @@ void debug_shell(void)
 	    if(!strcmp(command, "help") || !strcmp(command, "?") ||
 	       !strcmp(command, "h"))
 	    {
-		help_message();
+		help();
 	    }
 	    else if (!strcmp(command, "zbxinfo") || !strcmp(command, "i"))
 	    {
-		show_zbxinfo();
+		info();
 	    }
 	    else if(!strcmp(command, "clear") || !strcmp(command, "cl"))
 	    {
@@ -550,11 +550,11 @@ void debug_shell(void)
 		if(sscanf(input, "%*s %x", &address) == 1) {
 			Z80_PC = address & 0xFFFF;
 		}
-		debug_run();
+		run();
 	    }
 	    else if(!strcmp(command, "dump") || !strcmp(command, "p"))
 	    {
-		debug_print_registers();
+		print_registers();
 	    }
 	    else if(!strcmp(command, "delete") || !strcmp(command, "d"))
 	    {
@@ -694,13 +694,13 @@ void debug_shell(void)
 		}
 		if (is_call) {
 		    set_trap((Z80_PC + 3) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
-		    debug_run();
+		    run();
 		} else if (is_rst) {
 		    set_trap((Z80_PC + 1) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
-		    debug_run();
+		    run();
 		} else if (is_rep) {
 		    set_trap((Z80_PC + 2) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
-		    debug_run();
+		    run();
 		} else {
 		    z80_run((!strcmp(command, "nextint") || !strcmp(command, "ni")) ? 0 : -1);
 		}
@@ -747,7 +747,7 @@ void debug_shell(void)
 	    {
 		puts("Performing hard reset and running.");
 		trs_reset(1);
-		debug_run();
+		run();
 	    }
 	    else if(!strcmp(command, "status") || !strcmp(command, "st"))
 	    {
