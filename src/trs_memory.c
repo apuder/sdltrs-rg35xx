@@ -910,9 +910,12 @@ int mem_read(int address)
       return memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
-      /* Expansions bit (RAM 192 B) */
-      if ((sys_byte & (1 << 7)) && address <= 0xBFFF)
-        return memory[address + bank_base];
+      /* Expansions bit */
+      if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
+        if (sys_byte & (1 << 0))
+          /* RAM 192 B */
+          return memory[address + bank_base];
+      }
       /* HRG in low 16K */
       if ((sys_byte & (1 << 3)) && address <= 0x3FFF) {
         hrg_write_addr(address, 0x3FFF);
@@ -1321,10 +1324,13 @@ void mem_write(int address, int value)
       break;
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
-      /* Expansions bit (RAM 192 B) */
+      /* Expansions bit */
       if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
-        memory[address + bank_base] = value;
-        return;
+        if (sys_byte & (1 << 0)) {
+          /* RAM 192 B */
+          memory[address + bank_base] = value;
+          return;
+        }
       }
       /* HRG in low 16K */
       if ((sys_byte & (1 << 3)) && address <= 0x3FFF) {
@@ -1627,9 +1633,12 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
-      /* Expansions bit (RAM 192 B) */
-      if ((sys_byte & (1 << 7)) && address <= 0xBFFF)
-        return &memory[address + bank_base];
+      /* Expansions bit */
+      if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
+        if (sys_byte & (1 << 0))
+          /* RAM 192 B */
+          return &memory[address + bank_base];
+      }
       /* ROM and MMIO */
       if ((sys_byte & (1 << 0)) == 0) {
         if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
