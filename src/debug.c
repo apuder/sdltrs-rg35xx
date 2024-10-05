@@ -96,7 +96,7 @@ static void help(void)
   l(ist) <start> , <end>  Disassemble instructions in the range of hex addresses\n\
   <start> , <end> ....... Print memory values in specified address range\n\
   <start> / <num bytes> . Print number of memory values starting at hex address\n\
-  <addr> = .............. Print memory value at specified hex address\n\
+  <addr> ................ Print memory value at specified hex address\n\
   tr(ace)on ............. Enable tracing of all instructions\n\
   tr(ace)off ............ Disable tracing\n\
   d(isk)d(ump) .......... Print state of floppy disk controller emulation\n\
@@ -982,7 +982,7 @@ void debug_shell(void)
 	    {
 		unsigned int start_address, end_address, num_bytes;
 
-		if(sscanf(input, "%x , %x / ", &start_address, &end_address) == 2)
+		if(sscanf(input, "%x , %x", &start_address, &end_address) == 2)
 		{
 		    print_memory(start_address, end_address - start_address + 1);
 		}
@@ -990,7 +990,7 @@ void debug_shell(void)
 		{
 		    print_memory(start_address, num_bytes);
 		}
-		else if(sscanf(input, "%x = ", &start_address) == 1)
+		else if(sscanf(input, "%x", &start_address) == 1)
 		{
 		    print_memory(start_address, 1);
 		}
