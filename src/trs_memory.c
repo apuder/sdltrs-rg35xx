@@ -227,7 +227,7 @@ void mem_card_out(int card, int bits)
       /* Genieplus Memory Card */
       bank_base = (bits & 0x07) << 16;
       if (bank_base) {
-        /* Select upper 32K of bank */
+        /* Select lower or upper 32K of bank */
         bank_base += (bits & (1 << 3)) << 12;
       }
       bank_offset[0] = bank_base; /* Low 32K for banking */
