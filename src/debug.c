@@ -314,14 +314,16 @@ static void print_memory(Uint16 address, int num_bytes)
 {
     while(num_bytes > 0)
     {
+	int byte[16];
 	int const bytes_to_print = num_bytes < 16 ? num_bytes : 16;
 	int i;
 
-	printf("%.4x:\t", address);
+	printf("%.4x: ", address);
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    printf("%.2x ", mem_read(address + i));
+	    byte[i] = mem_read(address + i);
+	    printf("%.2x ", byte[i]);
 	}
 
 	for(i = bytes_to_print; i < 16; ++i)
@@ -332,11 +334,9 @@ static void print_memory(Uint16 address, int num_bytes)
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    int const byte = mem_read(address + i);
-
-	    if(isprint(byte))
+	    if(isprint(byte[i]))
 	    {
-		putchar(byte);
+		putchar(byte[i]);
 	    }
 	    else
 	    {
