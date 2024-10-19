@@ -118,7 +118,7 @@ static void help(void)
   out <port> = <value> .. Output to given I/O port\n\
   peek <addr> ........... Show value of specified hex address\n\
   poke <addr> , <value> . Write value to specified hex address\n\
-  load <start> <file> ... Load memory from file to specified hex address\n\
+  load <addr> <file> .... Load memory from file to specified hex address\n\
   save <start> , <end> <file> ........ Save memory in range of specified\n\
   save <start> / <num bytes> <file>    hex addresses to file\n\
   state load <file> ..... Load emulator state from file\n\
@@ -721,26 +721,26 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "peek"))
 	    {
-		unsigned int addr;
+		unsigned int address;
 
-		if (sscanf(input, "%*s %x", &addr) == 1)
-		    printf("%x = %x\n", addr, mem_peek(addr));
+		if (sscanf(input, "%*s %x", &address) == 1)
+		    printf("%x = %x\n", address, mem_peek(address));
 	    }
 	    else if(!strcmp(command, "poke"))
 	    {
-		unsigned int addr, value;
+		unsigned int address, value;
 
-		if (sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
-		    mem_poke(addr, value);
+		if (sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
+		    mem_poke(address, value);
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {
-		unsigned int addr, value;
+		unsigned int address, value;
 
-		if (sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
+		if (sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		{
-		    if ((int)addr < trs_rom_size)
-			rom_write(addr, value);
+		    if ((int)address < trs_rom_size)
+			rom_write(address, value);
 		}
 	    }
 	    else if(!strcmp(command, "run") || !strcmp(command, "r"))
@@ -757,7 +757,7 @@ void debug_shell(void)
 		    !strcmp(command, "a"))
 	    {
 		char regname[MAXLINE];
-		unsigned int addr, value;
+		unsigned int address, value;
 
 		if(sscanf(input, "%*s $%[a-zA-Z'] %*c %x", regname, &value) == 2)
 		{
@@ -810,9 +810,9 @@ void debug_shell(void)
 			printf("Unrecognized register name '%s'.\n", regname);
 		    }
 		}
-		else if(sscanf(input, "%*s %x %*c %x", &addr, &value) == 2)
+		else if(sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		{
-			mem_write(addr, value);
+			mem_write(address, value);
 		}
 		else
 		{
@@ -943,26 +943,26 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "load"))
 	    {
-		unsigned int start_address;
+		unsigned int address;
 		char *file = input;
 
-		if(sscanf(input,"load %x %s", &start_address, file) == 2)
+		if(sscanf(input,"load %x %s", &address, file) == 2)
 		{
-		    load_memory(start_address, file);
+		    load_memory(address, file);
 		}
 	    }
 	    else if(!strcmp(command, "save"))
 	    {
-		unsigned int start_address, end_address, num_bytes;
+		unsigned int start, end;
 		char *file = input;
 
-		if(sscanf(input, "save %x / %x %s", &start_address, &num_bytes, file) == 3)
+		if(sscanf(input, "save %x / %x %s", &start, &end, file) == 3)
 		{
-		    save_memory(start_address, num_bytes, file);
+		    save_memory(start, end, file);
 		}
-		else if(sscanf(input, "save %x %*c %x %s", &start_address, &end_address, file) == 3)
+		else if(sscanf(input, "save %x %*c %x %s", &start, &end, file) == 3)
 		{
-		    save_memory(start_address, end_address - start_address + 1, file);
+		    save_memory(start, end - start + 1, file);
 		}
 	    }
 	    else if(!strcmp(command, "state"))
@@ -980,19 +980,19 @@ void debug_shell(void)
 	    }
 	    else
 	    {
-		unsigned int start_address, end_address, num_bytes;
+		unsigned int start, end;
 
-		if(sscanf(input, "%x / %x ", &start_address, &num_bytes) == 2)
+		if(sscanf(input, "%x / %x ", &start, &end) == 2)
 		{
-		    print_memory(start_address, num_bytes);
+		    print_memory(start, end);
 		}
-		else if(sscanf(input, "%x %*c %x", &start_address, &end_address) == 2)
+		else if(sscanf(input, "%x %*c %x", &start, &end) == 2)
 		{
-		    print_memory(start_address, end_address - start_address + 1);
+		    print_memory(start, end - start + 1);
 		}
-		else if(sscanf(input, "%x", &start_address) == 1)
+		else if(sscanf(input, "%x", &start) == 1)
 		{
-		    print_memory(start_address, 1);
+		    print_memory(start, 1);
 		}
 		else
 		{
