@@ -724,6 +724,7 @@ void trs_screen_init(int resize)
       window_h = OrigHeight * scale;
     }
     SDL_SetWindowPosition(window, window_x, window_y);
+    SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
   }
 
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
