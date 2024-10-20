@@ -1855,7 +1855,6 @@ void gui_display_menu(void)
   const char *font34[] = {"     Katakana",
                           "International",
                           "         Bold"};
-  extern int aspect_ratio;
   int selection = 0;
   int gui_charset1 = trs_charset1 >= 10 ? trs_charset1 - 6 : trs_charset1;
 

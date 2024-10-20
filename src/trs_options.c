@@ -53,6 +53,7 @@
 #endif
 
 /* Public data */
+int aspect_ratio;
 int foreground;
 int background;
 int gui_foreground;
@@ -74,6 +75,7 @@ int scanlines;
 int scanshade;
 int window_border_width;
 int turbo_paste;
+char scale_quality = '1';
 char romfile1[FILENAME_MAX];
 char romfile3[FILENAME_MAX];
 char romfile4p[FILENAME_MAX];
@@ -86,9 +88,6 @@ char trs_printer_dir[FILENAME_MAX];
 char trs_cmd_file[FILENAME_MAX];
 char trs_config_file[FILENAME_MAX];
 char trs_state_file[FILENAME_MAX];
-
-extern int  aspect_ratio;
-extern char scale_quality;
 
 /* Private data */
 static int debugger;
@@ -896,6 +895,7 @@ int trs_load_config_file(void)
 
   trs_cassette_remove();
 
+  aspect_ratio = 1;
   background = BLACK;
   cassette_default_sample_rate = MAX_SAMPLE_RATE;
   /* Disk Sizes are 5" or 8"

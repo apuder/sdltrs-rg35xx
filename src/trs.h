@@ -53,6 +53,7 @@
 #define DIR_SLASH '/'
 #endif
 
+extern char scale_quality;
 extern char romfile1[];
 extern char romfile3[];
 extern char romfile4p[];
@@ -118,6 +119,7 @@ extern void clear_key_queue(void);
 extern int  stretch_amount;
 extern int  trs_kb_bracket_state;
 
+extern int aspect_ratio;
 extern int scale;
 extern int resize3;
 extern int resize4;

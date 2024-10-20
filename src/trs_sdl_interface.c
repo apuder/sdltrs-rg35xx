@@ -69,9 +69,6 @@
 #define TRS_CHAR_HEIGHT  12
 #define TRS_CHAR_HEIGHT4 10
 
-/* Public data */
-int  aspect_ratio  = 1;
-char scale_quality = '1';
 
 /* Private data */
 #include "trs_chars.c"
