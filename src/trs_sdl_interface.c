@@ -625,69 +625,78 @@ void trs_screen_init(int resize)
   }
 
   screen_height = OrigHeight - led_height;
+  bitmap_init(trs_clones.model == GENIE3S);
 
-  paste_state = 0;
-  paste_lastkey = 0;
-  copyStatus = 0;
-  selectAll = 0;
+  if (resize) {
+    if (window == NULL) {
+      window = SDL_CreateWindow(NULL,
+                                window_x, window_y,
+                                800, 600,
+                                SDL_WINDOW_RESIZABLE);
+      if (window == NULL)
+        fatal("SDL_CreateWindow failed: %s", SDL_GetError());
 
-  if (window == NULL) {
-    window = SDL_CreateWindow(NULL,
-                              window_x, window_y,
-                              800, 600,
-                              SDL_WINDOW_RESIZABLE);
-    if (window == NULL)
-      fatal("SDL_CreateWindow failed: %s", SDL_GetError());
+      render = SDL_CreateRenderer(window, -1, 0);
+      if (render == NULL)
+        fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
 
-    render = SDL_CreateRenderer(window, -1, 0);
-    if (render == NULL)
-      fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
+#if SDLDEBUG
+      SDL_GetRendererInfo(render, &renderinfo);
+      debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
+      debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
+#endif
+
+      screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
+      if (screen == NULL)
+        fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+
+#if defined(big_endian) && !defined(__linux__)
+      light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
+      bright_red    = SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
+      light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x40);
+      bright_orange = SDL_MapRGB(screen->format, 0x00, 0xa0, 0xff);
+#else
+      light_red     = SDL_MapRGB(screen->format, 0x40, 0x00, 0x00);
+      bright_red    = SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
+      light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x00);
+      bright_orange = SDL_MapRGB(screen->format, 0xff, 0xa0, 0x00);
+#endif
+
+      image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2,
+                                       1, G_XSIZE, 1, 1, 1, 0);
+      if (image == NULL)
+        fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+    }
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, &scale_quality);
 
-#if SDLDEBUG
-    SDL_GetRendererInfo(render, &renderinfo);
-    debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
-    debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
-#endif
+    if (texture)
+      SDL_DestroyTexture(texture);
+    texture = SDL_CreateTexture(render,
+                                SDL_PIXELFORMAT_ARGB8888,
+                                SDL_TEXTUREACCESS_STREAMING,
+                                OrigWidth, OrigHeight);
+    if (texture == NULL)
+      fatal("SDL_CreateTexture failed: %s", SDL_GetError());
 
-    screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
-    if (screen == NULL)
-      fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+    if (fullscreen == 0) {
+      if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
+        SDL_SetWindowSize(window, window_w, window_h);
+      else {
+        SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+        window_w = OrigWidth * scale;
+        window_h = OrigHeight * scale;
+      }
+      SDL_SetWindowPosition(window, window_x, window_y);
+    }
 
-#if defined(big_endian) && !defined(__linux__)
-    light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
-    bright_red    = SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
-    light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x40);
-    bright_orange = SDL_MapRGB(screen->format, 0x00, 0xa0, 0xff);
-#else
-    light_red     = SDL_MapRGB(screen->format, 0x40, 0x00, 0x00);
-    bright_red    = SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
-    light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x00);
-    bright_orange = SDL_MapRGB(screen->format, 0xff, 0xa0, 0x00);
-#endif
+    if (aspect_ratio)
+      SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
+    else
+      SDL_RenderSetLogicalSize(render, 0, 0); /* Disable aspect */
 
-    image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2, 1,
-                                     G_XSIZE, 1, 1, 1, 0);
-    if (image == NULL)
-      fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+    SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
   }
-
-  if (texture)
-    SDL_DestroyTexture(texture);
-  texture = SDL_CreateTexture(render,
-                              SDL_PIXELFORMAT_ARGB8888,
-                              SDL_TEXTUREACCESS_STREAMING,
-                              OrigWidth, OrigHeight);
-  if (texture == NULL)
-    fatal("SDL_CreateTexture failed: %s", SDL_GetError());
-
-  if (aspect_ratio)
-    SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
-  else
-    SDL_RenderSetLogicalSize(render, 0, 0); /* Disable aspect */
-
-  SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
 
 #if defined(big_endian) && !defined(__linux__)
   colors[0].r = (background) & 0xFF;
@@ -704,31 +713,21 @@ void trs_screen_init(int resize)
   colors[1].g = (foreground >> 8) & 0xFF;
   colors[1].b = (foreground) & 0xFF;
 #endif
-
   back_color  = SDL_MapRGB(screen->format, colors[0].r, colors[0].g, colors[0].b);
 
   SDL_SetRenderDrawColor(render, colors[0].r, colors[0].g, colors[0].b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(render, NULL);
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
-
-  BlitMap(image->format->palette, screen->format);
-  bitmap_init(trs_clones.model == GENIE3S);
-  trs_screen_refresh();
-
-  if (resize && fullscreen == 0) {
-    if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
-      SDL_SetWindowSize(window, window_w, window_h);
-    else {
-      SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
-      window_w = OrigWidth * scale;
-      window_h = OrigHeight * scale;
-    }
-    SDL_SetWindowPosition(window, window_x, window_y);
-    SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
-  }
-
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
+
+  BlitMap(image->format->palette, screen->format);
+  trs_screen_refresh();
+
+  paste_state = 0;
+  paste_lastkey = 0;
+  copyStatus = 0;
+  selectAll = 0;
 }
 
 void trs_get_window(int *x, int *y, int *w, int *h)
