@@ -79,7 +79,6 @@ static Uint8 *blitMap;
 static Uint16 screen_chars = 1024;
 static int cols = 64;
 static int rows = 16;
-static int border_width = 2;
 static int scale_factor = 2;
 static int m6845_raster = 12;
 static int trs_charset;
@@ -577,9 +576,8 @@ void trs_screen_init(int resize)
   SDL_RendererInfo renderinfo = { 0 };
 #endif
 
-  border_width = fullscreen ? 0 : window_border_width;
-  char_width   = TRS_CHAR_WIDTH;
-  char_height  = TRS_CHAR_HEIGHT * 2;
+  char_width  = TRS_CHAR_WIDTH;
+  char_height = TRS_CHAR_HEIGHT * 2;
 
   if (trs_model == 1) {
     switch (trs_clones.model) {

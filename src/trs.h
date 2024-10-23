@@ -120,12 +120,12 @@ extern int  stretch_amount;
 extern int  trs_kb_bracket_state;
 
 extern int aspect_ratio;
+extern int border_width;
 extern int scale;
 extern int resize3;
 extern int resize4;
 extern int trs_uart_switches;
 extern int trs_show_led;
-extern int window_border_width;
 extern int trs_hd_boot;
 extern int trs_joystick;
 extern int trs_keypad_joystick;

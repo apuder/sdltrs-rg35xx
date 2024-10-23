@@ -54,6 +54,7 @@
 
 /* Public data */
 int aspect_ratio;
+int border_width;
 int foreground;
 int background;
 int gui_foreground;
@@ -73,7 +74,6 @@ int resize4;
 int scale;
 int scanlines;
 int scanshade;
-int window_border_width;
 int turbo_paste;
 char scale_quality = '1';
 char romfile1[FILENAME_MAX];
@@ -617,7 +617,7 @@ static void opt_intval(char *arg, int intarg, int *stringarg)
       if (value < 0 || value > 50)
         value = 2;
 
-      window_border_width = value;
+      border_width = value;
       break;
     case 2: /* keystretch */
       if (value < 0)
@@ -897,6 +897,7 @@ int trs_load_config_file(void)
 
   aspect_ratio = 1;
   background = BLACK;
+  border_width = 2;
   cassette_default_sample_rate = MAX_SAMPLE_RATE;
   /* Disk Sizes are 5" or 8"
      Corrected by Larry Kraemer 08-01-2011 */
@@ -973,7 +974,6 @@ int trs_load_config_file(void)
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
   turbo_paste = 0;
-  window_border_width = 2;
   z80_halt = 0;
 
   if (trs_config_file[0] == 0) {
@@ -1096,7 +1096,7 @@ int trs_write_config_file(const char *filename)
 
   fprintf(config_file, "%saspectratio\n", option(aspect_ratio));
   fprintf(config_file, "background=0x%x\n", background);
-  fprintf(config_file, "borderwidth=%d\n", window_border_width);
+  fprintf(config_file, "borderwidth=%d\n", border_width);
   fprintf(config_file, "cassdir=%s\n", trs_cass_dir);
   fprintf(config_file, "cassette=%s\n", trs_cassette_getfilename());
   fprintf(config_file, "charset1=%s\n", charset_name(trs_charset1));

@@ -1870,7 +1870,7 @@ void gui_display_menu(void)
     snprintf(&menu[4].text[49], 12, "%s", font1[gui_charset1]);
     snprintf(&menu[5].text[47], 14, "%s", font34[trs_charset3 - 4]);
     snprintf(&menu[6].text[47], 14, "%s", font34[trs_charset4 - 7]);
-    snprintf(&menu[7].text[52], 9, "%8d", window_border_width);
+    snprintf(&menu[7].text[52], 9, "%8d", border_width);
     snprintf(&menu[8].text[50], 11, "%s", yes_no[resize3]);
     snprintf(&menu[9].text[50], 11, "%s", yes_no[resize4]);
     snprintf(&menu[10].text[50], 11, "%s", yes_no[aspect_ratio]);
@@ -1951,14 +1951,14 @@ void gui_display_menu(void)
         }
         break;
       case 7:
-        snprintf(input, 3, "%d", window_border_width);
+        snprintf(input, 3, "%d", border_width);
         if (gui_input("Enter Window border width in pixels (0 to 50)",
             input, input, 2, 0) > 0) {
           value = atoi(input);
-          if (value != window_border_width) {
+          if (value != border_width) {
             if (value < 0 || value > 50)
               value = 2;
-            window_border_width = value;
+            border_width = value;
             resize = 1;
           }
         }
