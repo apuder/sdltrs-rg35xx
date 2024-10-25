@@ -2774,17 +2774,22 @@ void m6845_screen(int chars, int lines, int raster, int factor)
   }
 }
 
-void genie3s_char(int character, int scanline, int byte)
+void eg3200_char(int character, int scanline, int byte)
 {
-  char_ram[character][scanline] =
-      trs_clones.model == EG3200 ? mirror_bits(byte) : byte;
+  char_ram[character][scanline] = mirror_bits(byte);
 
   if (scanline == (m6845_raster - 1)) {
     bitmap_char(character, 1);
-
-    if (trs_clones.model == EG3200)
-      trs_screen_refresh();
+    trs_screen_refresh();
   }
+}
+
+void genie3s_char(int character, int scanline, int byte)
+{
+  char_ram[character][scanline] = byte;
+
+  if (scanline == (m6845_raster - 1))
+    bitmap_char(character, 1);
 }
 
 void genie3s_hrg(int value)

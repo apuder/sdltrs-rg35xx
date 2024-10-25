@@ -1206,7 +1206,7 @@ void mem_write(int address, int value)
         }
         if (address >= 0x4400 && address <= 0x47FF) {
           address = address - 0x4400;
-          genie3s_char((address / 16) + 192, address & 0x0F, value);
+          eg3200_char((address / 16) + 192, address & 0x0F, value);
           return;
         }
       }

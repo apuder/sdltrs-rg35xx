@@ -209,6 +209,8 @@ extern int stringy;
 
 extern void  eg3200_bank_out(int value);
 extern void  eg3200_init_out(int value);
+extern void  eg3200_char(int character, int scanline, int byte);
+
 extern void  genie3s_bank_out(int value);
 extern void  genie3s_init_out(int value);
 extern void  genie3s_sys_out(int value);
@@ -216,6 +218,7 @@ extern void  genie3s_char(int character, int scanline, int byte);
 extern void  genie3s_hrg(int value);
 extern void  genie3s_hrg_write(unsigned int position, int byte);
 extern Uint8 genie3s_hrg_read(unsigned int position);
+
 extern void  m6845_crtc_reset(void);
 extern void  m6845_cursor(int unsigned position, int start, int end, int visible);
 extern void  m6845_screen(int chars, int lines, int raster, int factor);
