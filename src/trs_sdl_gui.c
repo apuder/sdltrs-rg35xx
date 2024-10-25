@@ -2585,7 +2585,7 @@ void gui_about(void)
 {
   gui_clear();
   gui_write("About", 2, 0, 0);
-  gui_center("SDLTRS", 3, 0);
+  gui_center("SDL2TRS", 3, 0);
   gui_center("Version 1.2.30", 4, 0);
   gui_center("BSD 2-Clause License", 5, 0);
   gui_center("Copyright (C) 2006-2011 Mark Grebe, 2018-2024", 6, 0);
