@@ -1444,50 +1444,62 @@ void trs_get_event(int wait)
           goto done;
         }
 
-        if (keysym.sym == SDLK_RSHIFT && trs_model == 1)
-          keysym.sym = SDLK_LSHIFT;
+        if (trs_model == 1) {
+          if (keysym.sym == SDLK_RSHIFT) keysym.sym = SDLK_LSHIFT;
 
-        if (trs_clones.model & (EG3200 | GENIE3S)) {
-          if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
-            keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
-            goto done;
-          }
-          /* 1-5 on numeric keypad for P1-P5 / 6 for ESC */
-          if (keysym.sym >= SDLK_KP_1 && keysym.sym <= SDLK_KP_6) {
-            keysym.sym = (keysym.sym - SDLK_KP_1) + 0x88;
-            goto done;
-          }
-          switch (keysym.sym) {
-            case SDLK_END:   keysym.sym = 0x08d; goto done; /* ESC  */
-            case SDLK_LCTRL: keysym.sym = 0x12f; goto done; /* Ctrl */
+          switch (trs_clones.model) {
+            case EG3200:
+            case GENIE3S:
+              if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
+                keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
+                goto done;
+              }
+              /* 1-5 on numeric keypad for P1-P5, 6 for ESC */
+              if (keysym.sym >= SDLK_KP_1 && keysym.sym <= SDLK_KP_6) {
+                keysym.sym = (keysym.sym - SDLK_KP_1) + 0x88;
+                goto done;
+              }
+              switch (keysym.sym) {
+                case SDLK_END:   keysym.sym = 0x08d; goto done; /* ESC  */
+                case SDLK_LCTRL: keysym.sym = 0x12f; goto done; /* Ctrl */
+                default:
+                  break;
+              }
+              break;
+            case LNW80:
+              switch (keysym.sym) {
+                case SDLK_F1:    keysym.sym = 0x120; goto done; /* [ */
+                case SDLK_F2:    keysym.sym = 0x122; goto done; /* ] */
+                case SDLK_LCTRL: keysym.sym = 0x11a; goto done; /* Ctrl */
+                default:
+                  break;
+              }
+              break;
+            case SPEEDMASTER:
+              switch (keysym.sym) {
+                case SDLK_LCTRL: keysym.sym = 0x11c; goto done; /* P1 */
+                case SDLK_END:   keysym.sym = 0x088; goto done; /* P2 */
+                default:
+                  break;
+              }
+              break;
             default:
+              switch (keysym.sym) {
+                case SDLK_F1:    keysym.sym = 0x115; goto done; /* _ */
+                case SDLK_F2:    keysym.sym = 0x120; goto done; /* \ */
+                case SDLK_F3:    keysym.sym = 0x121; goto done; /* ] */
+                case SDLK_F4:    keysym.sym = 0x122; goto done; /* ^ */
+                case SDLK_LCTRL: keysym.sym = 0x11a; goto done; /* Ctrl */
+                case SDLK_END:   keysym.sym = 0x117; goto done; /* Shift Down */
+                default:
+                  break;
+              }
               break;
           }
         } else {
-          if (trs_model == 1) {
-            switch (keysym.sym) {
-              case SDLK_F1: /* [ on LNW80/II or _ */
-                keysym.sym = (speedup == 6) ? 0x120 : 0x115;
-                goto done;
-              case SDLK_F2: /* ] on LNW80/II or \ */
-                keysym.sym = (speedup == 6) ? 0x122 : 0x120;
-                goto done;
-              case SDLK_F3:  keysym.sym = 0x121; goto done; /* ] */
-              case SDLK_F4:  keysym.sym = 0x122; goto done; /* ^ */
-              case SDLK_LCTRL: /* P1 on SpeedMaster or Control */
-                keysym.sym = (speedup == 7) ? 0x11c : 0x11a;
-                goto done;
-              case SDLK_END:   /* P2 on SpeedMaster or Shifted Down Arrow */
-                keysym.sym = (speedup == 7) ? 0x088 : 0x117;
-                goto done;
-              default:
-                break;
-            }
-          } else {
-            if (trs_model == 3 && keysym.sym == SDLK_LCTRL) {
-              keysym.sym = 0x117; /* Shifted Down Arrow */
-              goto done;
-            }
+          if (trs_model == 3 && keysym.sym == SDLK_LCTRL) {
+            keysym.sym = 0x117; /* Shifted Down Arrow */
+            goto done;
           }
         }
 
