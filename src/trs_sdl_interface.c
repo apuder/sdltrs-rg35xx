@@ -629,7 +629,7 @@ void trs_screen_init(int resize)
     if (window == NULL) {
       window = SDL_CreateWindow(NULL,
                                 window_x, window_y,
-                                800, 600,
+                                640, 480,
                                 SDL_WINDOW_RESIZABLE);
       if (window == NULL)
         fatal("SDL_CreateWindow failed: %s", SDL_GetError());
