@@ -1439,8 +1439,10 @@ void trs_get_event(int wait)
             == (KMOD_CAPS | KMOD_LSHIFT) ||
             ((SDL_GetModState() & (KMOD_CAPS | KMOD_RSHIFT))
             == (KMOD_CAPS | KMOD_RSHIFT)))
-            && keysym.sym >= 'A' && keysym.sym <= 'Z')
+            && keysym.sym >= 'A' && keysym.sym <= 'Z') {
           keysym.sym = (int) keysym.sym + 0x20;
+          goto done;
+        }
 
         if (keysym.sym == SDLK_RSHIFT && trs_model == 1)
           keysym.sym = SDLK_LSHIFT;
