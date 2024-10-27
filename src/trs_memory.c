@@ -441,7 +441,7 @@ void sys_byte_out(int value)
   switch (speedup) {
     case 4: /* Banking-Modification from Martin Doppelbauer */
       memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
-      break;
+      /* Fall through - Accept speed up kit on bit 0 */
     case 5: /* Aster CT-80 */
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_timer_speed(value & 1);

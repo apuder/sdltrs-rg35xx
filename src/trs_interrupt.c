@@ -547,6 +547,7 @@ trs_timer_speed(int fast)
           default:
             switch (speedup) {
               case 1: /* Archbold */
+              case 4: /* Banking */
               case 5: /* CT-80 */
                 z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
                 break;
