@@ -729,6 +729,7 @@ int mem_read(int address)
 
   switch (memory_map) {
     case 0x10: /* Model I */
+    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address < RAM_START)
         return trs80_model1_mmio(address);
       else
@@ -754,12 +755,6 @@ int mem_read(int address)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram(address);
-
-    case 0x16: /* Model I: Low 16K in top 16K */
-      if (address < RAM_START)
-        return trs80_model1_mmio(address);
-      else
-        return trs80_model1_ram(address);
 
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
       break;   /* Not clear what really happens */
@@ -1105,6 +1100,7 @@ void mem_write(int address, int value)
 
   switch (memory_map) {
     case 0x10: /* Model I */
+    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address >= RAM_START)
         trs80_model1_write_mem(address, value);
       else
@@ -1134,13 +1130,6 @@ void mem_write(int address, int value)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       trs80_model1_write_mem(address, value);
-      break;
-
-    case 0x16: /* Model I: Low 16K in top 16K */
-      if (address < RAM_START)
-        trs80_model1_write_mmio(address, value);
-      else
-        trs80_model1_write_mem(address, value);
       break;
 
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
@@ -1482,6 +1471,7 @@ Uint8 *mem_pointer(int address, int writing)
 
   switch (memory_map) {
     case 0x10: /* Model I */
+    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       else
@@ -1504,12 +1494,6 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram_addr(address);
-
-    case 0x16: /* Model I: Low 16K in top 16K */
-      if (address < RAM_START)
-        return trs80_model1_mmio_addr(address, writing);
-      else
-        return trs80_model1_ram_addr(address);
 
     case 0x17: /* Model I: Described in the selector doc as 'not useful' */
       break;   /* Not clear what really happens */
