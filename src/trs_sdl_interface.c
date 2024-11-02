@@ -687,6 +687,7 @@ void trs_screen_init(int resize)
       }
       SDL_SetWindowPosition(window, window_x, window_y);
     }
+    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     if (aspect_ratio)
       SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
@@ -716,7 +717,6 @@ void trs_screen_init(int resize)
   SDL_SetRenderDrawColor(render, colors[0].r, colors[0].g, colors[0].b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(render, NULL);
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
-  SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
 
   BlitMap(image->format->palette, screen->format);
