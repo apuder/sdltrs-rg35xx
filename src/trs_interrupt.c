@@ -337,6 +337,7 @@ trs_nmi_latch_read(void)
 void
 trs_nmi_mask_write(Uint8 value)
 {
+  value &= 0xC0;
   nmi_mask = value | M3_RESET_BIT;
   z80_state.nmi = (nmi_latch & nmi_mask) != 0;
 #if IDEBUG2
