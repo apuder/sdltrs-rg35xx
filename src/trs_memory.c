@@ -263,6 +263,8 @@ void mem_card_out(int card, int bits)
       memory_map = 0x10 + (selector_reg & 7);
       /* 0x10 is already the default tandy map we add 11-17 in the style
          of the model 4 approach */
+      if (memory_map >= 0x16) memory_map = 0x10;
+      /* Set default memory map for Selector Modes 6 & 7 */
       if (selector_reg & 0x8) {
         /* External RAM enabled */
         /* Effectively the selector bits << 15 */
@@ -729,7 +731,6 @@ int mem_read(int address)
 
   switch (memory_map) {
     case 0x10: /* Model I */
-    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address < RAM_START)
         return trs80_model1_mmio(address);
       else
@@ -1097,7 +1098,6 @@ void mem_write(int address, int value)
 
   switch (memory_map) {
     case 0x10: /* Model I */
-    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address >= RAM_START)
         trs80_model1_write_mem(address, value);
       else
@@ -1465,7 +1465,6 @@ Uint8 *mem_pointer(int address, int writing)
 
   switch (memory_map) {
     case 0x10: /* Model I */
-    case 0x16: /* Model I: selector mode 6 (Low 16K in top 16K) */
       if (address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       else
