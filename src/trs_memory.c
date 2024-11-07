@@ -756,9 +756,6 @@ int mem_read(int address)
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram(address);
 
-    case 0x17: /* Model I: Described in the selector doc as 'not useful' */
-      break;   /* Not clear what really happens */
-
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF)
@@ -1132,9 +1129,6 @@ void mem_write(int address, int value)
       trs80_model1_write_mem(address, value);
       break;
 
-    case 0x17: /* Model I: Described in the selector doc as 'not useful' */
-      break;   /* Not clear what really happens */
-
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF) {
@@ -1494,9 +1488,6 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram_addr(address);
-
-    case 0x17: /* Model I: Described in the selector doc as 'not useful' */
-      break;   /* Not clear what really happens */
 
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
