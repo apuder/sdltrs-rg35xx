@@ -2122,8 +2122,10 @@ void gui_misc_menu(void)
         if (gui_input("Enter Turbo Rate Multiplier",
             input, input, 10, 0) > 0) {
           turbo_rate = atoi(input);
-          if (turbo_rate <= 0)
-            turbo_rate = 1;
+          if (turbo_rate <= 1) {
+            turbo_rate = 5;
+            turbo_mode = 0;
+          }
           trs_timer_mode(turbo_mode);
         }
         break;
