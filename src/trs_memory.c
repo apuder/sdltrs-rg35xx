@@ -1471,7 +1471,10 @@ Uint8 *mem_pointer(int address, int writing)
         return trs80_model1_ram_addr(address);
 
     case 0x11: /* Model I: selector mode 1 (all RAM except I/O high) */
-      return trs80_model1_ram_addr(address);
+      if (address >= 0xF7E0 && address <= 0xF7FF)
+        return NULL;
+      else
+        return trs80_model1_ram_addr(address);
 
     case 0x12: /* Model I: selector mode 2 (ROM disabled) */
       if (address >= 0x37E0 && address < RAM_START)
