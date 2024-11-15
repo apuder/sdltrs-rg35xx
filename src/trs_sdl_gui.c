@@ -1513,6 +1513,7 @@ void gui_hard_menu(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Hard Disk Image",
             trs_hard_dir, filename, FILENAME_MAX, 1) > 0) {
+          gui_add_extension(filename, ".hdv");
           if (gui_file_overwrite()) {
             if (trs_create_blank_hard(filename, cylinders, heads, sectors) != 0)
               gui_error(filename);
@@ -1568,6 +1569,7 @@ void gui_stringy_menu(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Wafer Image",
             trs_cass_dir, filename, FILENAME_MAX, 1) > 0) {
+          gui_add_extension(filename, ".esf");
           if (gui_file_overwrite()) {
             if (stringy_create(filename) != 0)
               gui_error(filename);
