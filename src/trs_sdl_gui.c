@@ -1648,17 +1648,9 @@ void gui_cassette_menu(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Cassette Image",
             trs_cass_dir, filename, FILENAME_MAX, 1) > 0) {
-          switch (type) {
-            case 0:
-              gui_add_extension(filename, ".cas");
-              break;
-            case 1:
-              gui_add_extension(filename, ".cpt");
-              break;
-            default:
-              gui_add_extension(filename, ".wav");
-              break;
-          }
+          const char *cass_ext[] = {".cas", ".cpt", ".wav"};
+
+          gui_add_extension(filename, cass_ext[type]);
           if (gui_file_overwrite()) {
             FILE *cassette_file = fopen(filename, "wb");
 
