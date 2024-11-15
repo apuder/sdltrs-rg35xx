@@ -1230,6 +1230,9 @@ void gui_disk_creation(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Disk Image",
             trs_disk_dir, filename, FILENAME_MAX, 1) > 0) {
+          const char *disk_ext[] = {".jv1", ".jv3", ".dmk"};
+
+          gui_add_extension(filename, disk_ext[type]);
           if (gui_file_overwrite()) {
             int ret = 0;
 
