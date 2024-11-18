@@ -65,7 +65,9 @@
 #define N_KEYS        52
 #define SHIFT         39
 
+#define CAS           ".cas.cpt.wav"
 #define CMD           ".cmd"
+#define DSK           ".dmk.dsk.jv1.jv3"
 #define ESF           ".esf"
 #define HDV           ".hdv"
 #define SET           ".set"
@@ -146,6 +148,7 @@ static void gui_center(const char *text, int y, int invert);
 static void gui_clear(void);
 static void gui_limit(const char *orig, char *limited, int limit);
 static void gui_add_extension(char *name, const char *ext);
+static int  gui_cmp_extension(const char *mask, const char *ext);
 static int  gui_key(void);
 static int  gui_select(const char *text, int x, int y);
 static void gui_error(const char *name);
@@ -252,6 +255,17 @@ void gui_add_extension(char *name, const char *ext)
 
   if (len && name[len - 1] != DIR_SLASH)
     snprintf(name + len, FILENAME_MAX - len, "%s", ext);
+}
+
+int gui_cmp_extension(const char *mask, const char *ext)
+{
+  int i;
+
+  for (i = 0; i < strlen(mask); i += 4)
+    if (strncasecmp(&mask[i], ext, 4) == 0)
+      return 1;
+
+  return 0;
 }
 
 int gui_key(void)
@@ -508,7 +522,7 @@ int gui_read_dir(const char *path, const char *mask, int dir)
         if (mask != NULL) {
           if (len < 4)
             continue;
-          if (strcasecmp(&dir_entry->d_name[len - 4], mask) != 0)
+          if (gui_cmp_extension(mask, &dir_entry->d_name[len - 4]) == 0)
             continue;
         }
         if ( (name = (char *)malloc(len + 2)) )
@@ -972,25 +986,25 @@ int gui_menu(const char *title, MENU *entry, int selection)
             case DISK_DRIVE:
               if (gui_file(trs_disk_getfilename(selection)[0] ?
                   trs_disk_getfilename(selection) : trs_disk_dir,
-                  filename, NULL, 0, "Floppy Disk Image") >= 0)
+                  filename, DSK, 0, "Floppy Disk Image") >= 0)
                 trs_disk_insert(selection, filename);
               break;
             case HARD_DRIVE:
               if (gui_file(trs_hard_getfilename(selection)[0] ?
                   trs_hard_getfilename(selection) : trs_hard_dir,
-                  filename, NULL, 0, "Hard Disk Image") >= 0)
+                  filename, HDV, 0, "Hard Disk Image") >= 0)
                 trs_hard_attach(selection, filename);
               break;
             case WAFER:
               if (gui_file(stringy_get_name(selection)[0] ?
                   stringy_get_name(selection) : trs_cass_dir,
-                  filename, NULL, 0, "Wafer Image") >= 0)
+                  filename, ESF, 0, "Wafer Image") >= 0)
                 stringy_insert(selection, filename);
               break;
             case CASSETTE:
               if (gui_file(trs_cassette_getfilename()[0] ?
                   trs_cassette_getfilename() : trs_cass_dir,
-                  filename, NULL, 0, "Cassette Image") >= 0)
+                  filename, CAS, 0, "Cassette Image") >= 0)
                 trs_cassette_insert(filename);
               break;
             case SAVE_SET:
