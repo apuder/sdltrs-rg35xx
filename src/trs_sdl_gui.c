@@ -65,6 +65,13 @@
 #define N_KEYS        52
 #define SHIFT         39
 
+#define CMD           ".cmd"
+#define ESF           ".esf"
+#define HDV           ".hdv"
+#define SET           ".set"
+#define T8C           ".t8c"
+#define T8S           ".t8s"
+
 static char filename[FILENAME_MAX];
 static char **filelist;
 static int filelistcount;
@@ -1361,7 +1368,7 @@ void gui_disk_options(void)
 
 void gui_diskset_load(void)
 {
-  if (gui_file(trs_disk_set_dir, filename, ".set", 0, "Disk Set") >= 0) {
+  if (gui_file(trs_disk_set_dir, filename, SET, 0, "Disk Set") >= 0) {
     if (trs_diskset_load(filename) != 0)
       gui_error(filename);
   }
@@ -1372,7 +1379,7 @@ void gui_diskset_save(void)
   filename[0] = 0;
   if (gui_input("Enter Filename for Disk Set",
       trs_disk_set_dir, filename, FILENAME_MAX - 5, 1) > 0) {
-    gui_add_extension(filename, ".set");
+    gui_add_extension(filename, SET);
     if (gui_file_overwrite()) {
       if (trs_diskset_save(filename) != 0)
         gui_error(filename);
@@ -1516,7 +1523,7 @@ void gui_hard_menu(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Hard Disk Image",
             trs_hard_dir, filename, FILENAME_MAX, 1) > 0) {
-          gui_add_extension(filename, ".hdv");
+          gui_add_extension(filename, HDV);
           if (gui_file_overwrite()) {
             if (trs_create_blank_hard(filename, cylinders, heads, sectors) != 0)
               gui_error(filename);
@@ -1572,7 +1579,7 @@ void gui_stringy_menu(void)
         filename[0] = 0;
         if (gui_input("Enter Filename for Wafer Image",
             trs_cass_dir, filename, FILENAME_MAX, 1) > 0) {
-          gui_add_extension(filename, ".esf");
+          gui_add_extension(filename, ESF);
           if (gui_file_overwrite()) {
             if (stringy_create(filename) != 0)
               gui_error(filename);
@@ -2141,7 +2148,7 @@ void gui_save_state(void)
   if (gui_input("Save Emulator State",
       trs_state_file[0] != 0 ? trs_state_file : trs_state_dir,
       filename, FILENAME_MAX - 5, 1) > 0) {
-    gui_add_extension(filename, ".t8s");
+    gui_add_extension(filename, T8S);
     if (gui_file_overwrite()) {
       if (trs_state_save(filename) == 0)
         snprintf(trs_state_file, FILENAME_MAX, "%s", filename);
@@ -2153,8 +2160,7 @@ void gui_save_state(void)
 
 int gui_load_state(void)
 {
-  if (gui_file(trs_state_dir, filename, ".t8s", 0,
-      "State (.t8s)") >= 0) {
+  if (gui_file(trs_state_dir, filename, T8S, 0, "State") >= 0) {
     if (trs_state_load(filename) == 0) {
       trs_screen_init(1);
       return 0;
@@ -2170,7 +2176,7 @@ void gui_write_config(void)
   if (gui_input("Write Configuration",
       trs_config_file[0] != 0 ? trs_config_file : trs_state_dir,
       filename, FILENAME_MAX - 5, 1) > 0) {
-    gui_add_extension(filename, ".t8c");
+    gui_add_extension(filename, T8C);
     if (gui_file_overwrite()) {
       if (trs_write_config_file(filename) == 0)
         snprintf(trs_config_file, FILENAME_MAX, "%s", filename);
@@ -2182,8 +2188,7 @@ void gui_write_config(void)
 
 int gui_read_config(void)
 {
-  if (gui_file(trs_config_file, trs_config_file, ".t8c", 0,
-      "Configuration (.t8c)") >= 0) {
+  if (gui_file(trs_config_file, trs_config_file, T8C, 0, "Configuration") >= 0) {
     if (trs_load_config_file() == 0) {
       trs_reset(1);
       return 0;
@@ -2636,7 +2641,7 @@ void gui_pause(void)
 
 void gui_exec_cmd(void)
 {
-  if (gui_file(trs_cmd_file, trs_cmd_file, ".cmd", 0, "CMD (.cmd)") >= 0) {
+  if (gui_file(trs_cmd_file, trs_cmd_file, CMD, 0, "CMD") >= 0) {
     if (trs_load_cmd(trs_cmd_file) != 0)
       gui_message("ERROR", "Failed to load CMD file");
   }
