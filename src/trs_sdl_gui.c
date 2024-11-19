@@ -576,6 +576,7 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
   struct stat st = { 0 };
   const char *dir_entry;
   int i;
+  int all = 0;
   int cnt;
   int num;
   int row;
@@ -615,8 +616,10 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
 read_dir:
   gui_delete_filelist();
 
-  if (gui_read_dir(directory, mask, dir) != 0)
+  if (gui_read_dir(directory, all ? NULL : mask, dir) != 0)
     return -1;
+
+  gui_write(all ? " F1:Ext " : " F1:All ", 54, 0, 1);
 
   gui_limit(directory, text, 58);
   gui_rect(2, 1, 60, 1, 0);
@@ -707,6 +710,9 @@ read_dir:
           row = cnt;
           redraw = 1;
           break;
+        case SDLK_F1:
+          all = !all;
+          goto read_dir;
         case SDLK_INSERT:
         case SDLK_TAB:
           if (dir)
