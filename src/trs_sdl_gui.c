@@ -70,6 +70,7 @@
 #define DSK           ".dmk.dsk.jv1.jv3"
 #define ESF           ".esf"
 #define HDV           ".hdv"
+#define ROM           ".bin.hex.iii.rom"
 #define SET           ".set"
 #define T8C           ".t8c"
 #define T8S           ".t8s"
@@ -2582,13 +2583,13 @@ void gui_roms(void)
     selection = gui_menu("ROM File Selection", menu, selection);
     switch (selection) {
       case 1:
-        gui_file(romfile1, romfile1, NULL, 0, "Model I ROM");
+        gui_file(romfile1, romfile1, ROM, 0, "Model I ROM");
         break;
       case 4:
-        gui_file(romfile3, romfile3, NULL, 0, "Model III / 4 ROM");
+        gui_file(romfile3, romfile3, ROM, 0, "Model III / 4 ROM");
         break;
       case 7:
-        gui_file(romfile4p, romfile4p, NULL, 0, "Model 4P ROM");
+        gui_file(romfile4p, romfile4p, ROM, 0, "Model 4P ROM");
         break;
       case 11:
         trs_hd_boot = gui_popup("Patch", yes_no, 2, trs_hd_boot);
