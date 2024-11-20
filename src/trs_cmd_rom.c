@@ -845,26 +845,25 @@ static int trs_load_rom(const char *filename)
 
 int trs_load_cmd(const char *filename)
 {
-  int entry;
   FILE *program = fopen(filename, "rb");
 
-  if (program == NULL) {
+  if (program) {
+    int entry;
+
+    if (load_cmd(program, NULL, &entry) == LOAD_CMD_OK) {
+      fclose(program);
+      debug("entry point of '%s': 0x%X (%d)\n", filename, entry, entry);
+      if (entry >= 0)
+        Z80_PC = entry;
+      return 0;
+    } else {
+      fclose(program);
+      error("unknown CMD format: '%s'", filename);
+    }
+  } else
     file_error("load CMD file: '%s'", filename);
-    return -1;
-  }
 
-  if (load_cmd(program, NULL, &entry) == LOAD_CMD_OK) {
-    debug("entry point of '%s': 0x%X (%d) ...\n", filename, entry, entry);
-    if (entry >= 0)
-      Z80_PC = entry;
-  } else {
-    error("unknown CMD format: '%s'", filename);
-    fclose(program);
-    return -1;
-  }
-
-  fclose(program);
-  return 0;
+  return -1;
 }
 
 void trs_rom_init(void)
