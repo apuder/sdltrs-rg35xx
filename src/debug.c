@@ -116,7 +116,7 @@ static void help(void)
   rom <addr> = <value> .. Change byte in ROM\n\
   in <port> ............. Input from given I/O port\n\
   out <port> = <value> .. Output to given I/O port\n\
-  peek <addr> ........... Show value of specified hex address\n\
+  peek <addr> [,<end>] .. Print memory values of specified hex address range\n\
   poke <addr> , <value> . Write value to specified hex address\n\
   load <addr> <file> .... Load memory from file to specified hex address\n\
   save <start> , <end> <file> ........ Save memory in range of specified\n\
@@ -310,7 +310,7 @@ void trs_debug(void)
     if (trs_continuous > 0) trs_continuous = 0;
 }
 
-static void print_memory(int address, int num_bytes)
+static void print_memory(int address, int num_bytes, int peek)
 {
     while(num_bytes > 0)
     {
@@ -322,7 +322,7 @@ static void print_memory(int address, int num_bytes)
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    byte[i] = mem_read(address + i);
+	    byte[i] = peek ? mem_peek(address + i) : mem_read(address + i);
 	    printf("%.2x ", byte[i]);
 	}
 
@@ -721,10 +721,16 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "peek"))
 	    {
-		unsigned int address;
+		unsigned int start, end;
 
-		if (sscanf(input, "%*s %x", &address) == 1)
-		    printf("%x = %x\n", address, mem_peek(address));
+		if (sscanf(input, "%*s %x %*c %x", &start, &end) == 2)
+		{
+		    print_memory(start, end - start + 1, 1);
+		}
+                else if (sscanf(input, "%*s %x", &start) == 1)
+		{
+		    print_memory(start, 1, 1);
+		}
 	    }
 	    else if(!strcmp(command, "poke"))
 	    {
@@ -984,15 +990,15 @@ void debug_shell(void)
 
 		if(sscanf(input, "%x / %x ", &start, &end) == 2)
 		{
-		    print_memory(start, end);
+		    print_memory(start, end, 0);
 		}
 		else if(sscanf(input, "%x %*c %x", &start, &end) == 2)
 		{
-		    print_memory(start, end - start + 1);
+		    print_memory(start, end - start + 1, 0);
 		}
 		else if(sscanf(input, "%x", &start) == 1)
 		{
-		    print_memory(start, 1);
+		    print_memory(start, 1, 0);
 		}
 		else
 		{
