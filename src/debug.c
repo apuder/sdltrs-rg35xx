@@ -310,7 +310,7 @@ void trs_debug(void)
     if (trs_continuous > 0) trs_continuous = 0;
 }
 
-static void print_memory(Uint16 address, int num_bytes)
+static void print_memory(int address, int num_bytes)
 {
     while(num_bytes > 0)
     {
@@ -350,7 +350,7 @@ static void print_memory(Uint16 address, int num_bytes)
     }
 }
 
-static void load_memory(Uint16 address, const char *filename)
+static void load_memory(int address, const char *filename)
 {
     FILE *file = fopen(filename, "rb");
 
@@ -368,7 +368,7 @@ static void load_memory(Uint16 address, const char *filename)
     }
 }
 
-static void save_memory(Uint16 address, int num_bytes, const char *filename)
+static void save_memory(int address, int num_bytes, const char *filename)
 {
     FILE *file = fopen(filename, "wb");
 
@@ -576,7 +576,7 @@ void debug_shell(void)
 	    else if(!strcmp(command, "list") || !strcmp(command, "l"))
 	    {
 		unsigned int x, y;
-		Uint16 start;
+		int start;
 		int bytes = 0;
 		int lines = 0;
 
@@ -606,7 +606,7 @@ void debug_shell(void)
 		else
 		{
 		    while (bytes >= 0) {
-			Uint16 const old_start = start;
+			int const old_start = start;
 
 			start = disassemble(old_start);
 			bytes -= (start - old_start) & 0xffff;

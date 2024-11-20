@@ -2095,7 +2095,7 @@ static const struct opcode minor[6][256] = {
     }
 };
 
-int disassemble(Uint16 pc)
+int disassemble(int pc)
 {
     int	i, j;
     const struct opcode	*code;

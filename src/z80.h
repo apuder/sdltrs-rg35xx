@@ -251,7 +251,7 @@ extern void	 z80_out(int port, int value);
 extern int	 z80_in(int port);
 
 #ifdef ZBX
-extern int	 disassemble(Uint16 pc);
+extern int	 disassemble(int pc);
 extern void	 debug_shell(void);
 #endif /* ZBX */
 
