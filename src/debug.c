@@ -318,7 +318,7 @@ static void print_memory(int address, int num_bytes, int peek)
 	int const bytes_to_print = num_bytes < 16 ? num_bytes : 16;
 	int i;
 
-	printf("%.4x: ", address);
+	printf("%.4x:\t", address);
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
