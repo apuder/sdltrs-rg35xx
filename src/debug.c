@@ -838,8 +838,7 @@ void debug_shell(void)
 	    {
 		unsigned int address;
 
-		if(sscanf(input, "stop at %x", &address) != 1 &&
-		   sscanf(input, "%*s %x", &address) != 1)
+		if(sscanf(input, "%*s %x", &address) != 1)
 		{
 		    address = Z80_PC;
 		}
@@ -861,8 +860,7 @@ void debug_shell(void)
 	    {
 		unsigned int address;
 
-		if(sscanf(input, "traceon at %x", &address) == 1 ||
-		   sscanf(input, "tron %x", &address) == 1)
+		if(sscanf(input, "%*s %x", &address) == 1)
 		{
 		    set_trap(address, DISASSEMBLE_ON_FLAG);
 		}
@@ -876,8 +874,7 @@ void debug_shell(void)
 	    {
 		unsigned int address;
 
-		if(sscanf(input, "traceoff at %x", &address) == 1 ||
-		   sscanf(input, "troff %x", &address) == 1)
+		if(sscanf(input, "%*s %x", &address) == 1)
 		{
 		    set_trap(address, DISASSEMBLE_OFF_FLAG);
 		}
