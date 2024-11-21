@@ -106,8 +106,8 @@ static void help(void)
   d(elete) <n> | * ...... Delete trap <n> or all traps\n\
   b(reak) <addr> ........ Set breakpoint at specified hex address\n\
   t(race) <addr> ........ Set trap to trace execution at specified hex address\n\
-  tron <addr> ........... Set trap to enable tracing at specified hex address\n\
-  troff <addr> .......... Set trap to disable tracing at specified hex address\n\
+  tr(ace)on <addr> ...... Set trap to enable tracing at specified hex address\n\
+  tr(ace)off <addr> ..... Set trap to disable tracing at specified hex address\n\
   w(atch) <addr> ........ Set trap to watch specified hex address for changes\n\
 \nMiscellaneous:\n\
   a(ssign) | set\n\
