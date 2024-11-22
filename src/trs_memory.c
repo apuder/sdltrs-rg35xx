@@ -641,6 +641,8 @@ static int trs80_model1_ram(int address)
 {
   if (selector) {
     int const addr = address;
+    /* Bank low on odd modes */
+    int const bank = (selector_reg & 1) ? 0 : 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -649,8 +651,8 @@ static int trs80_model1_ram(int address)
          PAL orders the two */
       address &= 0x3FFF;
     }
-    /* Deal with 32K banking from selector and bank low on odd modes */
-    if ((addr & 0x8000) == ((selector_reg & 1) ? 0 : 0x8000));
+    /* Deal with 32K banking from selector */
+    if ((addr & 0x8000) == bank)
       address += bank_base;
   }
 
@@ -999,6 +1001,8 @@ static void trs80_model1_write_mem(int address, int value)
 {
   if (selector) {
     int const addr = address;
+    /* Bank low on odd modes */
+    int const bank = (selector_reg & 1) ? 0 : 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1010,8 +1014,8 @@ static void trs80_model1_write_mem(int address, int value)
          PAL orders the two */
       address &= 0x3FFF;
     }
-    /* Deal with 32K banking from selector and bank low on odd modes */
-    if ((addr & 0x8000) == ((selector_reg & 1) ? 0 : 0x8000));
+    /* Deal with 32K banking from selector */
+    if ((addr & 0x8000) == bank)
       address += bank_base;
   }
 
@@ -1401,6 +1405,8 @@ static Uint8 *trs80_model1_ram_addr(int address)
 {
   if (selector) {
     int const addr = address;
+    /* Bank low on odd modes */
+    int const bank = (selector_reg & 1) ? 0 : 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1409,8 +1415,8 @@ static Uint8 *trs80_model1_ram_addr(int address)
          PAL orders the two */
       address &= 0x3FFF;
     }
-    /* Deal with 32K banking from selector and bank low on odd modes */
-    if ((addr & 0x8000) == ((selector_reg & 1) ? 0 : 0x8000));
+    /* Deal with 32K banking from selector */
+    if ((addr & 0x8000) == bank)
       address += bank_base;
   }
 
