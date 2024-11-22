@@ -51,7 +51,6 @@ const char *program_name;
 int main(int argc, char *argv[])
 {
   int zbx = 0;
-  wordregister x;
 
   /* program_name must be set first because the error
    * printing routines use it. */
@@ -61,10 +60,6 @@ int main(int argc, char *argv[])
   else
     program_name++;
 
-  x.byte.low = 1;
-  x.byte.high = 0;
-  if (x.word != 1)
-    fatal("Program compiled with wrong ENDIAN: please recompile for this architecture.");
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
     fatal("SDL_Init failed: %s", SDL_GetError());
