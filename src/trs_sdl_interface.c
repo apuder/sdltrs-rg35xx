@@ -1445,7 +1445,10 @@ void trs_get_event(int wait)
         }
 
         if (trs_model == 1) {
-          if (keysym.sym == SDLK_RSHIFT) keysym.sym = SDLK_LSHIFT;
+          if (keysym.sym == SDLK_RSHIFT) {
+            keysym.sym = 0x130;
+            goto done;
+          }
 
           switch (trs_clones.model) {
             case EG3200:
