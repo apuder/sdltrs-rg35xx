@@ -102,7 +102,7 @@ static Uint8 mem_command;
 static int romin; /* Model 4p */
 static int supermem_base;
 static Uint32 supermem_high;
-static int selector_reg;
+static int selector_bank;
 static int sys_byte;
 static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
@@ -258,22 +258,21 @@ void mem_card_out(int card, int bits)
     case SELECTOR:
       /* Not all bits are necessarily really present but hey what
          you can't read back you can't tell */
-      selector_reg = bits;
-      /* Always Model I */
-      memory_map = 0x10 + (selector_reg & 7);
+      mem_command = bits;
       /* 0x10 is already the default tandy map we add 11-17 in the style
          of the model 4 approach */
-      if (memory_map >= 0x16) memory_map = 0x10;
+      memory_map = 0x10 + (mem_command & 7);
       /* Set default memory map for Selector Modes 6 & 7 */
-      mem_command = (memory_map & 1) ? 0x0000 : 0x8000;
+      if (memory_map >= 0x16) memory_map = 0x10;
       /* Bank low on odd mode */
-      if (selector_reg & 0x8) {
+      selector_bank = (memory_map & 1) ? 0x0000 : 0x8000;
+      if (mem_command & 0x8) {
         /* External RAM enabled */
         /* Effectively the selector bits << 15 */
         /* Low 64K is the base memory */
-        bank_base = 32768 + ((selector_reg & 0xF0) << 11);
+        bank_base = 32768 + ((mem_command & 0xF0) << 11);
         /* Now are we mapping it high or low */
-        if (selector_reg & 1) /* Low */
+        if (mem_command & 1) /* Low */
           bank_base += 32768;
       } else
         bank_base = 0;
@@ -591,7 +590,7 @@ void trs_reset(int poweron)
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     bank_base = 0;
-    selector_reg = 0;
+    selector_bank = 0;
     sys_byte = sys_byte_2 = 0;
     trs_interrupt_latch_clear();
     trs_screen_inverse(0);
@@ -646,13 +645,13 @@ static int trs80_model1_ram(int address)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if ((selector_reg & 7) == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* Use the low 16K, and then bank it. I'm not 100% sure how the
          PAL orders the two */
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == mem_command)
+    if ((addr & 0x8000) == selector_bank)
       address += bank_base;
   }
 
@@ -1004,16 +1003,16 @@ static void trs80_model1_write_mem(int address, int value)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if ((selector_reg & 7) == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* We have no low 16K of RAM. This is for the LNW80 really */
-      if (!(selector_reg & 8))
+      if (!(mem_command & 8))
         return;
       /* Use the low 16K, and then bank it. I'm not 100% sure how the
          PAL orders the two */
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == mem_command)
+    if ((addr & 0x8000) == selector_bank)
       address += bank_base;
   }
 
@@ -1406,13 +1405,13 @@ static Uint8 *trs80_model1_ram_addr(int address)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if ((selector_reg & 7) == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* Use the low 16K, and then bank it. I'm not 100% sure how the
          PAL orders the two */
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == mem_command)
+    if ((addr & 0x8000) == selector_bank)
       address += bank_base;
   }
 
@@ -1688,7 +1687,7 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &supermem_base, 1);
   trs_save_uint32(file, &supermem_high, 1);
   trs_save_int(file, &selector, 1);
-  trs_save_int(file, &selector_reg, 1);
+  trs_save_int(file, &selector_bank, 1);
   trs_save_int(file, &lubomir, 1);
   trs_save_int(file, &megamem, 1);
   trs_save_int(file, &megamem_addr, 1);
@@ -1717,7 +1716,7 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &supermem_base, 1);
   trs_load_uint32(file, &supermem_high, 1);
   trs_load_int(file, &selector, 1);
-  trs_load_int(file, &selector_reg, 1);
+  trs_load_int(file, &selector_bank, 1);
   trs_load_int(file, &lubomir, 1);
   trs_load_int(file, &megamem, 1);
   trs_load_int(file, &megamem_addr, 1);
