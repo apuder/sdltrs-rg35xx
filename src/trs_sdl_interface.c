@@ -1742,25 +1742,17 @@ void trs_screen_expanded(int flag)
 
 void trs_screen_inverse(int flag)
 {
-  int i;
-
   if ((currentmode ^ (flag ? INVERSE : 0)) & INVERSE) {
     currentmode ^= INVERSE;
-    for (i = 0; i < screen_chars; i++)
-      trs_screen_write_char(i, trs_screen[i]);
+    trs_screen_refresh();
   }
 }
 
 void trs_screen_alternate(int flag)
 {
-  int i;
-
   if ((currentmode ^ (flag ? ALTERNATE : 0)) & ALTERNATE) {
     currentmode ^= ALTERNATE;
-    for (i = 0; i < screen_chars; i++) {
-      if (trs_screen[i] >= 0xc0)
-        trs_screen_write_char(i, trs_screen[i]);
-    }
+    trs_screen_refresh();
   }
 }
 
