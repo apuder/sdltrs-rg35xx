@@ -261,18 +261,18 @@ void mem_card_out(int card, int bits)
       mem_command = bits;
       /* 0x10 is already the default tandy map we add 11-17 in the style
          of the model 4 approach */
-      memory_map = 0x10 + (mem_command & 7);
+      memory_map = 0x10 + (bits & 7);
       /* Set default memory map for Selector Modes 6 & 7 */
       if (memory_map >= 0x16) memory_map = 0x10;
       /* Bank low on odd mode */
-      selector_bank = (memory_map & 1) ? 0x0000 : 0x8000;
-      if (mem_command & 0x8) {
+      selector_bank = (bits & 1) ? 0x0000 : 0x8000;
+      if (bits & 0x8) {
         /* External RAM enabled */
         /* Effectively the selector bits << 15 */
         /* Low 64K is the base memory */
-        bank_base = 32768 + ((mem_command & 0xF0) << 11);
+        bank_base = 32768 + ((bits & 0xF0) << 11);
         /* Now are we mapping it high or low */
-        if (mem_command & 1) /* Low */
+        if (bits & 1) /* Low */
           bank_base += 32768;
       } else
         bank_base = 0;
