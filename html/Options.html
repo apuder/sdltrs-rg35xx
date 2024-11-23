@@ -38,7 +38,7 @@ will be executed upon startup of the emulator.</p>
 
 <table align="center" border="1" cellpadding="10" cellspacing="0">
   <tr>
-    <td><code>-aspectratio</code></td>
+    <td><code>-a[spect][ratio]</code></td>
     <td>Keep aspect ratio of TRS-80 screen when resizing the SDL2 window.
         This is the default.</td>
   </tr>
@@ -324,7 +324,7 @@ will be executed upon startup of the emulator.</p>
     <td>Disable aspect ratio of TRS-80 screen when resizing SDL2 window.</td>
   </tr>
   <tr>
-    <td><code>-nodebug</code></td>
+    <td><code>-nodebug | -noz[bx]</code></td>
     <td>Do not enter the zbx debugger at startup. This is the default.</td>
   </tr>
   <tr>
@@ -393,8 +393,8 @@ will be executed upon startup of the emulator.</p>
     <td>Hide mouse pointer and emulate joystick with mouse.</td>
   </tr>
   <tr>
-    <td><code>-noresize3<br>
-              -noresize4</code></td>
+    <td><code>-noresize3 | -nors3<br>
+              -noresize4 | -nors4</code></td>
     <td>In Model III (<code>-noresize3</code>) or 4/4P (<code>-noresize4)
         </code>, always keep the emulator window large enough for 80x24 text
         or 640x240 graphics, putting a blank margin around the outside when
@@ -433,11 +433,11 @@ will be executed upon startup of the emulator.</p>
         This is the default.</td>
   </tr>
   <tr>
-    <td><code>-notruedam</code></td>
+    <td><code>-no[true]dam</code></td>
     <td>The opposite of <code>-truedam</code>. This setting is the default.</td>
   </tr>
   <tr>
-    <td><code>-noturbo</code></td>
+    <td><code>-not[urbo]</code></td>
     <td>Switch "Turbo" mode off. The emulator will run at the original speed
         of the selected TRS-80 Model. This is the default, but can be toggled
         with the <b>F12</b> key or <b>Alt-N</b> in the emulator.</td>
@@ -463,8 +463,8 @@ will be executed upon startup of the emulator.</p>
         Default is the current directory.</td>
   </tr>
   <tr>
-    <td><code>-resize3<br>
-              -resize4</code></td>
+    <td><code>-resize3 | -rs3<br>
+              -resize4 | -rs4</code></td>
     <td>In Model III (<code>-resize3</code>) or 4/4P (<code>-resize4</code>)
         mode, resize the window whenever the emulated display mode changes
         between 64x16 text (or 512x192 graphics) and 80x24 text (or 640x240
@@ -476,9 +476,9 @@ will be executed upon startup of the emulator.</p>
         TRS-80 Model with the <code>-model</code> option above.</td>
   </tr>
   <tr>
-    <td><code>-rom[file]1 <u>filename1</u><br>
-              -rom[file]3 <u>filename3</u><br>
-              -rom[file]4p <u>filename4p</u></code></td>
+    <td><code>-r[om][file]1 <u>filename1</u><br>
+              -r[om][file]3 <u>filename3</u><br>
+              -r[om][file]4p <u>filename4p</u></code></td>
     <td>Use the romfile specified by <code>filename1</code> in Model I mode,
         the romfile specified by <code>filename3</code> in Model III and
         Model 4 mode, or the romfile specified by <code>filename4p</code> in
@@ -502,7 +502,7 @@ will be executed upon startup of the emulator.</p>
         Valid values for factor are 1,2,3 and 4. Default is 1.</td>
   </tr>
   <tr>
-    <td><code>-scalequality quality</code></td>
+    <td><code>-scalequality | -sq <u>quality</u></code></td>
     <td>Select render scale quality: <code>0</code> for "nearest",
         <code>1</code> for "linear", <code>2</code> for "best".
         Default is <code>1</code>.</td>
@@ -606,7 +606,7 @@ will be executed upon startup of the emulator.</p>
         interprets as 9600 bps, 8 bits/word, no parity, 1 stop bit.</td>
   </tr>
   <tr>
-    <td><code>-truedam</code></td>
+    <td><code>-[true]dam</code></td>
     <td>Turn off the single density data address mark remapping kludges
         described in the "Emulated floppy disks" and "Real floppy disks"
         sections above. With this option given, the distinction between

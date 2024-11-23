@@ -20,7 +20,7 @@ is an SDL2-based emulator for Tandy/Radio Shack line of Zilog
 Z80-based microcomputers popular in late 1970s and early 1980s.
 .SH OPTIONS
 .TP
-.B \-aspect[ratio]
+.B \-a[spect][ratio]
 Keep TRS-80 screen aspect ratio when resizing SDL2 window (Default).
 .TP
 \fB\-background\fP | \fB\-bg\fP \fI0xRRGGBB\fP
@@ -200,7 +200,7 @@ Show mouse pointer for selection in emulator window (Default).
 .B \-noaspect[ratio]
 Disable aspect ratio of TRS-80 screen when resizing SDL2 window.
 .TP
-.B \-nodebug
+\fB\-nodebug\fP | \fB\-noz[bx]\fP
 Opposite of \fB-debug\fP (Optional).
 .TP
 .B \-nodouble[step]
@@ -234,7 +234,7 @@ No emulation of LE18 graphic adapter (Default).
 \fB\-nolower[case]\fP | \fB\-nolc\fP
 No lower case characters for TRS-80 Model I.
 .TP
-\fB\-nolubomir | \fB\-nolsb\fP
+\fB\-nolubomir\fP | \fB\-nolsb\fP
 Disable Lubomir Soft Banker for Model I (Default).
 .TP
 .B \-nomega[mem]
@@ -247,9 +247,9 @@ Model III or Model 4/4P: emulate Radio Shack Hi-Res card (Default).
 .B \-nomouse[pointer]
 Hide mouse pointer and emulate joystick with mouse.
 .TP
-.B \-noresize3
+\fB\-noresize3\fP | \fB\-nors3\fP
+\fB\-noresize4\fP | \fB\-nors4\fP
 .TQ
-.B \-noresize4
 Model III or 4/4P: always keep SDL2 window large enough for 80x24
 text (640x240) putting a blank margin around outside.
 .RS
@@ -275,10 +275,10 @@ Do not emulate Exatron Stringy Floppy Drive for Model I (Default).
 .B \-nosuper[mem]
 Disable SuperMem memory expansion (Default).
 .TP
-.B \-notruedam
+.B \-no[true]dam
 Opposite of \fB-truedam\fP (Default).
 .TP
-.B \-noturbo
+.B \-not[urbo]
 Switch "Turbo" mode off (Default).
 .TP
 \fB\-noturbopaste\fP | \fB\-notp\fP
@@ -296,9 +296,9 @@ Default: \fInone\fP
 Specify directory for printer output and screenshot files.
 Default: current directory.
 .TP
-.B \-resize3
+\fB\-resize3\fP | \fB\-rs3\fP
 .TQ
-.B \-resize4
+\fB\-resize4\fP | \fB\-rs4\fP
 Model III or 4/4P: resize window whenever emulated display mode
 changes between 64x16 text (512x192) and 80x24 text (640x240).
 .RS
@@ -308,11 +308,11 @@ Default: \fB\-resize3 \-noresize4\fP
 .B \-r[om][file] \fIfilename\fP
 Use romfile \fIfilename\fP for the selected TRS-80 Model with \fI-model\fP.
 .TP
-.B \-rom[file]1 \fIfilename\fP
+.B \-r[om][file]1 \fIfilename\fP
 .TQ
-.B \-rom[file]3 \fIfilename\fP
+.B \-r[om][file]3 \fIfilename\fP
 .TQ
-.B \-rom[file]4p \fIfilename\fP
+.B \-r[om][file]4p \fIfilename\fP
 Use romfile specified by \fIfilename\fP for the TRS-80 Model.
 .TP
 \fB\-samplerate\fP | \fB\-sr\fP \fIrate\fP
@@ -325,7 +325,7 @@ Scale emulator window by \fIfactor\fP times:
 \fI1\fP | \fI2\fP | \fI3\fP | \fI4\fP.
 Default: \fI1\fP
 .TP
-.B \-scalequality \fIquality\fP
+\fB\-scalequality\fP | \-sq\fP \fIquality\fP
 Select render scale quality:
 \fI0\fP (nearest) | \fI1\fP (linear) | \fI2\fP (best).
 Default: \fI1\fP
@@ -383,7 +383,7 @@ Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P.
 Set sense switches on Model I serial port card.
 Default: \fI0x6f\fP
 .TP
-.B \-truedam
+.B \-[true]dam
 Turn off single density data address mark remapping kludges.
 .TP
 .B \-t[urbo]
