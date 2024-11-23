@@ -260,7 +260,7 @@ void gui_add_extension(char *name, const char *ext)
 
 int gui_cmp_extension(const char *mask, const char *ext)
 {
-  int i;
+  size_t i;
 
   for (i = 0; i < strlen(mask); i += 4)
     if (strncasecmp(&mask[i], ext, 4) == 0)
