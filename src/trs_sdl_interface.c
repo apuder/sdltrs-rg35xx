@@ -2014,9 +2014,6 @@ void trs_screen_refresh(void)
   } else {
     int i;
 
-    for (i = 0; i < screen_chars; i++)
-      trs_screen_write_char(i, trs_screen[i]);
-
     /* Redraw HRG screen */
     if (hrg_enable) {
       memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
@@ -2030,6 +2027,9 @@ void trs_screen_refresh(void)
 
       grafyx_overlay = 1;
     }
+
+    for (i = 0; i < screen_chars; i++)
+      trs_screen_write_char(i, trs_screen[i]);
   }
 
   /* Redraw 6845 CRTC cursor */
