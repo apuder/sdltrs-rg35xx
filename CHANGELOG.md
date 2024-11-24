@@ -1,3 +1,18 @@
+## Version 1.2.31 Release 11-24-2024:
+
+ * Added TRS-80 Model III/4/4P NMI bug fix by Joshua Arnold.
+ * Added Model III/4/4P memory mapped printer port to be read-only.
+ * Added filter for supported file types in GUI file browser.
+ * Added window border in fullscreen mode.
+ * Added more shortcuts for command line options.
+ * Fixed command line options for memory expansion cards.
+ * Fixed TCS EG-64 Memory-Banking Adaptor.
+ * Fixed TCS Genie IIs/SpeedMaster RAM 192 B memory card.
+ * Fixed current date in LS-DOS for TRS-80 Model 4/4P.
+ * Fixed Hard Disk Activity LED for SDL2.
+ * Fixed Mouse cursor for selection in scaled SDL2 window.
+ * Fixed some bugs and other improvements.
+
 ## Version 1.2.30 Release 08-18-2024:
 
  * Added LNW80 Model II banking and 80x24 text mode support.
