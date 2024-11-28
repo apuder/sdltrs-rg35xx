@@ -538,7 +538,7 @@ void debug_shell(void)
 	    {
 		info();
 	    }
-	    else if(!strcmp(command, "clear") || !strcmp(command, "cl"))
+	    else if(!strncmp(command, "cl", 2))
 	    {
 		clear_trap_address(Z80_PC, 0);
 	    }
@@ -709,7 +709,7 @@ void debug_shell(void)
 	    {
 		done = 1;
 	    }
-	    else if(!strcmp(command, "reset") || !strcmp(command, "re"))
+	    else if(!strncmp(command, "re", 2))
 	    {
 		puts("Performing hard reset.");
 		trs_reset(1);
@@ -755,12 +755,11 @@ void debug_shell(void)
 		trs_reset(1);
 		run();
 	    }
-	    else if(!strcmp(command, "status") || !strcmp(command, "st"))
+	    else if(!strncmp(command, "st", 2))
 	    {
 		print_traps();
 	    }
-	    else if(!strcmp(command, "set") || !strcmp(command, "assign") ||
-		    !strcmp(command, "a"))
+	    else if(!strcmp(command, "set") || !strncmp(command, "a", 1))
 	    {
 		char regname[MAXLINE];
 		unsigned int address, value;
@@ -833,8 +832,7 @@ void debug_shell(void)
 	    {
 		z80_run(0);
 	    }
-	    else if(!strcmp(command, "stop") || !strcmp(command, "break") ||
-		    !strcmp(command, "b"))
+	    else if(!strcmp(command, "stop") || !strncmp(command, "b", 1))
 	    {
 		unsigned int address;
 
@@ -884,7 +882,7 @@ void debug_shell(void)
 		    puts("Tracing disabled.");
 		}
 	    }
-	    else if(!strcmp(command, "watch") || !strcmp(command, "w"))
+	    else if(!strncmp(command, "w", 1))
 	    {
 		unsigned int address;
 
@@ -934,12 +932,12 @@ void debug_shell(void)
 	    {
 		trs_disk_debug();
 	    }
-	    else if(!strcmp(command, "diskdebug") || !strcmp(command, "di"))
+	    else if(!strncmp(command, "di", 2))
 	    {
 		trs_disk_debug_flags = 0;
 		sscanf(input, "%*s %x", (unsigned int *)&trs_disk_debug_flags);
 	    }
-	    else if(!strcmp(command, "iodebug") || !strcmp(command, "io"))
+	    else if(!strncmp(command, "io", 2))
 	    {
 		trs_io_debug_flags = 0;
 		sscanf(input, "%*s %x", (unsigned int *)&trs_io_debug_flags);
