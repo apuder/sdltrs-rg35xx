@@ -177,7 +177,6 @@ static int grafyx_xoffset, grafyx_yoffset;
 static Uint8 hrg_screen[HRG_MEMSIZE];
 static int hrg_enable;
 static int hrg_addr;
-static Uint8 le18_x, le18_y, le18_on;
 
 /* Private routines */
 static void bitmap_char(int character, int ram);
@@ -2545,12 +2544,12 @@ void lowe_le18_write_x(int value)
   /* This really is 0-255. The unit has 16K x 6bit of RAM
      of which only 12K is displayed. You can use the rest
      as a 4K x 6bit area for .. not a lot really */
-  le18_x = value & 63;
+  grafyx_x = value & 63;
 }
 
 void lowe_le18_write_y(int value)
 {
-  le18_y = value;
+  grafyx_y = value;
 }
 
 static Uint8 pack8to6(Uint8 c)
@@ -2578,21 +2577,20 @@ int lowe_le18_read(void)
   if (!lowe_le18)
     return 0xFF;
 
-  return pack8to6(grafyx_unscaled[le18_y][le18_x]) | 0x80
-      | ((le18_on) ? 0x40 : 0x00);
+  return pack8to6(grafyx_unscaled[grafyx_y][grafyx_x]) | 0x80
+      | ((grafyx_enable) ? 0x40 : 0x00);
 }
 
 void lowe_le18_write_data(int value)
 {
-  grafyx_write_byte(le18_x, le18_y, expand6to8(value & 0x3F));
+  grafyx_write_byte(grafyx_x, grafyx_y, expand6to8(value & 0x3F));
 }
 
 void lowe_le18_write_control(int value)
 {
-  if (lowe_le18 && ((le18_on ^ value) & 1)) {
-    le18_on = value & 1;
-    grafyx_enable = le18_on;
-    grafyx_overlay = le18_on;
+  if (lowe_le18 && ((grafyx_enable ^ value) & 1)) {
+    grafyx_enable = value & 1;
+    grafyx_overlay = grafyx_enable;
     trs_screen_refresh();
   }
 }
@@ -2951,9 +2949,6 @@ void trs_main_save(FILE *file)
   trs_save_int(file, &hrg_enable, 1);
   trs_save_int(file, &hrg_addr, 1);
   trs_save_int(file, &lowe_le18, 1);
-  trs_save_uint8(file, &le18_on, 1);
-  trs_save_uint8(file, &le18_x, 1);
-  trs_save_uint8(file, &le18_y, 1);
 }
 
 void trs_main_load(FILE *file)
@@ -2991,9 +2986,6 @@ void trs_main_load(FILE *file)
   trs_load_int(file, &hrg_enable, 1);
   trs_load_int(file, &hrg_addr, 1);
   trs_load_int(file, &lowe_le18, 1);
-  trs_load_uint8(file, &le18_on, 1);
-  trs_load_uint8(file, &le18_x, 1);
-  trs_load_uint8(file, &le18_y, 1);
 }
 
 int trs_sdl_savebmp(const char *filename)
