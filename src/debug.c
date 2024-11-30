@@ -52,9 +52,9 @@
 #include "trs_memory.h"
 #include "trs_state_save.h"
 
-#define MAXLINE		(256)
-#define ADDRESS_SPACE	(0x10000)
-#define MAX_TRAPS	(100)
+#define MAXLINE			(256)
+#define ADDRESS_SPACE		(0x10000)
+#define MAX_TRAPS		(100)
 
 #define BREAKPOINT_FLAG		(0x1)
 #define TRACE_FLAG		(0x2)
@@ -360,6 +360,7 @@ static void load_memory(int address, const char *filename)
 
 	while((c = getc(file)) != EOF)
 	    mem_write(address++, c);
+
 	fclose(file);
     }
     else
@@ -1002,8 +1003,10 @@ void debug_shell(void)
 	    }
 	}
     }
+
 #ifdef READLINE
     write_history(history_file);
 #endif
+
 }
 #endif

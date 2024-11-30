@@ -579,12 +579,14 @@ trs_timer_speed(int fast)
       break;
     }
   }
+
   if (trs_model >= 4) {
     if ((fast & 0x80) || (fast & 0x40))
       timer_hz = TIMER_HZ_4;
     else
       timer_hz = TIMER_HZ_3;
   }
+
   trs_timer_mode(-1);
 }
 
@@ -603,8 +605,8 @@ trs_timer_mode(int mode)
     if (trs_show_led)
       trs_turbo_led();
   }
-  trs_screen_caption();
 
+  trs_screen_caption();
   cycles_per_timer = z80_state.clockMHz * 1000000 / timer_hz;
 }
 

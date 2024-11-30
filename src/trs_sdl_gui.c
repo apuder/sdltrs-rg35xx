@@ -881,7 +881,7 @@ redraw:
               output[i] = output[i - 1];
             len++;
           }
-          output[pos] = (char) key;
+          output[pos] = (char)key;
           if (pos == col + 59)
             col++;
           pos++;
@@ -1505,8 +1505,7 @@ void gui_hard_menu(void)
               if (cylinders > 203)
                 debug("Cylinder Count > 203 is incompatible with XTRSHARD/DCT\n");
             } else {
-              gui_message("ERROR",
-                  "Cylinder Count must be between 3 and 8192");
+              gui_message("ERROR", "Cylinder Count must be between 3 and 8192");
             }
           }
         }
@@ -1519,8 +1518,7 @@ void gui_hard_menu(void)
             if (value >= 0 && value <= 8)
               heads = value;
             else
-              gui_message("ERROR",
-                  "Head Count must be between 0 and 8");
+              gui_message("ERROR", "Head Count must be between 0 and 8");
           }
         }
         break;
@@ -1532,8 +1530,7 @@ void gui_hard_menu(void)
             if (value >= 4 && value <= 256)
               sectors = value;
             else
-              gui_message("ERROR",
-                  "Sector Count must be between 4 and 256");
+              gui_message("ERROR", "Sector Count must be between 4 and 256");
           }
         }
         break;
@@ -2398,8 +2395,7 @@ void gui_joystick_map(int button)
     for (row = 0; row < 4; row++) {
       int const pos = col * 4 + row;
 
-      snprintf(text, 12, "%2d:%s",
-          pos, gui_key_name(jbutton_map[pos]));
+      snprintf(text, 12, "%2d:%s", pos, gui_key_name(jbutton_map[pos]));
       gui_write(text, 2 + col * 12, 11 + row, button == pos);
     }
   }

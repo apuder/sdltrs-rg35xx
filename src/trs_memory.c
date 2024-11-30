@@ -266,8 +266,8 @@ void mem_card_out(int card, int bits)
       if (memory_map >= 0x16) memory_map = 0x10;
       /* Bank low on odd mode */
       selector_bank = (bits & 1) ? 0x0000 : 0x8000;
+      /* External RAM enabled */
       if (bits & 0x8) {
-        /* External RAM enabled */
         /* Effectively the selector bits << 15 */
         /* Low 64K is the base memory */
         bank_base = 32768 + ((bits & 0xF0) << 11);
@@ -287,9 +287,7 @@ void mem_card_out(int card, int bits)
     case TCS_GENIE3S:
       if (bits == mem_command)
         return;
-
       mem_command = bits;
-
       /* D0/D1: 256K block */
       bank_offset[0] = (bits & 0x03) << 18;
       /* D7: Common area */
@@ -967,7 +965,6 @@ int mem_read(int address)
     case 0x53: /* Model 4P map 3, boot ROM out */
     case 0x57: /* Model 4P map 3, boot ROM in */
       return memory[address + bank_offset[address >> 15]];
-
   }
 
   return 0xFF;
@@ -980,8 +977,8 @@ static void lnw80_screen_write_char(int vaddr, int value)
     if (sys_byte & (1 << 7)) {
       /* LNW80 II 80x24 text mode */
       if (vaddr >= 1536)
-        trs_screen_write_char((vaddr & 15) + 64 +
-          (((vaddr - 1536) / 64 + ((vaddr >> 4) & 3) * 8) * 80), value);
+        trs_screen_write_char((vaddr & 15) + 64
+         + (((vaddr - 1536) / 64 + ((vaddr >> 4) & 3) * 8) * 80), value);
       else
         trs_screen_write_char((vaddr % 64) + ((vaddr / 64) * 80), value);
     } else {
@@ -1232,7 +1229,7 @@ void mem_write(int address, int value)
       /* Write to Font-SRAM */
       if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
         genie3s_char(video[(VIDEO_START + video_addr)],
-                     (address - 0x8000) >> 11, value);
+            (address - 0x8000) >> 11, value);
         return;
       }
       /* "Constant bit" points to Bank 0 */
@@ -1519,7 +1516,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       /* Read from Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
-       address += 0x8000;
+        address += 0x8000;
       return &memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
