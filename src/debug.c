@@ -240,7 +240,7 @@ static void set_trap(int address, int flag)
 
 static void clear_trap(int i)
 {
-    if((i < 0) || (i > MAX_TRAPS) || !trap_table[i].valid)
+    if((i < 0) || (i > MAX_TRAPS - 1) || !trap_table[i].valid)
     {
 	printf("[%d] is not a valid trap.\n", i);
     }
