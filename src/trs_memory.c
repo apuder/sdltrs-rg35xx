@@ -110,7 +110,7 @@ static Uint8 mem_video_read(int vaddr)
 {
   if (VIDEO_ADDR(vaddr)) {
     return video[vaddr];
-  } else { /* emulator bug, should never happen */
+  } else {
 #if MEMDEBUG
     error("Reading video address %04X out of range [%04X]", vaddr, MAX_VIDEO_SIZE);
 #endif
@@ -127,7 +127,7 @@ static int mem_video_write(int vaddr, Uint8 value)
     } else {
       return 0;
     }
-  } else { /* emulator bug, should never happen */
+  } else {
 #if MEMDEBUG
     error("Writing %02X to video address %04X out of range [%04X]",
         value, vaddr, MAX_VIDEO_SIZE);
@@ -156,7 +156,7 @@ Uint8 *mem_video_page_addr(int vaddr)
   vaddr = vaddr + video_addr;
   if (VIDEO_ADDR(vaddr)) {
     return video + vaddr;
-  } else { /* emulator bug, should never happen */
+  } else {
 #if MEMDEBUG
     error("Video page address %04X out of range [%04X]", vaddr, MAX_VIDEO_SIZE);
 #endif
@@ -394,7 +394,7 @@ void genie3s_sys_out(int value)
   if (value == sys_byte)
     return;
 
-  /* HRG page */
+  /* HRG page on or off */
   if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
     genie3s_hrg(value & (1 << 1));
 
@@ -538,7 +538,6 @@ void trs_reset(int poweron)
     /* Blank Video */
     memset(&video, ' ', MAX_VIDEO_SIZE);
     m6845_crtc_reset();
-    /* No quirks */
     trs_clones_model(0);
     trs_screen_reset();
     trs_screen_init(1);
@@ -924,8 +923,8 @@ int mem_read(int address)
       return trs80_model3_mem_read(address);
 
     case 0x31: /* CP-500 */
-    case 0x32: /* CP-500 64K RAM */
-    case 0x33: /* CP-500 80x24 video */
+    case 0x32: /* CP-500 M80 64K RAM */
+    case 0x33: /* CP-500 M80 80x24 video */
       return cp500_mem_read(address, memory_map, rom, memory);
 
     case 0x40: /* Model 4 map 0 */
@@ -942,7 +941,7 @@ int mem_read(int address)
     case 0x55: /* Model 4P map 1, boot ROM in */
       if (address < trs_rom_size) return rom[address];
       /* else fall thru */
-    case 0x41: /* Model 4 map 1 */
+    case 0x41: /* Model 4  map 1 */
     case 0x50: /* Model 4P map 0, boot ROM out */
     case 0x51: /* Model 4P map 1, boot ROM out */
       if (address >= RAM_START || address < KEYBOARD_START) {
@@ -952,7 +951,7 @@ int mem_read(int address)
       if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
       break;
 
-    case 0x42: /* Model 4 map 2 */
+    case 0x42: /* Model 4  map 2 */
     case 0x52: /* Model 4P map 2, boot ROM out */
     case 0x56: /* Model 4P map 2, boot ROM in */
       if (address < 0xF400) {
@@ -961,7 +960,7 @@ int mem_read(int address)
       if (address >= 0xF800) return video[address - 0xF800];
       return trs_kb_mem_read(address);
 
-    case 0x43: /* Model 4 map 3 */
+    case 0x43: /* Model 4  map 3 */
     case 0x53: /* Model 4P map 3, boot ROM out */
     case 0x57: /* Model 4P map 3, boot ROM in */
       return memory[address + bank_offset[address >> 15]];
@@ -977,9 +976,11 @@ static void lnw80_screen_write_char(int vaddr, int value)
     if (sys_byte & (1 << 7)) {
       /* LNW80 II 80x24 text mode */
       if (vaddr >= 1536)
+        /* 16x24 text extension region */
         trs_screen_write_char((vaddr & 15) + 64
          + (((vaddr - 1536) / 64 + ((vaddr >> 4) & 3) * 8) * 80), value);
       else
+        /* 64x24 text region */
         trs_screen_write_char((vaddr % 64) + ((vaddr / 64) * 80), value);
     } else {
       trs_screen_write_char(vaddr, value);
@@ -1333,12 +1334,12 @@ void mem_write(int address, int value)
       break;
 
     case 0x31: /* CP-500 */
-    case 0x32: /* CP-500 64K RAM */
-    case 0x33: /* CP-500 80x24 video */
+    case 0x32: /* CP-500 M80 64K RAM */
+    case 0x33: /* CP-500 M80 80x24 video */
       cp500_mem_write(address, value, memory_map, memory);
       break;
 
-    case 0x40: /* Model 4 map 0 */
+    case 0x40: /* Model 4  map 0 */
     case 0x50: /* Model 4P map 0, boot ROM out */
     case 0x54: /* Model 4P map 0, boot ROM in */
       if (address >= RAM_START) {
@@ -1349,7 +1350,7 @@ void mem_write(int address, int value)
       }
       break;
 
-    case 0x41: /* Model 4 map 1 */
+    case 0x41: /* Model 4  map 1 */
     case 0x51: /* Model 4P map 1, boot ROM out */
     case 0x55: /* Model 4P map 1, boot ROM in */
       if (address >= RAM_START || address < KEYBOARD_START) {
@@ -1360,7 +1361,7 @@ void mem_write(int address, int value)
       }
       break;
 
-    case 0x42: /* Model 4 map 2 */
+    case 0x42: /* Model 4  map 2 */
     case 0x52: /* Model 4P map 2, boot ROM out */
     case 0x56: /* Model 4P map 2, boot ROM in */
       if (address < 0xF400) {
@@ -1370,7 +1371,7 @@ void mem_write(int address, int value)
       }
       break;
 
-    case 0x43: /* Model 4 map 3 */
+    case 0x43: /* Model 4  map 3 */
     case 0x53: /* Model 4P map 3, boot ROM out */
     case 0x57: /* Model 4P map 3, boot ROM in */
       memory[address + bank_offset[address >> 15]] = value;
@@ -1621,8 +1622,8 @@ Uint8 *mem_pointer(int address, int writing)
       return trs80_model3_mem_addr(address, writing);
 
     case 0x31: /* CP-500 */
-    case 0x32: /* CP-500 64K RAM */
-    case 0x33: /* CP-500 80x24 video */
+    case 0x32: /* CP-500 M80 64K RAM */
+    case 0x33: /* CP-500 M80 80x24 video */
       return cp500_mem_addr(address, memory_map, rom, memory, writing);
 
     case 0x40: /* Model 4 map 0 */
@@ -1637,7 +1638,7 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x55: /* Model 4P map 1, boot ROM in */
       if (address < trs_rom_size && writing == 0) return &rom[address];
       /* else fall thru */
-    case 0x41: /* Model 4 map 1 */
+    case 0x41: /* Model 4  map 1 */
     case 0x50: /* Model 4P map 0, boot ROM out */
     case 0x51: /* Model 4P map 1, boot ROM out */
       if (address >= RAM_START || address < KEYBOARD_START) {
@@ -1646,7 +1647,7 @@ Uint8 *mem_pointer(int address, int writing)
       if (address >= VIDEO_START) return mem_video_page_addr(address);
       break;
 
-    case 0x42: /* Model 4 map 2 */
+    case 0x42: /* Model 4  map 2 */
     case 0x52: /* Model 4P map 2, boot ROM out */
     case 0x56: /* Model 4P map 2, boot ROM in */
       if (address < 0xF400) {
@@ -1655,7 +1656,7 @@ Uint8 *mem_pointer(int address, int writing)
       if (address >= 0xF800) return &video[address - 0xF800];
       break;
 
-    case 0x43: /* Model 4 map 3 */
+    case 0x43: /* Model 4  map 3 */
     case 0x53: /* Model 4P map 3, boot ROM out */
     case 0x57: /* Model 4P map 3, boot ROM in */
       return &memory[address + bank_offset[address >> 15]];
