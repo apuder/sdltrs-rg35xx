@@ -146,7 +146,7 @@ static unsigned int cycles_saved;
 
 /* True size of graphics memory -- some is offscreen */
 #define G_XSIZE 128
-#define G_YSIZE 512
+#define G_YSIZE 1024
 #define G_MSIZE (2 * G_YSIZE) * G_XSIZE
 static Uint8 grafyx[G_MSIZE];
 static Uint8 grafyx_unscaled[G_YSIZE][G_XSIZE];
@@ -2819,8 +2819,8 @@ void genie3s_hrg_write(unsigned int position, int byte)
     col = pos - (row * 80);
   }
 
-  grafyx_write_byte(col, row * m6845_raster + (position >> 11),
-      mirror_bits(byte));
+  grafyx_write_byte(col, row * m6845_raster + (position >> 11)
+      + grafyx_y, mirror_bits(byte));
 }
 
 Uint8 genie3s_hrg_read(unsigned int position)
@@ -2838,7 +2838,7 @@ Uint8 genie3s_hrg_read(unsigned int position)
   }
 
   return mirror_bits(grafyx_unscaled[row * m6845_raster
-      + (position >> 11)][col]);
+      + (position >> 11) + grafyx_y][col]);
 }
 
 void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)

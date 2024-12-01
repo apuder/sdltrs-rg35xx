@@ -365,6 +365,14 @@ void genie3s_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
+  /* Select HRG page 0/1 */
+  if ((value & (1 << 5)) != (sys_byte_2 & (1 << 5)))
+    grafyx_write_y((value & (1 << 5)) << 4);
+
+  /* Show HRG page 0/1 */
+  if ((value & (1 << 4)) != (sys_byte_2 & (1 << 4)))
+    grafyx_write_yoffset((value & (1 << 4)) << 5);
+
   /* Redraw if Font-SRAM is disabled */
   if ((value & (1 << 1)) == 0 && (sys_byte_2 & (1 << 1)))
     trs_screen_refresh();
