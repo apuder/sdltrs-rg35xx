@@ -527,6 +527,10 @@ void trs_screen_reset(void)
   grafyx_enable = 0;
   grafyx_mode = 0;
   grafyx_overlay = 0;
+  grafyx_x = 0;
+  grafyx_y = 0;
+  grafyx_xoffset = 0;
+  grafyx_yoffset = 0;
   m6845_raster = 12;
   text80x24 = 0;
   screen640x240 = 0;
