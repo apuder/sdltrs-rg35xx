@@ -3012,7 +3012,7 @@ int trs_sdl_savebmp(const char *filename)
     }
 
     SDL_FreeSurface(buffer);
-    file_error("save Screenshot '%s'", filename);
+    file_error("save Screenshot: '%s'", filename);
   }
   return -1;
 }
