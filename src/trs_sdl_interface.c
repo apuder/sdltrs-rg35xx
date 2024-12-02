@@ -2214,7 +2214,7 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
           SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
         break;
       }
-      /* Fall through: LNW80 II 80x24 text mode */
+      /* Fall through - LNW80 II 80x24 text mode */
     default:
       if (trs_model == 1 && trs_clones.model == 0) {
         /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */
