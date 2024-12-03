@@ -410,6 +410,10 @@ void genie3s_sys_out(int value)
   if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
     trs_timer_speed(value & (1 << 2));
 
+  /* Text screen on or off */
+  if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
+    genie3s_text(value & (1 << 7));
+
   sys_byte = value;
 }
 

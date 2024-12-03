@@ -224,6 +224,7 @@ extern void  genie3s_char(int character, int scanline, int byte);
 extern void  genie3s_hrg(int value);
 extern void  genie3s_hrg_write(unsigned int position, int byte);
 extern Uint8 genie3s_hrg_read(unsigned int position);
+extern void  genie3s_text(int onoff);
 
 extern void  m6845_crtc_reset(void);
 extern void  m6845_cursor(int unsigned position, int start, int end, int visible);
