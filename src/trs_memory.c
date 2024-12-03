@@ -459,7 +459,7 @@ void sys_byte_out(int value)
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
         trs_screen_80x24(value & (1 << 7));
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
-        trs_screen_inverse(value & 1);
+        trs_screen_mode(INVERSE, value & 1);
       /* Fall through - HRG on/off bit is identical */
     case 7: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
@@ -492,7 +492,7 @@ void s80z_out(int value)
   }
 
   if ((value & (1 << 6)) != (sys_byte & (1 << 6)))
-    trs_screen_inverse(value & (1 << 6));
+    trs_screen_mode(INVERSE, value & (1 << 6));
 
   sys_byte = value;
   memory_map = 0x20;
@@ -598,7 +598,7 @@ void trs_reset(int poweron)
     selector_bank = 0;
     sys_byte = sys_byte_2 = 0;
     trs_interrupt_latch_clear();
-    trs_screen_inverse(0);
+    trs_screen_mode(INVERSE, 0);
     trs_screen_80x24(0);
 
     switch (speedup) {

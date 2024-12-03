@@ -46,6 +46,14 @@
 #include <time.h>
 #include "z80.h"
 
+/* currentmode values */
+#ifdef _WIN32
+#undef  ALTERNATE
+#endif
+#define NORMAL    0
+#define EXPANDED  1
+#define INVERSE   2
+#define ALTERNATE 4
 
 #if defined(__OS2__) || defined(_WIN32)
 #define DIR_SLASH '\\'
@@ -94,10 +102,8 @@ extern void trs_screen_reset(void);
 extern void trs_rom_init(void);
 extern void trs_screen_write_char(unsigned int position, Uint8 character);
 extern void trs_screen_update(void);
-extern void trs_screen_expanded(int flag);
-extern void trs_screen_alternate(int flag);
+extern void trs_screen_mode(int mode, int flag);
 extern void trs_screen_80x24(int flag);
-extern void trs_screen_inverse(int flag);
 extern void trs_screen_refresh(void);
 extern void trs_screen_caption(void);
 extern void trs_get_window(int *x, int *y, int *w, int *h);

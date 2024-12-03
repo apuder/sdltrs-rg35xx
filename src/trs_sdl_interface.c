@@ -53,15 +53,6 @@
 #define MAX_SCALE   4
 #define SCREEN_SIZE 2048
 
-/* currentmode values */
-#ifdef _WIN32
-#undef  ALTERNATE
-#endif
-#define NORMAL    0
-#define EXPANDED  1
-#define INVERSE   2
-#define ALTERNATE 4
-
 /* TRS-80 character sizes */
 #define MAX_CHARS        256
 #define MAX_CHAR_HEIGHT  16
@@ -1738,26 +1729,10 @@ done:
   SDL_StopTextInput();
 }
 
-void trs_screen_expanded(int flag)
+void trs_screen_mode(int mode, int flag)
 {
-  if ((currentmode ^ (flag ? EXPANDED : 0)) & EXPANDED) {
-    currentmode ^= EXPANDED;
-    trs_screen_refresh();
-  }
-}
-
-void trs_screen_inverse(int flag)
-{
-  if ((currentmode ^ (flag ? INVERSE : 0)) & INVERSE) {
-    currentmode ^= INVERSE;
-    trs_screen_refresh();
-  }
-}
-
-void trs_screen_alternate(int flag)
-{
-  if ((currentmode ^ (flag ? ALTERNATE : 0)) & ALTERNATE) {
-    currentmode ^= ALTERNATE;
+  if ((currentmode ^ (flag ? mode : 0)) & mode) {
+    currentmode ^= mode;
     trs_screen_refresh();
   }
 }

@@ -224,7 +224,7 @@ void z80_out(int port, int value)
             rtc_reg = value >> 4;
             break;
           case 0xF5:
-            trs_screen_inverse(value & 1);
+            trs_screen_mode(INVERSE, value & 1);
             break;
           case 0xF6:
             ctrlimage = value;
@@ -306,7 +306,7 @@ void z80_out(int port, int value)
           case 0xFE:
           case 0xFF:
             modesel = (value >> 3) & 1;
-            trs_screen_expanded(modesel);
+            trs_screen_mode(EXPANDED, modesel);
             trs_cassette_out(value & 0x3);
             break;
           default:
@@ -431,7 +431,7 @@ void z80_out(int port, int value)
           case 0xFF:
             /* screen mode select is on D3 line */
             modesel = (value >> 3) & 1;
-            trs_screen_expanded(modesel);
+            trs_screen_mode(EXPANDED, modesel);
             /* do cassette emulation */
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
@@ -493,7 +493,7 @@ void z80_out(int port, int value)
             mem_bank((value & 0x70) >> 4);
 
           if (changes & 0x08)
-            trs_screen_inverse((value & 0x08) >> 3);
+            trs_screen_mode(INVERSE, (value & 0x08) >> 3);
 
           if (changes & 0x04)
             trs_screen_80x24((value & 0x04) >> 2);
@@ -561,9 +561,9 @@ void z80_out(int port, int value)
         /* cassette motor is on D1 */
         trs_cassette_motor((modeimage & 0x02) >> 1);
         /* screen mode select is on D2 */
-        trs_screen_expanded((modeimage & 0x04) >> 2);
+        trs_screen_mode(EXPANDED, (modeimage & 0x04) >> 2);
         /* alternate char set is on D3 */
-        trs_screen_alternate(!((modeimage & 0x08) >> 3));
+        trs_screen_mode(ALTERNATE, !((modeimage & 0x08) >> 3));
         /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
         if (trs_model == 3) {
           if (speedup == 2 || trs_clones.model == CP500_M80)
