@@ -2757,12 +2757,10 @@ void genie3s_char(int character, int scanline, int byte)
 
 void genie3s_hrg(int value)
 {
-  int const changed = (value != grafyx_enable);
-
   grafyx_enable = value;
   grafyx_overlay = value;
 
-  if (changed) trs_screen_refresh();
+  trs_screen_refresh();
 }
 
 void genie3s_hrg_write(unsigned int position, int byte)
