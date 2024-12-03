@@ -51,7 +51,7 @@
 #include "trs_stringy.h"
 #include "trs_uart.h"
 
-#define NORMAL        1
+#define ENTRY         1
 #define TITLE         2
 #define DISK_DRIVE    3
 #define HARD_DRIVE    4
@@ -988,7 +988,7 @@ int gui_menu(const char *title, MENU *entry, int selection)
         case SDLK_RETURN:
         case SDLK_TAB:
           switch (entry[selection].type) {
-            case NORMAL:
+            case ENTRY:
               return selection;
             case DISK_DRIVE:
               if (gui_file(trs_disk_getfilename(selection)[0] ?
@@ -1202,16 +1202,16 @@ int gui_file_overwrite(void)
 void gui_disk_creation(void)
 {
   MENU menu[] =
-  {{"Image Type                                             ", NORMAL},
+  {{"Image Type                                             ", ENTRY},
    {"", TITLE},
-   {"Number of Sides                                        ", NORMAL},
-   {"Density                                                ", NORMAL},
-   {"Physical Size                                          ", NORMAL},
+   {"Number of Sides                                        ", ENTRY},
+   {"Density                                                ", ENTRY},
+   {"Physical Size                                          ", ENTRY},
    {"", TITLE},
-   {"Ignore Density Flag                                    ", NORMAL},
-   {"Insert Created Floppy Disk Image Into Drive            ", NORMAL},
+   {"Ignore Density Flag                                    ", ENTRY},
+   {"Insert Created Floppy Disk Image Into Drive            ", ENTRY},
    {"", TITLE},
-   {"Create Disk Image with Above Parameters", NORMAL},
+   {"Create Disk Image with Above Parameters", ENTRY},
    {"", 0}};
   const char *disk_type[] = {"   JV1", "   JV3", "   DMK"};
   const char *disk_side[] = {"     1", "     2"};
@@ -1294,14 +1294,14 @@ void gui_disk_creation(void)
 void gui_disk_steps(void)
 {
   MENU menu[] =
-  {{"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
+  {{"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
    {"", 0}};
   const char *steps[] = {"Single", "Double"};
   int selection = 0;
@@ -1327,20 +1327,20 @@ void gui_disk_steps(void)
 void gui_disk_options(void)
 {
   MENU menu[] =
-  {{"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
-   {"", NORMAL},
+  {{"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
+   {"", ENTRY},
    {"", TITLE},
-   {"Floppy Disk Controller                             ", NORMAL},
-   {"Doubler Type                                       ", NORMAL},
-   {"True DAM Emulation                                 ", NORMAL},
+   {"Floppy Disk Controller                             ", ENTRY},
+   {"Doubler Type                                       ", ENTRY},
+   {"True DAM Emulation                                 ", ENTRY},
 #ifdef __linux__
-   {"Set Drive Steps", NORMAL},
+   {"Set Drive Steps", ENTRY},
 #endif
    {"", 0}};
   const char *doubler[]   = {"     None", "   Percom", " Tandy/RS", "     Both"};
@@ -1422,8 +1422,8 @@ void gui_disk_menu(void)
    {"", TITLE},
    {"Save Disk Set", SAVE_SET},
    {"Load Disk Set", LOAD_SET},
-   {"Create Blank Floppy Disk", NORMAL},
-   {"Disk Drive Options", NORMAL},
+   {"Create Blank Floppy Disk", ENTRY},
+   {"Disk Drive Options", ENTRY},
    {"", 0}};
   int selection = 0;
 
@@ -1462,11 +1462,11 @@ void gui_hard_menu(void)
    {"Save Disk Set", SAVE_SET},
    {"Load Disk Set", LOAD_SET},
    {"", TITLE},
-   {"Cylinder Count                                           ", NORMAL},
-   {"Head Count                                               ", NORMAL},
-   {"Sector Count                                             ", NORMAL},
-   {"Insert Created Hard Disk Image Into Drive                ", NORMAL},
-   {"Create Hard Disk Image with Above Parameters", NORMAL},
+   {"Cylinder Count                                           ", ENTRY},
+   {"Head Count                                               ", ENTRY},
+   {"Sector Count                                             ", ENTRY},
+   {"Insert Created Hard Disk Image Into Drive                ", ENTRY},
+   {"Create Hard Disk Image with Above Parameters", ENTRY},
    {"", 0}};
   static int drive;
   int cylinders = 202;
@@ -1571,8 +1571,8 @@ void gui_stringy_menu(void)
    {"", TITLE},
    {"Save Disk Set", SAVE_SET},
    {"Load Disk Set", LOAD_SET},
-   {"Insert Created Wafer Image Into Stringy Drive          ", NORMAL},
-   {"Create Blank Floppy Wafer", NORMAL},
+   {"Insert Created Wafer Image Into Stringy Drive          ", ENTRY},
+   {"Create Blank Floppy Wafer", ENTRY},
    {"", 0}};
   static int drive;
   int selection = 0;
@@ -1619,13 +1619,13 @@ void gui_cassette_menu(void)
   MENU menu[] =
   {{" Cass : ", CASSETTE},
    {"", TITLE},
-   {"Cassette Position                                     ", NORMAL},
-   {"Cassette Default Sample Rate                          ", NORMAL},
+   {"Cassette Position                                     ", ENTRY},
+   {"Cassette Default Sample Rate                          ", ENTRY},
    {"", TITLE},
-   {"Image Type                                            ", NORMAL},
-   {"Insert Created Cassette Into Drive                    ", NORMAL},
+   {"Image Type                                            ", ENTRY},
+   {"Insert Created Cassette Into Drive                    ", ENTRY},
    {"", TITLE},
-   {"Create Blank Cassette Image with Above Parameters", NORMAL},
+   {"Create Blank Cassette Image with Above Parameters", ENTRY},
    {"", 0}};
   const char *cass_type[] = {"   CAS", "   CPT", "   WAV"};
   static int type;
@@ -1706,19 +1706,19 @@ void gui_cassette_menu(void)
 void gui_emulator_menu(void)
 {
   MENU menu[] =
-  {{"Model                                             ", NORMAL},
-   {"CPU Clock Speed                                   ", NORMAL},
-   {"Speedup Kit or Banking for Model I/III/4/4P       ", NORMAL},
-   {"Exatron Stringy Floppy Emulation for Model I      ", NORMAL},
-   {"LE18 (Lowe Electronics) Graphics for Model I      ", NORMAL},
-   {"Lowercase Modification for Model I                ", NORMAL},
-   {"Lubomir Soft Banker Emulation for Model I         ", NORMAL},
-   {"TRS-80 Users Society Selector I Memory Expansion  ", NORMAL},
-   {"SuperMem (Alpha Technology) I/III/4/4P Memory     ", NORMAL},
-   {"Grafyx Solution (Micro-Labs) III/4/4P Graphics    ", NORMAL},
-   {"MegaMem (Anitek Software) III/4/4P Memory Board   ", NORMAL},
-   {"Dave Huffman (and other) 4/4P Memory Expansion    ", NORMAL},
-   {"HyperMem (Anitek Software) 4/4P Memory Expansion  ", NORMAL},
+  {{"Model                                             ", ENTRY},
+   {"CPU Clock Speed                                   ", ENTRY},
+   {"Speedup Kit or Banking for Model I/III/4/4P       ", ENTRY},
+   {"Exatron Stringy Floppy Emulation for Model I      ", ENTRY},
+   {"LE18 (Lowe Electronics) Graphics for Model I      ", ENTRY},
+   {"Lowercase Modification for Model I                ", ENTRY},
+   {"Lubomir Soft Banker Emulation for Model I         ", ENTRY},
+   {"TRS-80 Users Society Selector I Memory Expansion  ", ENTRY},
+   {"SuperMem (Alpha Technology) I/III/4/4P Memory     ", ENTRY},
+   {"Grafyx Solution (Micro-Labs) III/4/4P Graphics    ", ENTRY},
+   {"MegaMem (Anitek Software) III/4/4P Memory Board   ", ENTRY},
+   {"Dave Huffman (and other) 4/4P Memory Expansion    ", ENTRY},
+   {"HyperMem (Anitek Software) 4/4P Memory Expansion  ", ENTRY},
    {"", 0}};
   const char *model[] = {"  TRS-80 Model I",
                          "TRS-80 Model III",
@@ -1847,22 +1847,22 @@ void gui_emulator_menu(void)
 void gui_display_menu(void)
 {
   MENU menu[] =
-  {{"Emulator Background Color                              ", NORMAL},
-   {"Emulator Foreground Color                              ", NORMAL},
-   {"GUI Background Color                                   ", NORMAL},
-   {"GUI Foreground Color                                   ", NORMAL},
-   {"Model I Character Set                                  ", NORMAL},
-   {"Model III Character Set                                ", NORMAL},
-   {"Model 4/4P Character Set                               ", NORMAL},
-   {"Border Width                                           ", NORMAL},
-   {"Resize Window on Mode Change for Model III             ", NORMAL},
-   {"Resize Window on Mode Change for Model 4/4P            ", NORMAL},
-   {"Aspect Ratio for Window                                ", NORMAL},
-   {"LED Display for Disks and Turbo Mode                   ", NORMAL},
+  {{"Emulator Background Color                              ", ENTRY},
+   {"Emulator Foreground Color                              ", ENTRY},
+   {"GUI Background Color                                   ", ENTRY},
+   {"GUI Foreground Color                                   ", ENTRY},
+   {"Model I Character Set                                  ", ENTRY},
+   {"Model III Character Set                                ", ENTRY},
+   {"Model 4/4P Character Set                               ", ENTRY},
+   {"Border Width                                           ", ENTRY},
+   {"Resize Window on Mode Change for Model III             ", ENTRY},
+   {"Resize Window on Mode Change for Model 4/4P            ", ENTRY},
+   {"Aspect Ratio for Window                                ", ENTRY},
+   {"LED Display for Disks and Turbo Mode                   ", ENTRY},
 #ifdef OLD_SCANLINES
-   {"Display Scanlines with Background Color                ", NORMAL},
+   {"Display Scanlines with Background Color                ", ENTRY},
 #else
-   {"Display Scanlines with brightness                      ", NORMAL},
+   {"Display Scanlines with brightness                      ", ENTRY},
 #endif
    {"", 0}};
   const char *font1[]  = {"      Early",
@@ -2045,19 +2045,19 @@ void gui_display_menu(void)
 void gui_misc_menu(void)
 {
   MENU menu[] =
-  {{"Close and Reopen Printer Output File", NORMAL},
-   {"Emulator Traps Safe                                     ", NORMAL},
-   {"Fake year for TRS-80 time-of-day clock                  ", NORMAL},
-   {"Keystretch Value                                        ", NORMAL},
-   {"Printer Type                                            ", NORMAL},
+  {{"Close and Reopen Printer Output File", ENTRY},
+   {"Emulator Traps Safe                                     ", ENTRY},
+   {"Fake year for TRS-80 time-of-day clock                  ", ENTRY},
+   {"Keystretch Value                                        ", ENTRY},
+   {"Printer Type                                            ", ENTRY},
    {"Serial Port Name:", TITLE},
-   {"                                                        ", NORMAL},
-   {"Serial Switches                                         ", NORMAL},
-   {"Shift Bracket Emulation                                 ", NORMAL},
-   {"Sound Output                                            ", NORMAL},
-   {"Turbo Mode                                              ", NORMAL},
-   {"Turbo Speed                                             ", NORMAL},
-   {"Turbo Paste                                             ", NORMAL},
+   {"                                                        ", ENTRY},
+   {"Serial Switches                                         ", ENTRY},
+   {"Shift Bracket Emulation                                 ", ENTRY},
+   {"Sound Output                                            ", ENTRY},
+   {"Turbo Mode                                              ", ENTRY},
+   {"Turbo Speed                                             ", ENTRY},
+   {"Turbo Paste                                             ", ENTRY},
    {"", 0}};
   const char *printer[] = {"     None", "     Text"};
   int selection = 0;
@@ -2219,10 +2219,10 @@ int gui_read_config(void)
 static int gui_config_menu(void)
 {
   MENU menu[] =
-  {{"Save Emulator State (Alt-S)", NORMAL},
-   {"Load Emulator State (Alt-L)", NORMAL},
-   {"Write Configuration (Alt-W)", NORMAL},
-   {"Read Configuration  (Alt-R)", NORMAL},
+  {{"Save Emulator State (Alt-S)", ENTRY},
+   {"Load Emulator State (Alt-L)", ENTRY},
+   {"Write Configuration (Alt-W)", ENTRY},
+   {"Read Configuration  (Alt-R)", ENTRY},
    {"", 0}};
   int selection = 0;
 
@@ -2404,14 +2404,14 @@ void gui_joystick_map(int button)
 void gui_joystick_menu(void)
 {
   MENU menu[] =
-  {{"Use Keypad for Joystick                           ", NORMAL},
-   {"USB Joystick/Gamepad                              ", NORMAL},
-   {"Map Joystick/Mouse to Arrow Keys                  ", NORMAL},
-   {"Map Button to Key", NORMAL},
-   {"Map Button to Function", NORMAL},
-   {"Unmap Button", NORMAL},
-   {"Unmap All Buttons", NORMAL},
-   {"Check Button Mapping", NORMAL},
+  {{"Use Keypad for Joystick                           ", ENTRY},
+   {"USB Joystick/Gamepad                              ", ENTRY},
+   {"Map Joystick/Mouse to Arrow Keys                  ", ENTRY},
+   {"Map Button to Key", ENTRY},
+   {"Map Button to Function", ENTRY},
+   {"Unmap Button", ENTRY},
+   {"Unmap All Buttons", ENTRY},
+   {"Check Button Mapping", ENTRY},
    {"", 0}};
   int selection = 0;
   int button, key;
@@ -2508,17 +2508,17 @@ void gui_default_dirs(void)
 {
   MENU menu[] =
   {{"Floppy Disk:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"Hard Disk:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"Cassette/Wafer:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"Disk Set:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"State/Configuration:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"Printer Output/Screenshot:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"", 0}};
   int selection = 1;
 
@@ -2561,17 +2561,17 @@ void gui_roms(void)
 {
   MENU menu[] =
   {{"Model I ROM:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"", TITLE},
    {"Model III / 4 ROM:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"", TITLE},
    {"Model 4P ROM:", TITLE},
-   {"   ", NORMAL},
+   {"   ", ENTRY},
    {"", TITLE},
    {"", TITLE},
    {"", TITLE},
-   {"Patch Model I ROM for auto-boot from hard drive   ", NORMAL},
+   {"Patch Model I ROM for auto-boot from hard drive   ", ENTRY},
    {"", 0}};
   int selection = 1;
 
@@ -2685,19 +2685,19 @@ void gui_save_bmp(void)
 void gui_main_menu(void)
 {
   MENU menu[] =
-  {{"Floppy Disk Management   (Alt-D)", NORMAL},
-   {"Hard Disk Management     (Alt-H)", NORMAL},
-   {"Cassette/Tape Management (Alt-T)", NORMAL},
-   {"Stringy Wafer Management (Alt-G)", NORMAL},
-   {"Emulator Settings        (Alt-E)", NORMAL},
-   {"Display Settings         (Alt-I)", NORMAL},
-   {"Miscellaneous/Printer    (Alt-O)", NORMAL},
-   {"Configuration/State Files", NORMAL},
-   {"Joystick Settings", NORMAL},
-   {"Default Directories", NORMAL},
-   {"ROM File Selection", NORMAL},
-   {"TRS-80 Power Reset", NORMAL},
-   {"About SDLTRS", NORMAL},
+  {{"Floppy Disk Management   (Alt-D)", ENTRY},
+   {"Hard Disk Management     (Alt-H)", ENTRY},
+   {"Cassette/Tape Management (Alt-T)", ENTRY},
+   {"Stringy Wafer Management (Alt-G)", ENTRY},
+   {"Emulator Settings        (Alt-E)", ENTRY},
+   {"Display Settings         (Alt-I)", ENTRY},
+   {"Miscellaneous/Printer    (Alt-O)", ENTRY},
+   {"Configuration/State Files", ENTRY},
+   {"Joystick Settings", ENTRY},
+   {"Default Directories", ENTRY},
+   {"ROM File Selection", ENTRY},
+   {"TRS-80 Power Reset", ENTRY},
+   {"About SDLTRS", ENTRY},
    {"", 0}};
   int selection = 0;
 
