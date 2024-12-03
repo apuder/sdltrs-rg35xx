@@ -2518,19 +2518,6 @@ Uint8 grafyx_m3_read_byte(unsigned int position)
  *     7-1: unused
  *     0: hi res (1 = on)
  */
-void lowe_le18_write_x(int value)
-{
-  /* This really is 0-255. The unit has 16K x 6bit of RAM
-     of which only 12K is displayed. You can use the rest
-     as a 4K x 6bit area for .. not a lot really */
-  grafyx_x = value & 63;
-}
-
-void lowe_le18_write_y(int value)
-{
-  grafyx_y = value;
-}
-
 static Uint8 pack8to6(Uint8 c)
 {
   return ((c & 0x70) >> 1) | (c & 7);

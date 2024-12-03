@@ -381,10 +381,10 @@ void z80_out(int port, int value)
               trs_timer_speed(value & 0xC0);
             return;
           case 0xED:
-            if (lowe_le18) lowe_le18_write_x(value);
+            if (lowe_le18) grafyx_write_x(value & 63);
             return;
           case 0xEE:
-            if (lowe_le18) lowe_le18_write_y(value);
+            if (lowe_le18) grafyx_write_y(value);
             return;
           case 0xEF:
             if (lowe_le18) lowe_le18_write_control(value);

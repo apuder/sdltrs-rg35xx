@@ -257,8 +257,6 @@ extern void  hrg_write_data(int data);
 extern int   hrg_read_data(void);
 
 extern int   lowe_le18;
-extern void  lowe_le18_write_x(int);
-extern void  lowe_le18_write_y(int);
 extern int   lowe_le18_read(void);
 extern void  lowe_le18_write_data(int);
 extern void  lowe_le18_write_control(int);
