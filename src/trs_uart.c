@@ -142,18 +142,18 @@ xlate_baud(int trs_baud)
 void
 trs_uart_init(void)
 {
-#ifndef _WIN32
-  int err;
-#endif
-#if UARTDEBUG
-  debug("trs_uart_init\n");
-#endif
 #ifdef _WIN32
   initialized = -1;
   return;
 #else
+  int err;
+
+#if UARTDEBUG
+  debug("trs_uart_init\n");
+#endif
+
   if (initialized == 1 && uart.fd != -1) close(uart.fd);
-  if (trs_uart_name[0] == '\000') {
+  if (trs_uart_name[0] == '\0') {
     /* Emulate having no serial port */
     initialized = -1;
     return;
@@ -208,9 +208,11 @@ trs_uart_modem_in(void)
   /* should poll hardware here, if we could */
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return 0xff;
+
 #if UARTDEBUG2
   debug("trs_uart_modem_in returns 0x%02X\n", uart.modem);
 #endif
+
   return uart.modem;
 }
 
@@ -220,6 +222,7 @@ trs_uart_reset_out(void)
 #if UARTDEBUG
   debug("trs_uart_reset_out\n");
 #endif
+
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) {
     if (trs_uart_name[0] != '\0')
@@ -233,25 +236,27 @@ trs_uart_switches_in(void)
 {
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return 0xff;
+
 #if UARTDEBUG
   debug("trs_uart_switches_in returns 0x%02X\n", uart.switches);
 #endif
+
   return uart.switches;
 }
 
 void
 trs_uart_baud_out(int value)
 {
-#ifndef _WIN32
-  int err;
-  int bits;
-#endif
-#if UARTDEBUG
-  debug("trs_uart_baud_out 0x%02X\n", value);
-#endif
 #ifdef _WIN32
   return;
 #else
+  int err;
+  int bits;
+
+#if UARTDEBUG
+  debug("trs_uart_baud_out 0x%02X\n", value);
+#endif
+
   if (initialized == 1 && uart.baud == value) return;
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return;
@@ -302,21 +307,25 @@ trs_uart_check_avail(void)
     /* check for data available */
     int rc;
     if (!(uart.fdflags & FNONBLOCK)) {
+
 #if UARTDEBUG
       debug("trs_uart nonblocking\n");
 #endif
+
       uart.fdflags |= FNONBLOCK;
       fcntl(uart.fd, F_SETFL, uart.fdflags);
     }
     do {
       rc = read(uart.fd, uart.buf, BUFSIZE);
     } while (rc < 0 && errno == EINTR);
+
 #if UARTDEBUG
 #if !UARTDEBUG2
     if (rc >= 0 || errno != EAGAIN)
 #endif
       file_error("trs_uart read returns %d", rc);
 #endif
+
     if (rc < 0) {
       if (errno != EAGAIN) {
 	file_error("read UART: '%s'", trs_uart_name);
@@ -330,9 +339,11 @@ trs_uart_check_avail(void)
       trs_schedule_event(trs_uart_set_avail, 1, uart.tstates);
     }
   }
+
 #if UARTDEBUG2
   debug("trs_uart_check_avail returns %d\n", uart.bufleft);
 #endif
+
   return uart.bufleft;
 #endif
 }
@@ -343,15 +354,18 @@ trs_uart_status_in(void)
 #if UARTDEBUG
   static int oldstatus = -1;
 #endif
+
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return 0xff;
   trs_uart_check_avail();
+
 #if UARTDEBUG
   if (uart.status != oldstatus) {
     debug("trs_uart_status_in returns 0x%02X\n", uart.status);
     oldstatus = uart.status;
   }
 #endif
+
   return uart.status;
 }
 
@@ -363,9 +377,11 @@ trs_uart_control_out(int value)
 #else
   int err;
   int cflag = HUPCL|CREAD|CLOCAL;
+
 #if UARTDEBUG
   debug("trs_uart_control_out 0x%02X\n", value);
 #endif
+
   if (initialized == 1 && uart.control == value) return;
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return;
@@ -419,9 +435,11 @@ trs_uart_data_in(void)
       trs_schedule_event(trs_uart_set_avail, 1, uart.tstates);
     }
   }
+
 #if UARTDEBUG
   debug("trs_uart_data_in returns 0x%02X\n", uart.idata);
 #endif
+
   return uart.idata;
 }
 
@@ -431,26 +449,29 @@ trs_uart_data_out(int value)
 #ifdef _WIN32
   return;
 #else
-  int err;
 
 #if UARTDEBUG
   debug("trs_uart_data_out 0x%02X\n", value);
 #endif
+
   if (initialized == 0) trs_uart_init();
   if (initialized == -1) return;
   uart.odata = value;
   if (uart.fd != -1) {
     for (;;) {
-      err = write(uart.fd, &uart.odata, 1);
+      int err = write(uart.fd, &uart.odata, 1);
+
       if (err >= 0) return;
       if (errno != EAGAIN) {
 	file_error("read UART: '%s'", trs_uart_name);
 	return;
       }
       /* Oops, here we didn't really want nonblocking i/o */
+
 #if UARTDEBUG
       debug("trs_uart blocking\n");
 #endif
+
       uart.fdflags &= ~FNONBLOCK;
       fcntl(uart.fd, F_SETFL, uart.fdflags);
     }
