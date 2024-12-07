@@ -619,7 +619,8 @@ read_dir:
   if (gui_read_dir(directory, all ? NULL : mask, dir) != 0)
     return -1;
 
-  gui_write(all ? " F1:Ext " : " F1:All ", 54, 0, 1);
+  if (dir == 0)
+    gui_write(all ? " F1:Ext " : " F1:All ", 54, 0, 1);
 
   gui_limit(directory, text, 58);
   gui_rect(2, 1, 60, 1, 0);
@@ -711,6 +712,8 @@ read_dir:
           redraw = 1;
           break;
         case SDLK_F1:
+          if (dir)
+            break;
           all = !all;
           goto read_dir;
         case SDLK_INSERT:
