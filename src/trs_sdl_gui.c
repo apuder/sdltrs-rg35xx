@@ -900,7 +900,7 @@ int gui_menu(const char *title, MENU *entry, int selection)
 {
   int num = 0;
 
-  gui_write(title, 2, 0, 0);
+  gui_center(title, 0, 0);
 
   if (strstr(title, "Man"))
     gui_center(" ENTER/INS/TAB:Insert  DEL:Remove  SPACE:Write-Protect ", 15, 1);
