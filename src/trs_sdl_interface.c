@@ -2280,16 +2280,14 @@ void gui_rect(int x, int y, int w, int h, int frame)
   w = w * char_width;
   h = h * char_height;
 
+  trs_screen_rect(x, y, w, h, gui_background);
 
   if (frame) {
-    trs_screen_rect(x, y, w, h, gui_foreground);
-    x += 2;
-    y += 2;
-    w -= 4;
-    h -= 4;
+    trs_screen_rect(x, y, w, 2, gui_foreground);
+    trs_screen_rect(x, y, 2, h, gui_foreground);
+    trs_screen_rect(x + w - 2, y, 2, h, gui_foreground);
+    trs_screen_rect(x, y + h - 2, w, 2, gui_foreground);
   }
-
-  trs_screen_rect(x, y, w, h, gui_background);
 }
 
 void gui_char(int col, int row, Uint8 character, int invert)
