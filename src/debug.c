@@ -116,6 +116,7 @@ static void help(void)
   rom <addr> = <value> .. Change byte in ROM\n\
   in <port> ............. Input from given I/O port\n\
   out <port> = <value> .. Output to given I/O port\n\
+  cmd <file> ............ Load specified CMD file\n\
   peek <addr> [,<end>] .. Print memory values of specified hex address range\n\
   poke <addr> , <value> . Write value to specified hex address\n\
   load <addr> <file> .... Load memory from file to specified hex address\n\
@@ -624,6 +625,13 @@ void debug_shell(void)
 			z80_out(port, value);
 		else
 			puts("A port and a value must be specified.\n");
+	    }
+	    else if(!strcmp(command, "cmd"))
+	    {
+		char *file = input;
+
+		if(sscanf(input, "%*s %s", file) == 1)
+			trs_load_cmd(file);
 	    }
 	    else if(!strcmp(command, "next") || !strcmp(command, "nextint") ||
 		    !strcmp(command, "n") || !strcmp(command, "ni"))
