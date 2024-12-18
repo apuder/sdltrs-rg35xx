@@ -96,7 +96,6 @@ static void hard_seek(void);
 static int  open_drive(int drive);
 static int  find_sector(int newstatus);
 static int  open_drive(int n);
-static void set_dir_cyl(int cyl);
 
 /* Powerup or reset button */
 void trs_hard_init(int poweron)
@@ -561,7 +560,15 @@ static void hard_data_out(int value)
     if (state.bytesdone < state.secsize) {
       if (state.cyl == 0 && state.head == 0 &&
 	  state.secnum == 0 && state.bytesdone == 2) {
-	set_dir_cyl(value);
+	/* Sleazy trick to update the "directory cylinder" byte in the Reed
+	   header.  This value is only needed by the Reed emulator itself, and
+	   we would like xtrs to set it automatically so that the user doesn't
+	   have to know about it. */
+	const long where = ftell(d->file);
+
+	fseek(d->file, 31, 0);
+	putc(state.data, d->file);
+	fseek(d->file, where, 0);
       }
       res = putc(state.data, d->file);
       state.bytesdone++;
@@ -576,20 +583,6 @@ static void hard_data_out(int value)
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_DATAERR; /* arbitrary choice */
   }
-}
-
-/* Sleazy trick to update the "directory cylinder" byte in the Reed
-   header.  This value is only needed by the Reed emulator itself, and
-   we would like xtrs to set it automatically so that the user doesn't
-   have to know about it. */
-static void set_dir_cyl(int cyl)
-{
-  const Drive *d = &state.d[state.drive];
-  long where = ftell(d->file);
-
-  fseek(d->file, 31, 0);
-  putc(cyl, d->file);
-  fseek(d->file, where, 0);
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
