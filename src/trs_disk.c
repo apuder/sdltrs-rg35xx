@@ -437,8 +437,6 @@ trs_disk_getstep(int unit)
 void
 trs_disk_init(int poweron)
 {
-  int i;
-
   state.status = TRSDISK_NOTRDY|TRSDISK_TRKZERO;
   state.track = 0;
   state.sector = 0;
@@ -456,6 +454,8 @@ trs_disk_init(int poweron)
   state.motor_timeout = 0;
 
   if (poweron) {
+    int i;
+
     for (i = 0; i < NDRIVES; i++) {
       disk[i].phytrack = 0;
       if (disk[i].file == NULL) {
@@ -800,11 +800,10 @@ trs_disk_insert(int drive, const char *diskname)
   #if __linux__
   if (S_ISBLK(st.st_mode)) {
     /* Real floppy drive */
-    int fd;
     int reset_now = 0;
     struct floppy_drive_params fdp;
+    int fd = open(diskname, O_ACCMODE|O_NDELAY);
 
-    fd = open(diskname, O_ACCMODE|O_NDELAY);
     if (fd == -1) {
       file_error("open real: '%s'", diskname);
       d->file = NULL;
@@ -2978,7 +2977,7 @@ trs_disk_command_write(Uint8 cmd)
 	bytlen = (1.0 - GAP1ANGLE - GAP4ANGLE) / ((float)totbyt);
 	i = id_index;
 	for (;;) {
-	  SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
+	  const SectorId *sid = &d->u.jv3.id[d->u.jv3.sorted_id[i]];
 	  if (sid->track != d->phytrack ||
 	      (sid->flags & JV3_SIDE ? 1 : 0) != state.curside) {
 	    /* Wrap around to start of track */

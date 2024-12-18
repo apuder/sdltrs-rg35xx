@@ -1056,7 +1056,7 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
   num--;
 
   while (1) {
-    int key = gui_select(entry[selection], x, selection + y);
+    int const key = gui_select(entry[selection], x, selection + y);
 
     if (key >= '0' && key <= 'Z') {
       if (num == 1) {

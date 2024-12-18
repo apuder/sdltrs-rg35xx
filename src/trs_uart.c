@@ -250,7 +250,6 @@ trs_uart_baud_out(int value)
 #ifdef _WIN32
   return;
 #else
-  int err;
   int bits;
 
 #if UARTDEBUG
@@ -275,7 +274,8 @@ trs_uart_baud_out(int value)
 #endif
 
   if (uart.fd != -1) {
-    err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
+    int err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
+
     if (err == -1) {
       file_error("set UART attributes: '%s'", trs_uart_name);
     }
