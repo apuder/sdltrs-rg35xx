@@ -131,7 +131,9 @@ static void help(void)
                             2 = FDC commands          20 = Readadr timing\n\
                             4 = VTOS 3.0 JV3 kludges  40 = DMK\n\
                             8 = Gaps                  80 = IOCTL errors\n\
-  io[debug] <hexval> .... Set I/O port debug flags: 1=port input, 2=port output\n\
+  io[debug] <hexval> .... Set I/O port debug flags:\n\
+                            1 = port input             4 = Hard Disk I/O\n\
+                            2 = port output            8 = Hard Disk Command\n\
   (zbx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
   quit .................. Exit from SDLTRS");

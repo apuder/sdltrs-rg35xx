@@ -39,8 +39,8 @@
 
 int trs_hd_boot;
 
-/*#define HARDDEBUG1 1*/  /* show detail on all port i/o */
-/*#define HARDDEBUG2 1*/  /* show all commands */
+#define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
+#define HARDDEBUG2 (1 << 3)  /* show all commands */
 
 /* Private types and data */
 
@@ -225,8 +225,9 @@ int trs_hard_in(int port)
       break;
     }
   }
-#if HARDDEBUG1
-  debug("%02X -> %02X\n", port, v);
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("%02X -> %02X\n", port, v);
 #endif
   return v;
 }
@@ -234,8 +235,9 @@ int trs_hard_in(int port)
 /* Write to an I/O port mapped to the controller */
 void trs_hard_out(int port, int value)
 {
-#if HARDDEBUG1
-  debug("%02X <- %02X\n", port, value);
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("%02X <- %02X\n", port, value);
 #endif
   switch (port) {
   case TRS_HARD_WP:
@@ -320,8 +322,9 @@ void trs_hard_out(int port, int value)
 
 static void hard_restore(void)
 {
-#if HARDDEBUG2
-  debug("hard_restore drive %d\n", state.drive);
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_restore drive %d\n", state.drive);
 #endif
   state.cyl = 0;
   /*!! should anything else be zeroed? */
@@ -330,8 +333,9 @@ static void hard_restore(void)
 
 static void hard_read(int cmd)
 {
-#if HARDDEBUG2
-  debug("hard_read drive %d, cyl %d, hd %d, sec %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_read drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -345,8 +349,9 @@ static void hard_read(int cmd)
 
 static void hard_write(int cmd)
 {
-#if HARDDEBUG2
-  debug("hard_write drive %d, cyl %d, hd %d, sec %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_write drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -360,8 +365,9 @@ static void hard_write(int cmd)
 
 static void hard_verify(void)
 {
-#if HARDDEBUG2
-  debug("hard_verify drive %d, cyl %d, hd %d, sec %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_verify drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
@@ -369,8 +375,9 @@ static void hard_verify(void)
 
 static void hard_format(void)
 {
-#if HARDDEBUG2
-  debug("hard_format drive %d, cyl %d, hd %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_format drive %d, cyl %d, hd %d\n",
 	state.drive, state.cyl, state.head);
 #endif
   /* !!should probably set up to read skew table here */
@@ -379,8 +386,9 @@ static void hard_format(void)
 
 static void hard_init(int cmd)
 {
-#if HARDDEBUG2
-  debug("hard_init drive %d, cyl %d, hd %d, sec %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_init drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   /* I don't know what this command does */
@@ -390,8 +398,9 @@ static void hard_init(int cmd)
 
 static void hard_seek(void)
 {
-#if HARDDEBUG2
-  debug("hard_seek drive %d, cyl %d, hd %d, sec %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_seek drive %d, cyl %d, hd %d, sec %d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
@@ -470,8 +479,9 @@ static int open_drive(int drive)
     d->secs  = secs / d->heads;
   }
 
-#if HARDDEBUG2
-  debug("open_drive %d, cyls %d, heads %d, secs %d\n",
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("open_drive %d, cyls %d, heads %d, secs %d\n",
 	drive, d->cyls, d->heads, d->secs);
 #endif
 
