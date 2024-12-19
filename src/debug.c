@@ -763,7 +763,8 @@ void debug_shell(void)
 	    {
 		print_traps();
 	    }
-	    else if(!strcmp(command, "set") || !strncmp(command, "a", 1))
+	    else if(!strcmp(command, "set") || !strncmp(command, "as", 2) ||
+		    !strcmp(command, "a"))
 	    {
 		char regname[MAXLINE];
 		unsigned int address, value;
@@ -836,7 +837,8 @@ void debug_shell(void)
 	    {
 		z80_run(0);
 	    }
-	    else if(!strcmp(command, "stop") || !strncmp(command, "b", 1))
+	    else if(!strcmp(command, "stop") || !strncmp(command, "br", 2) ||
+		    !strcmp(command, "b"))
 	    {
 		unsigned int address;
 
