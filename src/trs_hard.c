@@ -95,7 +95,10 @@ static void hard_init(int cmd);
 static void hard_seek(void);
 static int  open_drive(int drive);
 static int  find_sector(int newstatus);
-static int  open_drive(int n);
+
+#ifdef ZBX
+static const char *hard_debug(int port);
+#endif
 
 /* Powerup or reset button */
 void trs_hard_init(int poweron)
@@ -227,7 +230,7 @@ int trs_hard_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("%02X -> %02X\n", port, v);
+    debug("trs_hard_in(%s) => %02X\n", hard_debug(port), v);
 #endif
   return v;
 }
@@ -237,7 +240,7 @@ void trs_hard_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("%02X <- %02X\n", port, value);
+    debug("trs_hard_out(%s), %02X\n", hard_debug(port), value);
 #endif
   switch (port) {
   case TRS_HARD_WP:
@@ -324,7 +327,7 @@ static void hard_restore(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_restore drive %d\n", state.drive);
+    debug("hard_restore drive:%d\n", state.drive);
 #endif
   state.cyl = 0;
   /*!! should anything else be zeroed? */
@@ -335,7 +338,7 @@ static void hard_read(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_read drive %d, cyl %d, hd %d, sec %d\n",
+    debug("hard_read drive:%d, cyl:%d, head:%d, sec:%d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -351,7 +354,7 @@ static void hard_write(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_write drive %d, cyl %d, hd %d, sec %d\n",
+    debug("hard_write drive:%d, cyl:%d, head:%d, sec:%d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   if (cmd & TRS_HARD_MULTI) {
@@ -367,7 +370,7 @@ static void hard_verify(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_verify drive %d, cyl %d, hd %d, sec %d\n",
+    debug("hard_verify drive:%d, cyl:%d, head:%d, sec:%d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
@@ -377,7 +380,7 @@ static void hard_format(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_format drive %d, cyl %d, hd %d\n",
+    debug("hard_format drive:%d, cyl:%d, head:%d\n",
 	state.drive, state.cyl, state.head);
 #endif
   /* !!should probably set up to read skew table here */
@@ -388,7 +391,7 @@ static void hard_init(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_init drive %d, cyl %d, hd %d, sec %d\n",
+    debug("hard_init drive:%d, cyl:%d, head:%d, sec:%d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   /* I don't know what this command does */
@@ -400,11 +403,41 @@ static void hard_seek(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_seek drive %d, cyl %d, hd %d, sec %d\n",
+    debug("hard_seek drive:%d, cyl:%d, head:%d, sec:%d\n",
 	state.drive, state.cyl, state.head, state.secnum);
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
+
+#if ZBX
+static const char *hard_debug(int port)
+{
+  switch (port) {
+    case TRS_HARD_WP:
+      return "WP";
+    case TRS_HARD_CONTROL:
+      return "CONTROL";
+    case TRS_HARD_DATA:
+      return "DATA";
+    case TRS_HARD_PRECOMP:
+      return "PRECOMP/ERROR";
+    case TRS_HARD_SECCNT:
+      return "SECCNT";
+    case TRS_HARD_SECNUM:
+      return "SECNUM";
+    case TRS_HARD_CYLLO:
+      return "CYLLO";
+    case TRS_HARD_CYLHI:
+      return "CYLHI";
+    case TRS_HARD_SDH:
+      return "SDH";
+    case TRS_HARD_COMMAND:
+      return "COMMAND/STATUS";
+    default:
+      return "";
+  }
+}
+#endif
 
 /*
  * 1) Make sure the file for the current drive is open.  If the file
@@ -441,8 +474,7 @@ static int open_drive(int drive)
       d->file = fopen(d->filename, "rb");
     }
     if (d->file == NULL) {
-      file_error("open hard%d: '%s'",
-	    drive, d->filename);
+      file_error("open hard%d: '%s'", drive, d->filename);
       err = errno;
       goto fail;
     }
@@ -481,7 +513,7 @@ static int open_drive(int drive)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("open_drive %d, cyls %d, heads %d, secs %d\n",
+    debug("open_drive:%d, cyls:%d, heads:%d, secs:%d\n",
 	drive, d->cyls, d->heads, d->secs);
 #endif
 
@@ -520,7 +552,7 @@ static int find_sector(int newstatus)
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
-    error("hard%d: requested cyl %d, hd %d, sec %d; max cyl %d, hd %d, sec %d",
+    error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
 	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_NFERR;
