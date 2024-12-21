@@ -2180,6 +2180,8 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
     case GENIE3S:
       if (grafyx_overlay)
         SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
+      else
+        goto overlay;
       break;
     case LNW80:
       if (rows == 16) {
@@ -2212,6 +2214,7 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
       }
   }
 
+overlay:
   /* Overlay grafyx on character */
   if (grafyx_enable) {
     /* assert(grafyx_overlay); */
