@@ -653,7 +653,7 @@ void rom_write(int address, int value)
 static int trs80_model1_ram(int address)
 {
   if (selector) {
-    int const addr = address;
+    int const addr = address & 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -663,7 +663,7 @@ static int trs80_model1_ram(int address)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == selector_bank)
+    if (addr == selector_bank)
       address += bank_base;
   }
 
@@ -1012,7 +1012,7 @@ static void trs80_screen_write_char(int vaddr, int value)
 static void trs80_model1_write_mem(int address, int value)
 {
   if (selector) {
-    int const addr = address;
+    int const addr = address & 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1025,7 +1025,7 @@ static void trs80_model1_write_mem(int address, int value)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == selector_bank)
+    if (addr == selector_bank)
       address += bank_base;
   }
 
@@ -1414,7 +1414,7 @@ void mem_write_word(int address, int value)
 static Uint8 *trs80_model1_ram_addr(int address)
 {
   if (selector) {
-    int const addr = address;
+    int const addr = address & 0x8000;
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1424,7 +1424,7 @@ static Uint8 *trs80_model1_ram_addr(int address)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if ((addr & 0x8000) == selector_bank)
+    if (addr == selector_bank)
       address += bank_base;
   }
 
