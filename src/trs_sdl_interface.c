@@ -73,7 +73,6 @@ static int rows = 16;
 static int scale_factor = 2;
 static int m6845_raster = 12;
 static int trs_charset;
-static int trs_resize;
 static int text80x24, screen640x240;
 static int drawnRectCount;
 static int top_margin;
@@ -565,6 +564,7 @@ void trs_screen_caption(void)
 void trs_screen_init(int resize)
 {
   int const led_height = trs_show_led ? 8 : 0;
+  int trs_resize;
   SDL_Color colors[2];
 #if SDLDEBUG
   SDL_RendererInfo renderinfo = { 0 };
@@ -583,8 +583,6 @@ void trs_screen_init(int resize)
         char_height = m6845_raster * scale_factor;
         break;
       default:
-        /* Resize for LNW80 80x24 text mode */
-         trs_resize = speedup == 6;
         trs_charset = trs_charset1;
         if (trs_charset < 3)
           char_width = 6;
@@ -1755,14 +1753,7 @@ static void trs_screen_640x240(int flag)
 
   screen_chars = cols * rows;
 
-  if (trs_resize)
-    trs_screen_init(1);
-  else {
-    left_margin = char_width * (80 - cols) / 2 + border_width;
-    top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 -
-        char_height * rows) / 2 + border_width;
-    trs_screen_refresh();
-  }
+  trs_screen_init(1);
 }
 
 void trs_screen_80x24(int flag)
