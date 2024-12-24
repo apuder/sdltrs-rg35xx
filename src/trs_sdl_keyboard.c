@@ -815,14 +815,16 @@ static int kb_mem_value(int address)
       data |= tmp;
     }
   } else {
-    for (i = 0, bitpos = 1; i < 5; i++, bitpos <<= 1) {
-      if (address & bitpos) {
-        data |= keystate[i];
+    if ((address & 0x00e0) == 0x00a0) {
+      /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
+      for (i = 0, bitpos = 1; i < 5; i++, bitpos <<= 1) {
+        if (address & bitpos) {
+          data |= keystate[i];
+        }
       }
-    }
 
-    if ((address & 0x00e0) == 0x00a0)
       data |= keystate[8];
+    }
   }
 
   return data;
