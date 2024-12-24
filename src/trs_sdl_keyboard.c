@@ -701,7 +701,7 @@ int trs_joystick_in(void)
 void trs_xlate_keysym(int keysym)
 {
   int key_down;
-  KeyTable* kt;
+  const KeyTable* kt;
   static int shift_action = TK_Neutral;
 
   if (keysym == 0x10000) {
