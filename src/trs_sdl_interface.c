@@ -758,8 +758,10 @@ static void DrawRectangle(int orig_x, int orig_y, int copy_x, int copy_y)
     orig_y = swap;
   }
 
-  if (SDL_MUSTLOCK(screen))
-    SDL_LockSurface(screen);
+  if (SDL_MUSTLOCK(screen)) {
+    if (SDL_LockSurface(screen) < 0)
+      return;
+  }
 
   orig_x *= bpp;
   copy_x *= bpp;
@@ -1025,8 +1027,10 @@ static void trs_screen_flush(void)
     Uint8 *pixels   = screen->pixels;
     int x, y;
 
-    if (SDL_MUSTLOCK(screen))
-      SDL_LockSurface(screen);
+    if (SDL_MUSTLOCK(screen)) {
+      if (SDL_LockSurface(screen) < 0)
+        return;
+    }
 
     for (y = 0; y < pitch * screen_height; y += pitch * 2) {
       Uint8 *pixel = pixels + y;
