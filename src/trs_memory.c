@@ -547,7 +547,7 @@ void trs_reset(int poweron)
   trs_timer_interrupt(0);
 
   if (poweron || trs_model >= 4 || trs_clones.model == GENIE3S) {
-    if (poweron || trs_model >= 4)
+    if (poweron)
       mem_init();
     trs_rom_init();
     /* Blank Video */
