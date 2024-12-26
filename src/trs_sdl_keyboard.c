@@ -783,7 +783,12 @@ static int kb_mem_value(int address)
 {
   int i, bitpos, data = 0;
 
-  if ((trs_clones.model & (EG3200 | GENIE3S)) == 0 || (address & 0x00e0) < 0x00a0) {
+  if ((trs_clones.model & (EG3200 | GENIE3S)) && (address & 0x00e0) >= 0x00a0) {
+    if ((address & 0x00e0) == 0x00a0) {
+      /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
+      data |= keystate[8];
+    }
+  } else {
     for (i = 0, bitpos = 1; i < 7; i++, bitpos <<= 1) {
       if (address & bitpos) {
         data |= keystate[i];
@@ -813,17 +818,6 @@ static int kb_mem_value(int address)
       }
 
       data |= tmp;
-    }
-  } else {
-    if ((address & 0x00e0) == 0x00a0) {
-      /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
-      for (i = 0, bitpos = 1; i < 5; i++, bitpos <<= 1) {
-        if (address & bitpos) {
-          data |= keystate[i];
-        }
-      }
-
-      data |= keystate[8];
     }
   }
 
