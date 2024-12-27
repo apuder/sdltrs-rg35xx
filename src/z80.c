@@ -64,8 +64,6 @@
 #include "trs_memory.h"
 #include "trs_state_save.h"
 
-unsigned int z80_halt;
-
 /*
  * The state of our Z80 registers is kept in this structure:
  */
@@ -3374,15 +3372,15 @@ int z80_run(int continuous)
 
 	  case 0x76:	/* halt */
 #ifdef ZBX
-	    if (z80_halt == 'd') {
+	    if (Z80_HALT == 'd') {
 		trs_debug();
 	    }
 	    else
 #endif
-	    if (z80_halt == 'r') {
+	    if (Z80_HALT == 'r') {
 		trs_reset(0);
 	    } else {
-	      if (trs_model == 1 && z80_halt != 'h') {
+	      if (trs_model == 1 && Z80_HALT != 'h') {
 		/* Z80 HALT output is tied to reset button circuit */
 		trs_reset(0);
 	      } else {

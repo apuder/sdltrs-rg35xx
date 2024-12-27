@@ -609,9 +609,9 @@ static void opt_stepmap(char *arg, int intarg, int *stringarg)
 static void opt_halt(char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
-    z80_halt = tolower((int)*arg);
+    Z80_HALT = tolower((int)*arg);
   else
-    z80_halt = 0;
+    Z80_HALT = 0;
 }
 
 static void opt_hard(char *arg, int intarg, int *stringarg)
@@ -988,7 +988,7 @@ int trs_load_config_file(void)
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
   turbo_paste = 0;
-  z80_halt = 0;
+  Z80_HALT = 0;
 
   if (trs_config_file[0] == 0) {
     const char *home = getenv("HOME");
@@ -1139,9 +1139,9 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "guiforeground=0x%x\n", gui_foreground);
 
   fprintf(config_file, "halt=%s\n",
-      z80_halt == 'd' ? "debugger" :
-      z80_halt == 'h' ? "halt"     :
-      z80_halt == 'r' ? "reset"    : "");
+      Z80_HALT == 'd' ? "debugger" :
+      Z80_HALT == 'h' ? "halt"     :
+      Z80_HALT == 'r' ? "reset"    : "");
 
   for (i = 0; i < 4; i++)
     fprintf(config_file, "hard%d=%s\n", i, trs_hard_getfilename(i));

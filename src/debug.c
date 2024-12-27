@@ -914,11 +914,11 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %c", &halt) == 1)
 		{
-		    z80_halt = halt;
+		    Z80_HALT = halt;
 		}
 		else
 		{
-		    switch (z80_halt) {
+		    switch (Z80_HALT) {
 			case 'd':
 			    puts("debugger");
 			    break;
