@@ -265,6 +265,7 @@ static const struct {
   { "mouse",           opt_value,         0, 1, &mousepointer         },
   { "mousepointer",    opt_value,         0, 1, &mousepointer         },
   { "mute",            opt_value,         0, 0, &trs_sound            },
+  { "noa",             opt_value,         0, 0, &aspect_ratio         },
   { "noaspect",        opt_value,         0, 0, &aspect_ratio         },
   { "noaspectratio",   opt_value,         0, 0, &aspect_ratio         },
   { "nodam",           opt_value,         0, 0, &trs_disk_truedam     },
