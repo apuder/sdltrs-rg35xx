@@ -55,6 +55,16 @@
 #define EXEC         (-28)
 #define SAVE_BMP     (-29)
 
+#define CAS          ".cas.cpt.wav"
+#define CMD          ".cmd"
+#define DSK          ".dmk.dsk.jv1.jv3"
+#define ESF          ".esf"
+#define HDV          ".hdv"
+#define ROM          ".bin.hex.iii.rom"
+#define SET          ".set"
+#define T8C          ".t8c"
+#define T8S          ".t8s"
+
 #define N_JOYBUTTONS 20
 
 extern int jbutton_map[N_JOYBUTTONS];

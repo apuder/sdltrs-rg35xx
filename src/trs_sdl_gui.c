@@ -65,16 +65,6 @@
 #define N_KEYS        52
 #define SHIFT         39
 
-#define CAS           ".cas.cpt.wav"
-#define CMD           ".cmd"
-#define DSK           ".dmk.dsk.jv1.jv3"
-#define ESF           ".esf"
-#define HDV           ".hdv"
-#define ROM           ".bin.hex.iii.rom"
-#define SET           ".set"
-#define T8C           ".t8c"
-#define T8S           ".t8s"
-
 static char filename[FILENAME_MAX];
 static char **filelist;
 static int filelistcount;
