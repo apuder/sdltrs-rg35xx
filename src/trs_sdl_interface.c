@@ -1413,8 +1413,8 @@ void trs_get_event(int wait)
                 } else {
                   char filename[FILENAME_MAX];
 
-                  if (gui_file(trs_disk_dir, filename, NULL, 0,
-                        "Floppy Disk Image") != -1)
+                  if (gui_file(trs_disk_dir, filename, DSK, 0,
+                        "Floppy Disk Image") >= 0)
                     trs_disk_insert(keysym.sym, filename);
                   trs_screen_refresh();
                 }
