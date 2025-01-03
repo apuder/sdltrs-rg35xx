@@ -563,7 +563,7 @@ void debug_shell(void)
 		}
 		else if(sscanf(input, "%*s %d", &i) != 1)
 		{
-		    puts("A trap must be specified.");
+		    puts("Trap must be specified.");
 		}
 		else
 		{
@@ -617,7 +617,7 @@ void debug_shell(void)
 		if(sscanf(input, "in %x", &port) == 1)
 			printf("in %x = %x\n", port, z80_in(port));
 		else
-			puts("A port must be specified.");
+			puts("Port must be specified.");
 	    }
 	    else if(!strcmp(command, "out"))
 	    {
@@ -626,7 +626,7 @@ void debug_shell(void)
 		if(sscanf(input, "out %x %*c %x", &port, &value) == 2)
 			z80_out(port, value);
 		else
-			puts("A port and a value must be specified.\n");
+			puts("Port and value must be specified.");
 	    }
 	    else if(!strcmp(command, "cmd"))
 	    {
@@ -634,6 +634,8 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %s", file) == 1)
 			trs_load_cmd(file);
+		else
+			puts("Filename must be specified.");
 	    }
 	    else if(!strcmp(command, "next") || !strcmp(command, "nextint") ||
 		    !strcmp(command, "n") || !strcmp(command, "ni"))
@@ -735,6 +737,10 @@ void debug_shell(void)
 		{
 		    print_memory(start, 1, 1);
 		}
+		else
+		{
+		    puts("Address or range must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "poke"))
 	    {
@@ -742,6 +748,8 @@ void debug_shell(void)
 
 		if (sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		    mem_poke(address, value);
+		else
+		    puts("Address and value must be specified.");
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {
@@ -751,6 +759,10 @@ void debug_shell(void)
 		{
 		    if ((int)address < trs_rom_size)
 			rom_write(address, value);
+		}
+		else
+		{
+		    puts("ROM address and value must be specified.");
 		}
 	    }
 	    else if(!strcmp(command, "run") || !strcmp(command, "r"))
@@ -897,6 +909,10 @@ void debug_shell(void)
 		    address %= ADDRESS_SPACE;
 		    set_trap(address, WATCHPOINT_FLAG);
 		}
+		else
+		{
+		    puts("Address must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "timeroff"))
 	    {
@@ -957,6 +973,10 @@ void debug_shell(void)
 		{
 		    load_memory(address, file);
 		}
+		else
+		{
+		    puts("Address and filename must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "save"))
 	    {
@@ -971,6 +991,10 @@ void debug_shell(void)
 		{
 		    save_memory(start, end - start + 1, file);
 		}
+		else
+		{
+		    puts("Address range and filename must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "state"))
 	    {
@@ -983,6 +1007,10 @@ void debug_shell(void)
 		else if(sscanf(input, "state save %s", file) == 1)
 		{
 		    trs_state_save(file);
+		}
+		else
+		{
+		    puts("Filename must be specified.");
 		}
 	    }
 	    else
