@@ -759,7 +759,7 @@ void debug_shell(void)
 		trs_reset(1);
 		run();
 	    }
-	    else if(!strncmp(command, "st", 2))
+	    else if(!strcmp(command, "status") || !strcmp(command, "st"))
 	    {
 		print_traps();
 	    }
