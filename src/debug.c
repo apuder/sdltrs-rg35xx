@@ -162,8 +162,7 @@ static const char *trap_name(int flag)
 
 static void info(void)
 {
-    puts("zbx: Z80 debugger by David Gingold, Alex Wolman, and Timothy"
-         " Mann\n");
+    puts("zbx: Z80 debugger by David Gingold, Alex Wolman, and Timothy Mann\n");
     printf("Traps set: %d (maximum %d)\n", num_traps, MAX_TRAPS);
     printf("Size of address space: 0x%X\n", ADDRESS_SPACE);
     printf("Maximum length of command line: %d\n", MAXLINE);
@@ -355,8 +354,9 @@ static void load_memory(int address, const char *filename)
 	int c;
 
 	while((c = getc(file)) != EOF)
+	{
 	    mem_write(address++, c);
-
+	}
 	fclose(file);
     }
     else
@@ -374,8 +374,9 @@ static void save_memory(int address, int num_bytes, const char *filename)
 	int i;
 
 	for(i = 0; i < num_bytes; ++i)
+	{
 	    putc(mem_read(address + i), file);
-
+	}
 	fclose(file);
     }
     else
@@ -540,12 +541,12 @@ void debug_shell(void)
 		clear_trap_address(Z80_PC, 0);
 	    }
 	    else if(!strcmp(command, "cont") || !strcmp(command, "c") ||
-	            !strcmp(command, "go")   || !strcmp(command, "g"))
+		    !strcmp(command, "go")   || !strcmp(command, "g"))
 	    {
 		unsigned int address;
 
 		if(sscanf(input, "%*s %x", &address) == 1) {
-			Z80_PC = address & 0xFFFF;
+		    Z80_PC = address & 0xFFFF;
 		}
 		run();
 	    }
@@ -615,27 +616,39 @@ void debug_shell(void)
 		unsigned int port;
 
 		if(sscanf(input, "in %x", &port) == 1)
-			printf("in %x = %x\n", port, z80_in(port));
+		{
+		    printf("in %x = %x\n", port, z80_in(port));
+		}
 		else
-			puts("Port must be specified.");
+		{
+		    puts("Port must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "out"))
 	    {
 		unsigned int port, value;
 
 		if(sscanf(input, "out %x %*c %x", &port, &value) == 2)
-			z80_out(port, value);
+		{
+		    z80_out(port, value);
+		}
 		else
-			puts("Port and value must be specified.");
+		{
+		    puts("Port and value must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "cmd"))
 	    {
 		char *file = input;
 
 		if(sscanf(input, "%*s %s", file) == 1)
-			trs_load_cmd(file);
+		{
+		    trs_load_cmd(file);
+		}
 		else
-			puts("Filename must be specified.");
+		{
+		    puts("Filename must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "next") || !strcmp(command, "nextint") ||
 		    !strcmp(command, "n") || !strcmp(command, "ni"))
@@ -733,7 +746,7 @@ void debug_shell(void)
 		{
 		    print_memory(start, end - start + 1, 1);
 		}
-                else if (sscanf(input, "%*s %x", &start) == 1)
+		else if (sscanf(input, "%*s %x", &start) == 1)
 		{
 		    print_memory(start, 1, 1);
 		}
@@ -747,9 +760,13 @@ void debug_shell(void)
 		unsigned int address, value;
 
 		if (sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
+		{
 		    mem_poke(address, value);
+		}
 		else
+		{
 		    puts("Address and value must be specified.");
+		}
 	    }
 	    else if(!strcmp(command, "rom"))
 	    {
@@ -834,7 +851,7 @@ void debug_shell(void)
 		}
 		else if(sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		{
-			mem_write(address, value);
+		    mem_write(address, value);
 		}
 		else
 		{
@@ -916,17 +933,17 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "timeroff"))
 	    {
-	        /* Turn off emulated real time clock interrupt */
-	        trs_timer(0);
+		/* Turn off emulated real time clock interrupt */
+		trs_timer(0);
             }
 	    else if(!strcmp(command, "timeron"))
 	    {
-	        /* Turn on  emulated real time clock interrupt */
-	        trs_timer(1);
+		/* Turn on  emulated real time clock interrupt */
+		trs_timer(1);
             }
 	    else if(!strcmp(command, "halt"))
 	    {
-	        char halt;
+		char halt;
 
 		if(sscanf(input, "%*s %c", &halt) == 1)
 		{
