@@ -2749,7 +2749,7 @@ void m6845_screen(int chars, int lines, int raster, int factor)
   }
 }
 
-void eg3200_char(int character, int scanline, int byte)
+void eg3210_char(int character, int scanline, int byte)
 {
   char_ram[character][scanline] = mirror_bits(byte);
 
