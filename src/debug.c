@@ -574,24 +574,19 @@ void debug_shell(void)
 	    else if(!strcmp(command, "list") || !strcmp(command, "l"))
 	    {
 		unsigned int x, y;
-		int start;
+		int start = Z80_PC;
 		int bytes = 0;
-		int lines = 0;
+		int lines = 10;
 
 		if(sscanf(input, "%*s %x %*c %x", &x, &y) == 2)
 		{
-		    start = x;
+		    start = x & 0xffff;
 		    bytes = (y - x) & 0xffff;
+		    lines = 0;
 		}
 		else if(sscanf(input, "%*s %x", &x) == 1)
 		{
-		    start = x;
-		    lines = 10;
-		}
-		else
-		{
-		    start = Z80_PC;
-		    lines = 10;
+		    start = x & 0xffff;
 		}
 
 		if(lines)
