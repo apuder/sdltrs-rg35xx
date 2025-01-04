@@ -128,7 +128,7 @@ static int selection_y1;
 static int selection_x2;
 static int selection_y2;
 static int selectAll;
-static int timer_saved;
+static int turbo_saved;
 static unsigned int cycles_saved;
 
 /* Support for Micro-Labs Grafyx Solution and Radio Shack hi-res card
@@ -1131,7 +1131,7 @@ void trs_get_event(int wait)
         if (paste_lastkey) {
           paste_state = PASTE_IDLE;
           if (turbo_paste)
-            trs_timer_mode(timer_saved);
+            trs_timer_mode(turbo_saved);
           cycles_per_timer = cycles_saved;
         }
         else
@@ -1261,7 +1261,7 @@ void trs_get_event(int wait)
               break;
             case SDLK_v:
               if (turbo_paste) {
-                timer_saved = turbo_mode;
+                turbo_saved = turbo_mode;
                 trs_timer_mode(1);
               }
               cycles_saved = cycles_per_timer;
