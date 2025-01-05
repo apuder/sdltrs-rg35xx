@@ -38,9 +38,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <SDL.h>
 #include "error.h"
 #include "trs.h"
 #include "trs_sdl_keyboard.h"
@@ -60,15 +58,9 @@ int main(int argc, char *argv[])
   else
     program_name++;
 
-
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
-    fatal("SDL_Init failed: %s", SDL_GetError());
-
-  if (atexit(SDL_Quit))
-    fatal("failed to register SDL_Quit.");
-
   zbx = trs_parse_command_line(argc, argv);
 
+  trs_sdl_init();
   trs_set_keypad_joystick();
   trs_open_joystick();
   trs_reset(1);

@@ -2970,6 +2970,15 @@ void trs_main_load(FILE *file)
   trs_load_int(file, &lowe_le18, 1);
 }
 
+void trs_sdl_init(void)
+{
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0)
+    fatal("SDL_Init failed: %s", SDL_GetError());
+
+  if (atexit(SDL_Quit))
+    fatal("failed to register SDL_Quit.");
+}
+
 int trs_sdl_savebmp(const char *filename)
 {
   SDL_Surface *buffer = SDL_CreateRGBSurface(SDL_SWSURFACE,
