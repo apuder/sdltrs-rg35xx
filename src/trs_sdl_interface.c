@@ -618,46 +618,6 @@ void trs_screen_init(int resize)
   bitmap_init(trs_clones.model == GENIE3S);
 
   if (resize) {
-    if (window == NULL) {
-      window = SDL_CreateWindow(NULL,
-                                window_x, window_y,
-                                640, 480,
-                                SDL_WINDOW_RESIZABLE);
-      if (window == NULL)
-        fatal("SDL_CreateWindow failed: %s", SDL_GetError());
-
-      render = SDL_CreateRenderer(window, -1, 0);
-      if (render == NULL)
-        fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
-
-#if SDLDEBUG
-      SDL_GetRendererInfo(render, &renderinfo);
-      debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
-      debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
-#endif
-
-      screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
-      if (screen == NULL)
-        fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
-
-#if defined(big_endian) && !defined(__linux__)
-      light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
-      bright_red    = SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
-      light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x40);
-      bright_orange = SDL_MapRGB(screen->format, 0x00, 0xa0, 0xff);
-#else
-      light_red     = SDL_MapRGB(screen->format, 0x40, 0x00, 0x00);
-      bright_red    = SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
-      light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x00);
-      bright_orange = SDL_MapRGB(screen->format, 0xff, 0xa0, 0x00);
-#endif
-
-      image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2,
-                                       1, G_XSIZE, 1, 1, 1, 0);
-      if (image == NULL)
-        fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
-    }
-
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, &scale_quality);
 
     if (texture)
@@ -2977,6 +2937,44 @@ void trs_sdl_init(void)
 
   if (atexit(SDL_Quit))
     fatal("failed to register SDL_Quit.");
+
+  window = SDL_CreateWindow(NULL,
+                            window_x, window_y,
+                            640, 480,
+                            SDL_WINDOW_RESIZABLE);
+  if (window == NULL)
+    fatal("SDL_CreateWindow failed: %s", SDL_GetError());
+
+  render = SDL_CreateRenderer(window, -1, 0);
+  if (render == NULL)
+    fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
+
+#if SDLDEBUG
+  SDL_GetRendererInfo(render, &renderinfo);
+  debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
+  debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
+#endif
+
+  screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
+  if (screen == NULL)
+    fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+
+#if defined(big_endian) && !defined(__linux__)
+  light_red     = SDL_MapRGB(screen->format, 0x00, 0x00, 0x40);
+  bright_red    = SDL_MapRGB(screen->format, 0x00, 0x00, 0xff);
+  light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x40);
+  bright_orange = SDL_MapRGB(screen->format, 0x00, 0xa0, 0xff);
+#else
+  light_red     = SDL_MapRGB(screen->format, 0x40, 0x00, 0x00);
+  bright_red    = SDL_MapRGB(screen->format, 0xff, 0x00, 0x00);
+  light_orange  = SDL_MapRGB(screen->format, 0x40, 0x28, 0x00);
+  bright_orange = SDL_MapRGB(screen->format, 0xff, 0xa0, 0x00);
+#endif
+
+  image = SDL_CreateRGBSurfaceFrom(grafyx, G_XSIZE * 8, G_YSIZE * 2,
+                                   1, G_XSIZE, 1, 1, 1, 0);
+  if (image == NULL)
+    fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
 }
 
 int trs_sdl_savebmp(const char *filename)
