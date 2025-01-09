@@ -679,27 +679,32 @@ read_dir:
             }
           break;
         case SDLK_PAGEUP:
-          top -= 13;
-          if (top < 0)
-            top = row = 0;
-          redraw = 1;
+          if (top - 13 >= 0) {
+            top -= 13;
+            redraw = 1;
+            break;
+          }
+          /* Fall through */
+        case SDLK_HOME:
+          if (top) {
+            top = 0;
+            redraw = 1;
+          }
+          row = 0;
           break;
         case SDLK_PAGEDOWN:
-          top += 13;
-          if (top > num) {
-            top = num;
-            row = cnt;
+          if (top + 13 <= num) {
+            top += 13;
+            redraw = 1;
+            break;
           }
-          redraw = 1;
-          break;
-        case SDLK_HOME:
-          row = top = 0;
-          redraw = 1;
-          break;
+          /* Fall through */
         case SDLK_END:
-          top = num;
+          if (top < num) {
+            top = num;
+            redraw = 1;
+          }
           row = cnt;
-          redraw = 1;
           break;
         case SDLK_F1:
           if (dir)
