@@ -564,7 +564,7 @@ void trs_screen_caption(void)
 void trs_screen_init(int resize)
 {
   int const led_height = trs_show_led ? 8 : 0;
-  int trs_resize;
+  int trs_resize = 0;
   SDL_Color colors[2];
 #if SDLDEBUG
   SDL_RendererInfo renderinfo = { 0 };
