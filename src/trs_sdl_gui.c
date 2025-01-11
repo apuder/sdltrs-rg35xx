@@ -51,12 +51,8 @@
 #include "trs_stringy.h"
 #include "trs_uart.h"
 
-#define ENTRY         1
-#define TITLE         2
-#define DISK_DRIVE    3
-#define HARD_DRIVE    4
-#define WAFER         5
-#define CASSETTE      6
+#define ENTRY         5
+#define TITLE         6
 #define SAVE_SET      7
 #define LOAD_SET      8
 

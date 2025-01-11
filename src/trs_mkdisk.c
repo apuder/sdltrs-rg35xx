@@ -31,7 +31,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
 #include "error.h"
 #include "reed.h"
 #include "trs_cassette.h"
@@ -39,11 +38,6 @@
 #include "trs_hard.h"
 #include "trs_mkdisk.h"
 #include "trs_stringy.h"
-
-#define DISK  3
-#define HARD  4
-#define WAFER 5
-#define CASS  6
 
 #ifdef _WIN32
 #include "wtypes.h"
@@ -69,16 +63,16 @@ int trs_write_protect(int type, int drive)
   struct stat st = { 0 };
 
   switch (type) {
-    case DISK:
+    case DISK_DRIVE:
       filename = trs_disk_getfilename(drive);
       break;
-    case HARD:
+    case HARD_DRIVE:
       filename = trs_hard_getfilename(drive);
       break;
     case WAFER:
       filename = stringy_get_name(drive);
       break;
-    case CASS:
+    case CASSETTE:
       filename = trs_cassette_getfilename();
       break;
     default:
@@ -102,7 +96,7 @@ int trs_write_protect(int type, int drive)
   }
 #endif
   switch (type) {
-    case DISK:
+    case DISK_DRIVE:
       emutype = trs_disk_getdisktype(drive);
       writeprot = !trs_disk_getwriteprotect(drive);
       trs_disk_remove(drive);
@@ -121,7 +115,7 @@ int trs_write_protect(int type, int drive)
         fclose(f);
       }
       break;
-    case HARD:
+    case HARD_DRIVE:
       writeprot = !trs_hard_getwriteprotect(drive);
       trs_hard_remove(drive);
 
@@ -156,7 +150,7 @@ int trs_write_protect(int type, int drive)
         fclose(f);
       }
       break;
-    case CASS:
+    case CASSETTE:
       writeprot = !trs_cass_getwriteprotect();
       trs_cassette_remove();
       break;
@@ -181,16 +175,16 @@ int trs_write_protect(int type, int drive)
   }
 #endif
   switch (type) {
-    case DISK:
+    case DISK_DRIVE:
       trs_disk_insert(drive, prot_filename);
       break;
-    case HARD:
+    case HARD_DRIVE:
       trs_hard_attach(drive, prot_filename);
       break;
     case WAFER:
       stringy_insert(drive, prot_filename);
       break;
-    case CASS:
+    case CASSETTE:
       trs_cassette_insert(prot_filename);
       break;
     default:
