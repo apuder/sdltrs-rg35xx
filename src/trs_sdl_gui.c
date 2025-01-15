@@ -2692,6 +2692,7 @@ void gui_main_menu(void)
    {"ROM File Selection", ENTRY},
    {"TRS-80 Power Reset", ENTRY},
    {"About SDLTRS", ENTRY},
+   {"Quit SDLTRS", ENTRY},
    {"", 0}};
   int selection = 0;
 
@@ -2742,6 +2743,9 @@ void gui_main_menu(void)
         break;
       case 12:
         gui_about();
+        break;
+      case 13:
+        trs_exit(1);
         break;
       case -1:
         return;
