@@ -899,13 +899,13 @@ int gui_menu(const char *title, MENU *entry, int selection)
     gui_center(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 15, 1);
 
   while (entry[num].type != 0) {
-    gui_write(entry[num].text, 2, num + 2, 0);
+    gui_write(entry[num].text, 2, num + 1, 0);
     num++;
   }
   num--;
 
   while (1) {
-    int key = gui_select(entry[selection].text, 2, selection + 2);
+    int key = gui_select(entry[selection].text, 2, selection + 1);
 
     if (key >= '0' && key <= '7') {
       key -= '0';
@@ -1203,8 +1203,8 @@ void gui_disk_creation(void)
    {"Physical Size                                          ", ENTRY},
    {"", TITLE},
    {"Ignore Density Flag                                    ", ENTRY},
-   {"Insert Created Floppy Disk Image Into Drive            ", ENTRY},
    {"", TITLE},
+   {"Insert Created Floppy Disk Image Into Drive            ", ENTRY},
    {"Create Disk Image with Above Parameters", ENTRY},
    {"", 0}};
   const char *disk_type[] = {"   JV1", "   JV3", "   DMK"};
@@ -1225,7 +1225,7 @@ void gui_disk_creation(void)
     snprintf(&menu[3].text[54], 7, "%s", disk_dens[density - 1]);
     snprintf(&menu[4].text[54], 7, "%s", disk_size[size]);
     snprintf(&menu[6].text[50], 11, "%s", yes_no[ignore_density]);
-    snprintf(&menu[7].text[55], 6, "%s", drives[drive]);
+    snprintf(&menu[8].text[55], 6, "%s", drives[drive]);
     gui_clear();
 
     selection = gui_menu("Floppy Disk Creation", menu, selection);
@@ -1245,7 +1245,7 @@ void gui_disk_creation(void)
       case 6:
         ignore_density = gui_popup("Ignore", yes_no, 2, ignore_density);
         break;
-      case 7:
+      case 8:
         drive = gui_popup("Drive", drives, 9, drive);
         break;
       case 9:
@@ -1617,8 +1617,8 @@ void gui_cassette_menu(void)
    {"Cassette Default Sample Rate                          ", ENTRY},
    {"", TITLE},
    {"Image Type                                            ", ENTRY},
-   {"Insert Created Cassette Into Drive                    ", ENTRY},
    {"", TITLE},
+   {"Insert Created Cassette Into Drive                    ", ENTRY},
    {"Create Blank Cassette Image with Above Parameters", ENTRY},
    {"", 0}};
   const char *cass_type[] = {"   CAS", "   CPT", "   WAV"};
@@ -1637,7 +1637,7 @@ void gui_cassette_menu(void)
              trs_get_cassette_length());
     snprintf(&menu[3].text[50], 11, "%10d", cassette_default_sample_rate);
     snprintf(&menu[5].text[54], 7, "%s", cass_type[type]);
-    snprintf(&menu[6].text[50], 11, "%s", yes_no[insert]);
+    snprintf(&menu[7].text[50], 11, "%s", yes_no[insert]);
     gui_clear();
 
     selection = gui_menu("Cassette Management", menu, selection);
@@ -1665,7 +1665,7 @@ void gui_cassette_menu(void)
       case 5:
         type = gui_popup("Type", cass_type, 3, type);
         break;
-      case 6:
+      case 7:
         insert = gui_popup("Insert", yes_no, 2, insert);
         break;
       case 8:
@@ -2390,7 +2390,7 @@ void gui_joystick_map(int button)
       int const pos = col * 4 + row;
 
       snprintf(text, 12, "%2d:%s", pos, gui_key_name(jbutton_map[pos]));
-      gui_write(text, 2 + col * 12, 11 + row, button == pos);
+      gui_write(text, 2 + col * 12, 10 + row, button == pos);
     }
   }
 }
