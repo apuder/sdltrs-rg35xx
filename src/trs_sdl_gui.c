@@ -1858,6 +1858,7 @@ void gui_display_menu(void)
 #else
    {"Display Scanlines with brightness                      ", ENTRY},
 #endif
+   {"Quality of Scaling                                     ", ENTRY},
    {"", 0}};
   const char *font1[]  = {"      Early",
                           "      Stock",
@@ -1871,6 +1872,9 @@ void gui_display_menu(void)
   const char *font34[] = {"     Katakana",
                           "International",
                           "         Bold"};
+  const char *scaleq[] = {"Nearest:0",
+                          " Linear:1",
+                          "   Best:2"};
   int selection = 0;
   int gui_charset1 = trs_charset1 >= 10 ? trs_charset1 - 6 : trs_charset1;
 
@@ -1896,6 +1900,7 @@ void gui_display_menu(void)
 #else
     snprintf(&menu[12].text[34], 27, "%-3d%23s", scanshade, yes_no[scanlines]);
 #endif
+    snprintf(&menu[13].text[51], 11, "%s", scaleq[scale_quality - '0']);
     gui_clear();
 
     selection = gui_menu("Display Settings", menu, selection);
@@ -2026,6 +2031,13 @@ void gui_display_menu(void)
           }
         }
 #endif
+        break;
+      case 13:
+        value = gui_popup("Quality", scaleq, 3, scale_quality - '0') + '0';
+        if (value != scale_quality) {
+          scale_quality = value;
+          resize = 1;
+        }
         break;
       case -1:
         return;
