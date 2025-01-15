@@ -2599,7 +2599,7 @@ void gui_roms(void)
 void gui_about(void)
 {
   gui_clear();
-  gui_write("About", 2, 0, 0);
+  gui_center("About", 0, 0);
   gui_center("SDL2TRS", 3, 0);
   gui_center("Version 1.2.31", 4, 0);
   gui_center("BSD 2-Clause License", 5, 0);
@@ -2617,7 +2617,7 @@ void gui_about(void)
 void gui_keys(void)
 {
   gui_clear();
-  gui_write("Keys", 2, 0, 0);
+  gui_center("Keys", 0, 0);
   gui_write("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 0);
   gui_write("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 0);
   gui_write("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 0);
