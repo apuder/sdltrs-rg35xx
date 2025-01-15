@@ -2691,8 +2691,8 @@ void gui_main_menu(void)
    {"Default Directories", ENTRY},
    {"ROM File Selection", ENTRY},
    {"TRS-80 Power Reset", ENTRY},
-   {"About SDLTRS", ENTRY},
-   {"Quit SDLTRS", ENTRY},
+   {"About SDL2TRS", ENTRY},
+   {"Quit SDL2TRS", ENTRY},
    {"", 0}};
   int selection = 0;
 
