@@ -339,6 +339,7 @@ void eg3200_init_out(int value)
   sys_byte = value;
   trs_clones_model(EG3200);
   trs_timer_init();
+  trs_screen_init(0);
 }
 
 void eg64_mba_out(int value)
