@@ -16,8 +16,8 @@ sdl2trs \- TRS-80 Model I/III/4/4P emulator for SDL2
 [\fIfile.t8c\fP] [\fIfile.t8s\fP] [\fIfile.cmd\fP] [\fIoptions\fP]
 .SH DESCRIPTION
 .B sdl2trs
-is an SDL2-based emulator for Tandy/Radio Shack line of Zilog
-Z80-based microcomputers popular in late 1970s and early 1980s.
+is an emulator for Tandy/Radio Shack line of Zilog Z80-based
+microcomputers popular in late 1970s and early 1980s.
 .SH OPTIONS
 .TP
 .B \-a(spect)(ratio)
@@ -29,7 +29,7 @@ Specifies background color of emulator window.
 Default: black (\fI0x000000\fP).
 .TP
 \fB\-b(order)w(idth)\fP \fIwidth\fP
-Put border of \fIwidth\fP pixels (0 to 50) around TRS-80 window.
+Put border of \fIwidth\fP pixels (0 - 50) around TRS-80 window.
 Default: \fI2\fP.
 .TP
 \fB\-c(ass)d(ir)\fP \fIdir\fP
@@ -45,15 +45,24 @@ Use charset of the selected TRS-80 Model with \fB-m(odel)\fP.
 .TP
 \fB\-c(har)s(et)1\fP \fIcharset-name\fP
 Select Model I charset:
-\fIc(t-80)\fP | \fIe(arly)\fP | \fIg(enie)\fP | \fIh(t-1080z)\fP | \fIl(cmod)\fP |
-\fIm(eritum)\fP | \fIs(tock)\fP | \fIv(ideogenie)\fP | \fIw(ider)\fP.
+\fIc(t-80)\fP |
+\fIe(arly)\fP |
+\fIg(enie)\fP |
+\fIh(t-1080z)\fP |
+\fIl(cmod)\fP |
+\fIm(eritum)\fP |
+\fIs(tock)\fP |
+\fIv(ideogenie)\fP |
+\fIw(ider)\fP.
 Default: \fIwider\fP.
 .TP
 \fB\-c(har)s(et)3\fP \fIcharset-name\fP
 .TQ
 \fB\-c(har)s(et)4\fP \fIcharset-name\fP
 Select Model III/4/4P charset:
-\fIk(atakana)\fP | \fIi(nternational)\fP | \fIb(old)\fP.
+\fIk(atakana)\fP |
+\fIi(nternational)\fP |
+\fIb(old)\fP.
 Defaults are \fIkatakana\fP for Model III and \fIinternational\fP
 for Model 4/4P.
 .TP
@@ -63,21 +72,28 @@ for Model 4/4P.
 .TQ
 \fB\-cl(ock)4\fP \fIMHz\fP
 Set clock speed rate in MHz for the specified TRS-80 Model.
-Defaults are: \fI1.77408\fP MHz for Model I, \fI2.02752\fP MHz for
-Model III and \fI4.05504\fP MHz for Model 4/4P.
+Defaults are:
+\fI1.77408\fP MHz for Model I,
+\fI2.02752\fP MHz for Model III and
+\fI4.05504\fP MHz for Model 4/4P.
 .TP
 \fB\-debug\fP | \fB-z(bx)\fP
 Enter zbx debugger (Optional).
 .TP
 \fB\-di(skdebug)\fP \fIhexval\fP
 Set floppy disk controller debug flags to hex value:
-\fI01\fP = FDC register I/O | \fI02\fP = FDC commands | \fI04\fP = VTOS 3.0 JV3
-kludges | \fI08\fP = Gaps | \fI10\fP = Phys sector sizes | \fI20\fP = Readadr
-timing | \fI\40\fP = DMK | \fI80\fP = ioctl errors.
+\fI01\fP = FDC register I/O |
+\fI02\fP = FDC commands |
+\fI04\fP = VTOS 3.0 JV3 kludges |
+\fI08\fP = Gaps |
+\fI10\fP = Phys sector sizes |
+\fI20\fP = Readadr timing |
+\fI40\fP = DMK |
+\fI80\fP = ioctl errors.
 .TP
 \fB\-d(isk)\fP\fIN filename\fP
 Specifies name of floppy disk image file to be inserted into
-Disk\fIN\fP, where \fIN\fP=0 through 7.
+Disk\fIN\fP (0 - 7).
 .TP
 \fB\-d(isk)d(ir)\fP \fIdir\fP
 Specify directory containing floppy disk images.
@@ -92,7 +108,10 @@ Default: current directory.
 .TP
 \fB\-d(oubler)\fP \fItype\fP
 Specify type of double density adaptor to emulate for Model I:
-\fIp(ercom)\fP | \fIt(andy)\fP | \fIb(oth)\fP | \fIn(one)\fP.
+\fIp(ercom)\fP |
+\fIt(andy)\fP |
+\fIb(oth)\fP |
+\fIn(one)\fP.
 Default: \fIboth\fP.
 .TP
 .B \-double(step)
@@ -111,7 +130,7 @@ Specifies foreground color of emulator window.
 Default: white (\fI0xE0E0FF\fP).
 .TP
 .B -f(ull)s(creen)
-Run in fullscreen mode.
+Run in Fullscreen mode.
 .TP
 \fB\-guib(ack)g(round)\fP \fI0xRRGGBB\fP
 Specifies background color of text based GUI window.
@@ -122,12 +141,15 @@ Specifies foreground color of text based GUI window.
 Default: white (\fI0xE0E0FF\fP).
 .TP
 \fB\-halt\fP \fIaction\fP
-Set action for Z80 HALT instruction: \fId(ebugger)\fP | \fIh(alt)\fP |
-\fIr(eset)\fP. Default depends on the selected TRS-80 Model.
+Set action for Z80 HALT instruction:
+\fId(ebugger)\fP |
+\fIh(alt)\fP |
+\fIr(eset)\fP.
+Default depends on the selected TRS-80 Model.
 .TP
 \fB\-h(ard)\fP\fIN filename\fP
 Specifies name of hard disk image file to be inserted into
-Hard\fIN\fP, where \fIN\fP=0 through 3.
+Hard\fIN\fP (0 - 3).
 .TP
 \fB\-h(ard)d(ir)\fP \fIdir\fP
 Specify directory containing hard disk images.
@@ -140,16 +162,19 @@ Patch Level II ROM for auto-boot from hard disk (Model I only).
 Hide disk activity and Turbo LED.
 .TP
 .B \-huff(man)
-Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
-.B Disables "MegaMem", "HyperMem" and "SuperMem".
+Enable Dave Huffman (and other) memory expansion for Model 4/4P.
+.B Disables MegaMem, HyperMem and SuperMem.
 .TP
 .B \-hyper(mem)
 Enable HyperMem (Anitek) memory expansion for Model 4/4P.
-.B Disables "Dave Huffman memory expansion" and "SuperMem".
+.B Disables Dave Huffman memory expansion and SuperMem.
 .TP
 \fB\-io(debug)\fP \fIhexval\fP
-Set I/O port debug flags: \fI01\fP = port input | \fI02\fP = port output |
-\fI04\fP = Hard Disk I/O | \fI08\fP = Hard Disk Command.
+Set I/O port debug flags:
+\fI01\fP = port input |
+\fI02\fP = port output |
+\fI04\fP = Hard Disk I/O |
+\fI08\fP = Hard Disk Command.
 .TP
 \fB\-j(oy)s(tick)\fP \fInum\fP
 Use USB joystick number \fInum\fP as joystick in emulator.
@@ -166,14 +191,14 @@ Default: \fI4000\fP.
 Emulate Lowe Electronics LE18 384x192 graphics adapter for Model I.
 .TP
 .B \-l(ower)c(ase)
-"Lower Case Modification Kit" for TRS-80 Model I (Default).
+Lower Case Modification Kit for TRS-80 Model I (Default).
 .TP
 \fB\-lubomir\fP | \fB\-lsb\fP
 Enable Lubomir Soft Banker for Model I.
 .TP
 .B \-mega(mem)
 Enable MegaMem (Anitek) memory expansion for Model III and 4/4P.
-.B Disables "Dave Huffman memory expansion".
+.B Disables Dave Huffman memory expansion.
 .TP
 .B \-micro(labs)
 Model III or 4/4P: emulate Micro-Labs Grafyx Solution Hi-Res
@@ -189,8 +214,11 @@ graphics card.
 Select TRS-80 model to emulate: I, III, 4 or 4P.
 .TP
 \fB\-m(odel)\fP \fIm\fP
-Specifies TRS-80 model to emulate: \fI1\fP (or \fII\fP) | \fI3\fP
-(or \fIIII\fP) | \fI4\fP (or \fIIV\fP) | \fI4P\fP (or \fIIVP\fP).
+Specifies TRS-80 model to emulate:
+\fI1\fP or \fII\fP |
+\fI3\fP or \fIIII\fP |
+\fI4\fP or \fIIV\fP |
+\fI4P\fP or \fIIVP\fP.
 .RS
 Default: Model I.
 .RE
@@ -221,7 +249,7 @@ Run in windowed mode (Default).
 Do not patch Level II ROM for auto-boot from hard disk (Default).
 .TP
 .B \-nohuff(man)
-Disable "Dave Huffman (and other)" memory expansion (Default).
+Disable Dave Huffman (and other) memory expansion (Default).
 .TP
 .B \-nohyper(mem)
 Disable HyperMem memory expansion (Default).
@@ -261,7 +289,7 @@ Default: \fB\-resize3 \-noresize4\fP.
 No scanlines in emulator screen (Default).
 .TP
 .B \-nosel(ector)
-Disable TRS-80 Users Society Selector memory expansion (Default).
+Disable Dutch TRS-80 Users Society Selector memory expansion (Default).
 .TP
 .B \-nos(hift)b(racket)
 Emulate [, \, ], ^, and _ as unshifted keys, and {, |, }, and ~ as shifted.
@@ -280,17 +308,18 @@ Disable SuperMem memory expansion (Default).
 Opposite of \fB-truedam\fP (Default).
 .TP
 .B \-not(urbo)
-Switch "Turbo" mode off (Default).
+Switch Turbo mode off (Default).
 .TP
 .B \-not(urbo)p(aste)
-Disable "Turbo" mode temporarily while pasting from clipboard (Default).
+Disable Turbo mode temporarily while pasting from clipboard (Default).
 .TP
 .B \-pause
 Pause the emulator at startup.
 .TP
 \fB\-p(rinter)\fP \fItype\fP
-Select printer type: \fI0\fP or \fIn(one)\fP | \fI1\fP
-or \fIt(ext)\fP.
+Select printer type:
+\fI0\fP or \fIn(one)\fP |
+\fI1\fP or \fIt(ext)\fP.
 Default: \fInone\fP.
 .TP
 \fB\-p(rinter)d(ir)\fP \fIdir\fP
@@ -339,8 +368,8 @@ Set brightness of scanlines (0 = dark - 255 = light).
 Default: \fI127\fP.
 .TP
 .B \-sel(ector)
-Enable TRS-80 Users Society Selector memory expansion for Model I.
-.B Disables "SuperMem".
+Enable Dutch TRS-80 Users Society Selector memory expansion for Model I.
+.B Disables SuperMem.
 .TP
 \fB\-serial\fP \fIttyname\fP
 Set tty device to be used for I/O to TRS-80's serial port.
@@ -361,8 +390,14 @@ Enable Sound Output (Default).
 .TP
 \fB\-s(peedup)\fP \fIkit\fP
 Select Speedup Kit or Banking:
-\fIn(one)\fP | \fIa(rchbold)\fP | \fIb(anking)\fP | \fIc(t-80)\fP |
-\fIh(olmes)\fP | \fIl(nw)\fP | \fIs(eatronics)\fP | \fIt(cs)\fP.
+\fIn(one)\fP |
+\fIa(rchbold)\fP |
+\fIb(anking)\fP |
+\fIc(t-80)\fP |
+\fIh(olmes)\fP |
+\fIl(nw)\fP |
+\fIs(eatronics)\fP |
+\fIt(cs)\fP.
 Default: \fIarchbold\fP.
 .TP
 \fB\-s(tate)d(ir)\fP \fIdir\fP
@@ -378,7 +413,7 @@ Emulate Exatron Stringy Floppy Drive for Model I.
 .TP
 .B \-super(mem)
 Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P.
-.B Disables "Huffman", "HyperMem" and "Selector".
+.B Disables Huffman, HyperMem and Selector.
 .TP
 \fB\-sw(itches)\fP \fIvalue\fP
 Set sense switches on Model I serial port card.
@@ -388,10 +423,10 @@ Default: \fI0x6f\fP.
 Turn off single density data address mark remapping kludges.
 .TP
 .B \-t(urbo)
-Switch "Turbo" mode on.
+Switch Turbo mode on.
 .TP
 .B \-t(urbo)p(aste)
-Engage "Turbo" mode temporarily while pasting from clipboard.
+Engage Turbo mode temporarily while pasting from clipboard.
 .TP
 \fB\-t(urbo)r(ate)\fP \fIfactor\fP
 Set \fIfactor\fP of normal TRS-80 speed that the emulator runs in Turbo mode.
@@ -399,7 +434,7 @@ Default: \fI5\fP.
 .TP
 \fB\-w(afer)\fP\fIN filename\fP
 Specifies name of stringy wafer image file to be inserted into
-Wafer\fIN\fP, where \fIN\fP=0 through 7.
+Wafer\fIN\fP (0 - 7).
 .TP
 \fB\-y(ear)\fP \fIyear\fP
 Set \fIyear\fP for TRS-80 time-of-day clock instead of the current year.
@@ -437,7 +472,7 @@ Quit SDL2TRS / F8 key
 Abort SDL2TRS / Shift-F8 key
 .TQ
 .B F9
-Toggle Fullscreen mode/Enter zbx debugger
+Toggle Fullscreen mode / Enter zbx debugger
 .TQ
 .B Shift-F9
 Toggle CPU panel in window title bar
@@ -616,10 +651,10 @@ Execute selected CMD file
 Switch Scanlines in Emulator window on/off
 .TQ
 .B Alt-Z
-Toggle Fullscreen mode/Enter zbx debugger
+Toggle Fullscreen mode / Enter zbx debugger
 .SH FILES
 .TP
-.I ${HOME}/.sdltrs.t8c
+.I ~/.sdltrs.t8c
 Default configuration file
 .TQ
 .I file.t8c

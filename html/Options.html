@@ -147,8 +147,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-d(isk)<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the floppy disk image file to be inserted into
-        Disk<b>N</b>, where <code><b>N</b></code>=0 through 7. Use <code>""
-        </code> as <u>filename</u> to remove an image from the drive.</td>
+        Disk<b>N</b> (0 - 7). Use <code>""</code> as <u>filename</u> to remove
+        an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-d(isk)d(ir) <u>dir</u></code></td>
@@ -170,10 +170,10 @@ will be executed upon startup of the emulator.</p>
     <td>Specify what type of double density adaptor to emulate (Model I only).
         The <u>type</u> may be <code>percom</code>, <code>radioshack</code>
         (or <code>tandy</code>), <code>both</code>, or <code>none</code>.
-        The type may be abbreviated to one character. The default is <code>
-        both</code>, which causes the double density adaptor emulation to
-        respond to the special commands of both the Percom and Radio Shack
-        cards.</td>
+        The type may be abbreviated to one character.
+        The default is <code> both</code>, which causes the double density
+        adaptor emulation to respond to the special commands of both the
+        Percom and Radio Shack cards.</td>
   </tr>
   <tr>
     <td><code>-double(step)</code></td>
@@ -218,8 +218,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-h(ard)<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the hard disk image file to be inserted into
-        Hard<b>N</b>, where <code><b>N</b></code>=0 through 3. Use <code>""
-        </code> as <u>filename</u> to remove an image from the drive.</td>
+        Hard<b>N</b> (0 - 3). Use <code>""</code> as <u>filename</u> to remove
+        an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-h(ard)d(ir) <u>dir</u></code></td>
@@ -236,13 +236,13 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-huff(man)</code></td>
-    <td>Enable "Dave Huffman (and other)" memory expansion for Model 4/4P.
-        <b>Disables "HyperMem" and "SuperMem"</b>.</td>
+    <td>Enable Dave Huffman (and other) memory expansion for Model 4/4P.
+        <b>Disables HyperMem and SuperMem</b>.</td>
   </tr>
   <tr>
     <td><code>-hyper(mem)</code></td>
     <td>Enable HyperMem (Anitek) memory expansion for Model 4/4P.
-        <b>Disables "Dave Huffman (and other)" and "SuperMem"</b>.</td>
+        <b>Disables Dave Huffman (and other) and SuperMem</b>.</td>
   </tr>
   <tr>
     <td><code>-io(debug) <u>hexval</u></code></td>
@@ -283,7 +283,7 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-l(ower)c(ase)</code></td>
-    <td>Emulate a "Lower Case Modification Kit" in the TRS-80 Model I mode.
+    <td>Emulate a Lower Case Modification Kit in the TRS-80 Model I mode.
         This is the default.</td>
   </tr>
   <tr>
@@ -293,8 +293,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-mega(mem)</code></td>
     <td>Enable MegaMem (Anitek) memory expansion for the Model III and 4/4P.
-        Can be used with "HyperMem" for a total of 4 MB on the Model 4/4P.
-        The "SuperMem" memory expansion must be enabled for Model III.</td>
+        Can be used with HyperMem for a total of 4 MB on the Model 4/4P.
+        The SuperMem memory expansion must be enabled for Model III.</td>
   </tr>
   <tr>
     <td><code>-micro(labs)</code></td>
@@ -355,7 +355,7 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-nohuff(man)</code></td>
-    <td>Disable "Dave Huffman (and other)" memory expansion.
+    <td>Disable Dave Huffman (and other) memory expansion.
         This is the default.</td>
   </tr>
   <tr>
@@ -410,7 +410,7 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-nosel(ector)</code></td>
-    <td>Disable TRS-80 Users Society Selector memory expansion.
+    <td>Disable Dutch TRS-80 Users Society Selector memory expansion.
         This is the default.</td>
   </tr>
   <tr>
@@ -440,13 +440,13 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-not(urbo)</code></td>
-    <td>Switch "Turbo" mode off. The emulator will run at the original speed
+    <td>Switch Turbo mode off. The emulator will run at the original speed
         of the selected TRS-80 Model. This is the default, but can be toggled
         with the <b>F12</b> key or <b>Alt-N</b> in the emulator.</td>
   </tr>
   <tr>
     <td><code>-not(urbo)p(aste)</code></td>
-    <td>Do not engage "Turbo" mode temporarily while pasting from clipboard.
+    <td>Do not engage Turbo mode temporarily while pasting from clipboard.
         This is the default.</td>
   </tr>
   <tr>
@@ -520,8 +520,8 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-sel(ector)</code></td>
-    <td>Enable TRS-80 Users Society Selector memory expansion for Model I.
-        <b>Disables "SuperMem"</b>.</td>
+    <td>Enable Dutch TRS-80 Users Society Selector memory expansion for Model I.
+        <b>Disables SuperMem</b>.</td>
   </tr>
   <tr>
     <td><code>-serial <u>ttyname</u></code></td>
@@ -564,10 +564,10 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-s(peedup) <u>kit</u></code></td>
     <td>Emulate the specified Speedup Kit or Banking for the TRS-80: this can
-        be <code>none</code>, <code>archbold</code> for "Archbold Electronics
-        Speed-Up Board" (only Model I), <code>holmes</code> for the "Holmes
-        Engineering Sprinter II/III" (Model I/III) or <code>seatronics</code>
-        for the "Seatronics Super Speed-Up" (all). <code>banking</code> to
+        be <code>none</code>, <code>archbold</code> for Archbold Electronics
+        Speed-Up Board (only Model I), <code>holmes</code> for the Holmes
+        Engineering Sprinter II/III (Model I/III) or <code>seatronics</code>
+        for the Seatronics Super Speed-Up (all). <code>banking</code> to
         enable support for the banking modification from Martin Doppelbauer.
         <code>lnw</code> sets the CPU clock to 4 MHz and enables banking for
         the 480*192 HRG in the lower 16 KB. Use <code>tcs</code> to emulate
@@ -597,7 +597,7 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-super(mem)</code></td>
     <td>Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P.
-        <b>Disables "Huffman", "HyperMem" and "Selector"</b>.</td>
+        <b>Disables Huffman, HyperMem and Selector</b>.</td>
   </tr>
   <tr>
     <td><code>-sw(itches) <u>value</u></code></td>
@@ -622,14 +622,14 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-t(urbo)</code></td>
-    <td>Switch "Turbo" mode on. The emulator will run faster than a normal
+    <td>Switch Turbo mode on. The emulator will run faster than a normal
         TRS-80 by the factor specified with <code>-turborate</code> below.
         Turbo Mode can be toggled with <b>F12</b> key or <b>Alt-N</b> in
         the emulator.</td>
   </tr>
   <tr>
     <td><code>-t(urbo)p(aste)</code></td>
-    <td>Engage "Turbo" mode temporarily while pasting from clipboard.</td>
+    <td>Engage Turbo mode temporarily while pasting from clipboard.</td>
   </tr>
   <tr>
     <td><code>-t(urbo)r(ate) <u>factor</u></code></td>
@@ -639,8 +639,8 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-w(afer)<b>N</b> <u>filename</u></code></td>
     <td>Specifies the name of the stringy wafer image file to be inserted into
-        Wafer<b>N</b>, where <code><b>N</b></code>=0 through 7. Use <code>""
-        </code> as <u>filename</u> to remove an image from the drive.</td>
+        Wafer<b>N</b> (0 - 7). Use <code>""</code> as <u>filename</u> to remove
+        an image from the drive.</td>
   </tr>
   <tr>
     <td><code>-y(ear) <u>year</u></code></td>
