@@ -428,12 +428,8 @@ void lnw80_bank_out(int value)
     mem_video_page((value & (1 << 3)) << 7);
 
   /* Disable or enable interrupts */
-  if ((value & (1 << 2)) != (sys_byte_2 & (1 << 2))) {
-    if (value & (1 << 2))
-      z80_state.iff1 = z80_state.iff2 = 0;
-    else
-      z80_state.iff1 = z80_state.iff2 = 1;
-  }
+  if ((value & (1 << 2)) != (sys_byte_2 & (1 << 2)))
+    z80_state.iff1 = z80_state.iff2 = ((value & (1 << 2)) == 0);
 
   sys_byte_2 = value;
 }
