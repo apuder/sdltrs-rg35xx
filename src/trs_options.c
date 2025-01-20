@@ -199,7 +199,6 @@ static const struct {
   { "doubler",         opt_doubler,       1, 0, NULL                  },
   { "ds",              opt_diskset,       1, 0, NULL                  },
   { "dsd",             opt_dirname,       1, 0, trs_disk_set_dir      },
-  { "dx",              opt_value,         0, 0, &trs_disk_controller  },
 #ifdef __linux__
   { "double",          opt_doublestep,    0, 2, NULL                  },
   { "doublestep",      opt_doublestep,    0, 2, NULL                  },
