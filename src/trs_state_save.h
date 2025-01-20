@@ -28,7 +28,7 @@
 #include <SDL_types.h>
 
 extern int  trs_state_save(const char *filename);
-extern void trs_save_filename(FILE *file, char *filename);
+extern void trs_save_filename(FILE *file, const char *filename);
 extern void trs_save_float(FILE *file, const float *buffer, int count);
 extern void trs_save_int(FILE *file, const int *buffer, int count);
 extern void trs_save_uint8(FILE *file, const Uint8 *buffer, int count);

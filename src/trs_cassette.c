@@ -392,7 +392,7 @@ create_wav_header(FILE *f)
 
 /* Error message generator */
 static int
-check_chunk_id(char *expected, FILE* f)
+check_chunk_id(const char *expected, FILE* f)
 {
   char c4[5] = { 0 };
 

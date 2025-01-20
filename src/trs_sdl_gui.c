@@ -146,7 +146,7 @@ static void gui_add_to_filelist(char *name);
 static int  gui_filename_cmp(const void *nptr1, const void *nptr2);
 static int  gui_read_dir(const char *path, const char *mask, int dir);
 static int  gui_input(const char *title, const char *input, char *output, int limit, int file);
-static int  gui_menu(const char *title, MENU *entry, int selection);
+static int  gui_menu(const char *title, const MENU *entry, int selection);
 static int  gui_popup(const char *title, const char **entry, int num, int selection);
 static int  gui_matrix(const char *title, const char **entry, int rows, int cols, int selection);
 static int  gui_question(const char *text);
@@ -481,7 +481,7 @@ int gui_read_dir(const char *path, const char *mask, int dir)
   if (directory) {
     char   pathname[FILENAME_MAX];
     char  *name = NULL;
-    struct dirent *dir_entry;
+    const struct dirent *dir_entry;
     struct stat st = { 0 };
 
     gui_create_filelist();
@@ -887,7 +887,7 @@ redraw:
   }
 }
 
-int gui_menu(const char *title, MENU *entry, int selection)
+int gui_menu(const char *title, const MENU *entry, int selection)
 {
   int num = 0;
 

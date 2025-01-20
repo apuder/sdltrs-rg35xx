@@ -90,7 +90,7 @@ void do_emt_system(void)
   if (emt_block("system"))
     return;
 
-  res = system((char *)mem_pointer(Z80_HL, 0));
+  res = system((const char *)mem_pointer(Z80_HL, 0));
   if (res == -1) {
     Z80_A = errno;
     Z80_F &= ~ZERO_MASK;
@@ -173,7 +173,7 @@ void do_emt_setddir(void)
   if (emt_block("setddir"))
     return;
 
-  snprintf(trs_disk_dir, FILENAME_MAX, "%s", (char *)mem_pointer(Z80_HL, 0));
+  snprintf(trs_disk_dir, FILENAME_MAX, "%s", (const char *)mem_pointer(Z80_HL, 0));
   if (trs_disk_dir[0] == '~' &&
       (trs_disk_dir[1] == DIR_SLASH || trs_disk_dir[1] == '\0')) {
     const char *home = getenv("HOME");
@@ -217,7 +217,7 @@ void do_emt_open(void)
       return;
   }
 
-  fd = open((char *)mem_pointer(Z80_HL, 0), oflag, Z80_DE);
+  fd = open((const char *)mem_pointer(Z80_HL, 0), oflag, Z80_DE);
   if (fd >= 0) {
     Z80_A = 0;
     Z80_F |= ZERO_MASK;
@@ -338,7 +338,7 @@ void do_emt_lseek(void)
 
 void do_emt_strerror(void)
 {
-  char *msg;
+  const char *msg;
   int size;
 
   if (Z80_HL + Z80_BC > 0x10000) {
@@ -424,7 +424,7 @@ void do_emt_time(void)
 void do_emt_opendir(void)
 {
   int i;
-  char *dirname;
+  const char *dirname;
 
   for (i = 0; i < MAX_OPENDIR; i++) {
     if (dir[i].dir == NULL) break;
@@ -436,7 +436,7 @@ void do_emt_opendir(void)
     return;
   }
 
-  dirname = (char *)mem_pointer(Z80_HL, 0);
+  dirname = (const char *)mem_pointer(Z80_HL, 0);
   dir[i].dir = opendir(dirname);
 
   if (dir[i].dir == NULL) {
@@ -478,7 +478,7 @@ void do_emt_readdir(void)
 {
   int const i = Z80_DE;
   int size;
-  struct dirent *result;
+  const struct dirent *result;
 
   if (i < 0 || i >= MAX_OPENDIR || dir[i].dir == NULL) {
     Z80_A = EBADF;
@@ -524,7 +524,7 @@ void do_emt_chdir(void)
   if (emt_block("chdir"))
     return;
 
-  if (chdir((char *)mem_pointer(Z80_HL, 0)) < 0) {
+  if (chdir((const char *)mem_pointer(Z80_HL, 0)) < 0) {
     Z80_A = errno;
     Z80_F &= ~ZERO_MASK;
   } else {

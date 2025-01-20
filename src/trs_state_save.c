@@ -307,7 +307,7 @@ void trs_load_float(FILE *file, float *buffer, int count)
   }
 }
 
-void trs_save_filename(FILE *file, char *filename)
+void trs_save_filename(FILE *file, const char *filename)
 {
   Uint16 length = strlen(filename);
 
