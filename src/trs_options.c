@@ -661,9 +661,10 @@ static void opt_intval(char *arg, int intarg, int *stringarg)
       scanshade = value & 255;
       break;
     case 6: /* turborate */
-      if (value <= 0)
-        value = 1;
-
+      if (value <= 0) {
+        value = 5;
+        turbo_mode = 0;
+      }
       turbo_rate = value;
       break;
     case 7: /* year */
