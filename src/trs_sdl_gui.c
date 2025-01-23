@@ -195,7 +195,7 @@ void gui_write(const char *text, int x, int y, int invert)
 
     gui_text(text, x, y, len_1st, invert);
     gui_text("...", x + len_1st, y, 3, invert);
-    gui_text(&text[pos_2nd], x + len_1st + 3, y, 62 - len_1st, invert);
+    gui_text(&text[pos_2nd], x + len_1st + 3, y, 32 - x, invert);
   } else {
     gui_text(text, x, y, len, invert);
   }
