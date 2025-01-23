@@ -188,23 +188,16 @@ void gui_write(const char *text, int x, int y, int invert)
 {
   int const len = strlen(text);
   int const end = 62 - x;
-  int i;
 
   if (len > end) {
-    int const len_1st_part = (59 - x) / 2;
-    int pos_2nd_part = len - (59 - x - len_1st_part);
+    int const len_1st = (59 - x) / 2;
+    int const pos_2nd = len - (59 - x - len_1st);
 
-    for (i = 0; i < len_1st_part; i++)
-      gui_char(x++, y, text[i], invert);
-
-    for (; i < len_1st_part + 3; i++)
-      gui_char(x++, y, '.', invert);
-
-    for (; i < end; i++)
-      gui_char(x++, y, text[pos_2nd_part++], invert);
+    gui_text(text, x, y, len_1st, invert);
+    gui_text("...", x + len_1st, y, 3, invert);
+    gui_text(&text[pos_2nd], x + len_1st + 3, y, 62 - len_1st, invert);
   } else {
-    for (i = 0; i < len; i++)
-      gui_char(x++, y, text[i], invert);
+    gui_text(text, x, y, len, invert);
   }
 }
 
@@ -223,11 +216,11 @@ void gui_limit(const char *orig, char *limited, int limit)
   int const len = strlen(orig);
 
   if (len > limit) {
-    int const len_1st_part = (limit - 3) / 2;
-    int const pos_2nd_part = len - (limit - len_1st_part - 3);
+    int const len_1st = (limit - 3) / 2;
+    int const pos_2nd = len - (limit - len_1st - 3);
 
-    snprintf(limited, limit + 1, "%.*s...%s", len_1st_part, orig,
-        orig + pos_2nd_part);
+    snprintf(limited, limit + 1, "%.*s...%s", len_1st, orig,
+        orig + pos_2nd);
   } else
     snprintf(limited, limit + 1, "%s", orig);
 }
@@ -790,9 +783,8 @@ redraw:
     for (i = 0; i < 60; i++) {
       int const cur = col + i;
 
-      gui_char(i + 2, 7,
-          (cur >= len) ? ' ' : output[cur],
-          (cur == pos));
+      gui_text((cur >= len) ? " " : &output[cur],
+          2 + i, 7, 1, (cur == pos));
     }
 
     gui_write((insert ? " INS " : " OVR "), 56, 8, 1);
