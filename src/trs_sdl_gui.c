@@ -133,7 +133,7 @@ int jaxis_mapped;
 static void gui_write(const char *text, int x, int y, int invert);
 static void gui_center(const char *text, int y, int invert);
 static void gui_clear(void);
-static void gui_limit(const char *orig, char *limited, int limit);
+static void gui_limit(const char *text, char *limited, int limit);
 static void gui_add_extension(char *name, const char *ext);
 static int  gui_cmp_extension(const char *mask, const char *ext);
 static int  gui_key(void);
@@ -187,15 +187,13 @@ static void gui_save_bmp(void);
 void gui_write(const char *text, int x, int y, int invert)
 {
   int const len = strlen(text);
-  int const end = 62 - x;
 
-  if (len > end) {
-    int const len_1st = (59 - x) / 2;
-    int const pos_2nd = len - (59 - x - len_1st);
+  if (len > 62 - x) {
+    int const pos = (59 - x) / 2;
 
-    gui_text(text, x, y, len_1st, invert);
-    gui_text("...", x + len_1st, y, 3, invert);
-    gui_text(&text[pos_2nd], x + len_1st + 3, y, 32 - x, invert);
+    gui_text(text, x, y, pos, invert);
+    gui_text("...", x + pos, y, 3, invert);
+    gui_text(&text[len - (59 - x - pos)], x + pos + 3, y, 32 - x, invert);
   } else {
     gui_text(text, x, y, len, invert);
   }
@@ -211,18 +209,17 @@ void gui_clear(void)
   gui_rect(0, 0, 64, 16, 1);
 }
 
-void gui_limit(const char *orig, char *limited, int limit)
+void gui_limit(const char *text, char *limited, int limit)
 {
-  int const len = strlen(orig);
+  int const len = strlen(text);
 
   if (len > limit) {
-    int const len_1st = (limit - 3) / 2;
-    int const pos_2nd = len - (limit - len_1st - 3);
+    int const pos = (limit - 3) / 2;
 
-    snprintf(limited, limit + 1, "%.*s...%s", len_1st, orig,
-        orig + pos_2nd);
+    snprintf(limited, limit + 1, "%.*s...%s", pos, text,
+        text + len - (limit - pos - 3));
   } else
-    snprintf(limited, limit + 1, "%s", orig);
+    snprintf(limited, limit + 1, "%s", text);
 }
 
 void gui_add_extension(char *name, const char *ext)
@@ -780,11 +777,9 @@ redraw:
     int key;
     int i;
 
-    for (i = 0; i < 60; i++) {
-      int const cur = col + i;
-
-      gui_text((cur >= len) ? " " : &output[cur],
-          2 + i, 7, 1, (cur == pos));
+    for (i = col; i < col + 60; i++) {
+      gui_text((i >= len) ? " " : &output[i],
+          2 + (i - col), 7, 1, (i == pos));
     }
 
     gui_write((insert ? " INS " : " OVR "), 56, 8, 1);
