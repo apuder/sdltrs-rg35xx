@@ -111,8 +111,8 @@ int trs_write_protect(int type, int drive)
           } else {
             putc(writeprot ? 0xff : 0, f);
           }
+          fclose(f);
         }
-        fclose(f);
       }
       break;
     case HARD_DRIVE:
