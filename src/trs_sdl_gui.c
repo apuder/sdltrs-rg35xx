@@ -418,9 +418,9 @@ void gui_create_filelist(void)
 
 void gui_delete_filelist(void)
 {
-  int i;
+  int i = filelistcount;
 
-  for (i = 0; i < filelistcount; i++)
+  while (i--)
     free(filelist[i]);
 
   filelistcount = 0;
