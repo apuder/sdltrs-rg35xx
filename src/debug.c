@@ -769,8 +769,7 @@ void debug_shell(void)
 
 		if (sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		{
-		    if ((int)address < trs_rom_size)
-			rom_write(address, value);
+		    rom_write(address, value);
 		}
 		else
 		{
