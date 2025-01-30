@@ -1215,7 +1215,7 @@ void gui_disk_creation(void)
     snprintf(&menu[8].text[55], 6, "%s", drives[drive]);
     gui_clear();
 
-    selection = gui_menu("Floppy Disk Creation", menu, selection);
+    selection = gui_menu(" Floppy Disk Creation ", menu, selection);
     switch (selection) {
       case 0:
         type = gui_popup("Type", disk_type, 3, type);
@@ -1297,7 +1297,7 @@ void gui_disk_steps(void)
     }
 
     gui_clear();
-    if ((selection = gui_menu("Floppy Disk Step", menu, selection)) == -1)
+    if ((selection = gui_menu(" Floppy Disk Step ", menu, selection)) == -1)
       return;
     trs_disk_setstep(selection, gui_popup("Step", steps, 2,
         trs_disk_getstep(selection) - 1) + 1);
@@ -1342,7 +1342,7 @@ void gui_disk_options(void)
     snprintf(&menu[11].text[50], 11, "%s", yes_no[trs_disk_truedam]);
     gui_clear();
 
-    selection = gui_menu("Floppy Disk Options", menu, selection);
+    selection = gui_menu(" Floppy Disk Options ", menu, selection);
     if (selection >= 0 && selection < 8) {
       trs_disk_setsize(selection, gui_popup("Size", disk_size, 2,
           trs_disk_getsize(selection) == 8) ? 8 : 5);
@@ -1418,7 +1418,7 @@ void gui_disk_menu(void)
 
     gui_clear();
 
-    selection = gui_menu("Floppy Disk Management", menu, selection);
+    selection = gui_menu(" Floppy Disk Management ", menu, selection);
     switch (selection) {
       case 11:
         gui_disk_creation();
@@ -1474,7 +1474,7 @@ void gui_hard_menu(void)
     snprintf(&menu[11].text[55], 6, "%s", drives[drive]);
     gui_clear();
 
-    selection = gui_menu("Hard Disk Management", menu, selection);
+    selection = gui_menu(" Hard Disk Management ", menu, selection);
     switch (selection) {
       case 8:
         snprintf(input, 5, "%d", cylinders);
@@ -1569,7 +1569,7 @@ void gui_stringy_menu(void)
     snprintf(&menu[11].text[55], 6, "%5s", drives[drive]);
     gui_clear();
 
-    selection = gui_menu("Stringy Wafer Management", menu, selection);
+    selection = gui_menu(" Stringy Wafer Management ", menu, selection);
     switch (selection) {
       case 11:
         drive = gui_popup("Drive", drives, 9, drive);
@@ -1627,7 +1627,7 @@ void gui_cassette_menu(void)
     snprintf(&menu[7].text[50], 11, "%s", yes_no[insert]);
     gui_clear();
 
-    selection = gui_menu("Cassette Management", menu, selection);
+    selection = gui_menu(" Cassette Management ", menu, selection);
     switch (selection) {
       case 2:
         snprintf(input, 11, "%d", trs_get_cassette_position());
@@ -1740,7 +1740,7 @@ void gui_emulator_menu(void)
     snprintf(&menu[12].text[50], 11, "%s", yes_no[hypermem]);
     gui_clear();
 
-    selection = gui_menu("Emulator Settings", menu, selection);
+    selection = gui_menu(" Emulator Settings ", menu, selection);
     switch (selection) {
       case 0:
         model_selection = gui_popup("Model", model, 4, model_selection);
@@ -1890,7 +1890,7 @@ void gui_display_menu(void)
     snprintf(&menu[13].text[51], 11, "%s", scaleq[scale_quality - '0']);
     gui_clear();
 
-    selection = gui_menu("Display Settings", menu, selection);
+    selection = gui_menu(" Display Settings ", menu, selection);
     switch (selection) {
       case 0:
         snprintf(input, 7, "%06X", background);
@@ -2071,7 +2071,7 @@ void gui_misc_menu(void)
     snprintf(&menu[12].text[50], 11, "%s", yes_no[turbo_paste]);
     gui_clear();
 
-    selection = gui_menu("Miscellaneous/Printer", menu, selection);
+    selection = gui_menu(" Miscellaneous/Printer ", menu, selection);
     switch (selection) {
       case 0:
         if (trs_printer_reset() == 0)
@@ -2226,7 +2226,7 @@ static int gui_config_menu(void)
     gui_write("Configuration File:", 2, 11, 0);
     gui_write(trs_config_file, 4, 12, 0);
 
-    selection = gui_menu("Configuration/State Files", menu, selection);
+    selection = gui_menu(" Configuration/State Files ", menu, selection);
     switch (selection) {
       case 0:
         gui_save_state();
@@ -2282,7 +2282,7 @@ int gui_virtual_keyboard(void)
   int key_index = SHIFT, shifted = 0;
 
   while (key_index == SHIFT || (shifted && key_syms_shifted[key_index] == -1)) {
-    if ((key_index = gui_matrix("Select Key",
+    if ((key_index = gui_matrix(" Select Key ",
         !shifted ? key_names : key_names_shifted, 4, 13, saved_selection)) == -1)
       return -1;
 
@@ -2304,7 +2304,7 @@ void gui_virtual_key(void)
 
 void gui_joy_gui(void)
 {
-  int const selection = gui_matrix("Joystick GUI", function_menu, 3, 2, 0);
+  int const selection = gui_matrix(" Joystick GUI ", function_menu, 3, 2, 0);
 
   if (selection == -1)
     return;
@@ -2422,7 +2422,7 @@ void gui_joystick_menu(void)
     gui_clear();
     gui_joystick_map(-1);
 
-    selection = gui_menu("Joystick Settings", menu, selection);
+    selection = gui_menu(" Joystick Settings ", menu, selection);
     switch (selection) {
       case 0:
         trs_keypad_joystick = gui_popup("Keypad",
@@ -2469,7 +2469,7 @@ void gui_joystick_menu(void)
         }
         break;
       case 4:
-        if ((key = gui_matrix("Select Function",
+        if ((key = gui_matrix(" Select Function ",
             function_menu, 4, 2, 0)) != -1) {
           if ((button = gui_joystick_button()) != -1)
             jbutton_map[button] = function_codes[key];
@@ -2524,7 +2524,7 @@ void gui_default_dirs(void)
     gui_limit(trs_printer_dir, &menu[11].text[2], 58);
     gui_clear();
 
-    selection = gui_menu("Default Directories", menu, selection);
+    selection = gui_menu(" Default Directories ", menu, selection);
     switch (selection) {
       case 1:
         gui_file(trs_disk_dir, trs_disk_dir, NULL, 1, "Floppy Disk ");
@@ -2575,7 +2575,7 @@ void gui_roms(void)
     snprintf(&menu[11].text[50], 11, "%s", yes_no[trs_hd_boot]);
     gui_clear();
 
-    selection = gui_menu("ROM File Selection", menu, selection);
+    selection = gui_menu(" ROM File Selection ", menu, selection);
     switch (selection) {
       case 1:
         gui_file(romfile1, romfile1, ROM, 0, "Model I ROM");
@@ -2598,7 +2598,7 @@ void gui_roms(void)
 void gui_about(void)
 {
   gui_clear();
-  gui_center("About", 0, 0);
+  gui_center(" About ", 0, 0);
   gui_center("SDL2TRS", 3, 0);
   gui_center("Version 1.2.31", 4, 0);
   gui_center("BSD 2-Clause License", 5, 0);
@@ -2616,7 +2616,7 @@ void gui_about(void)
 void gui_keys(void)
 {
   gui_clear();
-  gui_center("Keys", 0, 0);
+  gui_center(" Keys ", 0, 0);
   gui_write("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 0);
   gui_write("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 0);
   gui_write("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 0);
@@ -2698,7 +2698,7 @@ void gui_main_menu(void)
   while (1) {
     gui_clear();
 
-    selection = gui_menu("Main Menu", menu, selection);
+    selection = gui_menu(" Main Menu ", menu, selection);
     switch (selection) {
       case 0:
         gui_disk_menu();
