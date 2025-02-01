@@ -1237,7 +1237,7 @@ void gui_disk_creation(void)
         break;
       case 9:
         filename[0] = 0;
-        if (gui_input("Enter Filename for Disk Image",
+        if (gui_input(" Enter Filename for Disk Image ",
             trs_disk_dir, filename, FILENAME_MAX, 1) > 0) {
           const char *disk_ext[] = {".jv1", ".jv3", ".dmk"};
 
@@ -1379,7 +1379,7 @@ void gui_diskset_load(void)
 void gui_diskset_save(void)
 {
   filename[0] = 0;
-  if (gui_input("Enter Filename for Disk Set",
+  if (gui_input(" Enter Filename for Disk Set ",
       trs_disk_set_dir, filename, FILENAME_MAX - 5, 1) > 0) {
     gui_add_extension(filename, SET);
     if (gui_file_overwrite()) {
@@ -1478,7 +1478,7 @@ void gui_hard_menu(void)
     switch (selection) {
       case 8:
         snprintf(input, 5, "%d", cylinders);
-        if (gui_input("Enter Cylinder Count", input, input, 4, 0) > 0) {
+        if (gui_input(" Enter Cylinder Count ", input, input, 4, 0) > 0) {
           value = atoi(input);
           if (value != cylinders) {
             if (value >= 3 && value <= 8192) {
@@ -1493,7 +1493,7 @@ void gui_hard_menu(void)
         break;
       case 9:
         snprintf(input, 2, "%d", heads);
-        if (gui_input("Enter Head Count", input, input, 1, 0) > 0) {
+        if (gui_input(" Enter Head Count ", input, input, 1, 0) > 0) {
           value = atoi(input);
           if (value != heads) {
             if (value >= 0 && value <= 8)
@@ -1505,7 +1505,7 @@ void gui_hard_menu(void)
         break;
       case 10:
         snprintf(input, 4, "%d", sectors);
-        if (gui_input("Enter Sector Count", input, input, 3, 0) > 0) {
+        if (gui_input(" Enter Sector Count ", input, input, 3, 0) > 0) {
           value = atoi(input);
           if (value != sectors) {
             if (value >= 4 && value <= 256)
@@ -1520,7 +1520,7 @@ void gui_hard_menu(void)
         break;
       case 12:
         filename[0] = 0;
-        if (gui_input("Enter Filename for Hard Disk Image",
+        if (gui_input(" Enter Filename for Hard Disk Image ",
             trs_hard_dir, filename, FILENAME_MAX, 1) > 0) {
           gui_add_extension(filename, HDV);
           if (gui_file_overwrite()) {
@@ -1576,7 +1576,7 @@ void gui_stringy_menu(void)
         break;
       case 12:
         filename[0] = 0;
-        if (gui_input("Enter Filename for Wafer Image",
+        if (gui_input(" Enter Filename for Wafer Image ",
             trs_cass_dir, filename, FILENAME_MAX, 1) > 0) {
           gui_add_extension(filename, ESF);
           if (gui_file_overwrite()) {
@@ -1631,7 +1631,7 @@ void gui_cassette_menu(void)
     switch (selection) {
       case 2:
         snprintf(input, 11, "%d", trs_get_cassette_position());
-        if (gui_input("Enter Cassette Position in Bytes",
+        if (gui_input(" Enter Cassette Position in Bytes ",
             input, input, 10, 0) > 0) {
           value = atoi(input);
           if (value != trs_get_cassette_position() &&
@@ -1641,7 +1641,7 @@ void gui_cassette_menu(void)
         break;
       case 3:
         snprintf(input, 11, "%d", cassette_default_sample_rate);
-        if (gui_input("Enter Cassette Default Sample Rate",
+        if (gui_input(" Enter Cassette Default Sample Rate ",
             input, input, 10, 0) > 0) {
           value = atoi(input);
           if (value != cassette_default_sample_rate &&
@@ -1657,7 +1657,7 @@ void gui_cassette_menu(void)
         break;
       case 8:
         filename[0] = 0;
-        if (gui_input("Enter Filename for Cassette Image",
+        if (gui_input(" Enter Filename for Cassette Image ",
             trs_cass_dir, filename, FILENAME_MAX, 1) > 0) {
           const char *cass_ext[] = {".cas", ".cpt", ".wav"};
 
@@ -1747,7 +1747,7 @@ void gui_emulator_menu(void)
         break;
       case 1:
         snprintf(input, 6, "%.2f", clock_mhz[model_selection]);
-        if (gui_input("Enter CPU Clock Speed in MHz",
+        if (gui_input(" Enter CPU Clock Speed in MHz ",
             input, input, 6, 0) > 0) {
           float const value = atof(input);
 
@@ -1894,7 +1894,7 @@ void gui_display_menu(void)
     switch (selection) {
       case 0:
         snprintf(input, 7, "%06X", background);
-        if (gui_input("Enter Background RGB color (Hex, RRGGBB)",
+        if (gui_input(" Enter Background RGB color (Hex, RRGGBB) ",
             input, input, 6, 0) > 0) {
           value = strtol(input, NULL, 16);
           if (value != background) {
@@ -1905,7 +1905,7 @@ void gui_display_menu(void)
         break;
       case 1:
         snprintf(input, 7, "%06X", foreground);
-        if (gui_input("Enter Foreground RGB color (Hex, RRGGBB)",
+        if (gui_input(" Enter Foreground RGB color (Hex, RRGGBB) ",
             input, input, 6, 0) > 0) {
           value = strtol(input, NULL, 16);
           if (value != foreground) {
@@ -1916,7 +1916,7 @@ void gui_display_menu(void)
         break;
       case 2:
         snprintf(input, 7, "%06X", gui_background);
-        if (gui_input("Enter GUI Background RGB color (Hex, RRGGBB)",
+        if (gui_input(" Enter GUI Background RGB color (Hex, RRGGBB) ",
             input, input, 6, 0) > 0) {
           value = strtol(input, NULL, 16);
           if (value != gui_background) {
@@ -1927,7 +1927,7 @@ void gui_display_menu(void)
         break;
       case 3:
         snprintf(input, 7, "%06X", gui_foreground);
-        if (gui_input("Enter GUI Foreground RGB color (Hex, RRGGBB)",
+        if (gui_input(" Enter GUI Foreground RGB color (Hex, RRGGBB) ",
             input, input, 6, 0) > 0) {
           value = strtol(input, NULL, 16);
           if (value != gui_foreground) {
@@ -1960,7 +1960,7 @@ void gui_display_menu(void)
         break;
       case 7:
         snprintf(input, 3, "%d", border_width);
-        if (gui_input("Enter Window border width in pixels (0 to 50)",
+        if (gui_input(" Enter Window border width in pixels (0 to 50) ",
             input, input, 2, 0) > 0) {
           value = atoi(input);
           if (value != border_width) {
@@ -2008,7 +2008,7 @@ void gui_display_menu(void)
 #ifndef OLD_SCANLINES
         if (scanlines) {
           snprintf(input, 4, "%d", scanshade);
-          if (gui_input("Enter brightness (0 = dark - 255 = light)",
+          if (gui_input(" Enter brightness (0 = dark - 255 = light) ",
               input, input, 3, 0) > 0) {
             value = atoi(input) & 255;
             if (value != scanshade) {
@@ -2084,7 +2084,7 @@ void gui_misc_menu(void)
         break;
       case 2:
         snprintf(input, 5, "%d", trs_year);
-        if (gui_input("Enter year (0 to disable)",
+        if (gui_input(" Enter year (0 to disable) ",
             input, input, 4, 0) > 0) {
           trs_year = atoi(input);
           if (trs_year < 0)
@@ -2093,7 +2093,7 @@ void gui_misc_menu(void)
         break;
       case 3:
         snprintf(input, 11, "%d", stretch_amount);
-        if (gui_input("Enter Keystretch in Cycles",
+        if (gui_input(" Enter Keystretch in Cycles ",
             input, input, 10, 0) > 0) {
           stretch_amount = atoi(input);
           if (stretch_amount < 0)
@@ -2105,7 +2105,7 @@ void gui_misc_menu(void)
         break;
       case 6:
         filename[0] = 0;
-        if (gui_input("Enter Serial Port Name", trs_uart_name,
+        if (gui_input(" Enter Serial Port Name ", trs_uart_name,
             filename, FILENAME_MAX, 0) >= 0) {
           snprintf(trs_uart_name, FILENAME_MAX, "%s", filename);
           trs_uart_init();
@@ -2113,7 +2113,7 @@ void gui_misc_menu(void)
         break;
       case 7:
         snprintf(input, 3, "%2X", trs_uart_switches);
-        if (gui_input("Enter Serial Switches (Hex, XX)",
+        if (gui_input(" Enter Serial Switches (Hex, XX) ",
             input, input, 2, 0) > 0) {
           trs_uart_switches = strtol(input, NULL, 16);
           trs_uart_init();
@@ -2134,7 +2134,7 @@ void gui_misc_menu(void)
         break;
       case 11:
         snprintf(input, 11, "%d", turbo_rate);
-        if (gui_input("Enter Turbo Rate Multiplier",
+        if (gui_input(" Enter Turbo Rate Multiplier ",
             input, input, 10, 0) > 0) {
           turbo_rate = atoi(input);
           if (turbo_rate <= 1) {
@@ -2156,7 +2156,7 @@ void gui_misc_menu(void)
 void gui_save_state(void)
 {
   filename[0] = 0;
-  if (gui_input("Save Emulator State",
+  if (gui_input(" Save Emulator State ",
       trs_state_file[0] != 0 ? trs_state_file : trs_state_dir,
       filename, FILENAME_MAX - 5, 1) > 0) {
     gui_add_extension(filename, T8S);
@@ -2184,7 +2184,7 @@ int gui_load_state(void)
 void gui_write_config(void)
 {
   filename[0] = 0;
-  if (gui_input("Write Configuration",
+  if (gui_input(" Write Configuration ",
       trs_config_file[0] != 0 ? trs_config_file : trs_state_dir,
       filename, FILENAME_MAX - 5, 1) > 0) {
     gui_add_extension(filename, T8C);
@@ -2665,7 +2665,7 @@ int gui_exit(void)
 void gui_save_bmp(void)
 {
   filename[0] = 0;
-  if (gui_input("Save Screenshot",
+  if (gui_input(" Save Screenshot ",
       trs_printer_dir, filename, FILENAME_MAX - 5, 1) > 0) {
     gui_add_extension(filename, ".bmp");
     if (gui_file_overwrite()) {
