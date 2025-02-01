@@ -741,12 +741,12 @@ read_dir:
 done:
 #if defined(__OS2__) || defined(_WIN32)
   if (dir && dir_entry[0] == '[')
-    sprintf(name, "%c: ", dir_entry[1]);
+    i = sprintf(name, "%c: ", dir_entry[1]);
   else
 #endif
-  snprintf(name, FILENAME_MAX, "%s%s", directory, &dir_entry[1]);
-  if (dir)
-    name[strlen(name) - 1] = DIR_SLASH;
+  i = snprintf(name, FILENAME_MAX, "%s%s", directory, &dir_entry[1]);
+  if (dir && i >= 1)
+    name[i - 1] = DIR_SLASH;
 
   gui_delete_filelist();
   return selection;
