@@ -730,25 +730,25 @@ static void DrawRectangle(int orig_x, int orig_y, int copy_x, int copy_y)
 
   pixel = pixels + orig_y + orig_x;
 
-  for (x = 0; x < copy_x - orig_x + bpp; x++)
+  for (x = copy_x - orig_x + bpp; x--;)
     *pixel++ ^= 0xFF;
 
   if (copy_y > orig_y) {
     pixel = pixels + copy_y + orig_x;
-    for (x = 0; x < copy_x - orig_x + bpp; x++)
+    for (x = copy_x - orig_x + bpp; x--;)
       *pixel++ ^= 0xFF;
   }
 
   for (y = orig_y + pitch; y < copy_y; y += pitch) {
     pixel = pixels + y + orig_x;
-    for (x = 0; x < bpp; x++)
+    for (x = bpp; x--;)
       *pixel++ ^= 0xFF;
   }
 
   if (copy_x > orig_x) {
     for (y = orig_y + pitch; y < copy_y; y += pitch) {
       pixel = pixels + y + copy_x;
-      for (x = 0; x < bpp; x++)
+      for (x = bpp; x--;)
         *pixel++ ^= 0xFF;
     }
   }
@@ -995,7 +995,7 @@ static void trs_screen_flush(void)
     for (y = 0; y < pitch * screen_height; y += pitch * 2) {
       Uint8 *pixel = pixels + y;
 
-      for (x = 0; x < width; x++)
+      for (x = width; x--;)
         *pixel++ &= scanshade;
     }
 
@@ -1663,7 +1663,7 @@ done:
                 int key = motion.xrel < 0 ? 0x114 : 0x113;
                 int i;
 
-                for (i = 0; i < abs(motion.xrel); i++)
+                for (i = abs(motion.xrel); i--;)
                   trs_xlate_keysym(key);
               }
             } else
@@ -1678,7 +1678,7 @@ done:
                 int key = motion.yrel < 0 ? 0x111 : 0x112;
                 int i;
 
-                for (i = 0; i < abs(motion.yrel); i++)
+                for (i = abs(motion.yrel); i--;)
                   trs_xlate_keysym(key);
               }
             } else
@@ -1817,12 +1817,12 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
   for (j = 0; j < MAX_CHAR_HEIGHT * scale_factor; j++) {
     Uint8 const *currpixel = &pixels[((j / scale_factor) * TRS_CHAR_WIDTH)];
 
-    for (w = 0; w < TRS_CHAR_WIDTH; w++) {
+    for (w = TRS_CHAR_WIDTH; w--;) {
       if (*currpixel++ == 0) {
-        for (i = 0; i < scale_x; i++)
+        for (i = scale_x; i--;)
           *currdata++ = bg_color;
       } else {
-        for (i = 0; i < scale_x; i++)
+        for (i = scale_x; i--;)
           *currdata++ = fg_color;
       }
     }
