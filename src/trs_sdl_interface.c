@@ -184,13 +184,9 @@ static void CopyBlit1(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80)
-        *dst = map[1];
-      else
-        *dst = map[0];
+      *dst++ = map[(byte & 0x80) >> 7];
 
       byte <<= 1;
-      dst++;
     }
 
     src += srcskip;
@@ -209,13 +205,9 @@ static void CopyBlit2(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80)
-        *dst = map[1];
-      else
-        *dst = map[0];
+      *dst++ = map[(byte & 0x80) >> 7];
 
       byte <<= 1;
-      dst++;
     }
 
     src += srcskip;
@@ -264,13 +256,9 @@ static void CopyBlit4(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80)
-        *dst = map[1];
-      else
-        *dst = map[0];
+      *dst++ = map[(byte & 0x80) >> 7];
 
       byte <<= 1;
-      dst++;
     }
 
     src += srcskip;
@@ -289,12 +277,8 @@ static void XorBlit1(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80) {
-        if (*dst == map[0])
-          *dst = map[1];
-        else
-          *dst = map[0];
-      }
+      if (byte & 0x80)
+        *dst = map[(*dst == map[0])];
 
       byte <<= 1;
       dst++;
@@ -316,12 +300,8 @@ static void XorBlit2(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80) {
-        if (*dst == map[0])
-          *dst = map[1];
-        else
-          *dst = map[0];
-      }
+      if (byte & 0x80)
+        *dst = map[(*dst == map[0])];
 
       byte <<= 1;
       dst++;
@@ -375,12 +355,8 @@ static void XorBlit4(int width, int height, const Uint8 *src,
       if ((c & 7) == 0)
         byte = *src++;
 
-      if (byte & 0x80) {
-        if (*dst == map[0])
-          *dst = map[1];
-        else
-          *dst = map[0];
-      }
+      if (byte & 0x80)
+        *dst = map[(*dst == map[0])];
 
       byte <<= 1;
       dst++;
