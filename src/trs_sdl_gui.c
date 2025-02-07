@@ -623,7 +623,7 @@ read_dir:
     dir_entry = filelist[selection];
 
     key = gui_select(dir_entry, 2, row + 2);
-    if (key >= ' ' && key <= 'Z') {
+    if (key >= '!' && key <= 'Z') {
       int sel = selection;
 
       do {
