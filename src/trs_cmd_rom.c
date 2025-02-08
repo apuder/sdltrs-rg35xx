@@ -687,11 +687,8 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       break;
 
     case 0x10: /* yanked load block */
-      a1 = getc(f);
-      if (a1 == EOF) return LOAD_CMD_EOF;
-      a2 = getc(f);
-      if (a2 == EOF) return LOAD_CMD_EOF;
-      addr = a1 + a2 * 256;
+      if (getc(f) == EOF) return LOAD_CMD_EOF;
+      if (getc(f) == EOF) return LOAD_CMD_EOF;
 
       count -= 2;
       if (count <= 0) count += 256;

@@ -852,7 +852,7 @@ trs_disk_insert(int drive, const char *diskname)
 
     /* Read first block of ids */
     fseek(d->file, JV3_IDSTART, 0);
-    n = fread((void*)&d->u.jv3.id[0], 3, JV3_SECSPERBLK, d->file);
+    fread((void*)&d->u.jv3.id[0], 3, JV3_SECSPERBLK, d->file);
 
     /* Scan to find their offsets */
     ofst = JV3_SECSTART;
