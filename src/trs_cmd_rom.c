@@ -840,6 +840,8 @@ static int trs_load_rom(const char *filename)
     c = getc(program);
   }
 
+  fclose(program);
+
   return 0;
 }
 
