@@ -1940,7 +1940,7 @@ void gui_display_menu(void)
         value = gui_popup("Charset I", font1, 9, gui_charset1);
         if (value != gui_charset1) {
           gui_charset1 = value;
-          trs_charset1 = value >= 4 ? value += 6 : value;
+          trs_charset1 = value >= 4 ? value + 6 : value;
           resize = 1;
         }
         break;
