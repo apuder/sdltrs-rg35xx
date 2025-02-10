@@ -477,8 +477,6 @@ static void run(void)
 
 void debug_shell(void)
 {
-    int done = 0;
-
 #ifdef READLINE
     char history_file[MAXLINE];
     const char *home = (char *)getenv ("HOME");
@@ -489,7 +487,7 @@ void debug_shell(void)
 
     puts("Type \"h(elp)\" for a list of commands.");
 
-    while(!done)
+    while(1)
     {
 	char input[MAXLINE];
 	char command[MAXLINE];
@@ -721,7 +719,7 @@ void debug_shell(void)
 	    }
 	    else if(!strcmp(command, "quit"))
 	    {
-		done = 1;
+		break;
 	    }
 	    else if(!strncmp(command, "re", 2))
 	    {
