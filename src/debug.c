@@ -731,7 +731,7 @@ void debug_shell(void)
 		puts("Pressing reset button.");
 		trs_reset(0);
 	    }
-	    else if(!strcmp(command, "peek"))
+	    else if(!strncmp(command, "pe", 2))
 	    {
 		unsigned int start, end;
 
@@ -748,7 +748,7 @@ void debug_shell(void)
 		    puts("Address or range must be specified.");
 		}
 	    }
-	    else if(!strcmp(command, "poke"))
+	    else if(!strncmp(command, "po", 2))
 	    {
 		unsigned int address, value;
 
