@@ -748,7 +748,7 @@ static void change_keystate(int action)
   switch (action) {
     case TK_AllKeysUp:
       /* force all keys up */
-      for (i = 0; i < 8; i++) {
+      for (i = 0; i < 9; i++) {
         keystate[i] = 0;
       }
       force_shift = TK_Neutral;
