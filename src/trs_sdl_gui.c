@@ -585,8 +585,8 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
     if (getcwd(directory, FILENAME_MAX) == NULL)
       directory[0] = 0;
 
-    snprintf(directory + strlen(directory), FILENAME_MAX - strlen(directory),
-        "%c", DIR_SLASH);
+    i = strlen(directory);
+    snprintf(directory + i, FILENAME_MAX - i, "%c", DIR_SLASH);
   }
 
 read_dir:
