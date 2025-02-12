@@ -3718,30 +3718,24 @@ int trs_diskset_load(const char *filename)
   }
 
   for (i = 0; i < NDRIVES; i++) {
-    if (fgets(diskname, FILENAME_MAX, f) == NULL)
-      continue;
-    if (strlen(diskname) != 0) {
-      diskname[strlen(diskname) - 1] = 0;
+    if (fgets(diskname, FILENAME_MAX, f) != NULL) {
+      diskname[strcspn(diskname, "\r\n")] = 0;
       if (diskname[0])
         trs_disk_insert(i, diskname);
     }
   }
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
-    if (fgets(diskname, FILENAME_MAX, f) == NULL)
-      continue;
-    if (strlen(diskname) != 0) {
-      diskname[strlen(diskname) - 1] = 0;
+    if (fgets(diskname, FILENAME_MAX, f) != NULL) {
+      diskname[strcspn(diskname, "\r\n")] = 0;
       if (diskname[0])
         trs_hard_attach(i, diskname);
     }
   }
 
   for (i = 0; i < NDRIVES; i++) {
-    if (fgets(diskname, FILENAME_MAX, f) == NULL)
-      continue;
-    if (strlen(diskname) != 0) {
-      diskname[strlen(diskname) - 1] = 0;
+    if (fgets(diskname, FILENAME_MAX, f) != NULL) {
+      diskname[strcspn(diskname, "\r\n")] = 0;
       if (diskname[0])
         stringy_insert(i, diskname);
     }
