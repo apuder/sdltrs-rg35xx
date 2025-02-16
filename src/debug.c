@@ -110,9 +110,9 @@ static void help(void)
   tr(ace)off <addr> ..... Set trap to disable tracing at specified hex address\n\
   w(atch) <addr> ........ Set trap to watch specified hex address for changes\n\
 \nMiscellaneous:\n\
-  a(ssign) | set\n\
+  a(ssign) | m(odify) | set\n\
     $<reg> = <value> .... Change value of register\n\
-    <addr> = <value> .... Change value of memory byte\n\
+    <addr> [= <value>] .. Change value at hex memory address (enter '.' to end)\n\
   rom <addr> = <value> .. Change byte in ROM\n\
   in <port> ............. Input from given I/O port\n\
   out <port> = <value> .. Output to given I/O port\n\
@@ -785,7 +785,7 @@ void debug_shell(void)
 		print_traps();
 	    }
 	    else if(!strcmp(command, "set") || !strncmp(command, "as", 2) ||
-		    !strcmp(command, "a"))
+		    !strcmp(command, "a")   || !strncmp(command, "m", 1))
 	    {
 		char regname[MAXLINE];
 		unsigned int address, value;
@@ -844,6 +844,21 @@ void debug_shell(void)
 		else if(sscanf(input, "%*s %x %*c %x", &address, &value) == 2)
 		{
 		    mem_write(address, value);
+		}
+		else if(sscanf(input, "%*s %x", &address) == 1)
+		{
+		    do
+		    {
+			printf("%.4x:\t%.2x ", address, mem_read(address));
+
+			if(fgets(input, MAXLINE, stdin) == NULL) continue;
+			if(!strncmp(input, ".", 1)) break;
+			if(sscanf(input, "%x", &value) == 1)
+			{
+			    mem_write(address, value);
+			}
+		    }
+		    while(address++ < 0xFFFF);
 		}
 		else
 		{
