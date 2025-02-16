@@ -941,22 +941,20 @@ void debug_shell(void)
 		{
 		    Z80_HALT = tolower((int)halt);
 		}
-		else
-		{
-		    switch (Z80_HALT) {
-			case 'd':
-			    puts("debugger");
-			    break;
-			case 'h':
-			    puts("halt");
-			    break;
-			case 'r':
-			    puts("reset");
-			    break;
-			default:
-			    puts("default");
-			    break;
-		    }
+
+		switch (Z80_HALT) {
+		    case 'd':
+			puts("debugger");
+			break;
+		    case 'h':
+			puts("halt");
+			break;
+		    case 'r':
+			puts("reset");
+			break;
+		    default:
+			puts("default");
+			break;
 		}
 	    }
 	    else if(!strcmp(command, "diskdump") || !strcmp(command, "dd"))
