@@ -847,7 +847,7 @@ void debug_shell(void)
 		}
 		else
 		{
-		    puts("Syntax error.  (Type \"h(elp)\" for commands.)");
+		    puts("Register or address must be specified.");
 		}
 	    }
 	    else if(!strcmp(command, "step") || !strcmp(command, "s"))
