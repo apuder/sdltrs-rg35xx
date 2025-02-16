@@ -939,7 +939,7 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %c", &halt) == 1)
 		{
-		    Z80_HALT = halt;
+		    Z80_HALT = tolower((int)halt);
 		}
 		else
 		{
