@@ -1586,7 +1586,7 @@ done:
             event.jbutton.button = event.button.button;
         }
 
-        if (event.jbutton.button < N_JOYBUTTONS) {
+        if (event.jbutton.button < JOY_BUTTONS) {
           int const key = jbutton_map[event.jbutton.button];
 
           if (key >= 0)
@@ -1615,7 +1615,7 @@ done:
             event.jbutton.button = event.button.button;
         }
 
-        if (event.jbutton.button < N_JOYBUTTONS) {
+        if (event.jbutton.button < JOY_BUTTONS) {
           int const key = jbutton_map[event.jbutton.button];
 
           if (key >= 0)

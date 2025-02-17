@@ -65,9 +65,7 @@
 #define T8C          ".t8c"
 #define T8S          ".t8s"
 
-#define N_JOYBUTTONS 20
-
-extern int jbutton_map[N_JOYBUTTONS];
+extern int jbutton_map[];
 extern int jaxis_mapped;
 extern int mousepointer;
 extern int scanlines;

@@ -31,6 +31,7 @@
 #define _TRS_SDL_KEYBOARD_H
 
 #define JOY_BOUNCE      (20000)
+#define JOY_BUTTONS     (20)
 #define KEY_QUEUE_SIZE  (32)
 #define STRETCH_AMOUNT  (4000)
 

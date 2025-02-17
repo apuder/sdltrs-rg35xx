@@ -310,7 +310,7 @@ int gui_key(void)
           return event.key.keysym.sym;
         break;
       case SDL_JOYBUTTONDOWN:
-        if (event.jbutton.button < N_JOYBUTTONS) {
+        if (event.jbutton.button < JOY_BUTTONS) {
           int const key = jbutton_map[event.jbutton.button];
 
           if (key >= 0)
@@ -2369,7 +2369,7 @@ int gui_joystick_button(void)
       case SDL_MOUSEBUTTONDOWN:
         if (event.type == SDL_MOUSEBUTTONDOWN)
           event.jbutton.button = event.button.button;
-        if (event.jbutton.button < N_JOYBUTTONS)
+        if (event.jbutton.button < JOY_BUTTONS)
           return event.jbutton.button;
         else {
           gui_message("ERROR", "Unsupported Button");
@@ -2481,7 +2481,7 @@ void gui_joystick_menu(void)
         break;
       case 6:
         if (gui_question("Sure?")) {
-          for (i = 0; i < N_JOYBUTTONS; i++)
+          for (i = 0; i < JOY_BUTTONS; i++)
             jbutton_map[i] = -1;
          }
         break;

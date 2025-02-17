@@ -680,7 +680,7 @@ static void opt_joybuttonmap(char *arg, int intarg, int *stringarg)
 {
   int i;
 
-  for (i = 0; i < N_JOYBUTTONS; i++) {
+  for (i = 0; i < JOY_BUTTONS; i++) {
     char *ptr = strchr(arg, ',');
 
     if (ptr != NULL)
@@ -1158,8 +1158,8 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%sjoyaxismapped\n", option(jaxis_mapped));
 
   fprintf(config_file, "joybuttonmap=");
-  for (i = 0; i < N_JOYBUTTONS; i++)
-    fprintf(config_file, i < N_JOYBUTTONS - 1 ? "%d," : "%d\n", jbutton_map[i]);
+  for (i = 0; i < JOY_BUTTONS; i++)
+    fprintf(config_file, i < JOY_BUTTONS - 1 ? "%d," : "%d\n", jbutton_map[i]);
 
   fprintf(config_file, "joystick=");
   if (trs_joystick == -1)
