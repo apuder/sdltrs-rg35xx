@@ -243,7 +243,6 @@ void do_emt_close(void)
 void do_emt_read(void)
 {
   int size;
-  int i;
 
   if (Z80_HL + Z80_BC > 0x10000) {
     Z80_A = EFAULT;
@@ -253,6 +252,8 @@ void do_emt_read(void)
   }
 
   if (trs_show_led) {
+    int i;
+
     for (i = 0; i < 3; i++) {
       if (Z80_DE == xtrshard_fd[i])
         trs_hard_led(i, 1);
@@ -275,7 +276,6 @@ void do_emt_read(void)
 void do_emt_write(void)
 {
   int size;
-  int i;
 
   if (Z80_HL + Z80_BC > 0x10000) {
     Z80_A = EFAULT;
@@ -285,6 +285,8 @@ void do_emt_write(void)
   }
 
   if (trs_show_led) {
+    int i;
+
     for (i = 0; i < 3; i++) {
       if (Z80_DE == xtrshard_fd[i])
         trs_hard_led(i, 1);
@@ -734,9 +736,9 @@ void do_emt_opendisk(void)
 static
 int do_emt_closefd(int odindex)
 {
-  int i;
-
   if (od[odindex].xtrshard) {
+    int i;
+
     for (i = 0; i < 4; i++) {
       if (xtrshard_fd[i] == od[odindex].fd)
         xtrshard_fd[i] = -1;
