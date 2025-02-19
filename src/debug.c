@@ -847,8 +847,9 @@ void debug_shell(void)
 		}
 		else if(sscanf(input, "%*s %x", &address) == 1)
 		{
-		    do
+		    while(1)
 		    {
+		        address &= 0xFFFF;
 			printf("%.4x:\t%.2x ", address, mem_read(address));
 
 			if(fgets(input, MAXLINE, stdin) == NULL) continue;
@@ -857,8 +858,8 @@ void debug_shell(void)
 			{
 			    mem_write(address, value);
 			}
+			address++;
 		    }
-		    while(address++ < 0xFFFF);
 		}
 		else
 		{
