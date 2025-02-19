@@ -768,6 +768,7 @@ redraw:
   col = pos > 60 ? pos - 59 : 0;
 
   gui_rect(1, 6, 62, 3, 1);
+  gui_text(insert ? " INS " : " OVR ", 56, 8, 6, 1);
   gui_center(title, 6, 0);
 
   if (file)
@@ -777,12 +778,11 @@ redraw:
     int key;
     int i;
 
-    for (i = col; i < col + 60; i++) {
-      gui_text((i >= len) ? " " : &output[i],
-          2 + (i - col), 7, 1, (i == pos));
-    }
+    output[len] = 0;
 
-    gui_write((insert ? " INS " : " OVR "), 56, 8, 1);
+    gui_rect(2, 7, 60, 1, 0);
+    gui_text(&output[col], 2, 7, 60, 0);
+    gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), 7, 1, 1);
     trs_screen_update();
 
     key = gui_key();
@@ -808,8 +808,7 @@ redraw:
       case SDLK_END:
       case SDLK_PAGEDOWN:
         pos = len;
-        col = pos > 60 ? pos - 59 : 0;
-        break;
+        goto redraw;
       case SDLK_BACKSPACE:
         if (pos > 0) {
           for (i = pos; i < len; i++)
@@ -829,9 +828,8 @@ redraw:
         break;
       case SDLK_INSERT:
         insert = !insert;
-        break;
+        goto redraw;
       case SDLK_RETURN:
-        output[len] = 0;
         return len;
       case SDLK_ESCAPE:
         return -1;
@@ -849,14 +847,12 @@ redraw:
         break;
       case SDLK_F9:
         col = len = pos = 0;
-        output[0] = 0;
         break;
       case SDLK_F10:
         len = pos;
-        output[pos] = 0;
         break;
       default:
-        if (key >= 0x20 && key <= 0xFF && pos < limit) {
+        if (key >= ' ' && key <= 0xFF && pos < limit) {
           if (insert && len < limit) {
             for (i = len; i > pos; i--)
               output[i] = output[i - 1];
