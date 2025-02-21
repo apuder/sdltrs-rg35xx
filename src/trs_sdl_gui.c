@@ -201,7 +201,9 @@ void gui_write(const char *text, int x, int y, int invert)
 
 void gui_center(const char *text, int y, int invert)
 {
-  gui_write(text, (64 - strlen(text)) / 2, y, invert);
+  int const len = strlen(text);
+
+  gui_text(text, (64 - len) / 2, y, len, invert);
 }
 
 void gui_clear(void)
