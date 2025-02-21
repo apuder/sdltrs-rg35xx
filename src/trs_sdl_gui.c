@@ -596,7 +596,7 @@ read_dir:
     return -1;
 
   if (dir == 0)
-    gui_write(all ? " F1:Ext " : " F1:All ", 54, 0, 1);
+    gui_text(all ? " F1:Ext " : " F1:All ", 54, 0, 9, 1);
 
   gui_limit(directory, text, 58);
   gui_rect(2, 1, 60, 1, 0);
@@ -882,7 +882,7 @@ int gui_menu(const char *title, const MENU *entry, int selection)
     gui_center(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 15, 1);
 
   while (entry[num].type != 0) {
-    gui_write(entry[num].text, 2, num + 1, 0);
+    gui_text(entry[num].text, 2, num + 1, 60, 0);
     num++;
   }
   num--;
@@ -1026,7 +1026,7 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
   gui_center(title, y - 1, 0);
 
   for (i = 0; i < num; i++)
-    gui_write(entry[i], x, y + i, 0);
+    gui_text(entry[i], x, y + i, len, 0);
   num--;
 
   while (1) {
@@ -1095,7 +1095,7 @@ int gui_matrix(const char *title, const char **entry, int rows, int cols, int se
 
   for (row = 0; row < rows; row++)
     for (col = 0; col < cols; col++)
-      gui_write(entry[row * cols + col], x + col * len, y + row, 0);
+      gui_text(entry[row * cols + col], x + col * len, y + row, len, 0);
 
   if (selection < 0)
     selection = 0;
@@ -2332,7 +2332,7 @@ int gui_joystick_button(void)
   SDL_Event event;
 
   gui_rect(25, 7, 14, 3, 1);
-  gui_write("Press Button", 26, 8, 0);
+  gui_text("Press Button", 26, 8, 13, 0);
   trs_screen_update();
 
   while (1) {
@@ -2385,7 +2385,7 @@ void gui_joystick_map(int button)
       int const pos = col * 4 + row;
 
       snprintf(text, 12, "%2d:%s", pos, gui_key_name(jbutton_map[pos]));
-      gui_write(text, 2 + col * 12, 10 + row, button == pos);
+      gui_text(text, 2 + col * 12, 10 + row, 12, button == pos);
     }
   }
 }
@@ -2612,27 +2612,27 @@ void gui_about(void)
 void gui_keys(void)
 {
   gui_clear();
-  gui_center(" Keys ", 0, 0);
-  gui_write("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 0);
-  gui_write("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 0);
-  gui_write("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 0);
-  gui_write("F6: TRS-80 Shifted '0' Key      Alt-PgUp/PgDn: Scale Window ", 2, 4, 0);
-  gui_write("F7/Alt-M: Main Menu of SDLTRS   Alt-Enter: Toggle Fullscreen", 2, 5, 0);
-  gui_write("F8/Shift-F8: Quit/Abort SDLTRS  Alt-A/C/V: Select/Copy/Paste", 2, 6, 0);
-  gui_write("F9/Alt-Z:"
+  gui_text(" Keys ", 28, 0, 9, 0);
+  gui_text("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 60, 0);
+  gui_text("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 60, 0);
+  gui_text("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 60, 0);
+  gui_text("F6: TRS-80 Shifted '0' Key      Alt-PgUp/PgDn: Scale Window ", 2, 4, 60, 0);
+  gui_text("F7/Alt-M: Main Menu of SDLTRS   Alt-Enter: Toggle Fullscreen", 2, 5, 60, 0);
+  gui_text("F8/Shift-F8: Quit/Abort SDLTRS  Alt-A/C/V: Select/Copy/Paste", 2, 6, 60, 0);
+  gui_text("F9/Alt-Z:"
 #ifdef ZBX
   " Enter debugger (zbx)  "
 #else
   " Toggle Fullscreen     "
 #endif
-  "Alt-D/F: Floppy Disk Menu   ", 2, 7, 0);
-  gui_write("F10/Shift-F10: Warm/Cold Reset  Alt-H: Hard Disk Menu       ", 2, 8, 0);
-  gui_write("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2, 9, 0);
-  gui_write("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 0);
-  gui_write("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 0);
-  gui_write("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 0);
-  gui_write("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 0);
-  gui_write("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 0);
+  "Alt-D/F: Floppy Disk Menu   ", 2, 7, 60, 0);
+  gui_text("F10/Shift-F10: Warm/Cold Reset  Alt-H: Hard Disk Menu       ", 2,  8, 60, 0);
+  gui_text("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2,  9, 60, 0);
+  gui_text("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 60, 0);
+  gui_text("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 60, 0);
+  gui_text("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 60, 0);
+  gui_text("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 60, 0);
+  gui_text("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 60, 0);
   gui_center(" Press Any Key To Return ", 15, 1);
   trs_screen_update();
   gui_key();
