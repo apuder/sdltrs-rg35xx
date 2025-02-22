@@ -136,7 +136,7 @@ static void help(void)
                             2 = port output            8 = Hard Disk Command\n\
   (zbx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
-  quit .................. Exit from SDLTRS");
+  exit | quit ........... Exit from SDLTRS");
 }
 
 static const char *trap_name(int flag)
@@ -717,7 +717,7 @@ void debug_shell(void)
 		    z80_run((!strcmp(command, "nextint") || !strcmp(command, "ni")) ? 0 : -1);
 		}
 	    }
-	    else if(!strcmp(command, "quit"))
+	    else if(!strcmp(command, "exit") || !strcmp(command, "quit"))
 	    {
 		break;
 	    }
