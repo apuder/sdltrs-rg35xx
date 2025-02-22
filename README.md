@@ -93,5 +93,5 @@ Lupi's fork of [RetroPie-Setup] ...
 [RTCC]: https://electrickery.nl/comp/trs80/rtccc/
 [SDL]: https://www.libsdl.org
 [SDLTRS]: http://sdltrs.sourceforge.net
-[SlackBuilds]: http://slackbuilds.org/repository/15.0/system/sdltrs/
+[SlackBuilds]: http://slackbuilds.org/repository/15.0/system/sdl2trs/
 [xtrs]: https://www.tim-mann.org/xtrs.html
