@@ -125,7 +125,7 @@ static void help(void)
   state load <file> ..... Load emulator state from file\n\
   state save <file> ..... Save current emulator state to file\n\
   timeroff / timeron .... Disable / enable TRS-80 real time clock interrupt\n\
-  halt <action> ......... Show / change Z80 HALT action: debugger, halt or reset\n\
+  halt <action> ......... Show / change Z80 HALT action: debug, halt or reset\n\
   di[skdebug] <hexval> .. Set floppy disk controller debug flags to hexval:\n\
                             1 = FDC register I/O      10 = Phys sector sizes\n\
                             2 = FDC commands          20 = Readadr timing\n\
@@ -960,7 +960,7 @@ void debug_shell(void)
 
 		switch (Z80_HALT) {
 		    case 'd':
-			puts("debugger");
+			puts("debug");
 			break;
 		    case 'h':
 			puts("halt");

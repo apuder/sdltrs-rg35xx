@@ -1144,9 +1144,9 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "guiforeground=0x%x\n", gui_foreground);
 
   fprintf(config_file, "halt=%s\n",
-      Z80_HALT == 'd' ? "debugger" :
-      Z80_HALT == 'h' ? "halt"     :
-      Z80_HALT == 'r' ? "reset"    : "");
+      Z80_HALT == 'd' ? "debug" :
+      Z80_HALT == 'h' ? "halt"  :
+      Z80_HALT == 'r' ? "reset" : "");
 
   for (i = 0; i < 4; i++)
     fprintf(config_file, "hard%d=%s\n", i, trs_hard_getfilename(i));
