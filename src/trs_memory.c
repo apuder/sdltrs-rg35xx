@@ -502,12 +502,9 @@ void s80z_out(int value)
 static void mem_init(void)
 {
   /* Initialize RAM & ROM */
-  int i;
+  Uint8 const fill = trs_model >= 4 ? 0xFF : 0xC9;
 
-  for (i = 0; i < MAX_MEMORY_SIZE - 1;) {
-    memory[i++] = 0xFF;
-    memory[i++] = 0x00;
-  }
+  memset(&memory, fill, MAX_MEMORY_SIZE);
   memset(&rom, 0xFF, MAX_ROM_SIZE);
 
   mem_map(0);
