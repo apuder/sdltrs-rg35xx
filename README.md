@@ -61,6 +61,9 @@ has very low system requirements: it works on all platforms supported by the
 
   [BSD 2-Clause](LICENSE)
 
+## Building
+To build from the source code see [BUILDING.md].
+
 ## Contributing
 All contributions are welcome.
 
