@@ -191,6 +191,7 @@ void cp500_mem_write(int address, Uint8 value, int mem_map, Uint8 *ram)
     case 0x33: /* 80x24, 3C00-3FFF = VRAM */
       if (address >= RAM_START) {
         ram[address] = value;
+        return;
       } else if (address >= VIDEO_START) {
         if (mem_video_page_write(address, value)) {
           /*
@@ -207,8 +208,8 @@ void cp500_mem_write(int address, Uint8 value, int mem_map, Uint8 *ram)
           trs_screen_write_char((address % 128) + (((address / 128) +
               cp500_m80_video_first_row) * 80), value);
         }
+        return;
       }
-      return;
   }
 #ifdef DEBUG_CP500
   error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
