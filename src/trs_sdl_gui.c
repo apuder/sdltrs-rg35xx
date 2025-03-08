@@ -1686,7 +1686,7 @@ void gui_emulator_menu(void)
    {"LE18 (Lowe Electronics) Graphics for Model I      ", ENTRY},
    {"Lowercase Modification for Model I                ", ENTRY},
    {"Lubomir Soft Banker Emulation for Model I         ", ENTRY},
-   {"TRS-80 Users Society Selector I Memory Expansion  ", ENTRY},
+   {"Selector (Dutch TRS-80 Users Society) Model I     ", ENTRY},
    {"SuperMem (Alpha Technology) I/III/4/4P Memory     ", ENTRY},
    {"Grafyx Solution (Micro-Labs) III/4/4P Graphics    ", ENTRY},
    {"MegaMem (Anitek Software) III/4/4P Memory Board   ", ENTRY},
