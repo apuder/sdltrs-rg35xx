@@ -1397,20 +1397,19 @@ void trs_get_event(int wait)
               break;
             case EG3200:
             case GENIE3S:
-              if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
-                keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
-                goto done;
-              }
-              /* 1-5 on numeric keypad for P1-P5, 6 for ESC */
-              if (keysym.sym >= SDLK_KP_1 && keysym.sym <= SDLK_KP_6) {
-                keysym.sym = (keysym.sym - SDLK_KP_1) + 0x88;
-                goto done;
-              }
               switch (keysym.sym) {
                 case SDLK_END:   keysym.sym = 0x08d; goto done; /* ESC  */
                 case SDLK_LCTRL: keysym.sym = 0x12f; goto done; /* Ctrl */
                 default:
-                  break;
+                  if (keysym.sym >= SDLK_F1 && keysym.sym <= SDLK_F8) {
+                    keysym.sym = (keysym.sym - SDLK_F1) + 0x080;
+                    goto done;
+                  }
+                  /* 1-6 on numeric keypad for P1-P5 and ESC */
+                  if (keysym.sym >= SDLK_KP_1 && keysym.sym <= SDLK_KP_6) {
+                    keysym.sym = (keysym.sym - SDLK_KP_1) + 0x88;
+                    goto done;
+                  }
               }
               break;
             case LNW80:
