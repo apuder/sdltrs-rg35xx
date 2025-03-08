@@ -1,3 +1,5 @@
+## Linux/BSD/Unix prerequesits
+
 **SDL2TRS** needs the development files of `SDL2` and optional
 `GNU readline` for the integrated Z80 debugger zbx.
 
