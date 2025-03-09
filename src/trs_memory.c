@@ -808,7 +808,7 @@ int mem_read(int address)
         return rom[address];
       /* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
       if ((sys_byte & (1 << 1)) == 0) {
-        if (address >= VIDEO_START && address <= 0x3FFF)
+        if (address >= VIDEO_START && address < RAM_START)
           return video[address - VIDEO_START];
       }
       /* Bit 2 - Bank 3: Video Memory 1 (additional 1k for 80x24 video mode) */
@@ -864,7 +864,7 @@ int mem_read(int address)
           return rom[address];
         if ((sys_byte & (1 << 3)) == 0) {
           /* TRS-80 mode */
-          if (address >= 0x3000 && address <= 0x3FFF)
+          if (address >= 0x3000 && address < RAM_START)
             return trs80_model1_mmio(address);
         } else {
           /* CP/M mode */
@@ -919,7 +919,7 @@ int mem_read(int address)
           return memory[address + bank_base];
       }
       /* HRG in low 16K */
-      if ((sys_byte & (1 << 3)) && address <= 0x3FFF) {
+      if ((sys_byte & (1 << 3)) && address < RAM_START) {
         hrg_write_addr(address, 0x3FFF);
         return hrg_read_data();
       }
@@ -927,7 +927,7 @@ int mem_read(int address)
       if ((sys_byte & (1 << 0)) == 0) {
         if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
           return rom[address];
-        if (address >= 0x3400 && address <= 0x3FFF)
+        if (address >= 0x3400 && address < RAM_START)
           return trs80_model1_mmio(address);
       }
       return memory[address];
@@ -1183,7 +1183,7 @@ void mem_write(int address, int value)
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       /* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
       if ((sys_byte & (1 << 1)) == 0) {
-        if (address >= VIDEO_START && address <= 0x3FFF) {
+        if (address >= VIDEO_START && address < RAM_START) {
           trs80_screen_write_char(address - VIDEO_START, value);
           return;
         }
@@ -1258,7 +1258,7 @@ void mem_write(int address, int value)
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
         if ((sys_byte & (1 << 3)) == 0) {
           /* TRS-80 mode */
-          if (address >= 0x37E0 && address <= 0x3FFF) {
+          if (address >= 0x37E0 && address < RAM_START) {
             trs80_model1_write_mmio(address, value);
             return;
           }
@@ -1324,14 +1324,14 @@ void mem_write(int address, int value)
         }
       }
       /* HRG in low 16K */
-      if ((sys_byte & (1 << 3)) && address <= 0x3FFF) {
+      if ((sys_byte & (1 << 3)) && address < RAM_START) {
         hrg_write_addr(address, 0x3FFF);
         hrg_write_data(value);
         return;
       }
       /* MMIO */
       if ((sys_byte & (1 << 0)) == 0) {
-        if (address >= 0x3400 && address <= 0x3FFF) {
+        if (address >= 0x3400 && address < RAM_START) {
           trs80_model1_write_mmio(address, value);
           return;
         }
@@ -1539,7 +1539,7 @@ Uint8 *mem_pointer(int address, int writing)
         return writing ? NULL : &rom[address];
       /* Bit 1 - Bank 2: Video Memory 0 (1k, 64x16, TRS-80 M1 compatible) */
       if ((sys_byte & (1 << 1)) == 0) {
-        if (address >= VIDEO_START && address <= 0x3FFF)
+        if (address >= VIDEO_START && address < RAM_START)
           return &video[address - VIDEO_START];
       }
       /* Bit 2 - Bank 3: Video Memory 1 (additional 1k for 80x24 video mode) */
@@ -1580,7 +1580,7 @@ Uint8 *mem_pointer(int address, int writing)
           return writing ? NULL : &rom[address];
         if ((sys_byte & (1 << 3)) == 0) {
           /* TRS-80 mode */
-          if (address >= 0x3000 && address <= 0x3FFF)
+          if (address >= 0x3000 && address < RAM_START)
             return trs80_model1_mmio_addr(address, writing);
         } else {
           /* CP/M mode */
@@ -1626,7 +1626,7 @@ Uint8 *mem_pointer(int address, int writing)
       if ((sys_byte & (1 << 0)) == 0) {
         if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
           return writing ? NULL : &rom[address];
-        if (address >= 0x3400 && address <= 0x3FFF)
+        if (address >= 0x3400 && address < RAM_START)
           return trs80_model1_mmio_addr(address, writing);
       }
       return &memory[address];
