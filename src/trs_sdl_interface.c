@@ -2841,8 +2841,6 @@ void trs_set_mouse_max(int x, int y, unsigned int sens)
 
 void trs_main_save(FILE *file)
 {
-  int i;
-
   trs_save_uint8(file, trs_screen, SCREEN_SIZE);
   trs_save_uint16(file, &screen_chars, 1);
   trs_save_int(file, &rows, 1);
@@ -2856,13 +2854,8 @@ void trs_main_save(FILE *file)
   trs_save_int(file, &trs_charset1, 1);
   trs_save_int(file, &trs_charset3, 1);
   trs_save_int(file, &trs_charset4, 1);
-
-  for (i = 0; i < MAX_CHARS; i++)
-    trs_save_uint8(file, char_ram[i], MAX_CHAR_HEIGHT);
-
-  for (i = 0; i < G_YSIZE; i++)
-    trs_save_uint8(file, grafyx_unscaled[i], G_XSIZE);
-
+  trs_save_uint8(file, &char_ram[0][0], MAX_CHARS * MAX_CHAR_HEIGHT);
+  trs_save_uint8(file, &grafyx_unscaled[0][0], G_YSIZE * G_XSIZE);
   trs_save_int(file, &grafyx_x, 1);
   trs_save_int(file, &grafyx_y, 1);
   trs_save_int(file, &grafyx_mode, 1);
@@ -2878,8 +2871,6 @@ void trs_main_save(FILE *file)
 
 void trs_main_load(FILE *file)
 {
-  int i;
-
   trs_load_uint8(file, trs_screen, SCREEN_SIZE);
   trs_load_uint16(file, &screen_chars, 1);
   trs_load_int(file, &rows, 1);
@@ -2893,13 +2884,8 @@ void trs_main_load(FILE *file)
   trs_load_int(file, &trs_charset1, 1);
   trs_load_int(file, &trs_charset3, 1);
   trs_load_int(file, &trs_charset4, 1);
-
-  for (i = 0; i < MAX_CHARS; i++)
-    trs_load_uint8(file, char_ram[i], MAX_CHAR_HEIGHT);
-
-  for (i = 0; i < G_YSIZE; i++)
-    trs_load_uint8(file, grafyx_unscaled[i], G_XSIZE);
-
+  trs_load_uint8(file, &char_ram[0][0], MAX_CHARS * MAX_CHAR_HEIGHT);
+  trs_load_uint8(file, &grafyx_unscaled[0][0], G_YSIZE * G_XSIZE);
   trs_load_int(file, &grafyx_x, 1);
   trs_load_int(file, &grafyx_y, 1);
   trs_load_int(file, &grafyx_mode, 1);
