@@ -2240,7 +2240,7 @@ void gui_rect(int x, int y, int w, int h, int frame)
   }
 }
 
-void gui_text(const char *text, int col, int row, int len, int invert)
+void gui_text(const char *text, int col, int row, int len, int font)
 {
   SDL_Rect srcRect, dstRect;
 
@@ -2260,7 +2260,7 @@ void gui_text(const char *text, int col, int row, int len, int invert)
   dstRect.y = char_height * row + top_margin;
 
   while (len-- && *text) {
-    SDL_BlitSurface(trs_char[4 + invert][(Uint8)*text++], &srcRect, screen, &dstRect);
+    SDL_BlitSurface(trs_char[font][(Uint8)*text++], &srcRect, screen, &dstRect);
     dstRect.x += srcRect.w;
   }
 }

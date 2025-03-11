@@ -130,7 +130,7 @@ static int const key_syms_shifted[] = {
 int jbutton_map[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int jaxis_mapped;
 
-static void gui_write(const char *text, int x, int y, int invert);
+static void gui_write(const char *text, int x, int y, int font);
 static void gui_clear(void);
 static void gui_limit(const char *text, char *limited, int limit);
 static void gui_add_extension(char *name, const char *ext);
@@ -183,7 +183,7 @@ static void gui_keys(void);
 static void gui_exec_cmd(void);
 static void gui_save_bmp(void);
 
-void gui_write(const char *text, int x, int y, int invert)
+void gui_write(const char *text, int x, int y, int font)
 {
   int const len = strlen(text);
 
@@ -195,11 +195,11 @@ void gui_write(const char *text, int x, int y, int invert)
   if (len > 62 - x) {
     int const pos = (59 - x) / 2;
 
-    gui_text(text, x, y, pos, invert);
-    gui_text("...", x + pos, y, 3, invert);
-    gui_text(&text[len - (59 - x - pos)], x + pos + 3, y, 32 - x, invert);
+    gui_text(text, x, y, pos, font);
+    gui_text("...", x + pos, y, 3, font);
+    gui_text(&text[len - (59 - x - pos)], x + pos + 3, y, 32 - x, font);
   } else {
-    gui_text(text, x, y, len, invert);
+    gui_text(text, x, y, len, font);
   }
 }
 
@@ -377,10 +377,10 @@ int gui_select(const char *text, int x, int y)
 {
   int key;
 
-  gui_write(text, x, y, 1);
+  gui_write(text, x, y, 5);
   trs_screen_update();
   key = gui_key();
-  gui_write(text, x, y, 0);
+  gui_write(text, x, y, 4);
 
   return toupper(key);
 }
@@ -398,9 +398,9 @@ void gui_error(const char *name)
 void gui_message(const char *title, const char *message)
 {
   gui_rect(1, 6, 62, 3, 1);
-  gui_text(title, 3, 6, 32, 0);
-  gui_text(message, 3, 7, 60, 0);
-  gui_text(" Press any key to continue ", 34, 8, 28, 1);
+  gui_text(title, 3, 6, 32, 4);
+  gui_text(message, 3, 7, 60, 4);
+  gui_text(" Press any key to continue ", 34, 8, 28, 5);
   trs_screen_update();
   gui_key();
 }
@@ -559,14 +559,14 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
   int selection;
 
   gui_clear();
-  gui_text("Select ", 2, 0, 8, 0);
-  gui_text(type, 9, 0, 32, 0);
+  gui_text("Select ", 2, 0, 8, 4);
+  gui_text(type, 9, 0, 32, 4);
 
   if (dir) {
-    gui_write(" Directory", 9 + strlen(type), 0, 0);
-    gui_write(" INS/TAB:Select Directory ", 0, 15, 1);
+    gui_write(" Directory", 9 + strlen(type), 0, 4);
+    gui_write(" INS/TAB:Select Directory ", 0, 15, 5);
   } else {
-    gui_write(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 0, 15, 1);
+    gui_write(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 0, 15, 5);
   }
 
   i = snprintf(directory, FILENAME_MAX, "%s", path);
@@ -593,10 +593,10 @@ read_dir:
     return -1;
 
   if (dir == 0)
-    gui_text(all ? " F1:Ext " : " F1:All ", 54, 0, 9, 1);
+    gui_text(all ? " F1:Ext " : " F1:All ", 54, 0, 9, 5);
 
   gui_rect(2, 1, 60, 1, 0);
-  gui_write(directory, 0, 1, 0);
+  gui_write(directory, 0, 1, 4);
 
   cnt = filelistcount < 13 ? filelistcount - 1 : 12;
   num = filelistcount - cnt - 1;
@@ -610,7 +610,7 @@ read_dir:
       gui_rect(2, 2, 60, 13, 0);
 
       for (i = 0; i <= cnt; i++)
-        gui_write(filelist[top + i], 2, i + 2, 0);
+        gui_write(filelist[top + i], 2, i + 2, 4);
 
       redraw = 0;
     }
@@ -764,11 +764,11 @@ redraw:
   col = pos > 60 ? pos - 59 : 0;
 
   gui_rect(1, 6, 62, 3, 1);
-  gui_text(insert ? " INS " : " OVR ", 56, 8, 6, 1);
-  gui_write(title, 0, 6, 0);
+  gui_text(insert ? " INS " : " OVR ", 56, 8, 6, 5);
+  gui_write(title, 0, 6, 4);
 
   if (file)
-    gui_write(" TAB:Select Directory ", 0, 8, 1);
+    gui_write(" TAB:Select Directory ", 0, 8, 5);
 
   while (1) {
     int key;
@@ -777,8 +777,8 @@ redraw:
     output[len] = 0;
 
     gui_rect(2, 7, 60, 1, 0);
-    gui_text(&output[col], 2, 7, 60, 0);
-    gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), 7, 1, 1);
+    gui_text(&output[col], 2, 7, 60, 4);
+    gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), 7, 1, 5);
     trs_screen_update();
 
     key = gui_key();
@@ -870,15 +870,15 @@ int gui_menu(const char *title, const MENU *entry, int selection)
 {
   int num = 0;
 
-  gui_write(title, 0, 0, 0);
+  gui_write(title, 0, 0, 4);
 
   if (strstr(title, "Man"))
-    gui_write(" ENTER/INS/TAB:Insert  DEL:Remove  SPACE:Write-Protect ", 0, 15, 1);
+    gui_write(" ENTER/INS/TAB:Insert  DEL:Remove  SPACE:Write-Protect ", 0, 15, 5);
   else
-    gui_write(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 0, 15, 1);
+    gui_write(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 0, 15, 5);
 
   while (entry[num].type != 0) {
-    gui_text(entry[num].text, 2, num + 1, 60, 0);
+    gui_text(entry[num].text, 2, num + 1, 60, 4);
     num++;
   }
   num--;
@@ -1019,10 +1019,10 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
   int i;
 
   gui_rect(x - 1, y - 1, len + 2, num + 2, 1);
-  gui_write(title, 0, y - 1, 0);
+  gui_write(title, 0, y - 1, 4);
 
   for (i = 0; i < num; i++)
-    gui_text(entry[i], x, y + i, len, 0);
+    gui_text(entry[i], x, y + i, len, 4);
   num--;
 
   while (1) {
@@ -1087,11 +1087,11 @@ int gui_matrix(const char *title, const char **entry, int rows, int cols, int se
   int row, col;
 
   gui_rect(x - 1, y - 1, width + 2, rows + 2, 1);
-  gui_write(title, 0, y - 1, 0);
+  gui_write(title, 0, y - 1, 4);
 
   for (row = 0; row < rows; row++)
     for (col = 0; col < cols; col++)
-      gui_text(entry[row * cols + col], x + col * len, y + row, len, 0);
+      gui_text(entry[row * cols + col], x + col * len, y + row, len, 4);
 
   if (selection < 0)
     selection = 0;
@@ -2213,10 +2213,10 @@ static int gui_config_menu(void)
 
   while (1) {
     gui_clear();
-    gui_write("State File:", 2, 8, 0);
-    gui_write(trs_state_file, 4, 9, 0);
-    gui_write("Configuration File:", 2, 11, 0);
-    gui_write(trs_config_file, 4, 12, 0);
+    gui_write("State File:", 2, 8, 4);
+    gui_write(trs_state_file, 4, 9, 4);
+    gui_write("Configuration File:", 2, 11, 4);
+    gui_write(trs_config_file, 4, 12, 4);
 
     selection = gui_menu(" Configuration/State Files ", menu, selection);
     switch (selection) {
@@ -2328,7 +2328,7 @@ int gui_joystick_button(void)
   SDL_Event event;
 
   gui_rect(25, 7, 14, 3, 1);
-  gui_text("Press Button", 26, 8, 13, 0);
+  gui_text("Press Button", 26, 8, 13, 4);
   trs_screen_update();
 
   while (1) {
@@ -2381,7 +2381,7 @@ void gui_joystick_map(int button)
       int const pos = col * 4 + row;
 
       snprintf(text, 12, "%2d:%s", pos, gui_key_name(jbutton_map[pos]));
-      gui_text(text, 2 + col * 12, 10 + row, 12, button == pos);
+      gui_text(text, 2 + col * 12, 10 + row, 12, 4 + (button == pos));
     }
   }
 }
@@ -2590,17 +2590,17 @@ void gui_roms(void)
 void gui_about(void)
 {
   gui_clear();
-  gui_write(" About ", 0, 0, 0);
-  gui_write("SDLT2RS", 0, 3, 0);
-  gui_write("Version 1.2.31", 0, 4, 0);
-  gui_write("BSD 2-Clause License", 0, 5, 0);
-  gui_write("Copyright (C) 2006-2011 Mark Grebe, 2018-2025", 0, 6, 0);
-  gui_write("Alan Cox, Jens Guenther, Leonardo Brondani Schenkel", 0, 7, 0);
-  gui_write("<https://gitlab.com/jengun/sdltrs>", 0, 8, 0);
-  gui_write("Based on xtrs 4.9d by Tim Mann", 0, 10, 0);
-  gui_write("<http://www.tim-mann.org/xtrs>", 0, 11, 0);
-  gui_write("xtrs 1.0 Copyright (C) 1992 Clarendon Hill Software", 0, 12, 0);
-  gui_write(" Press Any Key To Return ", 0, 15, 1);
+  gui_write(" About ", 0, 0, 4);
+  gui_write("SDL2TRS", 0, 3, 4);
+  gui_write("Version 1.2.31", 0, 4, 4);
+  gui_write("BSD 2-Clause License", 0, 5, 4);
+  gui_write("Copyright (C) 2006-2011 Mark Grebe, 2018-2025", 0, 6, 4);
+  gui_write("Alan Cox, Jens Guenther, Leonardo Brondani Schenkel", 0, 7, 4);
+  gui_write("<https://gitlab.com/jengun/sdltrs>", 0, 8, 4);
+  gui_write("Based on xtrs 4.9d by Tim Mann", 0, 10, 4);
+  gui_write("<http://www.tim-mann.org/xtrs>", 0, 11, 4);
+  gui_write("xtrs 1.0 Copyright (C) 1992 Clarendon Hill Software", 0, 12, 4);
+  gui_write(" Press Any Key To Return ", 0, 15, 5);
   trs_screen_update();
   gui_key();
 }
@@ -2608,28 +2608,28 @@ void gui_about(void)
 void gui_keys(void)
 {
   gui_clear();
-  gui_text(" Keys ", 28, 0, 9, 0);
-  gui_text("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 60, 0);
-  gui_text("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 60, 0);
-  gui_text("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 60, 0);
-  gui_text("F6: TRS-80 Shifted '0' Key      Alt-PgUp/PgDn: Scale Window ", 2, 4, 60, 0);
-  gui_text("F7/Alt-M: Main Menu of SDLTRS   Alt-Enter: Toggle Fullscreen", 2, 5, 60, 0);
-  gui_text("F8/Shift-F8: Quit/Abort SDLTRS  Alt-A/C/V: Select/Copy/Paste", 2, 6, 60, 0);
+  gui_text(" Keys ", 28, 0, 9, 4);
+  gui_text("F1-F3: Functions Keys F1/F2/F3  PgUp/PgDn: Left/Right Shift ", 2, 1, 60, 4);
+  gui_text("F4: F4/CapsLock on TRS-80 4/4P  Insert: TRS-80 Underscore   ", 2, 2, 60, 4);
+  gui_text("F5/ScrollLock: TRS-80 '@' Key   Shift-Up Arrow: TRS-80 ESC  ", 2, 3, 60, 4);
+  gui_text("F6: TRS-80 Shifted '0' Key      Alt-PgUp/PgDn: Scale Window ", 2, 4, 60, 4);
+  gui_text("F7/Alt-M: Main Menu of SDLTRS   Alt-Enter: Toggle Fullscreen", 2, 5, 60, 4);
+  gui_text("F8/Shift-F8: Quit/Abort SDLTRS  Alt-A/C/V: Select/Copy/Paste", 2, 6, 60, 4);
   gui_text("F9/Alt-Z:"
 #ifdef ZBX
   " Enter debugger (zbx)  "
 #else
   " Toggle Fullscreen     "
 #endif
-  "Alt-D/F: Floppy Disk Menu   ", 2, 7, 60, 0);
-  gui_text("F10/Shift-F10: Warm/Cold Reset  Alt-H: Hard Disk Menu       ", 2,  8, 60, 0);
-  gui_text("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2,  9, 60, 0);
-  gui_text("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 60, 0);
-  gui_text("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 60, 0);
-  gui_text("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 60, 0);
-  gui_text("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 60, 0);
-  gui_text("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 60, 0);
-  gui_write(" Press Any Key To Return ", 0, 15, 1);
+  "Alt-D/F: Floppy Disk Menu   ", 2, 7, 60, 4);
+  gui_text("F10/Shift-F10: Warm/Cold Reset  Alt-H: Hard Disk Menu       ", 2,  8, 60, 4);
+  gui_text("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2,  9, 60, 4);
+  gui_text("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 60, 4);
+  gui_text("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 60, 4);
+  gui_text("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 60, 4);
+  gui_text("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 60, 4);
+  gui_text("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 60, 4);
+  gui_write(" Press Any Key To Return ", 0, 15, 5);
   trs_screen_update();
   gui_key();
 }
@@ -2637,7 +2637,7 @@ void gui_keys(void)
 void gui_pause(void)
 {
   gui_rect(29, 6, 8, 3, 1);
-  gui_text("PAUSED", 30, 7, 7, 0);
+  gui_text("PAUSED", 30, 7, 7, 4);
   trs_screen_update();
 }
 

@@ -77,7 +77,7 @@ extern int  gui_file(const char *path, char *filename, const char *mask, int dir
 extern void gui_function(int function);
 extern void gui_pause(void);
 extern void gui_rect(int x, int y, int w, int h, int frame);
-extern void gui_text(const char *text, int col, int row, int len, int invert);
+extern void gui_text(const char *text, int col, int row, int len, int font);
 extern int  trs_sdl_savebmp(const char *name);
 
 #endif /* _TRS_SDL_GUI_H */
