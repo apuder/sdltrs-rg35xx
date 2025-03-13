@@ -320,7 +320,7 @@ static void print_memory(int address, int num_bytes, int peek)
 	int const bytes_to_print = num_bytes < 16 ? num_bytes : 16;
 	int i;
 
-	printf("%.4x:\t", address);
+	printf("%.4x: ", address);
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
@@ -850,7 +850,7 @@ void debug_shell(void)
 		    while(1)
 		    {
 		        address &= 0xFFFF;
-			printf("%.4x:\t%.2x ", address, mem_read(address));
+			printf("%.4x: %.2x ", address, mem_read(address));
 
 			if(fgets(input, MAXLINE, stdin) == NULL) continue;
 			if(!strncmp(input, ".", 1)) break;

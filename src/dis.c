@@ -2121,7 +2121,7 @@ int disassemble(int pc)
     {
 	code = &major[i];
     }
-    printf ("%04x:\t", addr);
+    printf ("%04x: ", addr);
 
     for (i = 0; i < ((pc + arglen(code->args) - addr) & 0xffff); i++)
 	printf("%02x ", mem_read(addr + i));
