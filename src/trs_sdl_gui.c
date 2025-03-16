@@ -570,7 +570,7 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
   }
 
   i = snprintf(directory, FILENAME_MAX, "%s", path);
-  for (; i > 0; i--) {
+  while (i--) {
     if (directory[i] == DIR_SLASH) {
       directory[i + 1] = 0;
       break;
