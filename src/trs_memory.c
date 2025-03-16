@@ -618,6 +618,7 @@ void trs_reset(int poweron)
       case 7: /* TCS SpeedMaster 5.3 */
         memory_map = 0x27;
         trs_clones_model(SPEEDMASTER);
+        trs_screen_init(0);
         break;
     }
   }

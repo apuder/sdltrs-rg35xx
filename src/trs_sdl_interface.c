@@ -558,6 +558,10 @@ void trs_screen_init(int resize)
       case GENIE3S:
         char_height = m6845_raster * scale_factor;
         break;
+      case SPEEDMASTER:
+        /* Set font for TCS SpeedMaster */
+        trs_charset = 17;
+        break;
       default:
         trs_charset = trs_charset1;
         if (trs_charset < 3)
