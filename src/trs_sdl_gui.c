@@ -885,7 +885,8 @@ int gui_menu(const char *title, const MENU *entry, int selection)
   while (1) {
     int key = gui_select(entry[selection].text, 2, selection + 1);
 
-    if (key >= '0' && key <= '7') {
+    if (key >= '0' && key <= '9') {
+      if (strstr(title, "Creat")) return key; /* Floppy Disk Creation Drive */
       key -= '0';
       if (key <= num && entry[key].text[1] == (key + '0'))
         selection = key;
@@ -1258,6 +1259,10 @@ void gui_disk_creation(void)
         break;
       case -1:
         return;
+      default:
+        drive = selection <= '7' ? selection - '/' : 0;
+        selection = 8;
+        break;
     }
   }
 }
