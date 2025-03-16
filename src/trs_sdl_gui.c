@@ -725,7 +725,6 @@ read_dir:
           }
 #endif
           goto done;
-          break;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
           gui_delete_filelist();
