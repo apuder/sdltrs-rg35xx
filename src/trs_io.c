@@ -314,16 +314,16 @@ void z80_out(int port, int value)
         switch (port) {
           case 0x00: /* HRG off */
           case 0x01: /* HRG on */
-            hrg_onoff(port);
+            if (speedup <= 5) hrg_onoff(port);
             return;
           case 0x02: /* HRG write address low byte */
-            hrg_write_addr(value, 0xFF);
+            if (speedup <= 5) hrg_write_addr(value, 0xFF);
             return;
           case 0x03: /* HRG write address high byte */
-            hrg_write_addr(value << 8, 0x3F00);
+            if (speedup <= 5) hrg_write_addr(value << 8, 0x3F00);
             return;
           case 0x05: /* HRG write data byte */
-            hrg_write_data(value);
+            if (speedup <= 5) hrg_write_data(value);
             return;
             /* Selector doesn't decode A5 */
           case 0x1F:
@@ -766,10 +766,10 @@ int z80_in(int port)
           case 0x00: /* HRG off (undocumented) */
 #endif
           case 0x01: /* HRG on (undocumented) */
-            hrg_onoff(port);
+            if (speedup <= 5) hrg_onoff(port);
             goto done;
           case 0x04: /* HRG read data byte */
-            value = hrg_read_data();
+            if (speedup <= 5) value = hrg_read_data();
             goto done;
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
