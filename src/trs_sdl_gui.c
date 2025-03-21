@@ -2169,6 +2169,7 @@ int gui_load_state(void)
 {
   if (gui_file(trs_state_dir, filename, T8S, 0, "State") >= 0) {
     if (trs_state_load(filename) == 0) {
+      snprintf(trs_state_file, FILENAME_MAX, "%s", filename);
       trs_screen_init(1);
       return 0;
     } else
