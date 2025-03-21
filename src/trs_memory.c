@@ -1398,16 +1398,13 @@ void mem_write(int address, int value)
  */
 int mem_read_word(int address)
 {
-  int rval = mem_read(address++);
-
-  rval |= mem_read(address & 0xFFFF) << 8;
-  return rval;
+  return mem_read(address) | (mem_read(address + 1) << 8);
 }
 
 void mem_write_word(int address, int value)
 {
-  mem_write(address++, value & 0xFF);
-  mem_write(address, value >> 8);
+  mem_write(address, value & 0xFF);
+  mem_write(address + 1, value >> 8);
 }
 
 static Uint8 *trs80_model1_ram_addr(int address)
