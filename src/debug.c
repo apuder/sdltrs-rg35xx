@@ -480,8 +480,10 @@ void debug_shell(void)
 #ifdef READLINE
     char history_file[MAXLINE];
     const char *home = (char *)getenv ("HOME");
+
     if (!home) home = ".";
     snprintf(history_file, MAXLINE - 1, "%s/.zbx-history", home);
+    using_history();
     read_history(history_file);
 #endif
 
