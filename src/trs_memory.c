@@ -918,6 +918,9 @@ int mem_read(int address)
         if (sys_byte & (1 << 0))
           /* RAM 192 B */
           return memory[address + bank_base];
+        if (address >= RAM_START)
+          /* Load BASIC in ROM-Card */
+          return rom[(address & 0x2FFF) | 0x1000];
       }
       /* HRG in low 16K */
       if ((sys_byte & (1 << 3)) && address < RAM_START) {
@@ -1619,6 +1622,9 @@ Uint8 *mem_pointer(int address, int writing)
         if (sys_byte & (1 << 0))
           /* RAM 192 B */
           return &memory[address + bank_base];
+        if (address >= RAM_START)
+          /* Load BASIC in ROM-Card */
+          return writing ? NULL : &rom[(address & 0x2FFF) | 0x1000];
       }
       /* ROM and MMIO */
       if ((sys_byte & (1 << 0)) == 0) {
