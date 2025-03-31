@@ -334,6 +334,10 @@ void z80_out(int port, int value)
             if (selector)
               mem_card_out(SELECTOR, value);
             return;
+          case 0x5B: /* TCS Genie IIs Clock Card */
+            if (speedup == 7)
+              rtc_reg = value >> 4;
+            return;
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
               mem_card_out(RAM192B, value);
@@ -770,6 +774,10 @@ int z80_in(int port)
             goto done;
           case 0x04: /* HRG read data byte */
             if (speedup <= 5) value = hrg_read_data();
+            goto done;
+          case 0x5A: /* TCS Genie IIs Clock Card */
+            if (speedup == 7)
+              value = rtc_read(rtc_reg);
             goto done;
           case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
             if (speedup == 7)
