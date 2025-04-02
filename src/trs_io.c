@@ -309,6 +309,30 @@ void z80_out(int port, int value)
         }
         return;
 
+      case SPEEDMASTER:
+        switch (port) {
+          case 0x5B:
+            rtc_reg = value >> 4;
+            break;
+          case 0x7E:
+            mem_card_out(RAM192B, value);
+            break;
+          case 0xFD:
+            trs_printer_write(value);
+            break;
+          case 0xFE:
+            sys_byte_out(value);
+            break;
+          case 0xFF:
+            modesel = (value >> 3) & 1;
+            trs_screen_mode(EXPANDED, modesel);
+            trs_cassette_out(value & 0x3);
+            break;
+          default:
+            break;
+        }
+        return;
+
       default:
         /* Next, Model I only */
         switch (port) {
@@ -333,14 +357,6 @@ void z80_out(int port, int value)
             else
             if (selector)
               mem_card_out(SELECTOR, value);
-            return;
-          case 0x5B: /* TCS Genie IIs Clock Card */
-            if (speedup == 7)
-              rtc_reg = value >> 4;
-            return;
-          case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-            if (speedup == 7)
-              mem_card_out(RAM192B, value);
             return;
           case 0x85: /* Real Time Clock/Calendar Card */
             rtc_reg = value;
@@ -419,7 +435,7 @@ void z80_out(int port, int value)
               trs_printer_write(value);
             return;
           case 0xFE:
-            /* Speedup kit or Banking/LNW80/TCS Genie IIs and SpeedMaster */
+            /* Speedup kit or Banking/Aster CT-80/LNW80 */
             if (speedup) {
               if (speedup < 4)
                 trs_timer_speed(value);
@@ -763,6 +779,28 @@ int z80_in(int port)
         }
         goto done;
 
+      case SPEEDMASTER:
+        switch (port) {
+          case 0x5A:
+            value = rtc_read(rtc_reg);
+            break;
+          case 0x7E:
+            value = mem_card_in(RAM192B);
+            break;
+          case 0xFD:
+            value = trs_printer_read();
+            break;
+          case 0xFE:
+            value = sys_byte_in();
+            break;
+          case 0xFF:
+            value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
+            break;
+          default:
+            break;
+        }
+        goto done;
+
       default:
         /* Model I only */
         switch (port) {
@@ -774,14 +812,6 @@ int z80_in(int port)
             goto done;
           case 0x04: /* HRG read data byte */
             if (speedup <= 5) value = hrg_read_data();
-            goto done;
-          case 0x5A: /* TCS Genie IIs Clock Card */
-            if (speedup == 7)
-              value = rtc_read(rtc_reg);
-            goto done;
-          case 0x7E: /* TCS Genie IIs/SpeedMaster RAM 192 B */
-            if (speedup == 7)
-              value = mem_card_in(RAM192B);
             goto done;
           case 0x84: /* RTCC */
             value = rtc_read(rtc_reg);
