@@ -521,6 +521,13 @@ trs_timer(int on_off)
 void
 trs_timer_speed(int fast)
 {
+  static int speed = 0;
+
+  if (speed == fast)
+    return;
+  else
+    speed = fast;
+
   if (speedup == 3) {
     /* The Seatronics Super Speed-Up uses bits 7 and 6
      * of port 0xec to select the Z80 CPU clock rate:
