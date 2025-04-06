@@ -1,3 +1,15 @@
+## Version 1.2.32 Release 04-06-2025:
+
+ * Added support for TCS Genie IIIs HRG pages.
+ * Added character set for TCS Genie IIs/SpeedMaster.
+ * Added emulation of TCS Genie IIs ROM-Card.
+ * Added support for Aster CT-80 special keys.
+ * Added option to debug Hard Disk commands and I/O.
+ * Added command to load CMD files in debugger.
+ * Added debugger command to modify memory like DDT.
+ * Fixed boot with `LD4-631.III` ROM (reported by Daniel Srebnick/K2IE).
+ * Fixed bugs and internal improvements.
+
 ## Version 1.2.31 Release 11-24-2024:
 
  * Added TRS-80 Model III/4/4P NMI bug fix by Joshua Arnold.
