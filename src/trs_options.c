@@ -928,7 +928,6 @@ int trs_load_config_file(void)
   disksizes[5] = 8;
   disksizes[6] = 8;
   disksizes[7] = 8;
-  trs_disk_setsizes();
 #ifdef __linux__
   /* Disk Steps are 1 for Single Step, 2 for Double Step
      Corrected by Larry Kraemer 08-01-2011 */
@@ -940,7 +939,6 @@ int trs_load_config_file(void)
   disksteps[5] = 1;
   disksteps[6] = 1;
   disksteps[7] = 1;
-  trs_disk_setsteps();
 #endif
   foreground = WHITE;
   fullscreen = 0;
@@ -1038,6 +1036,12 @@ int trs_load_config_file(void)
   }
 
   fclose(config_file);
+
+  trs_disk_setsizes();
+#ifdef __linux__
+  trs_disk_setsteps();
+#endif
+
   return 0;
 }
 
