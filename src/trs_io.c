@@ -317,9 +317,6 @@ void z80_out(int port, int value)
           case 0x7E:
             mem_card_out(RAM192B, value);
             break;
-          case 0xFD:
-            trs_printer_write(value);
-            break;
           case 0xFE:
             sys_byte_out(value);
             break;
@@ -786,9 +783,6 @@ int z80_in(int port)
             break;
           case 0x7E:
             value = mem_card_in(RAM192B);
-            break;
-          case 0xFD:
-            value = trs_printer_read();
             break;
           case 0xFE:
             value = sys_byte_in();
