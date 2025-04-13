@@ -720,7 +720,7 @@ read_dir:
 #if defined(__OS2__) || defined(_WIN32)
           /* Select a new drive */
           else if (dir_entry[0] == '[') {
-            sprintf(directory, "%c:\\", dir_entry[1]);
+            snprintf(directory, 4, "%c:\\", dir_entry[1]);
             goto read_dir;
           }
 #endif
@@ -736,7 +736,7 @@ read_dir:
 done:
 #if defined(__OS2__) || defined(_WIN32)
   if (dir && dir_entry[0] == '[')
-    i = sprintf(name, "%c: ", dir_entry[1]);
+    i = snprintf(name, 4, "%c: ", dir_entry[1]);
   else
 #endif
   i = snprintf(name, FILENAME_MAX, "%s%s", directory, &dir_entry[1]);

@@ -963,12 +963,12 @@ int trs_load_config_file(void)
   snprintf(romfile4p, FILENAME_MAX, "%smodel4p.rom", ROM_PATH);
   stringy = 0;
   speedup = 1;
-  sprintf(trs_cass_dir, "%c%c", '.', DIR_SLASH);
-  sprintf(trs_disk_dir, "%c%c", '.', DIR_SLASH);
-  sprintf(trs_disk_set_dir, "%c%c", '.', DIR_SLASH);
-  sprintf(trs_hard_dir, "%c%c", '.', DIR_SLASH);
-  sprintf(trs_printer_dir, "%c%c", '.', DIR_SLASH);
-  sprintf(trs_state_dir, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_cass_dir, 3, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_disk_dir, 3, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_disk_set_dir, 3, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_hard_dir, 3, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_printer_dir, 3, "%c%c", '.', DIR_SLASH);
+  snprintf(trs_state_dir, 3, "%c%c", '.', DIR_SLASH);
   stretch_amount = STRETCH_AMOUNT;
   supermem = 0;
   turbo_mode = 0;
