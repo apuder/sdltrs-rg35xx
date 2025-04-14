@@ -110,7 +110,7 @@ static void help(void)
   tr(ace)off <addr> ..... Set trap to disable tracing at specified hex address\n\
   w(atch) <addr> ........ Set trap to watch specified hex address for changes\n\
 \nMiscellaneous:\n\
-  a(ssign) | m(odify) | set\n\
+  a(ssign) | set\n\
     $<reg> = <value> .... Change value of register\n\
     <addr> [= <value>] .. Change value at hex memory address (enter '.' to end)\n\
   rom <addr> = <value> .. Change byte in ROM\n\
@@ -120,6 +120,8 @@ static void help(void)
   peek <addr> [,<end>] .. Print memory values of specified hex address range\n\
   poke <addr> , <value> . Write value to specified hex address\n\
   load <addr> <file> .... Load memory from file to specified hex address\n\
+  f(ill) <start>, <end>, <value> ..... Fill memory range with hex value\n\
+  m(ove) <start>, <end>, <addr> ...... Move memory range to hex address\n\
   save <start> , <end> <file> ........ Save memory in range of specified\n\
   save <start> / <num bytes> <file>    hex addresses to file\n\
   state load <file> ..... Load emulator state from file\n\
@@ -787,7 +789,7 @@ void debug_shell(void)
 		print_traps();
 	    }
 	    else if(!strcmp(command, "set") || !strncmp(command, "as", 2) ||
-		    !strcmp(command, "a")   || !strncmp(command, "m", 1))
+		    !strcmp(command, "a"))
 	    {
 		char regname[MAXLINE];
 		unsigned int address, value;
@@ -866,6 +868,41 @@ void debug_shell(void)
 		else
 		{
 		    puts("Register or address must be specified.");
+		}
+	    }
+	    else if(!strcmp(command, "fill") || !strcmp(command, "f"))
+	    {
+		unsigned start, end, value;
+
+		if(sscanf(input, "%*s %x %*c %x %*c %x", &start, &end, &value) == 3)
+		{
+		    start &= 0xFFFF;
+		    end   &= 0xFFFF;
+
+		    while(start <= end)
+			mem_write(start++, value);
+		}
+		else
+		{
+		    puts("Address range and value must be specified.");
+		}
+	    }
+	    else if(!strcmp(command, "move") || !strcmp(command, "m"))
+	    {
+		unsigned start, end, addr;
+
+		if(sscanf(input, "%*s %x %*c %x %*c %x", &start, &end, &addr) == 3)
+		{
+		    start &= 0xFFFF;
+		    end   &= 0xFFFF;
+		    addr  &= 0xFFFF;
+
+		    while(start <= end)
+			mem_write(addr++, mem_read(start++));
+		}
+		else
+		{
+		    puts("Address range and destination must be specified.");
 		}
 	    }
 	    else if(!strcmp(command, "step") || !strcmp(command, "s"))
