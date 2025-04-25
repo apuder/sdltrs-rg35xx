@@ -584,7 +584,7 @@ void trs_reset(int poweron)
   }
 
   if (trs_model >= 3) {
-    memory[0x405B] = 0; /* LD4-631.III disk boot */
+    memory[0x405B] = 0; /* Clear Break Key Indicator */
     grafyx_write_mode(0);
     trs_interrupt_mask_write(0);
     trs_nmi_mask_write(0);
