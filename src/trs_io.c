@@ -60,9 +60,9 @@
 int trs_io_debug_flags;
 #endif
 
-static int modesel;         /* Model I */
+static int modesel;         /* Model I/III/4/4P */
 static int modeimage = 0x8; /* Model III/4/4p & SIO */
-static int ctrlimage;       /* Model 4/4p & M6845 */
+static int m6845_reg;       /* M6845 CRTC register */
 
 /* RTC addr/data */
 static int rtc_reg;
@@ -86,7 +86,7 @@ void m6845_crtc_reset(void)
 
 static void m6845_crtc(int value)
 {
-  switch (ctrlimage) {
+  switch (m6845_reg) {
     case 0x01: /* Chars displayed */
       if (value == 64 || value == 80)
         m6845_screen(value, 0, 0, 0);
@@ -222,7 +222,7 @@ void z80_out(int port, int value)
             trs_screen_mode(INVERSE, value & 1);
             break;
           case 0xF6:
-            ctrlimage = value;
+            m6845_reg = value;
             break;
           case 0xF7:
             m6845_crtc(value);
@@ -281,7 +281,7 @@ void z80_out(int port, int value)
             modeimage = value;
             break;
           case 0xF6:
-            ctrlimage = value;
+            m6845_reg = value;
             break;
           case 0xF7:
             m6845_crtc(value);
@@ -371,7 +371,7 @@ void z80_out(int port, int value)
           case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x10: /* Homebrew 80*22 SYS80.SYS */
             if (speedup <= 4)
-              ctrlimage = value;
+              m6845_reg = value;
             return;
           case 0xD1: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x11: /* Homebrew 80*22 SYS80.SYS */
@@ -422,7 +422,7 @@ void z80_out(int port, int value)
             return;
           case 0xFC:
             if (speedup == 5) /* 6845 CRTC Aster CT-80 */
-              ctrlimage = value;
+              m6845_reg = value;
             return;
           case 0xFD:
             if (speedup == 5) /* 6845 CRTC Aster CT-80 */
@@ -496,7 +496,7 @@ void z80_out(int port, int value)
       case 0x86:
       case 0x87:
         if (trs_model >= 4) {
-          int const changes = value ^ ctrlimage;
+          int const changes = value ^ modesel;
 
           if (changes & 0x80)
             mem_video_page((value & 0x80) << 3);
@@ -513,7 +513,7 @@ void z80_out(int port, int value)
           if (changes & 0x03)
             mem_map(value & 0x03);
 
-          ctrlimage = value;
+          modesel = value;
         }
         return;
       case 0x8C:
@@ -686,7 +686,7 @@ int z80_in(int port)
             value = rtc_read(rtc_reg);
             break;
           case 0xF7:
-            switch (ctrlimage) {
+            switch (m6845_reg) {
               case 0x0E: /* Cursor LSB */
                 value = (m6845.pos >> 8) & 0xFF;
                 break;
@@ -746,7 +746,7 @@ int z80_in(int port)
             value = modeimage;
             break;
           case 0xF7:
-            switch (ctrlimage) {
+            switch (m6845_reg) {
               case 0x0E: /* Cursor LSB */
                 value = (m6845.pos >> 8) & 0xFF;
                 break;
@@ -894,7 +894,7 @@ int z80_in(int port)
       case 0xF9:
       case 0xFA:
       case 0xFB:
-        value = trs_printer_read() | (ctrlimage & 0x0F);
+        value = trs_printer_read() | (modesel & 0x0F);
         goto done;
       case 0xFC:
       case 0xFD:
@@ -1004,7 +1004,7 @@ void trs_io_save(FILE *file)
 {
   trs_save_int(file, &modesel, 1);
   trs_save_int(file, &modeimage, 1);
-  trs_save_int(file, &ctrlimage, 1);
+  trs_save_int(file, &m6845_reg, 1);
   trs_save_int(file, &m6845.csr, 1);
   trs_save_int(file, &m6845.cer, 1);
   trs_save_int(file, &m6845.old, 1);
@@ -1020,7 +1020,7 @@ void trs_io_load(FILE *file)
 {
   trs_load_int(file, &modesel, 1);
   trs_load_int(file, &modeimage, 1);
-  trs_load_int(file, &ctrlimage, 1);
+  trs_load_int(file, &m6845_reg, 1);
   trs_load_int(file, &m6845.csr, 1);
   trs_load_int(file, &m6845.cer, 1);
   trs_load_int(file, &m6845.old, 1);
