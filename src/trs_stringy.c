@@ -102,12 +102,12 @@ static stringy_info_t stringy_info[STRINGY_MAX_UNITS];
 /*
  * .esf file format used by TRS32.
  */
-static const char stringy_esf_magic[4] = "ESF\x1a";
+static const Uint8 stringy_esf_magic[4] = { 'E', 'S', 'F', '\x1a' };
 static const Uint8 stringy_esf_header_length = 12;
 static const Uint8 stringy_esf_write_protected = 1;
 /*
 struct {
-  char magic[4] = stringy_esf_magic;
+  Uint8 magic[4] = stringy_esf_magic;
   Uint8 headerLength = 12;  // length of this header, in bytes
   Uint8 flags;              // bit 0: write protected; others reserved
   Uint16 leaderLength = 60; // little endian, in bit cells
