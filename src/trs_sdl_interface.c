@@ -2233,9 +2233,9 @@ void gui_rect(int x, int y, int w, int h, int frame)
 
   if (frame) {
     x += 4;
-    y += TRS_CHAR_HEIGHT4 - 2;
+    y += TRS_CHAR_HEIGHT4 * scale_factor / 2 - scale_factor;
     w -= 8;
-    h -= char_height - 4;
+    h -= char_height - (scale_factor * 2);
 
     trs_screen_rect(x, y, w, 2, gui_foreground);
     trs_screen_rect(x, y, 2, h, gui_foreground);
@@ -2259,7 +2259,7 @@ void gui_text(const char *text, int col, int row, int len, int font)
   srcRect.x = 0;
   srcRect.y = 0;
   srcRect.w = char_width;
-  srcRect.h = TRS_CHAR_HEIGHT4 * 2;
+  srcRect.h = TRS_CHAR_HEIGHT4 * scale_factor;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = char_height * row + top_margin;
 
