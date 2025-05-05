@@ -1318,9 +1318,11 @@ trs_cassette_in(void)
 }
 
 void
-trs_cassette_reset(void)
+trs_cassette_reset(int poweron)
 {
   assert_state(CLOSE);
+
+  if (poweron) cassette_position = 0;
 }
 
 void

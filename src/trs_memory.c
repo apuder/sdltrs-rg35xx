@@ -539,7 +539,7 @@ void trs_reset(int poweron)
   /* Close disks opened by Z80 programs */
   do_emt_resetdisk();
   /* Reset devices (Model I SYSRES, Model III/4 RESET) */
-  trs_cassette_reset();
+  trs_cassette_reset(poweron); /* Reset tape position on poweron */
   trs_disk_init(poweron); /* also inits trs_hard and trs_stringy */
   trs_uart_init();
 
