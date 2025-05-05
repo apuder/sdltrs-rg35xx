@@ -1146,13 +1146,13 @@ void trs_cassette_out(int value)
       if (assert_state(WRITE) < 0) return;
       transition_out(value);
     }
-  }
-
-  /* Do sound emulation by sending samples to /dev/dsp */
-  if (trs_sound && cassette_motor == 0) {
-    if (cassette_state != SOUND && value == 0) return;
-    if (assert_state(SOUND) < 0) return;
-    transition_out(value);
+  } else {
+    /* Do sound emulation */
+    if (trs_sound) {
+      if (cassette_state != SOUND && value == 0) return;
+      if (assert_state(SOUND) < 0) return;
+      transition_out(value);
+    }
   }
 }
 
