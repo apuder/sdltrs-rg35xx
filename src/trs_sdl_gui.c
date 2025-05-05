@@ -563,7 +563,7 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
   gui_text(type, 9, 0, 32, 4);
 
   if (dir) {
-    gui_write(" Directory", 9 + strlen(type), 0, 4);
+    gui_write(" Directory", 8 + strlen(type), 0, 4);
     gui_write(" INS/TAB:Select Directory ", 0, 15, 5);
   } else {
     gui_write(" ENTER/INS/SPACE/TAB:Select  BACKSPACE/ESC/F7:Return ", 0, 15, 5);
@@ -2524,22 +2524,22 @@ void gui_default_dirs(void)
     selection = gui_menu(" Default Directories ", menu, selection);
     switch (selection) {
       case 1:
-        gui_file(trs_disk_dir, trs_disk_dir, NULL, 1, "Floppy Disk");
+        gui_file(trs_disk_dir, trs_disk_dir, NULL, 1, "Floppy Disk ");
         break;
       case 3:
-        gui_file(trs_hard_dir, trs_hard_dir, NULL, 1, "Hard Disk");
+        gui_file(trs_hard_dir, trs_hard_dir, NULL, 1, "Hard Disk ");
         break;
       case 5:
-        gui_file(trs_cass_dir, trs_cass_dir, NULL, 1, "Cassette/Wafer");
+        gui_file(trs_cass_dir, trs_cass_dir, NULL, 1, "Cassette/Wafer ");
         break;
       case 7:
-        gui_file(trs_disk_set_dir, trs_disk_set_dir, NULL, 1, "Disk Set");
+        gui_file(trs_disk_set_dir, trs_disk_set_dir, NULL, 1, "Disk Set ");
         break;
       case 9:
-        gui_file(trs_state_dir, trs_state_dir, NULL, 1, "State/Configuration");
+        gui_file(trs_state_dir, trs_state_dir, NULL, 1, "State/Configuration ");
         break;
       case 11:
-        gui_file(trs_printer_dir, trs_printer_dir, NULL, 1, "Printer/Screenshot");
+        gui_file(trs_printer_dir, trs_printer_dir, NULL, 1, "Printer/Screenshot ");
         break;
       case -1:
         return;
