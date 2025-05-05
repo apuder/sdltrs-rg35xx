@@ -91,9 +91,8 @@ static void help(void)
   s(oft)r(eset) ......... Press system reset button\n\
 \nPrinting:\n\
   (dum)p ................ Print Z80 registers\n\
-  l(ist) ................ Disassemble 10 instructions at current PC\n\
-  l(ist) <addr> ......... Disassemble 10 instructions at specified hex address\n\
-  l(ist) <start> , <end>  Disassemble instructions in the range of hex addresses\n\
+  l(ist) | d(is) <addr> . Disassemble 10 instructions at current or hex address\n\
+  l | d <start> , <end> . Disassemble instructions in the range of hex addresses\n\
   <start> , <end> ....... Print memory values in specified address range\n\
   <start> / <num bytes> . Print number of memory values starting at hex address\n\
   <addr> ................ Print memory value at specified hex address\n\
@@ -573,7 +572,8 @@ void debug_shell(void)
 		    clear_trap(i);
 		}
 	    }
-	    else if(!strcmp(command, "list") || !strcmp(command, "l"))
+	    else if(!strcmp(command, "list") || !strcmp(command, "l") ||
+	            !strcmp(command, "dis")  || !strcmp(command, "d"))
 	    {
 		unsigned int x, y;
 		int start = Z80_PC;
