@@ -103,7 +103,7 @@ static void help(void)
 \nTraps:\n\
   st(atus) .............. Show all traps (breakpoints, tracepoints, watchpoints)\n\
   cl(ear) ............... Delete trap at current address\n\
-  d(elete) <n> | * ...... Delete trap <n> or all traps\n\
+  del(ete) <n> | * ...... Delete trap <n> or all traps\n\
   b(reak) <addr> ........ Set breakpoint at specified hex address\n\
   t(race) <addr> ........ Set trap to trace execution at specified hex address\n\
   tr(ace)on <addr> ...... Set trap to enable tracing at specified hex address\n\
@@ -556,11 +556,11 @@ void debug_shell(void)
 	    {
 		print_registers();
 	    }
-	    else if(!strcmp(command, "delete") || !strcmp(command, "d"))
+	    else if(!strcmp(command, "delete") || !strcmp(command, "del"))
 	    {
 		int i;
 
-		if(!strncmp(input, "delete *", 8) || !strncmp(input, "d *", 3))
+		if(!strncmp(input, "delete *", 8) || !strncmp(input, "del *", 5))
 		{
 		    clear_all_traps();
 		}
