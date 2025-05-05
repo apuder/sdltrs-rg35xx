@@ -101,7 +101,7 @@ static void help(void)
   d(isk)d(ump) .......... Print state of floppy disk controller emulation\n\
 \nTraps:\n\
   st(atus) .............. Show all traps (breakpoints, tracepoints, watchpoints)\n\
-  cl(ear) ............... Delete trap at current address\n\
+  cl(ear) <addr> ........ Delete trap at current or specified hex address\n\
   del(ete) <n> | * ...... Delete trap <n> or all traps\n\
   b(reak) <addr> ........ Set breakpoint at specified hex address\n\
   t(race) <addr> ........ Set trap to trace execution at specified hex address\n\
@@ -539,7 +539,13 @@ void debug_shell(void)
 	    }
 	    else if(!strncmp(command, "cl", 2))
 	    {
-		clear_trap_address(Z80_PC, 0);
+		unsigned int address = Z80_PC;
+
+		if(sscanf(input, "%*s %x", &address) == 1)
+		{
+			address &= 0xFFFF;
+		}
+		clear_trap_address(address, 0);
 	    }
 	    else if(!strcmp(command, "cont") || !strcmp(command, "c") ||
 		    !strcmp(command, "go")   || !strcmp(command, "g"))
