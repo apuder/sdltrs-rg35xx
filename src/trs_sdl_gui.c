@@ -1596,10 +1596,10 @@ void gui_cassette_menu(void)
   MENU menu[] =
   {{" Cass : ", CASSETTE},
    {"", TITLE},
-   {"Cassette Position                                     ", ENTRY},
-   {"Cassette Default Sample Rate                          ", ENTRY},
+   {"Position of Tape                                      ", ENTRY},
+   {"Default Sample Rate                                   ", ENTRY},
    {"", TITLE},
-   {"Image Type                                            ", ENTRY},
+   {"Type of Cassette Image                                ", ENTRY},
    {"", TITLE},
    {"Insert Created Cassette Into Drive                    ", ENTRY},
    {"Create Blank Cassette Image with Above Parameters", ENTRY},
@@ -1627,7 +1627,7 @@ void gui_cassette_menu(void)
     switch (selection) {
       case 2:
         snprintf(input, 11, "%d", trs_get_cassette_position());
-        if (gui_input(" Enter Cassette Position in Bytes ",
+        if (gui_input(" Enter Position of Tape in Bytes ",
             input, input, 10, 0) > 0) {
           value = atoi(input);
           if (value != trs_get_cassette_position() &&
@@ -1637,7 +1637,7 @@ void gui_cassette_menu(void)
         break;
       case 3:
         snprintf(input, 11, "%d", cassette_default_sample_rate);
-        if (gui_input(" Enter Cassette Default Sample Rate ",
+        if (gui_input(" Enter Default Sample Rate ",
             input, input, 10, 0) > 0) {
           value = atoi(input);
           if (value != cassette_default_sample_rate &&
