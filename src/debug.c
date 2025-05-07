@@ -222,6 +222,8 @@ static void set_trap(int address, int flag)
     {
 	int i = 0;
 
+	address &= 0xFFFF; /* allow callers to be sloppy */
+
 	while(trap_table[i].valid) ++i;
 
 	trap_table[i].valid = 1;
@@ -716,13 +718,13 @@ void debug_shell(void)
 		    break;
 		}
 		if (is_call) {
-		    set_trap((Z80_PC + 3) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
+		    set_trap(Z80_PC + 3, BREAK_ONCE_FLAG);
 		    run();
 		} else if (is_rst) {
-		    set_trap((Z80_PC + 1) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
+		    set_trap(Z80_PC + 1, BREAK_ONCE_FLAG);
 		    run();
 		} else if (is_rep) {
-		    set_trap((Z80_PC + 2) % ADDRESS_SPACE, BREAK_ONCE_FLAG);
+		    set_trap(Z80_PC + 2, BREAK_ONCE_FLAG);
 		    run();
 		} else {
 		    z80_run((!strcmp(command, "nextint") || !strcmp(command, "ni")) ? 0 : -1);
@@ -929,7 +931,6 @@ void debug_shell(void)
 		{
 		    address = Z80_PC;
 		}
-		address %= ADDRESS_SPACE;
 		set_trap(address, BREAKPOINT_FLAG);
 	    }
 	    else if(!strcmp(command, "trace") || !strcmp(command, "t"))
@@ -940,7 +941,6 @@ void debug_shell(void)
 		{
 		    address = Z80_PC;
 		}
-		address %= ADDRESS_SPACE;
 		set_trap(address, TRACE_FLAG);
 	    }
 	    else if(!strcmp(command, "traceon") || !strcmp(command, "tron"))
@@ -977,7 +977,6 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %x", &address) == 1)
 		{
-		    address %= ADDRESS_SPACE;
 		    set_trap(address, WATCHPOINT_FLAG);
 		}
 		else
