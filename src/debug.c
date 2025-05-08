@@ -136,7 +136,7 @@ static void help(void)
   io[debug] <hexval> .... Set I/O port debug flags:\n\
                             1 = port input             4 = Hard Disk I/O\n\
                             2 = port output            8 = Hard Disk Command\n\
-  (zbx)i(nfo) ........... Display information about this debugger\n\
+  z(bx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
   exit | quit ........... Exit from SDLTRS");
 }
@@ -536,7 +536,7 @@ void debug_shell(void)
 	    {
 		help();
 	    }
-	    else if (!strcmp(command, "zbxinfo") || !strcmp(command, "i"))
+	    else if (!strncmp(command, "z", 1) || !strcmp(command, "i"))
 	    {
 		info();
 	    }
