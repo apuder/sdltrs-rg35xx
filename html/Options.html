@@ -183,8 +183,8 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-(emt)safe</code></td>
-    <td>Turn off ability for emts (Emulation traps) to write to unexpected
-        places in the host filesystem. This now the default.</td>
+    <td>Enable only safe emulation traps to block potentially dangerous
+        functions to the host system. This the default.</td>
   </tr>
   <tr>
     <td><code>-floppy | -fdc</code></td>
@@ -336,8 +336,8 @@ will be executed upon startup of the emulator.</p>
   </tr>
   <tr>
     <td><code>-no(emt)safe</code></td>
-    <td>Turn on ability for emts (Emulation traps) to write to unexpected
-        places in the host filesystem.</td>
+    <td>Allow potentially dangerous emulation traps. Must be enabled to
+        export files to the host. <b>USE WITH CAUTION</b></td>
   </tr>
   <tr>
     <td><code>-nofloppy | -nofdc</code></td>

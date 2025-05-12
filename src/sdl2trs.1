@@ -119,8 +119,8 @@ Make real floppy drives double-step (35/40-track media in 80 track drive).
 .B Linux only.
 .TP
 .B \-(emt)safe
-Turn off ability for Emulation traps to write to unexpected places in
-host filesystem (Default).
+Enable only safe emulation traps to block potentially dangerous functions
+to the host system (Default).
 .TP
 \fB\-floppy\fP | \fB\-fdc\fP
 Enable Floppy Disk Controller (Default).
@@ -237,7 +237,8 @@ Turn off double-step mode for all real floppy drives (Default).
 .B Linux only.
 .TP
 .B \-no(emt)safe
-Turn on ability for Emulation traps.
+Allow potentially dangerous emulation traps.
+Must be enabled to export files to the host. (\fBUSE WITH CAUTION\fP)
 .TP
 \fB\-nofloppy\fP | \fB\-nofdc\fP
 Disable Floppy Disk Controller.
