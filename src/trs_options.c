@@ -1208,13 +1208,13 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%ssound\n", option(trs_sound));
 
   fprintf(config_file, "speedup=%s\n",
-      speedup == 1 ? "archbold"        :
-      speedup == 2 ? "holmes"          :
-      speedup == 3 ? "seatronics"      :
-      speedup == 4 ? "banking"         :
-      speedup == 5 ? "ct80"            :
-      speedup == 6 ? "lnw80"           :
-      speedup == 7 ? "tcs-speedmaster" : "none");
+      speedup == 1 ? "archbold"   :
+      speedup == 2 ? "holmes"     :
+      speedup == 3 ? "seatronics" :
+      speedup == 4 ? "banking"    :
+      speedup == 5 ? "ct80"       :
+      speedup == 6 ? "lnw80"      :
+      speedup == 7 ? "tcs-models" : "none");
 
   fprintf(config_file, "statedir=%s\n", trs_state_dir);
 #ifdef __linux__
