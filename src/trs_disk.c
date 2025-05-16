@@ -73,6 +73,7 @@ int trs_disk_truedam;
 int trs_disk_debug_flags;
 
 static const float trs_disk_holewidth = 0.01;
+static int trs_disk_size;
 
 typedef struct {
   /* Registers */
@@ -452,6 +453,9 @@ trs_disk_init(int poweron)
   state.controller = (trs_model == 1) ? TRSDISK_P1771 : TRSDISK_P1791;
   state.last_readadr = -1;
   state.motor_timeout = 0;
+
+  /* Disk sizes: drives 0-3 = 5", 4-7 = 8" */
+  trs_disk_size = 0;
 
   if (poweron) {
     int i;
@@ -1320,6 +1324,9 @@ trs_disk_select_write(Uint8 data)
     break;
   }
 
+  /* Select drives 4-7 for 8" disks */
+  state.curdrive = (state.curdrive + trs_disk_size) & 7;
+
   /* If a drive was selected... */
   if (!(state.status & TRSDISK_NOTRDY)) {
     DiskState *d = &disk[state.curdrive];
@@ -1424,9 +1431,7 @@ trs_disk_sector_write(Uint8 data)
       if ((trs_disk_doubler & TRSDISK_PERCOM) ||
           (trs_clones.model & (EG3200 | GENIE3S | LNW80 | SPEEDMASTER))) {
         if (data & (1 << 7) && (data & 0x1F) == 0) {
-          DiskState *d = &disk[state.curdrive];
-
-          d->inches = (data & (1 << 6)) ? 8 : 5;
+          trs_disk_size = (data & (1 << 6)) ? 4 : 0;
           return;
         }
       }
