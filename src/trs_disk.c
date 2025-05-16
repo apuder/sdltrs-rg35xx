@@ -73,7 +73,6 @@ int trs_disk_truedam;
 int trs_disk_debug_flags;
 
 static const float trs_disk_holewidth = 0.01;
-static int trs_disk_size;
 
 typedef struct {
   /* Registers */
@@ -94,6 +93,7 @@ typedef struct {
   int curdrive;
   int curside;
   int density;			/* sden=0, dden=1 */
+  Uint8 inches;			/* 5"=0, 8"=4 */
   Uint8 controller;		/* TRSDISK_P1771 or TRSDISK_P1791 */
   int last_readadr;             /* id index found by last readadr */
   tstate_t motor_timeout;       /* 0 if stopped, else time when it stops */
@@ -331,8 +331,8 @@ trs_disk_debug(void)
 	 state.sector, state.sector, state.data);
   printf("  currcommand 0x%02X, bytecount left %d, last step direction %d\n",
 	 state.currcommand, state.bytecount, state.lastdirection);
-  printf("  curdrive %d, curside %d, density %d, controller %s\n",
-	 state.curdrive, state.curside, state.density,
+  printf("  curdrive %d, curside %d, density %d, inches %d, controller %s\n",
+	 state.curdrive, state.curside, state.density, state.inches ? 8 : 5,
 	 state.controller == TRSDISK_P1771 ? "WD1771" : "WD1791/93");
   printf("  crc state 0x%04X, last_readadr %d, motor timeout %ld\n",
 	 state.crc, state.last_readadr,
@@ -450,12 +450,10 @@ trs_disk_init(int poweron)
   state.format_sec = 0;
   state.curdrive = state.curside = 0;
   state.density = 0;
+  state.inches = 0;
   state.controller = (trs_model == 1) ? TRSDISK_P1771 : TRSDISK_P1791;
   state.last_readadr = -1;
   state.motor_timeout = 0;
-
-  /* Disk sizes: drives 0-3 = 5", 4-7 = 8" */
-  trs_disk_size = 0;
 
   if (poweron) {
     int i;
@@ -1325,7 +1323,7 @@ trs_disk_select_write(Uint8 data)
   }
 
   /* Select drives 4-7 for 8" disks */
-  state.curdrive = (state.curdrive + trs_disk_size) & 7;
+  state.curdrive = (state.curdrive + state.inches) & 7;
 
   /* If a drive was selected... */
   if (!(state.status & TRSDISK_NOTRDY)) {
@@ -1431,7 +1429,7 @@ trs_disk_sector_write(Uint8 data)
       if ((trs_disk_doubler & TRSDISK_PERCOM) ||
           (trs_clones.model & (EG3200 | GENIE3S | LNW80 | SPEEDMASTER))) {
         if (data & (1 << 7) && (data & 0x1F) == 0) {
-          trs_disk_size = (data & (1 << 6)) ? 4 : 0;
+          state.inches = (data & (1 << 6)) ? 4 : 0;
           return;
         }
       }
@@ -3768,6 +3766,7 @@ static void trs_fdc_save(FILE *file, FDCState *fdc)
   trs_save_int(file, &fdc->curdrive, 1);
   trs_save_int(file, &fdc->curside, 1);
   trs_save_int(file, &fdc->density, 1);
+  trs_save_uint8(file, &fdc->inches, 1);
   trs_save_uint8(file, &fdc->controller, 1);
   trs_save_int(file, &fdc->last_readadr, 1);
   trs_save_uint64(file, &fdc->motor_timeout, 1);
@@ -3791,6 +3790,7 @@ static void trs_fdc_load(FILE *file, FDCState *fdc)
   trs_load_int(file, &fdc->curdrive, 1);
   trs_load_int(file, &fdc->curside, 1);
   trs_load_int(file, &fdc->density, 1);
+  trs_load_uint8(file, &fdc->inches, 1);
   trs_load_uint8(file, &fdc->controller, 1);
   trs_load_int(file, &fdc->last_readadr, 1);
   trs_load_uint64(file, &fdc->motor_timeout, 1);
