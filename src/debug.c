@@ -800,10 +800,10 @@ void debug_shell(void)
 	    else if(!strcmp(command, "set") || !strncmp(command, "as", 2) ||
 		    !strcmp(command, "a"))
 	    {
-		char regname[MAXLINE];
+		char regname[4];
 		unsigned int address, value;
 
-		if(sscanf(input, "%*s $%[a-zA-Z'] %*c %x", regname, &value) == 2)
+		if(sscanf(input, "%*s $%3[a-zA-Z'] %*c %x", regname, &value) == 2)
 		{
 		    if(!strcasecmp(regname, "a")) {
 			Z80_A = value;
