@@ -547,7 +547,7 @@ static int find_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->cyls == 0 && open_drive(state.drive) < 0) return 0;
+  if (d->file == NULL && open_drive(state.drive) < 0) return 0;
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
