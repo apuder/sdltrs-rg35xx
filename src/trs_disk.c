@@ -1430,6 +1430,7 @@ trs_disk_sector_write(Uint8 data)
           (trs_clones.model & (EG3200 | GENIE3S | LNW80 | SPEEDMASTER))) {
         if (data & (1 << 7) && (data & 0x1F) == 0) {
           state.inches = (data & (1 << 6)) ? 4 : 0;
+          state.curdrive = 0;
           return;
         }
       }
