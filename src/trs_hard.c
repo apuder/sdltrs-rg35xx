@@ -97,7 +97,39 @@ static int  open_drive(int drive);
 static int  find_sector(int newstatus);
 
 #ifdef ZBX
-static const char *hard_debug(int port);
+static const char *hard_cmd(int port)
+{
+  switch (port) {
+    case TRS_HARD_WP:
+      return "WP";
+    case TRS_HARD_CONTROL:
+      return "CONTROL";
+    case TRS_HARD_DATA:
+      return "DATA";
+    case TRS_HARD_PRECOMP:
+      return "PRECOMP/ERROR";
+    case TRS_HARD_SECCNT:
+      return "SECCNT";
+    case TRS_HARD_SECNUM:
+      return "SECNUM";
+    case TRS_HARD_CYLLO:
+      return "CYLLO";
+    case TRS_HARD_CYLHI:
+      return "CYLHI";
+    case TRS_HARD_SDH:
+      return "SDH";
+    case TRS_HARD_COMMAND:
+      return "COMMAND/STATUS";
+    default:
+      return "";
+  }
+}
+
+static void hard_debug(const char *cmd)
+{
+  debug("%s: drive:%d, head:%d, cyl:%4d, sec:%3d/%3d\n",
+    cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
+}
 #endif
 
 /* Powerup or reset button */
@@ -230,7 +262,7 @@ int trs_hard_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("trs_hard_in(%s) => %02X [PC=%04X]\n", hard_debug(port), v, Z80_PC);
+    debug("trs_hard_in(%s) => %02X [PC=%04X]\n", hard_cmd(port), v, Z80_PC);
 #endif
   return v;
 }
@@ -240,7 +272,7 @@ void trs_hard_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("trs_hard_out(%s), %02X [PC=%04X]\n", hard_debug(port), value, Z80_PC);
+    debug("trs_hard_out(%s), %02X [PC=%04X]\n", hard_cmd(port), value, Z80_PC);
 #endif
   switch (port) {
   case TRS_HARD_WP:
@@ -338,8 +370,7 @@ static void hard_read(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_read drive:%d, cyl:%d, head:%d, sec:%d\n",
-	state.drive, state.cyl, state.head, state.secnum);
+    hard_debug("hard_read");
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
@@ -354,8 +385,7 @@ static void hard_write(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_write drive:%d, cyl:%d, head:%d, sec:%d\n",
-	state.drive, state.cyl, state.head, state.secnum);
+    hard_debug("hard_write");
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
@@ -370,8 +400,7 @@ static void hard_verify(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_verify drive:%d, cyl:%d, head:%d, sec:%d\n",
-	state.drive, state.cyl, state.head, state.secnum);
+    hard_debug("hard_verify");
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
@@ -380,8 +409,7 @@ static void hard_format(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_format drive:%d, cyl:%d, head:%d\n",
-	state.drive, state.cyl, state.head);
+    hard_debug("hard_format");
 #endif
   /* !!should probably set up to read skew table here */
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
@@ -391,8 +419,7 @@ static void hard_init(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_init drive:%d, cyl:%d, head:%d, sec:%d\n",
-	state.drive, state.cyl, state.head, state.secnum);
+    hard_debug("hard_init");
 #endif
   /* I don't know what this command does */
   error("trs_hard: init command (0x%02X) not implemented", cmd);
@@ -403,41 +430,10 @@ static void hard_seek(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_seek drive:%d, cyl:%d, head:%d, sec:%d\n",
-	state.drive, state.cyl, state.head, state.secnum);
+    hard_debug("hard_seek");
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
-
-#if ZBX
-static const char *hard_debug(int port)
-{
-  switch (port) {
-    case TRS_HARD_WP:
-      return "WP";
-    case TRS_HARD_CONTROL:
-      return "CONTROL";
-    case TRS_HARD_DATA:
-      return "DATA";
-    case TRS_HARD_PRECOMP:
-      return "PRECOMP/ERROR";
-    case TRS_HARD_SECCNT:
-      return "SECCNT";
-    case TRS_HARD_SECNUM:
-      return "SECNUM";
-    case TRS_HARD_CYLLO:
-      return "CYLLO";
-    case TRS_HARD_CYLHI:
-      return "CYLHI";
-    case TRS_HARD_SDH:
-      return "SDH";
-    case TRS_HARD_COMMAND:
-      return "COMMAND/STATUS";
-    default:
-      return "";
-  }
-}
-#endif
 
 /*
  * 1) Make sure the file for the current drive is open.  If the file
