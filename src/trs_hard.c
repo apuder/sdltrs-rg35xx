@@ -130,6 +130,21 @@ static void hard_debug(const char *cmd)
   debug("%s: drive:%d, head:%d, cyl:%4d, sec:%3d/%3d\n",
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
+
+void trs_hard_debug(void)
+{
+  int i;
+
+  puts("Hard disk controller state:");
+  printf("  hard drive:%d, head:%d, cyl:%d, sec:%d/%d, secsize:%d\n",
+      state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
+  printf("  status:0x%02X, command:0x%02X, control:0x%02X, data:0x%02X, error:0x%02X\n",
+      state.status, state.command, state.control, state.data, state.error);
+
+  for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
+    printf("hard%d: heads:%d, cyls:%4d, secs:%4d, writeprot:%d\n",
+        i, state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
+}
 #endif
 
 /* Powerup or reset button */

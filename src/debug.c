@@ -100,6 +100,7 @@ static void help(void)
   tr(ace)on ............. Enable tracing of all instructions\n\
   tr(ace)off ............ Disable tracing\n\
   d(isk)d(ump) .......... Print state of floppy disk controller emulation\n\
+  h(ard)d(ump) .......... Print state of hard disk controller emulation\n\
 \nTraps:\n\
   st(atus) .............. Show all traps (breakpoints, tracepoints, watchpoints)\n\
   cl(ear) <addr> ........ Delete trap at current or specified hex address\n\
@@ -1021,6 +1022,10 @@ void debug_shell(void)
 	    else if(!strcmp(command, "diskdump") || !strcmp(command, "dd"))
 	    {
 		trs_disk_debug();
+	    }
+	    else if(!strcmp(command, "harddump") || !strcmp(command, "hd"))
+	    {
+		trs_hard_debug();
 	    }
 	    else if(!strncmp(command, "di", 2))
 	    {
