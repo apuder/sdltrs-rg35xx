@@ -3201,6 +3201,19 @@ trs_disk_command_write(Uint8 cmd)
   }
 }
 
+Uint8 genie3s_latch_read(Uint8 byte)
+{
+#if 0
+  byte = state.density ? byte | (1 << 4) : byte & ~(1 << 4);
+  byte = state.inches  ? byte | (1 << 5) : byte & ~(1 << 5);
+#else
+  byte ^= (Uint8)(-(state.density & 1) ^ byte) & (1 << 4);
+  byte ^= (Uint8)(-(state.inches  & 4) ^ byte) & (1 << 5);
+#endif
+
+  return byte | (1 << 7); /* Bit 7 always high */
+}
+
 #ifdef __linux__
 /* Interface to real floppy drive */
 int

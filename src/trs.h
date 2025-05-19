@@ -227,6 +227,7 @@ extern void  genie3s_hrg(int value);
 extern void  genie3s_hrg_write(unsigned int position, int byte);
 extern Uint8 genie3s_hrg_read(unsigned int position);
 extern void  genie3s_text(int onoff);
+extern Uint8 genie3s_latch_read(Uint8 byte);
 
 extern void  m6845_crtc_reset(void);
 extern void  m6845_cursor(int unsigned position, int start, int end, int visible);
