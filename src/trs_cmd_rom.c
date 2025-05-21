@@ -47,6 +47,8 @@
 
 #define BUFFER_SIZE 256
 
+int trs_hd_boot;
+
 /*
  * Fake ROM for xtrs, initial hack
  * Small improvements 1-Nov-2020
