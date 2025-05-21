@@ -141,8 +141,6 @@ stringy_create_with(const char *name,
 		    Uint32 eotCells,    /* leader length in bit cells */
 		    int writeProt)
 {
-  int ires;
-  size_t sres;
   FILE *f = fopen(name, "w");
 
   if (f == NULL) {
@@ -152,24 +150,18 @@ stringy_create_with(const char *name,
 
   switch (format) {
   case STRINGY_FMT_DEBUG:
-    ires = fprintf(f, stringy_debug_header,
-		   (stringy_pos_t)lengthBytes * STRINGY_CELL_WIDTH * 8,
-		   (stringy_pos_t)eotCells * STRINGY_CELL_WIDTH,
-		   writeProt);
-    if (ires < 0) goto error;
+    if (fprintf(f, stringy_debug_header,
+		(stringy_pos_t)lengthBytes * STRINGY_CELL_WIDTH * 8,
+		(stringy_pos_t)eotCells * STRINGY_CELL_WIDTH,
+		 writeProt) < 0) goto error;
     break;
 
   case STRINGY_FMT_ESF:
-    sres = fwrite(stringy_esf_magic, sizeof(stringy_esf_magic), 1, f);
-    if (sres < 1) goto error;
-    ires = fputc(stringy_esf_header_length, f);
-    if (ires < 0) goto error;
-    ires = fputc(writeProt ? stringy_esf_write_protected : 0, f);
-    if (ires < 0) goto error;
-    ires = put_twobyte(eotCells, f);
-    if (ires < 0) goto error;
-    ires = put_fourbyte(lengthBytes, f);
-    if (ires < 0) goto error;
+    if (fwrite(stringy_esf_magic, sizeof(stringy_esf_magic), 1, f) < 1) goto error;
+    if (fputc(stringy_esf_header_length, f) < 0) goto error;
+    if (fputc(writeProt ? stringy_esf_write_protected : 0, f) < 0) goto error;
+    if (put_twobyte(eotCells, f) < 0) goto error;
+    if (put_fourbyte(lengthBytes, f) < 0) goto error;
     break;
 
   default:
@@ -178,8 +170,7 @@ stringy_create_with(const char *name,
     return -1;
   }
 
-  ires = fclose(f);
-  if (ires < 0) return errno;
+  if (fclose(f) < 0) return errno;
 
   return 0;
 
