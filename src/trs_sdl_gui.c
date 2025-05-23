@@ -1176,9 +1176,9 @@ int gui_file_overwrite(void)
 void gui_disk_creation(void)
 {
   MENU menu[] =
-  {{"Image Type                                             ", ENTRY},
+  {{"Type of Disk Image                                     ", ENTRY},
    {"", TITLE},
-   {"Number of Sides                                        ", ENTRY},
+   {"Sides of Disk                                          ", ENTRY},
    {"Density                                                ", ENTRY},
    {"Physical Size                                          ", ENTRY},
    {"", TITLE},
@@ -1829,9 +1829,9 @@ void gui_display_menu(void)
    {"Emulator Foreground Color                              ", ENTRY},
    {"GUI Background Color                                   ", ENTRY},
    {"GUI Foreground Color                                   ", ENTRY},
-   {"Model I Character Set                                  ", ENTRY},
-   {"Model III Character Set                                ", ENTRY},
-   {"Model 4/4P Character Set                               ", ENTRY},
+   {"Character Set for Model I                              ", ENTRY},
+   {"Character Set for Model III                            ", ENTRY},
+   {"Character Set for Model 4/4P                           ", ENTRY},
    {"Border Width                                           ", ENTRY},
    {"Resize Window on Mode Change for Model III             ", ENTRY},
    {"Resize Window on Mode Change for Model 4/4P            ", ENTRY},
