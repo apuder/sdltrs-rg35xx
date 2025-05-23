@@ -75,7 +75,7 @@ extern char trs_cmd_file[];
 extern char trs_config_file[];
 extern char trs_state_file[];
 
-extern int trs_model; /* 1, 3, 4, 5(=4p) */
+extern int trs_model; /* 1, 3, 4, 5(=4P) */
 extern int foreground;
 extern int background;
 extern int gui_foreground;

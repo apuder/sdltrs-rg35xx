@@ -303,7 +303,7 @@ static void print_registers(void)
 	   Z80_D, Z80_E, Z80_PC, Z80_DE_PRIME);
     printf("H L: %.2x %.2x    SP: %.4x    HL': %.4x\n",
 	   Z80_H, Z80_L, Z80_SP, Z80_HL_PRIME);
-    printf("I R: %.2x %.2x\n", Z80_I, Z80_R7 | (Z80_R & 0x7f));
+    printf("I R: %.2x %.2x\n", Z80_I, Z80_R7 | (Z80_R & 0x7F));
 
     printf("\nMemory map used: 0x%X", get_mem_map());
     printf("\nT-state counter: %" TSTATE_T_LEN "", z80_state.t_count);
@@ -592,13 +592,13 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %x %*c %x", &x, &y) == 2)
 		{
-		    start = x & 0xffff;
-		    bytes = (y - x) & 0xffff;
+		    start = x & 0xFFFF;
+		    bytes = (y - x) & 0xFFFF;
 		    lines = 0;
 		}
 		else if(sscanf(input, "%*s %x", &x) == 1)
 		{
-		    start = x & 0xffff;
+		    start = x & 0xFFFF;
 		}
 
 		if(lines)
@@ -614,7 +614,7 @@ void debug_shell(void)
 			int const old_start = start;
 
 			start = disassemble(old_start);
-			bytes -= (start - old_start) & 0xffff;
+			bytes -= (start - old_start) & 0xFFFF;
 		    }
 		}
 	    }
@@ -1003,7 +1003,6 @@ void debug_shell(void)
 		{
 		    Z80_HALT = tolower((int)halt);
 		}
-
 		switch (Z80_HALT) {
 		    case 'd':
 			puts("debug");

@@ -43,8 +43,8 @@
 #define IODEBUG_IN  (1 << 0)  /* IN instructions */
 #define IODEBUG_OUT (2 << 0)  /* OUT instructions */
 
-#include <time.h>
 #include <string.h>
+#include <time.h>
 #include "error.h"
 #include "trs.h"
 #include "trs_clones.h"
@@ -61,11 +61,9 @@ int trs_io_debug_flags;
 #endif
 
 static int modesel;         /* Model I/III/4/4P */
-static int modeimage = 0x8; /* Model III/4/4p & SIO */
+static int modeimage = 0x8; /* Model III/4/4P & SIO */
 static int m6845_reg;       /* M6845 CRTC register */
-
-/* RTC addr/data */
-static int rtc_reg;
+static int rtc_reg;         /* RTC address/data */
 
 /* 6845 CRTC */
 static struct {
@@ -465,7 +463,7 @@ void z80_out(int port, int value)
         if (megamem)
           megamem_out(port & 0x0F, value);
         return;
-      case 0x5f: /* Sprinter III */
+      case 0x5F: /* Sprinter III */
         if (trs_model == 3)
           trs_timer_speed(value);
         return;
@@ -544,7 +542,7 @@ void z80_out(int port, int value)
       case 0x9D:
       case 0x9E:
       case 0x9F:
-        if (trs_model == 5 /*4p*/)
+        if (trs_model == 5 /*4P*/)
           mem_romin(value);
         return;
       case 0xE0:
@@ -587,16 +585,16 @@ void z80_out(int port, int value)
       case TRSDISK3_COMMAND: /* 0xF0 */
         trs_disk_command_write(value);
         return;
-      case TRSDISK3_TRACK: /* 0xF1 */
+      case TRSDISK3_TRACK:   /* 0xF1 */
         trs_disk_track_write(value);
         return;
-      case TRSDISK3_SECTOR: /* 0xF2 */
+      case TRSDISK3_SECTOR:  /* 0xF2 */
         trs_disk_sector_write(value);
         return;
-      case TRSDISK3_DATA: /* 0xF3 */
+      case TRSDISK3_DATA:    /* 0xF3 */
         trs_disk_data_write(value);
         return;
-      case TRSDISK3_SELECT: /* 0xF4 */
+      case TRSDISK3_SELECT:  /* 0xF4 */
       case 0xF5:
       case 0xF6:
       case 0xF7:
@@ -627,6 +625,10 @@ void z80_out(int port, int value)
 
   /* Ports common to all TRS-80 models */
   switch (port) {
+    case 0x43: /* Alpha Technology SuperMem */
+      if (supermem)
+        mem_card_out(SUPERMEM, value);
+      break;
     case TRS_HARD_WP:       /* 0xC0 */
     case TRS_HARD_CONTROL:  /* 0xC1 */
     case TRS_HARD_DATA:     /* 0xC8 */
@@ -650,10 +652,6 @@ void z80_out(int port, int value)
       break;
     case TRS_UART_DATA:     /* 0xEB */
       trs_uart_data_out(value);
-      break;
-    case 0x43: /* Alpha Technologies SuperMem */
-      if (supermem)
-        mem_card_out(SUPERMEM, value);
       break;
   }
 }
@@ -875,16 +873,16 @@ int z80_in(int port)
       case TRSDISK3_INTERRUPT: /* 0xE4 */
         value = trs_nmi_latch_read();
         goto done;
-      case TRSDISK3_STATUS: /* 0xF0 */
+      case TRSDISK3_STATUS:    /* 0xF0 */
         value = trs_disk_status_read();
         goto done;
-      case TRSDISK3_TRACK: /* 0xF1 */
+      case TRSDISK3_TRACK:     /* 0xF1 */
         value = trs_disk_track_read();
         goto done;
-      case TRSDISK3_SECTOR: /* 0xF2 */
+      case TRSDISK3_SECTOR:    /* 0xF2 */
         value = trs_disk_sector_read();
         goto done;
-      case TRSDISK3_DATA: /* 0xF3 */
+      case TRSDISK3_DATA:      /* 0xF3 */
         value = trs_disk_data_read();
         goto done;
       case 0xF4:
@@ -909,6 +907,10 @@ int z80_in(int port)
     case 0x00:
       value = trs_joystick_in();
       goto done;
+    case 0x43: /* Supermem memory expansion */
+      if (supermem)
+        value = mem_card_in(SUPERMEM);
+      goto done;
     case TRS_HARD_WP:       /* 0xC0 */
     case TRS_HARD_CONTROL:  /* 0xC1 */
     case TRS_HARD_DATA:     /* 0xC8 */
@@ -932,10 +934,6 @@ int z80_in(int port)
       goto done;
     case TRS_UART_DATA:     /* 0xEB */
       value = trs_uart_data_in();
-      goto done;
-    case 0x43: /* Supermem memory expansion */
-      if (supermem)
-        value = mem_card_in(SUPERMEM);
       goto done;
   }
 

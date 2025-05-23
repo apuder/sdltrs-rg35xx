@@ -50,7 +50,7 @@
 #define A_0       0  /* No arguments */
 #define A_8       1  /* 8-bit number */
 #define A_16      2  /* 16-bit number */
-#define A_0B   0xff  /* No arguments, backskip over last opcode byte */
+#define A_0B   0xFF  /* No arguments, backskip over last opcode byte */
 #define A_8P  0x100  /* 8-bit number preceding last opcode byte */
 #define A_8R  0x101  /* 8-bit relative address */
 #define A_8X2 0x102  /* Two 8-bit numbers */
@@ -61,7 +61,7 @@
 #define X_16  "%02x%02xh"
 #define UNDOC "undoc equiv"
 
-#define arglen(a) ((signed char) ((a) & 0xff))
+#define arglen(a) ((signed char) ((a) & 0xFF))
 
 static const char undefined[] = "UNDEFINED";
 
@@ -2127,7 +2127,7 @@ int disassemble(int pc)
     }
     printf ("%04x: ", addr);
 
-    for (i = 0; i < ((pc + arglen(code->args) - addr) & 0xffff); i++)
+    for (i = 0; i < ((pc + arglen(code->args) - addr) & 0xFFFF); i++)
 	printf("%02x ", mem_read(addr + i));
 
     for (; i < 4; i++)
@@ -2153,7 +2153,7 @@ int disassemble(int pc)
 	fputs (code->name, stdout);
 	break;
       case A_8R: /* One 8-bit relative address */
-	printf (code->name, (pc + 1 + (signed char) mem_read(pc)) & 0xffff);
+	printf (code->name, (pc + 1 + (signed char) mem_read(pc)) & 0xFFFF);
 	break;
     }
     putchar ('\n');

@@ -99,7 +99,7 @@ static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
 static Uint8 mem_command;
-static int romin; /* Model 4p */
+static int romin; /* Model 4P */
 static int supermem_base;
 static Uint32 supermem_high;
 static int selector_bank;
