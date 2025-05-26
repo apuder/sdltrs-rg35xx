@@ -606,18 +606,6 @@ static void hard_data_out(int value)
     if (state.bytesdone < state.secsize) {
       const Drive *d = &state.d[state.drive];
 
-      if (state.cyl == 0 && state.head == 0 &&
-	  state.secnum == 0 && state.bytesdone == 2) {
-	/* Sleazy trick to update the "directory cylinder" byte in the Reed
-	   header.  This value is only needed by the Reed emulator itself, and
-	   we would like xtrs to set it automatically so that the user doesn't
-	   have to know about it. */
-	const long where = ftell(d->file);
-
-	fseek(d->file, 31, 0);
-	putc(state.data, d->file);
-	fseek(d->file, where, 0);
-      }
       res = putc(state.data, d->file);
       state.bytesdone++;
       if (res != EOF && state.bytesdone == state.secsize) {
