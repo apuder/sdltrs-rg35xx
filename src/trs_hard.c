@@ -30,12 +30,11 @@
 
 #include <errno.h>
 #include "error.h"
+#include "reed.h"
 #include "trs.h"
 #include "trs_hard.h"
 #include "trs_imp_exp.h"
 #include "trs_state_save.h"
-
-#include "reed.h"
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
@@ -581,14 +580,14 @@ static int find_sector(int newstatus)
 
 static int hard_data_in(void)
 {
-  const Drive *d = &state.d[state.drive];
-
   if (trs_show_led)
     trs_hard_led(state.drive, 1);
 
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
+      const Drive *d = &state.d[state.drive];
+
       state.data = getc(d->file);
       state.bytesdone++;
     }
@@ -598,17 +597,15 @@ static int hard_data_in(void)
 
 static void hard_data_out(int value)
 {
-  const Drive *d = &state.d[state.drive];
   int res = 0;
-
-  if (trs_show_led)
-    trs_hard_led(state.drive, 1);
 
   state.data = value;
 
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
+      const Drive *d = &state.d[state.drive];
+
       if (state.cyl == 0 && state.head == 0 &&
 	  state.secnum == 0 && state.bytesdone == 2) {
 	/* Sleazy trick to update the "directory cylinder" byte in the Reed
@@ -634,6 +631,9 @@ static void hard_data_out(int value)
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_DATAERR; /* arbitrary choice */
   }
+
+  if (trs_show_led)
+    trs_hard_led(state.drive, 1);
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
