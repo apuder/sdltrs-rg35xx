@@ -408,7 +408,7 @@ trs_disk_getsize(int unit)
   return disk[unit].inches;
 }
 
-char*
+const char*
 trs_disk_getfilename(int unit)
 {
   return disk[unit].filename;

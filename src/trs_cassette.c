@@ -561,7 +561,7 @@ trs_cassette_remove(void)
    cassette_format = DIRECT_FORMAT;
 }
 
-char*
+const char*
 trs_cassette_getfilename(void)
 {
   return cassette_filename;

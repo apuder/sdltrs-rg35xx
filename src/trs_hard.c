@@ -201,7 +201,7 @@ void trs_hard_remove(int drive)
   state.d[drive].secs = 0;
 }
 
-char*
+const char*
 trs_hard_getfilename(int unit)
 {
   return state.d[unit].filename;
