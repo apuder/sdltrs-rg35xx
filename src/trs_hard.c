@@ -91,7 +91,7 @@ static void hard_format(void);
 static void hard_init(int cmd);
 static void hard_seek(void);
 static int  open_drive(int drive);
-static int  find_sector(int newstatus);
+static void find_sector(int newstatus);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -547,15 +547,15 @@ fail:
 
 /*
  * Check whether the current position is in bounds for the geometry.
- * If not, return 0 and set the controller error status.  If so, fseek
- * the file to the start of the current sector, return 1, and set
- * the controller status to newstatus.
+ * If not, set the controller error status and return.  If so, fseek
+ * the file to the start of the current sector and set the controller
+ * status to newstatus.
  */
-static int find_sector(int newstatus)
+static void find_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL && open_drive(state.drive) < 0) return 0;
+  if (d->file == NULL && open_drive(state.drive) < 0) return;
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
@@ -564,7 +564,7 @@ static int find_sector(int newstatus)
 	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_NFERR;
-    return 0;
+    return;
   }
 
   fseek(d->file,
@@ -575,7 +575,6 @@ static int find_sector(int newstatus)
 	0);
 
   state.status = newstatus;
-  return 1;
 }
 
 static int hard_data_in(void)
