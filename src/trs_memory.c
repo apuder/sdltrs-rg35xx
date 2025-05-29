@@ -112,7 +112,8 @@ static Uint8 mem_video_read(int vaddr)
     return video[vaddr];
   } else {
 #if MEMDEBUG
-    error("Reading video address %04X out of range [%04X]", vaddr, MAX_VIDEO_SIZE);
+    error("[PC=%04X] Reading video address %04X out of range (%04X)",
+        Z80_PC, vaddr, MAX_VIDEO_SIZE);
 #endif
     return 0xFF;
   }
@@ -129,8 +130,8 @@ static int mem_video_write(int vaddr, Uint8 value)
     }
   } else {
 #if MEMDEBUG
-    error("Writing %02X to video address %04X out of range [%04X]",
-        value, vaddr, MAX_VIDEO_SIZE);
+    error("[PC=%04X] Writing %02X to video address %04X out of range (%04X)",
+        Z80_PC, value, vaddr, MAX_VIDEO_SIZE);
 #endif
     return 0;
   }
@@ -158,7 +159,8 @@ Uint8 *mem_video_page_addr(int vaddr)
     return video + vaddr;
   } else {
 #if MEMDEBUG
-    error("Video page address %04X out of range [%04X]", vaddr, MAX_VIDEO_SIZE);
+    error("[PC=%04X] Video page address %04X out of range (%04X)",
+        Z80_PC, vaddr, MAX_VIDEO_SIZE);
 #endif
     return NULL;
   }
@@ -687,8 +689,8 @@ static int trs80_model1_mmio(int address)
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_1(address)) return trs_printer_read();
 #if MEMDEBUG
-  error("Invalid read of address %04X, returning FF [PC=%04X, mem_map=%02X]",
-      address, Z80_PC, memory_map);
+  error("[PC=%04X] Invalid read of address %04X, returning FF, mem_map=%02X",
+      Z80_PC, address, memory_map);
 #endif
   return 0xFF;
 }
@@ -701,8 +703,8 @@ int trs80_model3_mem_read(int address)
   if (PRINTER_3(address)) return trs_printer_read();
   if (address < trs_rom_size) return rom[address];
 #if MEMDEBUG
-  error("Invalid read of address %04X, returning FF [PC=%04X, mem_map=%02X]",
-      address, Z80_PC, memory_map);
+  error("[PC=%04X] Invalid read of address %04X, returning FF, mem_map=%02X",
+      Z80_PC, address, memory_map);
 #endif
   return 0xFF;
 }
@@ -1068,8 +1070,8 @@ static void trs80_model1_write_mmio(int address, int value)
     trs_printer_write(value);
 #if MEMDEBUG
   } else {
-    error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
-        value, address, Z80_PC, memory_map);
+    error("[PC=%04X] Invalid write of %02X to address %04X, mem_map=%02X",
+        Z80_PC, value, address, memory_map);
 #endif
   }
 }
@@ -1085,8 +1087,8 @@ void trs80_model3_mem_write(int address, int value)
       trs80_screen_write_char(address - VIDEO_START, value);
 #if MEMDEBUG
   } else {
-    error("Invalid write of %02X to address %04X [PC=%04X, mem_map=%02X]",
-        value, address, Z80_PC, memory_map);
+    error("[PC=%04X] Invalid write of %02X to address %04X, mem_map=%02X",
+        Z80_PC, value, address, memory_map);
 #endif
   }
 }

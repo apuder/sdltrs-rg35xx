@@ -274,7 +274,7 @@ int trs_hard_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("trs_hard_in(%s) => %02X [PC=%04X]\n", hard_cmd(port), v, Z80_PC);
+    debug("[PC=%04X] trs_hard_in(%s) => %02X\n", Z80_PC, hard_cmd(port), v);
 #endif
   return v;
 }
@@ -284,7 +284,7 @@ void trs_hard_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("trs_hard_out(%s), %02X [PC=%04X]\n", hard_cmd(port), value, Z80_PC);
+    debug("[PC=%04X] trs_hard_out(%s), %02X\n", Z80_PC, hard_cmd(port), value);
 #endif
   switch (port) {
   case TRS_HARD_WP:
