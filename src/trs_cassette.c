@@ -79,13 +79,14 @@
 #define WAV_FORMAT	3  /* wave file */
 #define DIRECT_FORMAT	4  /* direct to sound card */
 #define DEBUG_FORMAT	5  /* like cpt but in ASCII */
-static const char *format_name[] = {
-  NULL, "cas", "cpt", "wav", "direct", "debug" };
 #define NOISE_FLOOR	64
 
 #define DEFAULT_FORMAT	CAS_FORMAT
 
 #define FLUSH -500  /* special fake signal value used when turning off motor */
+
+int cassette_default_sample_rate = MAX_SAMPLE_RATE;
+int trs_sound = 1;
 
 static char cassette_filename[FILENAME_MAX];
 static int cassette_position;
@@ -97,12 +98,11 @@ static float cassette_avg;
 static float cassette_env;
 static int cassette_noisefloor;
 static int cassette_sample_rate;
-int cassette_default_sample_rate = MAX_SAMPLE_RATE;
 static int cassette_stereo;
 static Uint32 cassette_silence;
+static const char *format_name[] = {
+  NULL, "cas", "cpt", "wav", "direct", "debug" };
 static int soundDeviceOpen = 0;
-
-int trs_sound = 1;
 
 /* Windows won't work with a sound fragment size smaller than 2048,
    or you get gaps in sound */
