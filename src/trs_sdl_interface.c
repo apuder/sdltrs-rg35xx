@@ -486,6 +486,18 @@ static Uint8 mirror_bits(Uint8 byte)
   return byte;
 }
 
+static void trs_screen_print(void)
+{
+  int pos;
+
+  for (pos = 0; pos < screen_chars ;) {
+    trs_printer_write(trs_screen[pos] & 0x7F);
+
+    if ((++pos) % cols == 0)
+      trs_printer_write('\n');
+  }
+}
+
 void trs_screen_reset(void)
 {
   currentmode = NORMAL;
@@ -1212,6 +1224,9 @@ void trs_get_event(int wait)
             case SDLK_a:
               selectAll = mousepointer = 1;
               SDL_ShowCursor(SDL_ENABLE);
+              break;
+            case SDLK_BACKSPACE:
+              trs_screen_print();
               break;
             case SDLK_DELETE:
               trs_reset(0);
