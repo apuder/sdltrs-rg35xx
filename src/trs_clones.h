@@ -18,7 +18,7 @@ struct trs_clones {
   /*
    * Name of the clone:
    */
-  char *name;
+  const char *name;
 };
 
 extern struct trs_clones trs_clones;
