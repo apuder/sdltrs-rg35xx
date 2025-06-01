@@ -1200,6 +1200,12 @@ void trs_get_event(int wait)
           case SDLK_PAUSE:
             gui_function(PAUSE);
             continue;
+          case SDLK_PRINTSCREEN:
+            if (SDL_GetModState() & KMOD_SHIFT)
+              trs_screen_print();
+            else
+              gui_function(SAVE_BMP);
+            continue;
           case SDLK_NUMLOCKCLEAR:
             trs_keypad_joystick = !trs_keypad_joystick;
             trs_set_keypad_joystick();
@@ -1227,9 +1233,6 @@ void trs_get_event(int wait)
             case SDLK_a:
               selectAll = mousepointer = 1;
               SDL_ShowCursor(SDL_ENABLE);
-              break;
-            case SDLK_BACKSPACE:
-              trs_screen_print();
               break;
             case SDLK_DELETE:
               trs_reset(0);
