@@ -543,7 +543,7 @@ void z80_out(int port, int value)
       case 0x9E:
       case 0x9F:
         if (trs_model == 5 /*4P*/)
-          mem_romin(value);
+          mem_romin(value & 1);
         return;
       case 0xE0:
       case 0xE1:
