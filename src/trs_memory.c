@@ -549,7 +549,7 @@ void trs_reset(int poweron)
   trs_cancel_event();
   trs_timer_interrupt(0);
 
-  if (poweron || trs_model >= 4 || trs_clones.model == GENIE3S) {
+  if (poweron || trs_model >= 3 || trs_clones.model == GENIE3S) {
     if (poweron)
       mem_init();
     trs_rom_init();
