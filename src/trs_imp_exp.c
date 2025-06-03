@@ -256,7 +256,7 @@ void do_emt_read(void)
   if (trs_show_led) {
     int i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 4; i++) {
       if (Z80_DE == xtrshard_fd[i])
         trs_hard_led(i, 1);
     }
@@ -289,7 +289,7 @@ void do_emt_write(void)
   if (trs_show_led) {
     int i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 4; i++) {
       if (Z80_DE == xtrshard_fd[i])
         trs_hard_led(i, 1);
     }
