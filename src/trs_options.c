@@ -98,41 +98,41 @@ static int disksizes[8];
 static int disksteps[8];
 #endif
 
-static void opt_cass(char *arg, int intarg, int *stringarg);
-static void opt_charset(char *arg, int intarg, int *stringarg);
-static void opt_clock(char *arg, int intarg, int *stringarg);
-static void opt_color(char *arg, int intarg, int *color);
-static void opt_disk(char *arg, int intarg, int *stringarg);
-static void opt_diskset(char *arg, int intarg, int *stringarg);
-static void opt_dirname(char *arg, int intarg, int *stringarg);
-static void opt_doubler(char *arg, int intarg, int *stringarg);
+static void opt_cass(const char *arg, int intarg, int *stringarg);
+static void opt_charset(const char *arg, int intarg, int *stringarg);
+static void opt_clock(const char *arg, int intarg, int *stringarg);
+static void opt_color(const char *arg, int intarg, int *color);
+static void opt_disk(const char *arg, int intarg, int *stringarg);
+static void opt_diskset(const char *arg, int intarg, int *stringarg);
+static void opt_dirname(const char *arg, int intarg, int *stringarg);
+static void opt_doubler(const char *arg, int intarg, int *stringarg);
 #ifdef __linux__
-static void opt_doublestep(char *arg, int intarg, int *stringarg);
-static void opt_stepmap(char *arg, int intarg, int *stringarg);
+static void opt_doublestep(const char *arg, int intarg, int *stringarg);
+static void opt_stepmap(const char *arg, int intarg, int *stringarg);
 #endif
-static void opt_halt(char *arg, int intarg, int *stringarg);
-static void opt_hard(char *arg, int intarg, int *stringarg);
-static void opt_intval(char *arg, int intarg, int *stringarg);
-static void opt_joybuttonmap(char *arg, int intarg, int *stringarg);
-static void opt_joystick(char *arg, int intarg, int *stringarg);
-static void opt_memory(char *arg, int intarg, int *variable);
-static void opt_model(char *arg, int intarg, int *stringarg);
-static void opt_printer(char *arg, int intarg, int *stringarg);
-static void opt_rom(char *arg, int intarg, int *stringarg);
-static void opt_scalequality(char *arg, int intarg, int *stringarg);
-static void opt_serial(char *arg, int intarg, int *stringarg);
-static void opt_shiftbracket(char *arg, int intarg, int *stringarg);
-static void opt_sizemap(char *arg, int intarg, int *stringarg);
-static void opt_speedup(char *arg, int intarg, int *stringarg);
-static void opt_switches(char *arg, int intarg, int *stringarg);
-static void opt_value(char *arg, int intarg, int *variable);
-static void opt_wafer(char *arg, int intarg, int *stringarg);
-static void opt_window(char *arg, int intarg, int *stringarg);
+static void opt_halt(const char *arg, int intarg, int *stringarg);
+static void opt_hard(const char *arg, int intarg, int *stringarg);
+static void opt_intval(const char *arg, int intarg, int *stringarg);
+static void opt_joybuttonmap(const char *arg, int intarg, int *stringarg);
+static void opt_joystick(const char *arg, int intarg, int *stringarg);
+static void opt_memory(const char *arg, int intarg, int *variable);
+static void opt_model(const char *arg, int intarg, int *stringarg);
+static void opt_printer(const char *arg, int intarg, int *stringarg);
+static void opt_rom(const char *arg, int intarg, int *stringarg);
+static void opt_scalequality(const char *arg, int intarg, int *stringarg);
+static void opt_serial(const char *arg, int intarg, int *stringarg);
+static void opt_shiftbracket(const char *arg, int intarg, int *stringarg);
+static void opt_sizemap(const char *arg, int intarg, int *stringarg);
+static void opt_speedup(const char *arg, int intarg, int *stringarg);
+static void opt_switches(const char *arg, int intarg, int *stringarg);
+static void opt_value(const char *arg, int intarg, int *variable);
+static void opt_wafer(const char *arg, int intarg, int *stringarg);
+static void opt_window(const char *arg, int intarg, int *stringarg);
 
 /* Option handling */
 static const struct {
   const char *name;
-  void (*handler)(char *, int, int *);
+  void (*handler)(const char *, int, int *);
   int hasArg;
   int intArg;
   void *strArg;
@@ -452,7 +452,7 @@ static const char *option(int trs_option)
   return trs_option ? "" : "no";
 }
 
-static void opt_cass(char *arg, int intarg, int *stringarg)
+static void opt_cass(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_cassette_insert(arg);
@@ -460,7 +460,7 @@ static void opt_cass(char *arg, int intarg, int *stringarg)
     trs_cassette_remove();
 }
 
-static void opt_charset(char *arg, int intarg, int *stringarg)
+static void opt_charset(const char *arg, int intarg, int *stringarg)
 {
   if (intarg == 0)
     intarg = trs_model;
@@ -523,7 +523,7 @@ static void opt_charset(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_clock(char *arg, int intarg, int *stringarg)
+static void opt_clock(const char *arg, int intarg, int *stringarg)
 {
   float const clock_mhz = atof(arg);
 
@@ -542,12 +542,12 @@ static void opt_clock(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_color(char *arg, int intarg, int *color)
+static void opt_color(const char *arg, int intarg, int *color)
 {
   *color = strtol(arg, NULL, 16);
 }
 
-static void opt_disk(char *arg, int intarg, int *stringarg)
+static void opt_disk(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_disk_insert(intarg, arg);
@@ -555,18 +555,20 @@ static void opt_disk(char *arg, int intarg, int *stringarg)
     trs_disk_remove(intarg);
 }
 
-static void opt_diskset(char *arg, int intarg, int *stringarg)
+static void opt_diskset(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_diskset_load(arg);
 }
 
-static void opt_dirname(char *arg, int intarg, int *stringarg)
+static void opt_dirname(const char *arg, int intarg, int *stringarg)
 {
   struct stat st = { 0 };
 
-  if (stat(arg, &st) < 0)
-    strcpy(arg, ".");
+  if (stat(arg, &st) < 0) {
+    snprintf((char *)stringarg, FILENAME_MAX, ".%c", DIR_SLASH);
+    return;
+  }
 
   if (arg[strlen(arg) - 1] == DIR_SLASH)
     snprintf((char *)stringarg, FILENAME_MAX, "%s", arg);
@@ -574,7 +576,7 @@ static void opt_dirname(char *arg, int intarg, int *stringarg)
     snprintf((char *)stringarg, FILENAME_MAX, "%s%c", arg, DIR_SLASH);
 }
 
-static void opt_doubler(char *arg, int intarg, int *stringarg)
+static void opt_doubler(const char *arg, int intarg, int *stringarg)
 {
   switch (tolower((int)*arg)) {
     case 'p':
@@ -595,7 +597,7 @@ static void opt_doubler(char *arg, int intarg, int *stringarg)
 }
 
 #ifdef __linux__
-static void opt_doublestep(char *arg, int intarg, int *stringarg)
+static void opt_doublestep(const char *arg, int intarg, int *stringarg)
 {
   int i;
 
@@ -603,7 +605,7 @@ static void opt_doublestep(char *arg, int intarg, int *stringarg)
     disksteps[i] = intarg;
 }
 
-static void opt_stepmap(char *arg, int intarg, int *stringarg)
+static void opt_stepmap(const char *arg, int intarg, int *stringarg)
 {
   sscanf(arg, "%d,%d,%d,%d,%d,%d,%d,%d",
          &disksteps[0], &disksteps[1], &disksteps[2], &disksteps[3],
@@ -611,7 +613,7 @@ static void opt_stepmap(char *arg, int intarg, int *stringarg)
 }
 #endif
 
-static void opt_halt(char *arg, int intarg, int *stringarg)
+static void opt_halt(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     Z80_HALT = tolower((int)*arg);
@@ -619,7 +621,7 @@ static void opt_halt(char *arg, int intarg, int *stringarg)
     Z80_HALT = 0;
 }
 
-static void opt_hard(char *arg, int intarg, int *stringarg)
+static void opt_hard(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     trs_hard_attach(intarg, arg);
@@ -627,7 +629,7 @@ static void opt_hard(char *arg, int intarg, int *stringarg)
     trs_hard_remove(intarg);
 }
 
-static void opt_intval(char *arg, int intarg, int *stringarg)
+static void opt_intval(const char *arg, int intarg, int *stringarg)
 {
   int value = atoi(arg);
 
@@ -677,7 +679,7 @@ static void opt_intval(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_joybuttonmap(char *arg, int intarg, int *stringarg)
+static void opt_joybuttonmap(const char *arg, int intarg, int *stringarg)
 {
   int i;
 
@@ -695,7 +697,7 @@ static void opt_joybuttonmap(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_joystick(char *arg, int intarg, int *stringarg)
+static void opt_joystick(const char *arg, int intarg, int *stringarg)
 {
   if (strcasecmp(arg, "none") == 0)
     trs_joystick = -1;
@@ -703,7 +705,7 @@ static void opt_joystick(char *arg, int intarg, int *stringarg)
     trs_joystick = atoi(arg);
 }
 
-static void opt_memory(char *arg, int intarg, int *variable)
+static void opt_memory(const char *arg, int intarg, int *variable)
 {
   *variable = 1;
 
@@ -731,7 +733,7 @@ static void opt_memory(char *arg, int intarg, int *variable)
   }
 }
 
-static void opt_model(char *arg, int intarg, int *stringarg)
+static void opt_model(const char *arg, int intarg, int *stringarg)
 {
   if (strcmp(arg, "1") == 0 || strcasecmp(arg, "I") == 0)
     trs_model = 1;
@@ -745,7 +747,7 @@ static void opt_model(char *arg, int intarg, int *stringarg)
     error("TRS-80 Model '%s' not supported", arg);
 }
 
-static void opt_rom(char *arg, int intarg, int *stringarg)
+static void opt_rom(const char *arg, int intarg, int *stringarg)
 {
   switch (intarg ? intarg : trs_model) {
     case 1:
@@ -761,7 +763,7 @@ static void opt_rom(char *arg, int intarg, int *stringarg)
    }
 }
 
-static void opt_printer(char *arg, int intarg, int *stringarg)
+static void opt_printer(const char *arg, int intarg, int *stringarg)
 {
   switch (tolower((int)*arg)) {
     case 'n': /* none */
@@ -777,7 +779,7 @@ static void opt_printer(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_scalequality(char *arg, int intarg, int *stringarg)
+static void opt_scalequality(const char *arg, int intarg, int *stringarg)
 {
   switch (*arg) {
     case '0':
@@ -790,24 +792,24 @@ static void opt_scalequality(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_serial(char *arg, int intarg, int *stringarg)
+static void opt_serial(const char *arg, int intarg, int *stringarg)
 {
   snprintf(trs_uart_name, FILENAME_MAX, "%s", arg);
 }
 
-static void opt_shiftbracket(char *arg, int intarg, int *stringarg)
+static void opt_shiftbracket(const char *arg, int intarg, int *stringarg)
 {
   trs_kb_bracket(intarg);
 }
 
-static void opt_sizemap(char *arg, int intarg, int *stringarg)
+static void opt_sizemap(const char *arg, int intarg, int *stringarg)
 {
   sscanf(arg, "%d,%d,%d,%d,%d,%d,%d,%d",
          &disksizes[0], &disksizes[1], &disksizes[2], &disksizes[3],
          &disksizes[4], &disksizes[5], &disksizes[6], &disksizes[7]);
 }
 
-static void opt_speedup(char *arg, int intarg, int *stringarg)
+static void opt_speedup(const char *arg, int intarg, int *stringarg)
 {
   switch (tolower((int)*arg)) {
     case 'n': /* None */
@@ -839,7 +841,7 @@ static void opt_speedup(char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_switches(char *arg, int intarg, int *variable)
+static void opt_switches(const char *arg, int intarg, int *variable)
 {
   int base = 10;
 
@@ -849,12 +851,12 @@ static void opt_switches(char *arg, int intarg, int *variable)
   *variable = strtol(arg, NULL, base) & 0xFF;
 }
 
-static void opt_value(char *arg, int intarg, int *variable)
+static void opt_value(const char *arg, int intarg, int *variable)
 {
   *variable = intarg;
 }
 
-static void opt_wafer(char *arg, int intarg, int *stringarg)
+static void opt_wafer(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
     stringy_insert(intarg, arg);
@@ -862,7 +864,7 @@ static void opt_wafer(char *arg, int intarg, int *stringarg)
     stringy_remove(intarg);
 }
 
-static void opt_window(char *arg, int intarg, int *stringag)
+static void opt_window(const char *arg, int intarg, int *stringag)
 {
   int x, y, w, h;
 
