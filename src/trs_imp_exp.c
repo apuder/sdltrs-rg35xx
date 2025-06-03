@@ -154,8 +154,10 @@ void do_emt_mouse(void)
 
 void do_emt_getddir(void)
 {
+  int const size = strlen(trs_disk_dir);
+
   if (Z80_HL + Z80_BC > 0x10000 ||
-      Z80_HL + strlen(trs_disk_dir) + 1 > Z80_HL + Z80_BC) {
+      Z80_HL + size + 1 > Z80_HL + Z80_BC) {
     Z80_A = EFAULT;
     Z80_F &= ~ZERO_MASK;
     Z80_BC = 0xFFFF;
@@ -165,7 +167,7 @@ void do_emt_getddir(void)
   strcpy((char *)mem_pointer(Z80_HL, 1), trs_disk_dir);
   Z80_A = 0;
   Z80_F |= ZERO_MASK;
-  Z80_BC = strlen(trs_disk_dir);
+  Z80_BC = size;
 }
 
 void do_emt_setddir(void)
