@@ -1530,8 +1530,6 @@ done:
         debug("KeyUp: mod 0x%X, scancode 0x%X keycode 0x%X\n",
             keysym.mod, keysym.scancode, keysym.sym);
 #endif
-        if (SDL_GetModState() & KMOD_LALT)
-          break;
         trs_xlate_keysym(0x10000 | last_key[keysym.scancode]);
         last_key[keysym.scancode] = 0;
         break;
