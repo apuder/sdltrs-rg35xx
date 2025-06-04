@@ -1402,11 +1402,6 @@ void trs_get_event(int wait)
         }
 
         if (trs_model == 1) {
-          if (keysym.sym == SDLK_RSHIFT) {
-            keysym.sym = 0x130;
-            goto done;
-          }
-
           switch (trs_clones.model) {
             case CT80:
               switch (keysym.sym) {
@@ -1467,8 +1462,13 @@ void trs_get_event(int wait)
               }
               break;
           }
+
+          if (keysym.sym == SDLK_RSHIFT) {
+            keysym.sym = 0x130;
+            goto done;
+          }
         } else {
-          if (trs_model == 3 && keysym.sym == SDLK_LCTRL) {
+          if (keysym.sym == SDLK_LCTRL && trs_model == 3) {
             keysym.sym = 0x117; /* Shifted Down Arrow */
             goto done;
           }
