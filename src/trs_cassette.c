@@ -463,8 +463,9 @@ static void trs_sdl_sound_update(void *userdata, Uint8 * stream, int len)
   if (sound_ring_count == 0) {
     SDL_memset(stream, cassette_silence, len);
   } else {
-    int const num_to_read =
-        (sound_ring_count > (unsigned int)len) ? len : sound_ring_count;
+    int const num_to_read = (sound_ring_count > (unsigned int)len)
+        ? (unsigned int)len
+        : sound_ring_count;
 
     if (sound_ring_read_ptr + num_to_read > sound_ring_end) {
       int const len_to_end = sound_ring_end - sound_ring_read_ptr;
