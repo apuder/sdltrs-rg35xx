@@ -146,7 +146,6 @@ trs_uart_init(void)
   initialized = -1;
   return;
 #else
-  int err;
 
 #if UARTDEBUG
   debug("trs_uart_init\n");
@@ -166,8 +165,7 @@ trs_uart_init(void)
     return;
   } else {
     uart.fdflags = FNONBLOCK;
-    err = tcgetattr(uart.fd, &uart.t);
-    if (err < 0) {
+    if (tcgetattr(uart.fd, &uart.t) < 0) {
       file_error("get UART attributes: '%s'", trs_uart_name);
       close(uart.fd);
       initialized = uart.fd = -1;
@@ -274,9 +272,7 @@ trs_uart_baud_out(int value)
 #endif
 
   if (uart.fd != -1) {
-    int err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
-
-    if (err == -1) {
+    if (tcsetattr(uart.fd, TCSADRAIN, &uart.t) == -1) {
       file_error("set UART attributes: '%s'", trs_uart_name);
     }
   }
@@ -306,12 +302,11 @@ trs_uart_check_avail(void)
   if (initialized == 1 && uart.bufleft == 0 && uart.fd != -1) {
     /* check for data available */
     int rc;
-    if (!(uart.fdflags & FNONBLOCK)) {
 
+    if (!(uart.fdflags & FNONBLOCK)) {
 #if UARTDEBUG
       debug("trs_uart nonblocking\n");
 #endif
-
       uart.fdflags |= FNONBLOCK;
       fcntl(uart.fd, F_SETFL, uart.fdflags);
     }
@@ -375,7 +370,6 @@ trs_uart_control_out(int value)
 #ifdef _WIN32
   return;
 #else
-  int err;
   int cflag = HUPCL|CREAD|CLOCAL;
 
 #if UARTDEBUG
@@ -405,15 +399,13 @@ trs_uart_control_out(int value)
   if (!(value & TRS_UART_NOPAR)) cflag |= PARENB;
   uart.t.c_cflag = cflag;
   if (uart.fd != -1) {
-    err = tcsetattr(uart.fd, TCSADRAIN, &uart.t);
-    if (err == -1) {
+    if (tcsetattr(uart.fd, TCSADRAIN, &uart.t) == -1) {
       file_error("set UART attributes: '%s'", trs_uart_name);
     }
   }
 
   if (!(value & TRS_UART_NOTBREAK) && uart.fd != -1) {
-    err = tcsendbreak(uart.fd, 0);
-    if (err == -1) {
+    if (tcsendbreak(uart.fd, 0) == -1) {
       file_error("send break on UART: '%s'", trs_uart_name);
     }
   }
@@ -459,9 +451,7 @@ trs_uart_data_out(int value)
   uart.odata = value;
   if (uart.fd != -1) {
     for (;;) {
-      int err = write(uart.fd, &uart.odata, 1);
-
-      if (err >= 0) return;
+      if (write(uart.fd, &uart.odata, 1) >= 0) return;
       if (errno != EAGAIN) {
 	file_error("read UART: '%s'", trs_uart_name);
 	return;
