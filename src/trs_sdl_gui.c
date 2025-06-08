@@ -1192,8 +1192,8 @@ void gui_disk_creation(void)
   const char *disk_dens[] = {"Single", "Double"};
   const char *disk_size[] = {"5 Inch", "8 Inch"};
   static int type = 2;
-  static int sides = 2;
-  static int density = 2;
+  static int sides = 1;
+  static int density = 1;
   static int size;
   static int ignore_density;
   static int drive;
@@ -1201,8 +1201,8 @@ void gui_disk_creation(void)
 
   while (1) {
     snprintf(&menu[0].text[54], 7, "%s", disk_type[type]);
-    snprintf(&menu[2].text[54], 7, "%s", disk_side[sides - 1]);
-    snprintf(&menu[3].text[54], 7, "%s", disk_dens[density - 1]);
+    snprintf(&menu[2].text[54], 7, "%s", disk_side[sides]);
+    snprintf(&menu[3].text[54], 7, "%s", disk_dens[density]);
     snprintf(&menu[4].text[54], 7, "%s", disk_size[size]);
     snprintf(&menu[6].text[50], 11, "%s", yes_no[ignore_density]);
     snprintf(&menu[8].text[55], 6, "%s", drives[drive]);
@@ -1214,10 +1214,10 @@ void gui_disk_creation(void)
         type = gui_popup("Type", disk_type, 3, type);
         break;
       case 2:
-        sides = !(sides - 1) + 1;
+        sides = !sides;
         break;
       case 3:
-        density = !(density - 1) + 1;
+        density = !density;
         break;
       case 4:
         size = !size;
@@ -1246,7 +1246,8 @@ void gui_disk_creation(void)
                 ret = trs_create_blank_jv3(filename);
                 break;
               default:
-                ret = trs_create_blank_dmk(filename, sides, density, size, ignore_density);
+                ret = trs_create_blank_dmk(filename,
+                    sides + 1, density + 1, size, ignore_density);
                 break;
             }
 
