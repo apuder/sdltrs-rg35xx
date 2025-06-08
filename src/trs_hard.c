@@ -567,12 +567,14 @@ static void find_sector(int newstatus)
     return;
   }
 
-  fseek(d->file,
+  if (fseek(d->file,
 	sizeof(ReedHardHeader) +
 	state.secsize * (state.cyl * d->heads * d->secs +
 			 state.head * d->secs +
 			(state.secnum % d->secs)),
-	0);
+	0) != 0) {
+		file_error("hard%d: fseek '%s'", state.drive, d->filename);
+	}
 
   state.status = newstatus;
 }
