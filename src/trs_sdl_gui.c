@@ -1214,16 +1214,16 @@ void gui_disk_creation(void)
         type = gui_popup("Type", disk_type, 3, type);
         break;
       case 2:
-        sides = gui_popup("Sides", disk_side, 2, sides - 1) + 1;
+        sides = !(sides - 1) + 1;
         break;
       case 3:
-        density = gui_popup("Dens", disk_dens, 2, density - 1) + 1;
+        density = !(density - 1) + 1;
         break;
       case 4:
-        size = gui_popup("Size", disk_size, 2, size);
+        size = !size;
         break;
       case 6:
-        ignore_density = gui_popup("Ignore", yes_no, 2, ignore_density);
+        ignore_density = !ignore_density;
         break;
       case 8:
         drive = gui_popup("Drive", drives, 9, drive);
@@ -1296,8 +1296,7 @@ void gui_disk_steps(void)
     gui_clear();
     if ((selection = gui_menu(" Floppy Disk Step ", menu, selection)) == -1)
       return;
-    trs_disk_setstep(selection, gui_popup("Step", steps, 2,
-        trs_disk_getstep(selection) - 1) + 1);
+    trs_disk_setstep(selection, !(trs_disk_getstep(selection) - 1) + 1);
   }
 }
 #endif
@@ -1341,18 +1340,17 @@ void gui_disk_options(void)
 
     selection = gui_menu(" Floppy Disk Options ", menu, selection);
     if (selection >= 0 && selection < 8) {
-      trs_disk_setsize(selection, gui_popup("Size", disk_size, 2,
-          trs_disk_getsize(selection) == 8) ? 8 : 5);
+      trs_disk_setsize(selection, (trs_disk_getsize(selection) == 8) ? 5 : 8);
     }
     else switch (selection) {
       case 9:
-        trs_disk_controller = gui_popup("Floppy", yes_no, 2, trs_disk_controller);
+        trs_disk_controller = !trs_disk_controller;
         break;
       case 10:
         trs_disk_doubler = gui_popup("Doubler", doubler, 4, trs_disk_doubler);
         break;
       case 11:
-        trs_disk_truedam = gui_popup("True DAM", yes_no, 2, trs_disk_truedam);
+        trs_disk_truedam = !trs_disk_truedam;
         break;
 #ifdef __linux__
       case 12:
@@ -1650,7 +1648,7 @@ void gui_cassette_menu(void)
         type = gui_popup("Type", cass_type, 3, type);
         break;
       case 7:
-        insert = gui_popup("Insert", yes_no, 2, insert);
+        insert = !insert;
         break;
       case 8:
         filename[0] = 0;
@@ -1768,46 +1766,45 @@ void gui_emulator_menu(void)
         }
         break;
       case 2:
-        speedup = gui_popup("Speedup", speed, 8, speedup);
+        speedup = !speedup;
         break;
       case 3:
-        stringy = gui_popup("Stringy", yes_no, 2, stringy);
+        stringy = !stringy;
         break;
       case 4:
-        lowe_le18 = gui_popup("LE18", yes_no, 2, lowe_le18);
+        lowe_le18 = !lowe_le18;
         break;
       case 5:
-        lowercase = gui_popup("Lowercase", yes_no, 2, lowercase);
+        lowercase = !lowercase;
         break;
       case 6:
-        lubomir = gui_popup("Lubomir", yes_no, 2, lubomir);
+        lubomir = !lubomir;
         break;
       case 7:
-        selector = gui_popup("Selector", yes_no, 2, selector);
+        selector = !selector;
         if (selector)
           supermem = 0;
         break;
       case 8:
-        supermem = gui_popup("SuperMem", yes_no, 2, supermem);
+        supermem = !supermem;
         if (supermem)
           huffman = hypermem = selector = 0;
         break;
       case 9:
-        grafyx_microlabs = gui_popup("Micro-Labs", yes_no, 2,
-            grafyx_microlabs);
+        grafyx_microlabs = !grafyx_microlabs;
         break;
       case 10:
-        megamem = gui_popup("MegaMem", yes_no, 2, megamem);
+        megamem = !megamem;
         if (megamem)
           huffman = 0;
         break;
       case 11:
-        huffman = gui_popup("Huffman", yes_no, 2, huffman);
+        huffman = !huffman;
         if (huffman)
           megamem = hypermem = supermem = 0;
         break;
       case 12:
-        hypermem = gui_popup("HyperMem", yes_no, 2, hypermem);
+        hypermem = !hypermem;
         if (hypermem)
           huffman = supermem = 0;
         break;
@@ -1969,18 +1966,14 @@ void gui_display_menu(void)
         }
         break;
       case 8:
-        value = gui_popup("Resize III", yes_no, 2, resize3);
-        if (value != resize3) {
-          resize3 = value;
+        resize3 = !resize3;
+        if (trs_model == 3)
           resize = 1;
-        }
         break;
       case 9:
-        value = gui_popup("Resize 4", yes_no, 2, resize4);
-        if (value != resize4) {
-          resize4 = value;
+        resize4 = !resize4;
+        if (trs_model >= 4)
           resize = 1;
-        }
         break;
       case 10:
         value = gui_popup("Aspect", yes_no, 2, aspect_ratio);
@@ -1990,18 +1983,12 @@ void gui_display_menu(void)
         }
         break;
       case 11:
-        value = gui_popup("LEDs", yes_no, 2, trs_show_led);
-        if (value != trs_show_led) {
-          trs_show_led = value;
-          resize = 1;
-        }
+        trs_show_led = !trs_show_led;
+        resize = 1;
         break;
       case 12:
-        value = gui_popup("Scanlines", yes_no, 2, scanlines);
-        if (value != scanlines) {
-          scanlines = value;
-          resize = 0;
-        }
+        scanlines = !scanlines;
+        resize = 0;
 #ifndef OLD_SCANLINES
         if (scanlines) {
           snprintf(input, 4, "%d", scanshade);
@@ -2077,7 +2064,7 @@ void gui_misc_menu(void)
           gui_message("Warning", "No Printer Output in File");
         break;
       case 1:
-        trs_emtsafe = gui_popup("Safe", yes_no, 2, trs_emtsafe);
+        trs_emtsafe = !trs_emtsafe;
         break;
       case 2:
         snprintf(input, 5, "%d", trs_year);
@@ -2098,7 +2085,7 @@ void gui_misc_menu(void)
         }
         break;
       case 4:
-        trs_printer = gui_popup("Printer", printer, 2, trs_printer);
+        trs_printer = !trs_printer;
         break;
       case 6:
         filename[0] = 0;
@@ -2117,16 +2104,15 @@ void gui_misc_menu(void)
         }
         break;
       case 8:
-        trs_kb_bracket_state = gui_popup("Bracket",
-            yes_no, 2, trs_kb_bracket_state);
+        trs_kb_bracket_state = !trs_kb_bracket_state;
         trs_kb_bracket(trs_kb_bracket_state);
         break;
       case 9:
-        trs_sound = gui_popup("Sound", yes_no, 2, trs_sound);
+        trs_sound = !trs_sound;
         trs_screen_caption();
         break;
       case 10:
-        turbo_mode = gui_popup("Turbo", yes_no, 2, turbo_mode);
+        turbo_mode = !turbo_mode;
         trs_timer_mode(turbo_mode);
         break;
       case 11:
@@ -2142,7 +2128,7 @@ void gui_misc_menu(void)
         }
         break;
       case 12:
-        turbo_paste = gui_popup("Paste", yes_no, 2, turbo_paste);
+        turbo_paste = !turbo_paste;
         break;
       case -1:
         return;
@@ -2423,8 +2409,7 @@ void gui_joystick_menu(void)
     selection = gui_menu(" Joystick Settings ", menu, selection);
     switch (selection) {
       case 0:
-        trs_keypad_joystick = gui_popup("Keypad",
-            yes_no, 2, trs_keypad_joystick);
+        trs_keypad_joystick = !trs_keypad_joystick;
         trs_set_keypad_joystick();
         break;
       case 1:
@@ -2458,7 +2443,7 @@ void gui_joystick_menu(void)
         break;
       }
       case 2:
-        jaxis_mapped = gui_popup("Arrow", yes_no, 2, jaxis_mapped);
+        jaxis_mapped = !jaxis_mapped;
         break;
       case 3:
         if ((key = gui_virtual_keyboard()) != -1) {
@@ -2585,7 +2570,7 @@ void gui_roms(void)
         gui_file(romfile4p, romfile4p, ROM, 0, "Model 4P ROM");
         break;
       case 11:
-        trs_hd_boot = gui_popup("Patch", yes_no, 2, trs_hd_boot);
+        trs_hd_boot = !trs_hd_boot;
         break;
       case -1:
         return;
