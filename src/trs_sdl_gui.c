@@ -140,7 +140,6 @@ static int  gui_key(void);
 static int  gui_select(const char *text, int x, int y);
 static void gui_error(const char *name);
 static void gui_message(const char *title, const char *message);
-static void gui_create_filelist(void);
 static void gui_delete_filelist(void);
 static void gui_add_to_filelist(char *name);
 static int  gui_filename_cmp(const void *nptr1, const void *nptr2);
@@ -406,16 +405,6 @@ void gui_message(const char *title, const char *message)
   gui_key();
 }
 
-void gui_create_filelist(void)
-{
-  if (filelist == NULL) {
-    if ((filelist = (char **)malloc(256 * sizeof(char *))) == NULL)
-      fatal("failed to allocate filelist");
-
-    filelistsize = 256;
-  }
-}
-
 void gui_delete_filelist(void)
 {
   int i = filelistcount;
@@ -474,7 +463,12 @@ int gui_read_dir(const char *path, const char *mask, int dir)
     const struct dirent *dir_entry;
     struct stat st = { 0 };
 
-    gui_create_filelist();
+    if (filelist == NULL) {
+      if ((filelist = (char **)malloc(256 * sizeof(char *))) == NULL)
+        fatal("failed to allocate filelist");
+
+      filelistsize = 256;
+    }
 
     while ((dir_entry = readdir(directory))) {
       int const len = strlen(dir_entry->d_name);
