@@ -1767,7 +1767,7 @@ void gui_emulator_menu(void)
         }
         break;
       case 2:
-        speedup = !speedup;
+        speedup = gui_popup("Speedup", speed, 8, speedup);
         break;
       case 3:
         stringy = !stringy;
