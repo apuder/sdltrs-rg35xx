@@ -458,10 +458,7 @@ int gui_read_dir(const char *path, const char *mask, int dir)
   DIR *directory = opendir(path);
 
   if (directory) {
-    char   pathname[FILENAME_MAX];
-    char  *name = NULL;
     const struct dirent *dir_entry;
-    struct stat st = { 0 };
 
     if (filelist == NULL) {
       if ((filelist = (char **)malloc(256 * sizeof(char *))) == NULL)
@@ -471,6 +468,9 @@ int gui_read_dir(const char *path, const char *mask, int dir)
     }
 
     while ((dir_entry = readdir(directory))) {
+      char   pathname[FILENAME_MAX];
+      char  *name = NULL;
+      struct stat st = { 0 };
       int const len = strlen(dir_entry->d_name);
 
       if (dir_entry->d_name[0] == '.' && dir_entry->d_name[1] != '.')
