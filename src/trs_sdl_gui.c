@@ -574,11 +574,12 @@ int gui_file(const char *path, char *name, const char *mask, int dir, const char
 
   stat(directory, &st);
   if (S_ISDIR(st.st_mode) == 0 || directory[1] == DIR_SLASH) {
-    if (getcwd(directory, FILENAME_MAX) == NULL)
-      directory[0] = 0;
-
-    i = strlen(directory);
-    snprintf(directory + i, FILENAME_MAX - i, "%c", DIR_SLASH);
+    if (getcwd(directory, FILENAME_MAX) == NULL) {
+      snprintf(directory, 2, "%c", DIR_SLASH);
+    } else {
+      i = strlen(directory);
+      snprintf(directory + i, FILENAME_MAX - i, "%c", DIR_SLASH);
+    }
   }
 
 read_dir:
