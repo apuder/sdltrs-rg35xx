@@ -769,8 +769,6 @@ redraw:
     int key;
     int i;
 
-    output[len] = 0;
-
     gui_rect(2, 7, 60, 1, 0);
     gui_text(&output[col], 2, 7, 60, 4);
     gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), 7, 1, 5);
@@ -805,6 +803,7 @@ redraw:
           for (i = pos; i < len; i++)
             output[i - 1] = output[i];
           len--;
+          output[len] = 0;
           if (pos == col)
             col--;
           pos--;
@@ -815,6 +814,7 @@ redraw:
           len--;
           for (i = pos; i < len; i++)
             output[i] = output[i + 1];
+          output[i] = 0;
         }
         break;
       case SDLK_INSERT:
@@ -837,10 +837,11 @@ redraw:
         }
         break;
       case SDLK_F9:
-        col = len = pos = 0;
-        break;
+        col = pos = 0;
+        /* Fall through */
       case SDLK_F10:
         len = pos;
+        output[len] = 0;
         break;
       default:
         if (key >= ' ' && key <= 0xFF && pos < limit) {
@@ -855,6 +856,7 @@ redraw:
           pos++;
           if (pos > len)
             len++;
+          output[len] = 0;
         }
         break;
     }
