@@ -1028,9 +1028,10 @@ void trs_exit(int confirm)
   exit(EXIT_SUCCESS);
 }
 
-static void trs_flip_fullscreen(void)
+static void trs_set_fullscreen(int on_off)
 {
-  fullscreen = !fullscreen;
+  if (fullscreen == on_off) return;
+  fullscreen = on_off;
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
@@ -1167,11 +1168,10 @@ void trs_get_event(int wait)
               trs_screen_caption();
             } else {
 #ifdef ZBX
-              if (fullscreen)
-                trs_flip_fullscreen();
+              trs_set_fullscreen(0);
               trs_debug();
 #else
-              trs_flip_fullscreen();
+              trs_set_fullscreen(!fullscreen);
 #endif
             }
             continue;
@@ -1241,29 +1241,26 @@ void trs_get_event(int wait)
               gui_function(KEYBRD);
               break;
             case SDLK_RETURN:
-              trs_flip_fullscreen();
+              trs_set_fullscreen(!fullscreen);
               break;
             case SDLK_HOME:
-              fullscreen = 0;
-              SDL_SetWindowFullscreen(window, 0);
+              trs_set_fullscreen(0);
               if (scale != 1) {
                 scale = 1;
                 SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
               }
               break;
             case SDLK_PAGEDOWN:
+              trs_set_fullscreen(0);
               if (scale < MAX_SCALE) {
                 scale++;
-                fullscreen = 0;
-                SDL_SetWindowFullscreen(window, 0);
                 SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
               }
               break;
             case SDLK_PAGEUP:
+              trs_set_fullscreen(0);
               if (scale > 1) {
                 scale--;
-                fullscreen = 0;
-                SDL_SetWindowFullscreen(window, 0);
                 SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
               }
               break;
@@ -1360,11 +1357,10 @@ void trs_get_event(int wait)
               break;
             case SDLK_z:
 #ifdef ZBX
-              if (fullscreen)
-                trs_flip_fullscreen();
+              trs_set_fullscreen(0);
               trs_debug();
 #else
-              trs_flip_fullscreen();
+              trs_set_fullscreen(!fullscreen);
 #endif
               break;
             default:
