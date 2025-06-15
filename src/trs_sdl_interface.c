@@ -1235,7 +1235,7 @@ void trs_get_event(int wait)
               SDL_ShowCursor(SDL_ENABLE);
               break;
             case SDLK_DELETE:
-              trs_reset(0);
+              trs_reset(SDL_GetModState() & KMOD_SHIFT);
               break;
             case SDLK_INSERT:
               gui_function(KEYBRD);
