@@ -1407,6 +1407,23 @@ trs_disk_sector_write(Uint8 data)
   }
 #endif
   if (trs_model == 1) {
+    /* Switch 5" / 8" disk size */
+    if (data & (1 << 7) && (data & 0x1F) == 0) {
+      if (trs_clones.model & (GENIE3S | SPEEDMASTER)) {
+        state.inches = (data & (1 << 6)) ? 4 : 0;
+        state.curdrive = 0;
+        return;
+      } else {
+        if ((trs_disk_doubler & TRSDISK_PERCOM) ||
+          (trs_clones.model & (EG3200 | LNW80))) {
+          DiskState *d = &disk[state.curdrive];
+
+          d->inches = (data & (1 << 6)) ? 8 : 5;
+          return;
+        }
+      }
+    }
+
     if (trs_disk_doubler & TRSDISK_TANDY) {
       /* Emulate Radio Shack doubler */
       switch (data & TRSDISK_RCMDBITS) {
@@ -1432,23 +1449,6 @@ trs_disk_sector_write(Uint8 data)
         break;
       default:
         break;
-      }
-    } else {
-      /* Switch 5" / 8" disk size */
-      if (data & (1 << 7) && (data & 0x1F) == 0) {
-        if (trs_clones.model & (GENIE3S | SPEEDMASTER)) {
-          state.inches = (data & (1 << 6)) ? 4 : 0;
-          state.curdrive = 0;
-          return;
-        } else {
-          if ((trs_disk_doubler & TRSDISK_PERCOM) ||
-            (trs_clones.model & (EG3200 | LNW80))) {
-            DiskState *d = &disk[state.curdrive];
-
-            d->inches = (data & (1 << 6)) ? 8 : 5;
-            return;
-          }
-        }
       }
     }
   }
