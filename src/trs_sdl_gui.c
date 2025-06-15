@@ -2611,13 +2611,13 @@ void gui_keys(void)
   " Toggle Fullscreen     "
 #endif
   "Alt-D/F: Floppy Disk Menu   ", 2, 7, 60, 4);
-  gui_text("F10/Shift-F10: Warm/Cold Reset  Alt-H: Hard Disk Menu       ", 2,  8, 60, 4);
+  gui_text("F10/Shift-F10: Soft/Hard Reset  Alt-H: Hard Disk Menu       ", 2,  8, 60, 4);
   gui_text("F11/Alt-K: Show this key help   Alt-T: Cassette/Tape Menu   ", 2,  9, 60, 4);
   gui_text("F12/Alt-N: Switch Turbo On/Off  Alt-L/S: Load / Save State  ", 2, 10, 60, 4);
   gui_text("ESC: TRS-80 Break Key           Alt-R/W: Read / Write Config", 2, 11, 60, 4);
   gui_text("Delete/Home: TRS-80 Clear Key   Alt-P/Pause: Pause Emulator ", 2, 12, 60, 4);
   gui_text("End: TRS-80 Shifted Down Arrow  Alt-0...7: Insert Disk Drive", 2, 13, 60, 4);
-  gui_text("Control: TRS-80 Control Key     Shift-Alt-0...7: Remove Disk", 2, 14, 60, 4);
+  gui_text("Control: TRS-80 Control Key     Alt-Shift-0...7: Remove Disk", 2, 14, 60, 4);
   gui_write(" Press Any Key To Return ", 0, 15, 5);
   trs_screen_update();
   gui_key();
