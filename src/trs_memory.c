@@ -102,7 +102,6 @@ static Uint8 mem_command;
 static int romin; /* Model 4P */
 static int supermem_base;
 static Uint32 supermem_high;
-static int selector_bank;
 static int sys_byte;
 static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
@@ -266,8 +265,6 @@ void mem_card_out(int card, int bits)
       memory_map = 0x10 + (bits & 7);
       /* Set default memory map for Selector Modes 6 & 7 */
       if (memory_map >= 0x16) memory_map = 0x10;
-      /* Bank low on odd mode */
-      selector_bank = (bits & 1) ? 0x0000 : 0x8000;
       /* External RAM enabled */
       if (bits & 0x8) {
         /* Effectively the selector bits << 15 */
@@ -278,6 +275,14 @@ void mem_card_out(int card, int bits)
           bank_base += 32768;
       } else
         bank_base = 0;
+      /* Bank low on odd mode */
+      if (bits & 1) {
+        bank_offset[0] = bank_base;
+        bank_offset[1] = 0;
+      } else {
+        bank_offset[0] = 0;
+        bank_offset[1] = bank_base;
+      }
       break;
     case SUPERMEM:
       /* Support 1024 KB which is the full range of the mapping. */
@@ -606,7 +611,6 @@ void trs_reset(int poweron)
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     bank_base = 0;
-    selector_bank = 0;
     sys_byte = sys_byte_2 = 0;
     trs_interrupt_latch_clear();
     trs_screen_mode(INVERSE, 0);
@@ -658,7 +662,7 @@ void rom_write(int address, int value)
 static int trs80_model1_ram(int address)
 {
   if (selector) {
-    int const addr = address & 0x8000;
+    int const bank = bank_offset[address >> 15];
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -668,8 +672,7 @@ static int trs80_model1_ram(int address)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if (addr == selector_bank)
-      address += bank_base;
+    address += bank;
   }
 
   return memory[address];
@@ -1020,7 +1023,7 @@ static void trs80_screen_write_char(int vaddr, int value)
 static void trs80_model1_write_mem(int address, int value)
 {
   if (selector) {
-    int const addr = address & 0x8000;
+    int const bank = bank_offset[address >> 15];
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1033,8 +1036,7 @@ static void trs80_model1_write_mem(int address, int value)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if (addr == selector_bank)
-      address += bank_base;
+    address += bank;
   }
 
   memory[address] = value;
@@ -1419,7 +1421,7 @@ void mem_write_word(int address, int value)
 static Uint8 *trs80_model1_ram_addr(int address)
 {
   if (selector) {
-    int const addr = address & 0x8000;
+    int const bank = bank_offset[address >> 15];
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
@@ -1429,8 +1431,7 @@ static Uint8 *trs80_model1_ram_addr(int address)
       address &= 0x3FFF;
     }
     /* Deal with 32K banking from selector */
-    if (addr == selector_bank)
-      address += bank_base;
+    address += bank;
   }
 
   return memory + address;
@@ -1708,7 +1709,6 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &supermem_base, 1);
   trs_save_uint32(file, &supermem_high, 1);
   trs_save_int(file, &selector, 1);
-  trs_save_int(file, &selector_bank, 1);
   trs_save_int(file, &lubomir, 1);
   trs_save_int(file, &megamem, 1);
   trs_save_int(file, &megamem_addr, 1);
@@ -1737,7 +1737,6 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &supermem_base, 1);
   trs_load_uint32(file, &supermem_high, 1);
   trs_load_int(file, &selector, 1);
-  trs_load_int(file, &selector_bank, 1);
   trs_load_int(file, &lubomir, 1);
   trs_load_int(file, &megamem, 1);
   trs_load_int(file, &megamem_addr, 1);
