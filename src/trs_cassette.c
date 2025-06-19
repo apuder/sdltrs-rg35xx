@@ -1089,7 +1089,7 @@ void trs_cassette_motor(int value)
 {
   if (value) {
     /* motor on */
-    if (!cassette_motor) {
+    if (!cassette_motor && cassette_filename[0]) {
 #if CASSDEBUG3
       debug("motor on %ld\n", z80_state.t_count);
 #endif
