@@ -1087,6 +1087,8 @@ trs_cassette_kickoff(int dummy)
 /* Z80 program is turning motor on or off */
 void trs_cassette_motor(int value)
 {
+  if (value == cassette_motor) return;
+
   if (value) {
     /* motor on */
     if (!cassette_motor && cassette_filename[0]) {
