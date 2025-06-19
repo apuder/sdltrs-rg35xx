@@ -494,17 +494,18 @@ int sys_byte_2_in(void)
 
 void s80z_out(int value)
 {
-  if (value & (1 << 2)) {
-    if (speedup == 4)
-      video_addr = 0x3900; /* Homebrew 80*22 SYS80.SYS */
-    else
-      video_addr = (value & (1 << 1)) ? 0xB000 : 0xF000;
-  } else {
-    video_addr = VIDEO_START;
-  }
+  if ((value & (1 << 2)) != (sys_byte & (1 << 2))) {
+    if (value & (1 << 2)) {
+      if (speedup == 4)
+        video_addr = 0x3900; /* Homebrew 80*22 SYS80.SYS */
+      else
+        video_addr = (value & (1 << 1)) ? 0xB000 : 0xF000;
+    } else {
+      video_addr = VIDEO_START;
+    }
 
-  if ((value & (1 << 6)) != (sys_byte & (1 << 6)))
-    trs_screen_mode(INVERSE, value & (1 << 6));
+    trs_screen_mode(INVERSE, value & (1 << 2));
+  }
 
   sys_byte = value;
   memory_map = 0x20;
