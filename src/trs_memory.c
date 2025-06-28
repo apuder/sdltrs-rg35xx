@@ -469,11 +469,11 @@ void sys_byte_out(int value)
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_screen_mode(INVERSE, value & 1);
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-        hrg_onoff((value & (1 << 1)) ? 2 : 0);
+        hrg_onoff(value & (1 << 1));
       break;
     case 7: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-        hrg_onoff((value & (1 << 1)) ? 2 : 0);
+        hrg_onoff(value & (1 << 1));
       if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
         trs_timer_speed(value & (1 << 2));
       break;
