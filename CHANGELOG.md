@@ -61,7 +61,7 @@
  * Added option to pause the emulator at startup.
  * Fixed 6845 CRTC cursor redraw issues.
  * Fixed bugs in mouse selection.
- * Fixed AlphaTech SuperMem 32K bank switch.
+ * Fixed AlphaTech SuperMem bank switching.
  * Fixed loading of state file for TRS-80 clones.
  * Fixed more bugs and internal improvements.
 
@@ -132,7 +132,7 @@
 
 ## Version 1.2.19 Release 06-06-2021:
 
-  * Added support for EACA EG 3200 (Genie III).
+  * Added support for EACA EG 3200 Genie III.
 
 ## Version 1.2.18 Release 05-09-2021:
 
@@ -144,7 +144,7 @@
 
 ## Version 1.2.17 Release 04-04-2021:
 
-  * Added support for Prologica CP-300/500 16kB ROM.
+  * Added support for Prologica CP-300/500 16 KB ROM.
   * Added support for Seatronics Super Speed-Up Board.
   * Added SuperMem RAM and Prologica ROM to state file.
 

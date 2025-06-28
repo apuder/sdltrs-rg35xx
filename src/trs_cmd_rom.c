@@ -818,7 +818,7 @@ static int trs_load_rom(const char *filename)
       fclose(program);
 
       if (trs_rom_size > 0x3800) {
-        error("MODELA/III file '%s' size %d exceeds 14 kB", filename, trs_rom_size);
+        error("MODELA/III file '%s' size %d exceeds 14 KB", filename, trs_rom_size);
         return -1;
       } else {
         trs_load_compiled_rom(0, trs_rom_size, loadrom);
@@ -898,7 +898,7 @@ void trs_rom_init(void)
       break;
   }
 
-  /* Limit ROM size to maximum of 14 kB */
+  /* Limit ROM size to maximum of 14 KB */
   if (trs_rom_size > 0x3800)
       trs_rom_size = 0x3800;
 }

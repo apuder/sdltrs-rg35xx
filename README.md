@@ -18,11 +18,11 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Change Z80 CPU default MHz of each TRS-80 Model
   * More accurate emulation of Z80 block instructions
   * Joystick emulation with Mouse
-  * Support Prologica CP-300/500 16kB ROM with extra 2kB Z80 monitor
+  * Support Prologica CP-300/500 16 KB ROM with extra 2 KB Z80 monitor
   * Support Seatronics Super Speed-Up Board for all TRS-80 Models
   * Load and Save TRS-80 memory in debugger
   * Patch Model I ROM to boot from hard disk drive
-  * Support EACA EG 3200 (Genie III) system
+  * Support EACA EG 3200 Genie III system
   * 480x192 HRG resolution for LNW80 and TCS SpeedMaster/Genie IIs
   * CP/M banking support for TRS-80 Model I clones
   * Support EG-64 Memory-Banking-Adaptor from TCS
