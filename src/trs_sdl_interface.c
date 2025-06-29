@@ -566,6 +566,9 @@ void trs_screen_init(int resize)
 
   if (trs_model == 1) {
     switch (trs_clones.model) {
+      case CT80:
+        trs_charset = cols == 80 ? 18 : 13;
+        break;
       case EG3200:
         /* Use alternate font for Holte-ROM */
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
@@ -2140,6 +2143,9 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
     srcRect.w *= 2;
 
   switch (trs_clones.model) {
+    case CT80:
+      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
+      break;
     case GENIE3S:
       if (grafyx_overlay)
         SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
