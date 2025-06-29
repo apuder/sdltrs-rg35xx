@@ -1255,12 +1255,12 @@ trs_disk_select_write(Uint8 data)
     if (trs_clones.model & (EG3200 | GENIE3S | SPEEDMASTER)) {
       state.curside = (data & 0x10) != 0;
     } else if (trs_clones.model & CT80) {
-      /* Select Disk Density/Controller for Aster CT-80 */
-      state.curside = (data & 0x10) != 0;
+      /* Select Side/Density/Controller for Aster CT-80 */
       if (data & 0x80) {
+        state.curside = (data & 0x08) != 0;
         state.density = (data & 0x20) != 0;
         state.controller = state.density ? TRSDISK_P1791 : TRSDISK_P1771;
-        return;
+        data &= 0x07;
       }
     } else {
       /* Disk 3 and side select share a bit.  You can't have a drive :3
