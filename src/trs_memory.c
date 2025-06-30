@@ -881,7 +881,7 @@ int mem_read(int address)
           /* CP/M mode */
           /* 2K Video RAM */
           if (address >= 0xF800)
-            return video[address - 0xF800];
+            return video[(address - video_addr) & 0x7FF];
           /* Keyboard */
           if (address >= 0xF400 && address <= 0xF7FF)
             return trs_kb_mem_read(address - 0xBC00);
@@ -1096,6 +1096,19 @@ void trs80_model3_mem_write(int address, int value)
   }
 }
 
+void mem_video_start(int address)
+{
+  if (video_addr != address) {
+    int i;
+
+    video_addr = address;
+
+    /* Kludge for Aster CT-80 to wrap the 80*24 video page */
+    for (i = 0; i < 0x800; i++)
+      trs80_screen_write_char((i - 80) & 0x7FF, video[i]);
+  }
+}
+
 void mem_write(int address, int value)
 {
   address &= 0xFFFF;
@@ -1279,7 +1292,7 @@ void mem_write(int address, int value)
           /* CP/M mode */
           /* 2K Video RAM */
           if (address >= 0xF800) {
-            trs80_screen_write_char(address - 0xF800, value);
+            trs80_screen_write_char((address - video_addr) & 0x7FF, value);
             return;
           }
           /* Disk MMIO */

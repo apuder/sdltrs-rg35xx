@@ -36,6 +36,7 @@ extern void   mem_video_page(int offset);
 extern Uint8  mem_video_page_read(int vaddr);
 extern int    mem_video_page_write(int vaddr, Uint8 value);
 extern Uint8 *mem_video_page_addr(int vaddr);
+extern void   mem_video_start(int address);
 
 extern int    get_mem_map(void);
 extern void   mem_bank(int which);

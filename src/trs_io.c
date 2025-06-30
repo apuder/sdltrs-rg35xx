@@ -119,8 +119,14 @@ static void m6845_crtc(int value)
       return;
     case 0x0D: /* Start Address MSB */
       m6845.sta = ((value & 0xFF) << 0) | (m6845.sta & 0xFF00);
-      if (trs_clones.model == GENIE3S)
-        mem_video_page(1024 - m6845.sta);
+      switch (trs_clones.model) {
+        case CT80:
+          mem_video_start(m6845.sta);
+          return;
+        case GENIE3S:
+          mem_video_page(1024 - m6845.sta);
+          return;
+      }
       return;
     case 0x0E: /* Cursor LSB */
       m6845.pos = ((value & 0x3F) << 8) | (m6845.pos & 0x00FF);
