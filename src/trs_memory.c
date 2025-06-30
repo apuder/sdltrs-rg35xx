@@ -1608,7 +1608,7 @@ Uint8 *mem_pointer(int address, int writing)
           /* CP/M mode */
           /* 2K Video RAM */
           if (address >= 0xF800)
-            return &video[address - 0xF800];
+            return &video[(address - video_addr) & 0x7FF];
           /* Boot-ROM */
           if (address >= 0xEC00 && address <= 0xF3FF)
             return writing ? NULL : &rom[address - 0xBC00];
