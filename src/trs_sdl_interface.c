@@ -1406,6 +1406,7 @@ void trs_get_event(int wait)
           switch (trs_clones.model) {
             case CT80:
               switch (keysym.sym) {
+                case SDLK_END:   keysym.sym = 0x08d; goto done; /* ESC */
                 case SDLK_LCTRL: keysym.sym = 0x08b; goto done;
                 case SDLK_F1:    keysym.sym = 0x08c; goto done;
                 case SDLK_F2:    keysym.sym = 0x08a; goto done;
