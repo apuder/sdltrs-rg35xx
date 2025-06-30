@@ -1104,6 +1104,7 @@ void mem_video_start(int address)
     video_addr = address;
 
     /* Kludge for Aster CT-80 to wrap the 80*24 video page */
+    memset(video, 0, 80);
     for (i = 0; i < 0x800; i++)
       trs80_screen_write_char((i - 80) & 0x7FF, video[i]);
   }
