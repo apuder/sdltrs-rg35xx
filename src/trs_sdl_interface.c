@@ -1406,12 +1406,11 @@ void trs_get_event(int wait)
           switch (trs_clones.model) {
             case CT80:
               switch (keysym.sym) {
-                case SDLK_CAPSLOCK: keysym.sym = 0x119; goto done;
-                case SDLK_LCTRL:    keysym.sym = 0x08b; goto done;
-                case SDLK_F1:       keysym.sym = 0x08c; goto done;
-                case SDLK_F2:       keysym.sym = 0x08a; goto done;
-                case SDLK_F3:       keysym.sym = 0x089; goto done;
-                case SDLK_F4:       keysym.sym = 0x088; goto done;
+                case SDLK_LCTRL: keysym.sym = 0x08b; goto done;
+                case SDLK_F1:    keysym.sym = 0x08c; goto done;
+                case SDLK_F2:    keysym.sym = 0x08a; goto done;
+                case SDLK_F3:    keysym.sym = 0x089; goto done;
+                case SDLK_F4:    keysym.sym = 0x088; goto done;
                 default:
                   break;
               }
