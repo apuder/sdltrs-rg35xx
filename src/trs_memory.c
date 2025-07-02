@@ -555,9 +555,6 @@ void trs_reset(int poweron)
   trs_cancel_event();
   trs_timer_interrupt(0);
 
-  trs_screen_reset();
-  trs_screen_init(1);
-
   if (poweron || trs_model >= 3 || trs_clones.model == GENIE3S) {
     if (poweron)
       mem_init();
@@ -566,6 +563,8 @@ void trs_reset(int poweron)
     memset(&video, ' ', MAX_VIDEO_SIZE);
     m6845_crtc_reset();
     trs_clones_model(0);
+    trs_screen_reset();
+    trs_screen_init(1);
     trs_timer_init();
 
     if (trs_show_led) {
