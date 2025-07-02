@@ -621,6 +621,8 @@ void trs_reset(int poweron)
       case 5: /* Aster CT-80 */
         memory_map = 0x25;
         trs_clones_model(CT80);
+        trs_screen_reset();
+        trs_screen_init(1);
         break;
       case 6: /* LNW80/II */
         memory_map = 0x26;
