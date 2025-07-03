@@ -259,10 +259,10 @@ void mem_card_out(int card, int bits)
     case SELECTOR:
       /* Not all bits are necessarily really present but hey what
          you can't read back you can't tell */
-      mem_command = bits & 7;
+      mem_command = bits;
       /* 0x10 is already the default tandy map we add 11-17 in the style
          of the model 4 approach */
-      memory_map = 0x10 + mem_command;
+      memory_map = 0x10 + (bits & 7);
       /* Set default memory map for Selector Modes 6 & 7 */
       if (memory_map >= 0x16) memory_map = 0x10;
       /* External RAM enabled */
@@ -669,7 +669,7 @@ static int trs80_model1_ram(int address)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if (mem_command == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* Use the low 16K, and then bank it. I'm not 100% sure how the
          PAL orders the two */
       address &= 0x3FFF;
@@ -1030,7 +1030,7 @@ static void trs80_model1_write_mem(int address, int value)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if (mem_command == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* We have no low 16K of RAM. This is for the LNW80 really */
       if (!(mem_command & 8))
         return;
@@ -1442,7 +1442,7 @@ static Uint8 *trs80_model1_ram_addr(int address)
 
     /* Selector mode 6 remaps RAM from 0000-3FFF to C000-FFFF while keeping
        the ROMs visible */
-    if (mem_command == 6 && address >= 0xC000) {
+    if ((mem_command & 7) == 6 && address >= 0xC000) {
       /* Use the low 16K, and then bank it. I'm not 100% sure how the
          PAL orders the two */
       address &= 0x3FFF;
