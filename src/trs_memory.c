@@ -555,7 +555,7 @@ void trs_reset(int poweron)
   trs_cancel_event();
   trs_timer_interrupt(0);
 
-  if (poweron || trs_model >= 3 || trs_clones.model == GENIE3S) {
+  if (poweron || trs_model >= 3 || trs_clones.model & (CT80 | GENIE3S)) {
     if (poweron)
       mem_init();
     trs_rom_init();
@@ -621,8 +621,7 @@ void trs_reset(int poweron)
       case 5: /* Aster CT-80 */
         memory_map = 0x25;
         trs_clones_model(CT80);
-        trs_screen_reset();
-        trs_screen_init(1);
+        trs_screen_init(0);
         break;
       case 6: /* LNW80/II */
         memory_map = 0x26;
