@@ -194,6 +194,13 @@ void z80_out(int port, int value)
     switch (trs_clones.model) {
       case CT80:
         switch (port) {
+          case 0xD0:
+          case 0xD1:
+          case 0xD2:
+          case 0xD4:
+          case 0xD6:
+            ct80_ramdisk_out(port, value);
+            break;
           case 0xFC:
             m6845_reg = value;
             break;
@@ -687,6 +694,13 @@ int z80_in(int port)
     switch (trs_clones.model) {
       case CT80:
         switch (port) {
+          case 0xD0:
+          case 0xD1:
+          case 0xD2:
+          case 0xD4:
+          case 0xD6:
+            value = ct80_ramdisk_in(port);
+            break;
           case 0xFF:
             value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
             break;

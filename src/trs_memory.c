@@ -94,7 +94,7 @@ static Uint8 video[MAX_VIDEO_SIZE + 1];
 static Uint8 rom[MAX_ROM_SIZE + 1];
 static int memory_map;
 static int video_addr = -VIDEO_START;
-static int bank_offset[2];
+static int bank_offset[3];
 static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
@@ -335,6 +335,44 @@ void megamem_out(int mem_slot, Uint8 value)
   }
 }
 
+void ct80_ramdisk_out(int port, Uint8 byte)
+{
+  switch (port & 0x07) {
+    case 0:
+      memory[bank_base] = byte;
+      return;
+    case 1:
+      memory[bank_base++] = byte;
+      return;
+    case 2:
+      bank_offset[0] = byte;
+      break;
+    case 4:
+      bank_offset[1] = byte;
+      break;
+    case 6:
+      bank_offset[2] = byte & 0x3F;
+      break;
+    default:
+      break;
+   }
+   /* RAM disk starting at 64 KB */
+   bank_base = (bank_offset[0] | (bank_offset[1] << 8) | (bank_offset[2] << 16))
+             + 65536;
+}
+
+Uint8 ct80_ramdisk_in(int port)
+{
+  switch (port & 0x07) {
+    case 0:
+      return memory[bank_base];
+    case 1:
+      return memory[bank_base++];
+    default:
+      return 0xFF;
+   }
+}
+
 void eg3200_bank_out(int value)
 {
   sys_byte = value & 0x0F;
@@ -536,6 +574,7 @@ void trs_reset(int poweron)
   bank_base = 0x10000;
   bank_offset[0] = 0;
   bank_offset[1] = 0;
+  bank_offset[2] = 0;
   megamem_addr = 0;
   megamem_base = 0;
   mem_command = 0;
@@ -1715,7 +1754,7 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &trs_rom_size, 1);
   trs_save_int(file, &lowercase, 1);
   trs_save_int(file, &memory_map, 1);
-  trs_save_int(file, bank_offset, 2);
+  trs_save_int(file, bank_offset, 3);
   trs_save_int(file, &video_addr, 1);
   trs_save_int(file, &romin, 1);
   trs_save_uint32(file, &bank_base, 1);
@@ -1743,7 +1782,7 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &trs_rom_size, 1);
   trs_load_int(file, &lowercase, 1);
   trs_load_int(file, &memory_map, 1);
-  trs_load_int(file, bank_offset, 2);
+  trs_load_int(file, bank_offset, 3);
   trs_load_int(file, &video_addr, 1);
   trs_load_int(file, &romin, 1);
   trs_load_uint32(file, &bank_base, 1);
