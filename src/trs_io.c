@@ -192,6 +192,30 @@ void z80_out(int port, int value)
 
   if (trs_model == 1) {
     switch (trs_clones.model) {
+      case CT80:
+        switch (port) {
+          case 0xFC:
+            m6845_reg = value;
+            break;
+          case 0xFD:
+            m6845_crtc(value);
+            break;
+          case 0xFE:
+            sys_byte_out(value);
+            break;
+          case 0xFF:
+            /* screen mode select is on D3 line */
+            modesel = (value >> 3) & 1;
+            trs_screen_mode(EXPANDED, modesel);
+            /* do cassette emulation */
+            trs_cassette_motor((value >> 2) & 1);
+            trs_cassette_out(value & 0x3);
+            break;
+          default:
+            break;
+        }
+        return;
+
       case EG3200:
         switch (port) {
           case 0x28: /* Genieplus Memory Card */
@@ -425,18 +449,11 @@ void z80_out(int port, int value)
               eg3200_init_out(value);
             return;
           case 0xFC:
-            if (speedup == 5) /* 6845 CRTC Aster CT-80 */
-              m6845_reg = value;
-            return;
-          case 0xFD:
-            if (speedup == 5) /* 6845 CRTC Aster CT-80 */
-              m6845_crtc(value);
-            else
-              /* Printer port of EACA Genie/System 80 */
-              trs_printer_write(value);
+            /* Printer port of EACA Genie/System 80 */
+            trs_printer_write(value);
             return;
           case 0xFE:
-            /* Speedup kit or Banking/Aster CT-80/LNW80 */
+            /* Speedup kit or Banking/LNW80 */
             if (speedup) {
               if (speedup < 4)
                 trs_timer_speed(value);
@@ -668,6 +685,16 @@ int z80_in(int port)
 
   if (trs_model == 1) {
     switch (trs_clones.model) {
+      case CT80:
+        switch (port) {
+          case 0xFF:
+            value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
+            break;
+          default:
+            break;
+        }
+        goto done;
+
       case EG3200:
         switch (port) {
           case 0x48: /* TRS_HARD_DATA */
