@@ -1259,7 +1259,7 @@ trs_disk_select_write(Uint8 data)
       state.curside = (data & 0x08) != 0;
       if (data & 0x80) {
         state.density = (data & 0x20) != 0;
-        state.controller = state.density ? TRSDISK_P1791 : TRSDISK_P1771;
+        trs_disk_set_controller(state.density ? TRSDISK_P1791 : TRSDISK_P1771);
         data &= 0x07;
       }
     } else {
@@ -2378,7 +2378,7 @@ trs_disk_command_write(Uint8 cmd)
   if (trs_clones.model & (CT80 | EG3200 | GENIE3S | LNW80 | SPEEDMASTER)) {
     if ((cmd & 0xF8) == 0xF8) {
       state.density = cmd & 1;
-      state.controller = state.density ? TRSDISK_P1791 : TRSDISK_P1771;
+      trs_disk_set_controller(state.density ? TRSDISK_P1791 : TRSDISK_P1771);
       return;
     }
   }
