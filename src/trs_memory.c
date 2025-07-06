@@ -556,9 +556,10 @@ void trs_reset(int poweron)
   trs_timer_interrupt(0);
 
   if (poweron || trs_model >= 3 || trs_clones.model & (CT80 | GENIE3S)) {
-    if (poweron)
+    if (poweron) {
       mem_init();
-    trs_rom_init();
+      trs_rom_init();
+    }
     /* Blank Video */
     memset(&video, ' ', MAX_VIDEO_SIZE);
     m6845_crtc_reset();
