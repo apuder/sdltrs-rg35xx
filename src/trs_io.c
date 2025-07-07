@@ -707,6 +707,9 @@ int z80_in(int port)
           case 0xD7:
             value = ct80_ramdisk_in(port);
             goto done;
+          case 0xFE:
+            value = sys_byte_in();
+            goto done;
           case 0xFF:
             value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
             goto done;
@@ -745,6 +748,9 @@ int z80_in(int port)
                 value = (m6845.pos >> 0) & 0xFF;
                 break;
             }
+            break;
+          case 0xFA:
+            value = sys_byte_in();
             break;
           case 0xFD:
             value = trs_printer_read();
