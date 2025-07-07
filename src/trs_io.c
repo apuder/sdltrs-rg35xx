@@ -203,16 +203,16 @@ void z80_out(int port, int value)
           case 0xD6:
           case 0xD7:
             ct80_ramdisk_out(port, value);
-            break;
+            return;
           case 0xFC:
             m6845_reg = value;
-            break;
+            return;
           case 0xFD:
             m6845_crtc(value);
-            break;
+            return;
           case 0xFE:
             sys_byte_out(value);
-            break;
+            return;
           case 0xFF:
             /* screen mode select is on D3 line */
             modesel = (value >> 3) & 1;
@@ -220,11 +220,11 @@ void z80_out(int port, int value)
             /* do cassette emulation */
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
-            break;
+            return;
           default:
             break;
         }
-        return;
+        break;
 
       case EG3200:
         switch (port) {
@@ -706,14 +706,14 @@ int z80_in(int port)
           case 0xD6:
           case 0xD7:
             value = ct80_ramdisk_in(port);
-            break;
+            goto done;
           case 0xFF:
             value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
-            break;
+            goto done;
           default:
             break;
         }
-        goto done;
+        break;
 
       case EG3200:
         switch (port) {
