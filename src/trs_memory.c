@@ -165,6 +165,20 @@ Uint8 *mem_video_page_addr(int vaddr)
   }
 }
 
+void mem_video_start(int address)
+{
+  if (video_addr != address) {
+    int i;
+
+    video_addr = address;
+    /* Kludge for Aster CT-80 to scroll the 80*25 video page */
+    for (i = 0; i < 0x800; i++) {
+      video[i] = video[i + 80];
+      trs_screen_write_char(i, video[i]);
+    }
+  }
+}
+
 void mem_bank(int command)
 {
   switch (command) {
@@ -1144,20 +1158,6 @@ void trs80_model3_mem_write(int address, int value)
     error("[PC=%04X] Invalid write of %02X to address %04X, mem_map=%02X",
         Z80_PC, value, address, memory_map);
 #endif
-  }
-}
-
-void mem_video_start(int address)
-{
-  if (video_addr != address) {
-    int i;
-
-    video_addr = address;
-
-    /* Kludge for Aster CT-80 to wrap the 80*24 video page */
-    memset(video, 0, 80);
-    for (i = 0; i < 0x800; i++)
-      trs80_screen_write_char((i - 80) & 0x7FF, video[i]);
   }
 }
 
