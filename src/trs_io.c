@@ -197,8 +197,11 @@ void z80_out(int port, int value)
           case 0xD0:
           case 0xD1:
           case 0xD2:
+          case 0xD3:
           case 0xD4:
+          case 0xD5:
           case 0xD6:
+          case 0xD7:
             ct80_ramdisk_out(port, value);
             break;
           case 0xFC:
@@ -697,8 +700,11 @@ int z80_in(int port)
           case 0xD0:
           case 0xD1:
           case 0xD2:
+          case 0xD3:
           case 0xD4:
+          case 0xD5:
           case 0xD6:
+          case 0xD7:
             value = ct80_ramdisk_in(port);
             break;
           case 0xFF:

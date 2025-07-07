@@ -345,15 +345,16 @@ void ct80_ramdisk_out(int port, Uint8 byte)
       memory[bank_base++] = byte;
       return;
     case 2:
+    case 3:
       bank_offset[0] = byte;
       break;
     case 4:
+    case 5:
       bank_offset[1] = byte;
       break;
     case 6:
+    case 7:
       bank_offset[2] = byte & 0x3F;
-      break;
-    default:
       break;
    }
    /* RAM disk starting at 64 KB */
@@ -368,9 +369,18 @@ Uint8 ct80_ramdisk_in(int port)
       return memory[bank_base];
     case 1:
       return memory[bank_base++];
-    default:
-      return 0xFF;
-   }
+    case 2:
+    case 3:
+      return bank_offset[0];
+    case 4:
+    case 5:
+      return bank_offset[1];
+    case 6:
+    case 7:
+      return bank_offset[2];
+  }
+  /* not reached */
+  return 0;
 }
 
 void eg3200_bank_out(int value)
