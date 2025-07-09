@@ -214,10 +214,8 @@ void z80_out(int port, int value)
             sys_byte_out(value);
             return;
           case 0xFF:
-            /* screen mode select is on D3 line */
             modesel = (value >> 3) & 1;
             trs_screen_mode(EXPANDED, modesel);
-            /* do cassette emulation */
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
             return;
@@ -347,6 +345,26 @@ void z80_out(int port, int value)
         }
         return;
 
+      case LNW80:
+        switch (port) {
+          case 0x1F:
+          case 0x3F:
+            lnw80_bank_out(value);
+            return;
+          case 0xFE:
+            sys_byte_out(value);
+            return;
+          case 0xFF:
+            modesel = (value >> 3) & 1;
+            trs_screen_mode(EXPANDED, modesel);
+            trs_cassette_motor((value >> 2) & 1);
+            trs_cassette_out(value & 0x3);
+            return;
+          default:
+            break;
+        }
+        break;
+
       case SPEEDMASTER:
         switch (port) {
           case 0x5B:
@@ -373,23 +391,20 @@ void z80_out(int port, int value)
         switch (port) {
           case 0x00: /* HRG off */
           case 0x01: /* HRG on */
-            if (speedup <= 5) hrg_onoff(port);
+            hrg_onoff(port);
             return;
           case 0x02: /* HRG write address low byte */
-            if (speedup <= 5) hrg_write_addr(value, 0xFF);
+            hrg_write_addr(value, 0xFF);
             return;
           case 0x03: /* HRG write address high byte */
-            if (speedup <= 5) hrg_write_addr(value << 8, 0x3F00);
+            hrg_write_addr(value << 8, 0x3F00);
             return;
           case 0x05: /* HRG write data byte */
-            if (speedup <= 5) hrg_write_data(value);
+            hrg_write_data(value);
             return;
             /* Selector doesn't decode A5 */
           case 0x1F:
           case 0x3F:
-            if (speedup == 6)
-              lnw80_bank_out(value);
-            else
             if (selector)
               mem_card_out(SELECTOR, value);
             return;
@@ -408,17 +423,14 @@ void z80_out(int port, int value)
             return;
           case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x10: /* Homebrew 80*22 SYS80.SYS */
-            if (speedup <= 4)
-              m6845_reg = value;
+            m6845_reg = value;
             return;
           case 0xD1: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x11: /* Homebrew 80*22 SYS80.SYS */
-            if (speedup <= 4)
-              m6845_crtc(value);
+            m6845_crtc(value);
             return;
           case 0xD2: /* Schmidtke 80-Z Card: Banking */
-            if (speedup <= 4)
-              s80z_out(value);
+            s80z_out(value);
             return;
           case 0xDF:
             if (speedup <= 3 && lubomir == 0)
@@ -463,7 +475,7 @@ void z80_out(int port, int value)
             trs_printer_write(value);
             return;
           case 0xFE:
-            /* Speedup kit or Banking/LNW80 */
+            /* Speedup kit or Banking */
             if (speedup) {
               if (speedup < 4)
                 trs_timer_speed(value);
@@ -833,6 +845,19 @@ int z80_in(int port)
         }
         goto done;
 
+      case LNW80:
+        switch (port) {
+          case 0xFE:
+            value = sys_byte_in();
+            goto done;
+          case 0xFF:
+            value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
+            goto done;
+          default:
+            break;
+        }
+        break;
+
       case SPEEDMASTER:
         switch (port) {
           case 0x5A:
@@ -859,10 +884,10 @@ int z80_in(int port)
           case 0x00: /* HRG off (undocumented) */
 #endif
           case 0x01: /* HRG on (undocumented) */
-            if (speedup <= 5) hrg_onoff(port);
+            hrg_onoff(port);
             goto done;
           case 0x04: /* HRG read data byte */
-            if (speedup <= 5) value = hrg_read_data();
+            value = hrg_read_data();
             goto done;
           case 0x84: /* RTCC */
             value = rtc_read(rtc_reg);
@@ -890,10 +915,6 @@ int z80_in(int port)
           case 0xFD:
             /* GENIE location of printer port */
             value = trs_printer_read();
-            goto done;
-          case 0xFE:
-            if (speedup >= 4)
-              value = sys_byte_in();
             goto done;
           case 0xFF:
             value = (!modesel ? 0x7F : 0x3F) | trs_cassette_in();
