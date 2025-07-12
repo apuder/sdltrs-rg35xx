@@ -353,10 +353,12 @@ void ct80_ramdisk_out(int port, Uint8 byte)
 {
   switch (port & 0x07) {
     case 0:
-      memory[bank_base] = byte;
+      if (bank_base < MAX_MEMORY_SIZE)
+        memory[bank_base] = byte;
       return;
     case 1:
-      memory[bank_base++] = byte;
+      if (bank_base < MAX_MEMORY_SIZE - 1)
+        memory[bank_base++] = byte;
       return;
     case 2:
     case 3:
@@ -380,9 +382,13 @@ Uint8 ct80_ramdisk_in(int port)
 {
   switch (port & 0x07) {
     case 0:
-      return memory[bank_base];
+      if (bank_base < MAX_MEMORY_SIZE)
+        return memory[bank_base];
+      break;
     case 1:
-      return memory[bank_base++];
+      if (bank_base < MAX_MEMORY_SIZE - 1)
+        return memory[bank_base++];
+      break;
     case 2:
     case 3:
       return bank_offset[0];
@@ -393,7 +399,6 @@ Uint8 ct80_ramdisk_in(int port)
     case 7:
       return bank_offset[2];
   }
-  /* not reached */
   return 0;
 }
 
