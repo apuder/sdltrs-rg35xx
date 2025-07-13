@@ -614,18 +614,18 @@ void z80_out(int port, int value)
       case 0xEF:
         modeimage = value;
         /* cassette motor is on D1 */
-        trs_cassette_motor((modeimage & 0x02) >> 1);
+        trs_cassette_motor((value & 0x02) >> 1);
         /* screen mode select is on D2 */
-        trs_screen_mode(EXPANDED, (modeimage & 0x04) >> 2);
+        trs_screen_mode(EXPANDED, (value & 0x04) >> 2);
         /* alternate char set is on D3 */
-        trs_screen_mode(ALTERNATE, !((modeimage & 0x08) >> 3));
+        trs_screen_mode(ALTERNATE, !((value & 0x08) >> 3));
         /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
         if (trs_model == 3) {
           if (speedup == 2 || trs_clones.model == CP500_M80)
             return;
         }
         /* clock speed is on D6; it affects timer HZ too */
-        trs_timer_speed(modeimage & 0xC0); /* D6/D7 for Seatronic */
+        trs_timer_speed(value & 0xC0); /* D6/D7 for Seatronic */
         return;
       case TRSDISK3_COMMAND: /* 0xF0 */
         trs_disk_command_write(value);
