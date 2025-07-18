@@ -577,7 +577,6 @@ void trs_screen_init(int resize)
         char_height = m6845_raster * scale_factor;
         break;
       case SPEEDMASTER:
-        /* Set font for TCS SpeedMaster */
         trs_charset = 17;
         break;
       default:
@@ -1839,8 +1838,9 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
 static void
 bitmap_char(int character, int ram)
 {
-  Uint8 const *char_data = ram ?
-      char_ram[character] : trs_char_data[trs_charset][character];
+  Uint8 const *char_data = ram
+      ? char_ram[character]
+      : trs_char_data[trs_charset][character];
 
   bitmap_free(character, 0, 3);
 
@@ -2820,6 +2820,7 @@ void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)
   *x = mouse_last_x;
   *y = mouse_last_y;
   *buttons = mouse_last_buttons;
+
 #if MOUSEDEBUG
   debug("%d %d 0x%X\n",
       mouse_last_x, mouse_last_y, mouse_last_buttons);

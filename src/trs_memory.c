@@ -107,15 +107,14 @@ static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
-  if (VIDEO_ADDR(vaddr)) {
+  if (VIDEO_ADDR(vaddr))
     return video[vaddr];
-  } else {
+
 #if MEMDEBUG
-    error("[PC=%04X] Reading video address %04X out of range (%04X)",
-        Z80_PC, vaddr, MAX_VIDEO_SIZE);
+  error("[PC=%04X] Reading video address %04X out of range (%04X)",
+      Z80_PC, vaddr, MAX_VIDEO_SIZE);
 #endif
-    return 0xFF;
-  }
+  return 0xFF;
 }
 
 static int mem_video_write(int vaddr, Uint8 value)
@@ -127,13 +126,13 @@ static int mem_video_write(int vaddr, Uint8 value)
     } else {
       return 0;
     }
-  } else {
-#if MEMDEBUG
-    error("[PC=%04X] Writing %02X to video address %04X out of range (%04X)",
-        Z80_PC, value, vaddr, MAX_VIDEO_SIZE);
-#endif
-    return 0;
   }
+
+#if MEMDEBUG
+  error("[PC=%04X] Writing %02X to video address %04X out of range (%04X)",
+      Z80_PC, value, vaddr, MAX_VIDEO_SIZE);
+#endif
+  return 0;
 }
 
 void mem_video_page(int offset)
@@ -154,15 +153,14 @@ int mem_video_page_write(int vaddr, Uint8 value)
 Uint8 *mem_video_page_addr(int vaddr)
 {
   vaddr = vaddr + video_addr;
-  if (VIDEO_ADDR(vaddr)) {
+  if (VIDEO_ADDR(vaddr))
     return video + vaddr;
-  } else {
+
 #if MEMDEBUG
-    error("[PC=%04X] Video page address %04X out of range (%04X)",
-        Z80_PC, vaddr, MAX_VIDEO_SIZE);
+  error("[PC=%04X] Video page address %04X out of range (%04X)",
+      Z80_PC, vaddr, MAX_VIDEO_SIZE);
 #endif
-    return NULL;
-  }
+  return NULL;
 }
 
 void mem_video_start(int address)
@@ -374,7 +372,9 @@ void ct80_ramdisk_out(int port, Uint8 byte)
       break;
    }
    /* RAM disk starting at 64 KB */
-   bank_base = (bank_offset[0] | (bank_offset[1] << 8) | (bank_offset[2] << 16))
+   bank_base = (bank_offset[0]
+             | (bank_offset[1] << 8)
+             | (bank_offset[2] << 16))
              + 65536;
 }
 

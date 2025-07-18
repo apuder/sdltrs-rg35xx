@@ -153,22 +153,18 @@ Uint8 cp500_mem_read(int address, int mem_map, const Uint8 *rom, const Uint8 *ra
 {
   switch (mem_map) {
     case 0x31: /* 3000-37FF = extra 2K in EPROM 4 */
-      if (address >= 0x3000 && address <= 0x37FF) {
+      if (address >= 0x3000 && address <= 0x37FF)
         return rom[address | 0x0800];
-      }
-      return trs80_model3_mem_read(address);
+      else
+        return trs80_model3_mem_read(address);
 
     case 0x32: /* 64K of RAM, nothing else mapped */
       return ram[address];
 
     case 0x33: /* 80x24, 3800 = keyboard, 3C00-3FFF = VRAM */
-      if (address >= RAM_START) {
-        return ram[address];
-      } else if (address >= VIDEO_START) {
-        return mem_video_page_read(address);
-      } else if (address >= KEYBOARD_START) {
-        return trs_kb_mem_read(address);
-      }
+      if (address >= RAM_START) return ram[address];
+      if (address >= VIDEO_START) return mem_video_page_read(address);
+      if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   }
 #ifdef DEBUG_CP500
   error("[PC=%04X] Invalid read of address %04X, returning FF, mem_map=%02X",
@@ -221,20 +217,17 @@ Uint8 *cp500_mem_addr(int address, int mem_map, Uint8 *rom, Uint8 *ram, int writ
 {
   switch (mem_map) {
     case 0x31: /* 3000-37FF = extra 2K in EPROM 4 */
-      if (address >= 0x3000 && address <= 0x37FF && writing == 0) {
+      if (address >= 0x3000 && address <= 0x37FF && writing == 0)
         return &rom[address | 0x0800];
-      }
-      return trs80_model3_mem_addr(address, writing);
+      else
+        return trs80_model3_mem_addr(address, writing);
 
     case 0x32: /* 64K of RAM, nothing else mapped */
       return &ram[address];
 
     case 0x33: /* 80x24, 3C00-3FFF = VRAM */
-      if (address >= RAM_START) {
-        return &ram[address];
-      } else if (address >= VIDEO_START) {
-        return mem_video_page_addr(address);
-      }
+      if (address >= RAM_START) return &ram[address];
+      if (address >= VIDEO_START) return mem_video_page_addr(address);
   }
   return NULL;
 }
