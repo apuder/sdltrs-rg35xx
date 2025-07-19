@@ -2147,10 +2147,8 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
       SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
       break;
     case GENIE3S:
-      if (grafyx_overlay)
-        SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
-      else
-        goto overlay;
+      if (grafyx_overlay == 0) goto overlay;
+      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
       break;
     case LNW80:
       if (rows == 16) {
