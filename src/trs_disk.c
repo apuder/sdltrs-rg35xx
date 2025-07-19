@@ -1260,8 +1260,8 @@ trs_disk_select_write(Uint8 data)
       if (data & 0x80) {
         state.density = (data & 0x20) != 0;
         trs_disk_set_controller(state.density ? TRSDISK_P1791 : TRSDISK_P1771);
-        data &= 0x07;
       }
+      data &= 0x07;
     } else {
       /* Disk 3 and side select share a bit.  You can't have a drive :3
          on a real Model I if any drive is two-sided.  Here we are more
