@@ -1974,11 +1974,8 @@ void gui_display_menu(void)
           resize = 1;
         break;
       case 10:
-        value = gui_popup("Aspect", yes_no, 2, aspect_ratio);
-        if (value != aspect_ratio) {
-          aspect_ratio = value;
-          resize = 1;
-        }
+        aspect_ratio = !aspect_ratio;
+        resize = 1;
         break;
       case 11:
         trs_show_led = !trs_show_led;
