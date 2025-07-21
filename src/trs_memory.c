@@ -171,7 +171,7 @@ void mem_video_start(int address)
     video_addr = address;
     /* Kludge for Aster CT-80 to scroll the 80*25 video page */
     for (i = 0; i < 0x800; i++) {
-      video[i] = video[i + 80];
+      video[i] = video[(i + 80) & 0x7FF];
       trs_screen_write_char(i, video[i]);
     }
   }
