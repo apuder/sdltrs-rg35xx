@@ -937,29 +937,33 @@ int mem_read(int address)
 
     case 0x25: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
-        /* Boot-ROM */
-        if ((sys_byte & (1 << 1)) && address <= 0x7FF)
-          return rom[address | 0x3000];
-        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-          return rom[address];
-        if ((sys_byte & (1 << 3)) == 0) {
-          /* TRS-80 mode */
-          if (address >= 0x3000 && address < RAM_START)
-            return trs80_model1_mmio(address);
+        if (address <= 0x2FFF) {
+          /* Boot-ROM */
+          if (sys_byte & (1 << 1))
+            return rom[(address & 0x7FF) | 0x3000];
+          /* BASIC */
+          if ((sys_byte & (1 << 2)) == 0)
+            return rom[address];
         } else {
-          /* CP/M mode */
-          /* 2K Video RAM */
-          if (address >= 0xF800)
-            return video[(address - video_addr) & 0x7FF];
-          /* Keyboard */
-          if (address >= 0xF400 && address <= 0xF7FF)
-            return trs_kb_mem_read(address - 0xBC00);
-          /* Disk MMIO */
-          if (address >= 0xEFE0 && address <= 0xEFEF)
-            return trs80_model1_mmio(address - 0xB800);
-          /* Boot-ROM copy */
-          if (address >= 0xEC00 && address <= 0xF3FF)
-            return rom[address - 0xBC00];
+          if ((sys_byte & (1 << 3)) == 0) {
+            /* TRS-80 mode */
+            if (address < RAM_START)
+              return trs80_model1_mmio(address);
+          } else {
+            /* CP/M mode */
+            /* 2K Video RAM */
+            if (address >= 0xF800)
+              return video[(address - video_addr) & 0x7FF];
+            /* Keyboard */
+            if (address >= 0xF400)
+              return trs_kb_mem_read(address - 0xBC00);
+            /* Disk and Printer MMIO */
+            if (address >= 0xEFE0 && address <= 0xEFEF)
+              return trs80_model1_mmio(address - 0xB800);
+            /* Boot-ROM copy */
+            if (address >= 0xEC00)
+              return rom[address - 0xBC00];
+          }
         }
       }
       return memory[address];
@@ -1351,7 +1355,7 @@ void mem_write(int address, int value)
             trs80_screen_write_char((address - video_addr) & 0x7FF, value);
             return;
           }
-          /* Disk MMIO */
+          /* Disk and Printer MMIO */
           if (address >= 0xEFE0 && address <= 0xEFEF) {
             trs80_model1_write_mmio(address - 0xB800, value);
             return;
@@ -1651,23 +1655,27 @@ Uint8 *mem_pointer(int address, int writing)
 
     case 0x25: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
-        /* Boot-ROM */
-        if ((sys_byte & (1 << 1)) && address <= 0x7FF)
-          return writing ? NULL : &rom[address | 0x3000];
-        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-          return writing ? NULL : &rom[address];
-        if ((sys_byte & (1 << 3)) == 0) {
-          /* TRS-80 mode */
-          if (address >= 0x3000 && address < RAM_START)
-            return trs80_model1_mmio_addr(address, writing);
-        } else {
-          /* CP/M mode */
-          /* 2K Video RAM */
-          if (address >= 0xF800)
-            return &video[(address - video_addr) & 0x7FF];
+        if (address <= 0x2FFF) {
           /* Boot-ROM */
-          if (address >= 0xEC00 && address <= 0xF3FF)
-            return writing ? NULL : &rom[address - 0xBC00];
+          if (sys_byte & (1 << 1))
+            return writing ? NULL : &rom[(address & 0x7FF) | 0x3000];
+          /* BASIC */
+          if ((sys_byte & (1 << 2)) == 0)
+            return writing ? NULL : &rom[address];
+        } else {
+          if ((sys_byte & (1 << 3)) == 0) {
+            /* TRS-80 mode */
+            if (address < RAM_START)
+              return trs80_model1_mmio_addr(address, writing);
+          } else {
+            /* CP/M mode */
+            /* 2K Video RAM */
+            if (address >= 0xF800)
+              return &video[(address - video_addr) & 0x7FF];
+            /* Boot-ROM */
+            if (address >= 0xEC00 && address <= 0xF3FF)
+              return writing ? NULL : &rom[address - 0xBC00];
+          }
         }
       }
       return &memory[address];
