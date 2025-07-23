@@ -2144,8 +2144,6 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
 
   switch (trs_clones.model) {
     case CT80:
-      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
-      break;
     case GENIE3S:
       if (grafyx_overlay == 0) goto overlay;
       SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
@@ -2717,6 +2715,15 @@ void m6845_screen(int chars, int lines, int raster, int factor)
   }
 }
 
+void m6845_text(int onoff)
+{
+  if (grafyx_overlay != onoff) {
+    grafyx_overlay = onoff;
+
+    trs_screen_refresh();
+  }
+}
+
 void eg3210_char(int character, int scanline, int byte)
 {
   char_ram[character][scanline] = mirror_bits(byte);
@@ -2778,13 +2785,6 @@ Uint8 genie3s_hrg_read(unsigned int position)
 
   return mirror_bits(grafyx_unscaled[row * m6845_raster
       + (position >> 11) + grafyx_y][col]);
-}
-
-void genie3s_text(int onoff)
-{
-  grafyx_overlay = onoff;
-
-  trs_screen_refresh();
 }
 
 void trs_get_mouse_pos(int *x, int *y, unsigned int *buttons)

@@ -487,7 +487,7 @@ void genie3s_sys_out(int value)
 
   /* Text screen on or off */
   if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
-    genie3s_text(value & (1 << 7));
+    m6845_text(value & (1 << 7));
 
   sys_byte = value;
 }
