@@ -2648,7 +2648,7 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
   int cur_char, expanded;
   SDL_Rect srcRect, dstRect;
 
-  if (trs_clones.model == GENIE3S && grafyx_overlay == 0)
+  if ((trs_clones.model & (CT80 | GENIE3S)) && grafyx_overlay == 0)
     return;
 
   if (position >= screen_chars)

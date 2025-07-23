@@ -88,7 +88,7 @@ static void m6845_crtc(int value)
     case 0x01: /* Chars displayed */
       if (value == 64 || value == 80)
         m6845_screen(value, 0, 0, 0);
-      m6845.vis = value;
+      /* Toggle text output */
       m6845_text(value);
       return;
     case 0x06: /* Lines displayed */
