@@ -510,21 +510,18 @@ void lnw80_bank_out(int value)
 
 void sys_byte_out(int value)
 {
-  /* Hack for Schmidtke-CP/M with Doppelbauer banking */
-  if (memory_map == 0x20) {
-    if (value & (1 << 4))
-      sys_byte |=  (1 << 3);
-    else
-      sys_byte &= ~(1 << 3);
-    return;
-  }
-
   if (value == sys_byte)
     return;
 
   switch (speedup) {
     case 4: /* Banking-Modification from Martin Doppelbauer */
-      memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
+      if (memory_map == 0x20) {
+        /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
+        sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
+        return;
+      }
+      else
+        memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
       /* Fall through - Accept speed up kit on bit 0 */
     case 5: /* Aster CT-80 */
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
