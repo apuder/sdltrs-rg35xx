@@ -682,7 +682,10 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       }
       return LOAD_CMD_OK;
 
+    case 0: /* used by Model I TRSDOS BOOT/SYS easter egg */
     case 5: /* module header */
+    case 7: /* Patch name header */
+    case 0x1F: /* copyright block */
       while (count-- > 0) {
         if (getc(f) == EOF) return LOAD_CMD_EOF;
       }
