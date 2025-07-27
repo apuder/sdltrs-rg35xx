@@ -684,6 +684,7 @@ void trs_reset(int poweron)
 
     switch (speedup) {
       case 5: /* Aster CT-80 */
+        m6845_text(80);
         memory_map = 0x25;
         trs_clones_model(CT80);
         trs_screen_init(0);
