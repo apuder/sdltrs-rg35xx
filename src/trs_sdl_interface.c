@@ -2148,15 +2148,14 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
     case CT80:
     case GENIE3S:
       if (grafyx_overlay == 0) goto overlay;
-      SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
       break;
     case LNW80:
       if (rows == 16) {
         if (currentmode == INVERSE) expanded += 2;
-        if (character >= 0x80 && character <= 0xbf)
+        if (character >= 0x80 && character <= 0xbf) {
           SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
-        else
-          SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
+          goto overlay;
+        }
         break;
       }
       /* Fall through - LNW80 II 80x24 text mode */
@@ -2168,6 +2167,7 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
       }
       if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
         SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+        goto overlay;
       } else {
         if (trs_model > 1 && character >= 0xc0 &&
             (currentmode & (ALTERNATE + INVERSE)) == 0) {
@@ -2177,9 +2177,9 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
           expanded += 2;
           character &= 0x7f;
         }
-        SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
       }
   }
+  SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
 
 overlay:
   /* Overlay grafyx on character */
