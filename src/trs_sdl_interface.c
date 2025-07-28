@@ -2002,7 +2002,6 @@ void trs_screen_refresh(void)
 
   drawnRectCount = MAX_RECTS; /* Will force redraw of whole screen */
   trs_screen_flush();
-  trs_screen_caption();
 }
 
 void trs_disk_led(int drive, int on_off)

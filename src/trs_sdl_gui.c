@@ -2737,6 +2737,7 @@ void gui_function(int function)
   switch (function) {
     case PAUSE:
       trs_paused = !trs_paused;
+      trs_screen_caption();
       break;
     case RESET:
       trs_reset(1);
