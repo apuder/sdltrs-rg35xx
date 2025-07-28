@@ -395,9 +395,11 @@ copen::
 
 		ld a,(f_overwrite)
 		or a
-		jr nz,copen1		; overwrite
+		jr z,copen0		; open file
+		bdos b_fdelete,c_fcb1	; delete file
+		jr copen1
 
-		bdos b_fopen,c_fcb1	; open existing file (a=0ffh is error)
+copen0:		bdos b_fopen,c_fcb1	; open existing file (a=0ffh is error)
 		inc a
 		jr z,copen1		; file doesn't exist (good)
 		bdos b_fclose,c_fcb1	; close the existing file
