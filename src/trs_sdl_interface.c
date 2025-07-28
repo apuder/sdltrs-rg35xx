@@ -1411,6 +1411,8 @@ void trs_get_event(int wait)
                 case SDLK_F2:    keysym.sym = 0x08a; goto done;
                 case SDLK_F3:    keysym.sym = 0x089; goto done;
                 case SDLK_F4:    keysym.sym = 0x088; goto done;
+                case SDLK_DELETE:keysym.sym = 0x115; goto done;
+                case SDLK_TAB:   keysym.sym = 0x119; goto done;
                 default:
                   break;
               }
