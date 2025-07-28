@@ -526,8 +526,6 @@ void trs_screen_reset(void)
   memset(grafyx, 0, G_MSIZE);
   memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
   memset(hrg_screen, 0, HRG_MEMSIZE);
-
-  SDL_FillRect(image, NULL, background);
 }
 
 void trs_screen_caption(void)
