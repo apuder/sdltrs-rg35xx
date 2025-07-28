@@ -555,9 +555,6 @@ void trs_screen_init(int resize)
   int const led_height = trs_show_led ? 8 : 0;
   int trs_resize = 0;
   SDL_Color colors[2];
-#if SDLDEBUG
-  SDL_RendererInfo renderinfo = { 0 };
-#endif
 
   char_width  = TRS_CHAR_WIDTH;
   char_height = TRS_CHAR_HEIGHT * 2;
@@ -2939,9 +2936,13 @@ void trs_sdl_init(void)
     fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
 
 #if SDLDEBUG
-  SDL_GetRendererInfo(render, &renderinfo);
-  debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
-  debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
+  {
+    SDL_RendererInfo renderinfo = { 0 };
+
+    SDL_GetRendererInfo(render, &renderinfo);
+    debug("SDL_VIDEODRIVER=%s\n", SDL_GetCurrentVideoDriver());
+    debug("SDL_RENDER_DRIVER=%s\n", renderinfo.name);
+  }
 #endif
 
   screen = SDL_CreateRGBSurface(0, 1024, 1152, 32, 0, 0, 0, 0);
