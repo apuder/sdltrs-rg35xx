@@ -11,9 +11,15 @@
 ;	IMPORT [-F][-H][-L][-T][-V] hostfilename [cpmfilename]
 ;
 ; Where:
-;	-n converts host lf to CP/M cr lf;
-;	hostfilename - name of the host file to import; and
-;	cpmfilename - name of the file in CP/M (must not exist);
+;	hostfilename is the name of the file to open on the host
+;	   (converted to uppercase by default), use -L to convert
+;	   to lowercase and [ to toggle case of next character.
+;	cpmfilename is the name of the imported file for CP/M.
+;	-F forces overwrite of exisiting file in CP/M.
+;	-H switches emulator to high speed and restores speed when done.
+;	-L converts hostfilename to lowercase.
+;	-T import text file (LF becomes CR LF, add SUB character at EOF).
+;	-V (verbose) display "r" for block read, "w" for block written.'
 ;
 ; Notes:
 ;	When started with no arguments, import will prompt for all args.
@@ -53,8 +59,19 @@ MACLIB LIBXTRS.MLB
 ; Messages
 ;##############################################################################
 
-m_usage:	defb	cr,lf,'Usage:',tab
-		defb	'IMPORT [-F][-H][-L][-T][-V] hostfilename [cpmfilename]'
+m_usage:	defb	cr,lf,'Import file from host operating system to CP/M.',cr,lf
+		defb	cr,lf,'Usage:'
+		defb	tab,'IMPORT [-F][-H][-L][-T][-V] hostfilename [cpmfilename]',cr,lf
+		defb	cr,lf,'Where:'
+		defb	tab,'hostfilename is the name of the file to open on the host',cr,lf
+		defb	tab,spc,spc,spc,'(converted to uppercase by default), use -L to convert',cr,lf
+		defb	tab,spc,spc,spc,'to lowercase and [ to toggle case of next character.',cr,lf
+		defb	tab,'cpmfilename is the name of the imported file for CP/M.',cr,lf
+		defb	tab,'-F forces overwrite of exisiting file in CP/M.',cr,lf
+		defb	tab,'-H switches emulator to high speed and restores speed when done.',cr,lf
+		defb	tab,'-L converts hostfilename to lowercase.',cr,lf
+		defb	tab,'-T import text file (LF becomes CR LF, add SUB character at EOF).',cr,lf
+		defb	tab,'-V (verbose) display "r" for block read, "w" for block written.'
 m_crlf:		defb	cr,lf,'$'
 
 m_boption::	defb	'Invalid option "'
