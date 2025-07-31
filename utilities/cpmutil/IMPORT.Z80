@@ -462,10 +462,13 @@ cclose:
 ;		all registers trashed
 ;==============================================================================
 		bdos b_fclose,c_fcb1
-		ret z
+		inc a
+		jr z,cerror
+		xor a
+		ret
 
 	; display error message
-		bdos b_couts,m_cclose
+cerror:		bdos b_couts,m_cclose
 		xor a
 		dec a
 		ret			; ret nz
