@@ -251,8 +251,8 @@ static const struct {
   { "led",             opt_value,         0, 1, &trs_show_led         },
   { "lower",           opt_value,         0, 1, &lowercase            },
   { "lowercase",       opt_value,         0, 1, &lowercase            },
-  { "lsb",             opt_value,         0, 1, &lubomir              },
-  { "lubomir",         opt_value,         0, 1, &lubomir              },
+  { "lsb",             opt_memory,        0, 4, &lubomir              },
+  { "lubomir",         opt_memory,        0, 4, &lubomir              },
   { "micro",           opt_value,         0, 1, &grafyx_microlabs     },
   { "microlabs",       opt_value,         0, 1, &grafyx_microlabs     },
   { "m1",              opt_value,         0, 1, &trs_model            },
@@ -719,13 +719,19 @@ static void opt_memory(const char *arg, int intarg, int *variable)
       huffman  = 0;
       supermem = 0;
       break;
+    case LUBOMIR:
+      selector = 0;
+      supermem = 0;
+      break;
     case MEGAMEM:
       huffman  = 0;
       break;
     case SELECTOR:
+      lubomir  = 0;
       supermem = 0;
       break;
     case SUPERMEM:
+      lubomir  = 0;
       huffman  = 0;
       hypermem = 0;
       selector = 0;

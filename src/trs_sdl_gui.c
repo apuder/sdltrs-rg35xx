@@ -1777,16 +1777,18 @@ void gui_emulator_menu(void)
         break;
       case 6:
         lubomir = !lubomir;
+        if (lubomir)
+          selector = supermem = 0;
         break;
       case 7:
         selector = !selector;
         if (selector)
-          supermem = 0;
+          lubomir = supermem = 0;
         break;
       case 8:
         supermem = !supermem;
         if (supermem)
-          huffman = hypermem = selector = 0;
+          huffman = hypermem = lubomir = selector = 0;
         break;
       case 9:
         grafyx_microlabs = !grafyx_microlabs;
