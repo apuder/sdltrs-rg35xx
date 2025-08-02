@@ -103,6 +103,13 @@ float clock_mhz_4 = CLOCK_4_MHZ;
 #define LDOS4_DAY   0x0034
 #define LDOS4_YEAR  0x0033
 
+/* Set time and date for MultiDOS v1.7-v2.10 Model I */
+#define MDOS_SEC    0x4041
+#define MDOS_MIN    0x4042
+#define MDOS_HOUR   0x4043
+#define MDOS_YEAR   0x4044
+#define MDOS_DAY    0x4045
+#define MDOS_MONTH  0x4046
 /* Set time and date for MultiDOS v5.11-v6.20 Model 4 */
 #define MDOS4_SEC   0x4151
 #define MDOS4_MIN   0x4152
@@ -497,6 +504,13 @@ trs_timer_init(void)
         mem_poke(LDOS_MONTH,    (lt->tm_mon + 1) ^ 0x50);
         mem_poke(LDOS_DAY,       lt->tm_mday);
         mem_poke(LDOS_YEAR,      lt->tm_year - 80);
+
+        mem_poke(MDOS_MONTH,     lt->tm_mon + 1);
+        mem_poke(MDOS_DAY,       lt->tm_mday);
+        mem_poke(MDOS_YEAR,      lt->tm_year % 100);
+        mem_poke(MDOS_HOUR,      lt->tm_hour);
+        mem_poke(MDOS_MIN,       lt->tm_min);
+        mem_poke(MDOS_SEC,       lt->tm_sec);
 
         mem_poke(NEWDOS_DATETIME_VALID_ADDR, NEWDOS_DATETIME_VALID_BYTE);
         if (trs_charset1 == 10) { /* Genie/German */
