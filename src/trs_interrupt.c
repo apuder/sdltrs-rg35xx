@@ -95,6 +95,14 @@ float clock_mhz_4 = CLOCK_4_MHZ;
 #define LDOS4_DAY   0x0034
 #define LDOS4_YEAR  0x0033
 
+/* Set time and date for MultiDOS v5.11-v6.20 Model 4 */
+#define MDOS4_SEC   0x4151
+#define MDOS4_MIN   0x4152
+#define MDOS4_HOUR  0x4153
+#define MDOS4_YEAR  0x4154
+#define MDOS4_DAY   0x4155
+#define MDOS4_MONTH 0x4156
+
 /* Kludge, continued: On NEWDOS/80, both date and time are stored in memory
    across reboots, but a test is done on boot to decide whether to use the
    stored values.  Here's how it works: NEWDOS/80 writes a special byte value
@@ -511,6 +519,13 @@ trs_timer_init(void)
           mem_poke(LDOS4_MONTH,  lt->tm_mon + 1);
           mem_poke(LDOS4_DAY,    lt->tm_mday);
           mem_poke(LDOS4_YEAR,   lt->tm_year);
+
+          mem_poke(MDOS4_MONTH,  lt->tm_mon + 1);
+          mem_poke(MDOS4_DAY,    lt->tm_mday);
+          mem_poke(MDOS4_YEAR,   lt->tm_year % 100);
+          mem_poke(MDOS4_HOUR,   lt->tm_hour);
+          mem_poke(MDOS4_MIN,    lt->tm_min);
+          mem_poke(MDOS4_SEC,    lt->tm_sec);
         }
     }
   }
