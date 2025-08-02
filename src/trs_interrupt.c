@@ -83,6 +83,14 @@ float clock_mhz_1 = CLOCK_1_MHZ;
 float clock_mhz_3 = CLOCK_2_MHZ;
 float clock_mhz_4 = CLOCK_4_MHZ;
 
+/* Set time and date for DOSPLUS IV */
+#define DOSP4_SEC   0x00A4
+#define DOSP4_MIN   0x00A5
+#define DOSP4_HOUR  0x00A6
+#define DOSP4_YEAR  0x00A7
+#define DOSP4_DAY   0x00A8
+#define DOSP4_MONTH 0x00A9
+
 /* Kludge: LDOS hides the date (not time) in a memory area across reboots. */
 /* We put it there on powerup, so LDOS magically knows the date! */
 #define LDOS_MONTH  0x4306
@@ -516,6 +524,13 @@ trs_timer_init(void)
         mem_poke(NEWDOS3_SEC,    lt->tm_sec);
 
         if (trs_model >= 4) {
+          mem_poke(DOSP4_MONTH,  lt->tm_mon + 1);
+          mem_poke(DOSP4_DAY,    lt->tm_mday);
+          mem_poke(DOSP4_YEAR,   lt->tm_year % 100);
+          mem_poke(DOSP4_HOUR,   lt->tm_hour);
+          mem_poke(DOSP4_MIN,    lt->tm_min);
+          mem_poke(DOSP4_SEC,    lt->tm_sec);
+
           mem_poke(LDOS4_MONTH,  lt->tm_mon + 1);
           mem_poke(LDOS4_DAY,    lt->tm_mday);
           mem_poke(LDOS4_YEAR,   lt->tm_year);
