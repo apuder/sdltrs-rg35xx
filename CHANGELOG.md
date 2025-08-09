@@ -1,3 +1,15 @@
+## Version 1.2.33 Release 08-09-2025:
+
+ * Added Solid State Disk (RAM-Disk) for Aster CT-80.
+ * Added character set for Aster CT-80 CP/M.
+ * Added debugger command to show hard disk controller state.
+ * Added debugger commands to fill and move memory.
+ * Added support for 8 Disk Drives (TCS SpeedMaster/Genie IIs/IIIs).
+ * Added function to copy the emulator screen to printer file.
+ * Fixed Aster CT-80 emulation to run CP/M (thanks to Wim Nelis).
+ * Fixed CP/M utilities (reported by Wim Nelis).
+ * Fixed some bugs and internal improvements.
+
 ## Version 1.2.32 Release 04-06-2025:
 
  * Added support for TCS Genie IIIs HRG pages.

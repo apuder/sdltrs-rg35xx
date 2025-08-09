@@ -2580,7 +2580,7 @@ void gui_about(void)
   gui_clear();
   gui_write(" About ", 0, 0, 4);
   gui_write("SDL2TRS", 0, 3, 4);
-  gui_write("Version 1.2.32", 0, 4, 4);
+  gui_write("Version 1.2.33", 0, 4, 4);
   gui_write("BSD 2-Clause License", 0, 5, 4);
   gui_write("Copyright (C) 2006-2011 Mark Grebe, 2018-2025", 0, 6, 4);
   gui_write("Alan Cox, Jens Guenther, Leonardo Brondani Schenkel", 0, 7, 4);
