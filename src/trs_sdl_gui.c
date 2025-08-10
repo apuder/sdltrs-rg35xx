@@ -759,8 +759,10 @@ redraw:
   col = pos > 60 ? pos - 59 : 0;
 
   gui_rect(1, 6, 62, 3, 1);
-  gui_text(insert ? " INS " : " OVR ", 56, 8, 6, 5);
   gui_write(title, 0, 6, 4);
+
+  if (insert)
+    gui_text(" INS ", 56, 8, 6, 5);
 
   if (file)
     gui_write(" TAB:Select Directory ", 0, 8, 5);
