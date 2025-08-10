@@ -290,7 +290,7 @@ int gui_key(void)
 #endif
             case SDLK_q:
             case SDLK_END:
-              trs_exit(1);
+              trs_exit(!(SDL_GetModState() & KMOD_SHIFT));
               break;
             case SDLK_BACKSPACE:
               return SDLK_F9;
