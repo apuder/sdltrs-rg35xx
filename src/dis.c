@@ -55,7 +55,7 @@
 #define A_8R  0x101  /* 8-bit relative address */
 #define A_8X2 0x102  /* Two 8-bit numbers */
 
-/* Argument formating */
+/* Argument formatting */
 #define X_8   "%02xh"
 #define X_8R  "%04xh"
 #define X_16  "%02x%02xh"
