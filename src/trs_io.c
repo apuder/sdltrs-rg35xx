@@ -116,10 +116,10 @@ static void m6845_crtc(int value)
       value &= 0x1F;
       m6845.cer = value > m6845.ras ? m6845.ras : value;
       break;
-    case 0x0C: /* Start Address LSB */
+    case 0x0C: /* Start Address MSB */
       m6845.sta = ((value & 0x3F) << 8) | (m6845.sta & 0x00FF);
       return;
-    case 0x0D: /* Start Address MSB */
+    case 0x0D: /* Start Address LSB */
       m6845.sta = ((value & 0xFF) << 0) | (m6845.sta & 0xFF00);
       switch (trs_clones.model) {
         case CT80:
@@ -130,10 +130,10 @@ static void m6845_crtc(int value)
           return;
       }
       return;
-    case 0x0E: /* Cursor LSB */
+    case 0x0E: /* Cursor MSB */
       m6845.pos = ((value & 0x3F) << 8) | (m6845.pos & 0x00FF);
       return;
-    case 0x0F: /* Cursor MSB */
+    case 0x0F: /* Cursor LSB */
       m6845.pos = ((value & 0xFF) << 0) | (m6845.pos & 0xFF00);
       if (m6845.pos != m6845.old) {
         if (m6845.vis)
@@ -757,10 +757,10 @@ int z80_in(int port)
             break;
           case 0xF7:
             switch (m6845_reg) {
-              case 0x0E: /* Cursor LSB */
+              case 0x0E: /* Cursor MSB */
                 value = (m6845.pos >> 8) & 0xFF;
                 break;
-              case 0x0F: /* Cursor MSB */
+              case 0x0F: /* Cursor LSB */
                 value = (m6845.pos >> 0) & 0xFF;
                 break;
             }
@@ -820,10 +820,10 @@ int z80_in(int port)
             break;
           case 0xF7:
             switch (m6845_reg) {
-              case 0x0E: /* Cursor LSB */
+              case 0x0E: /* Cursor MSB */
                 value = (m6845.pos >> 8) & 0xFF;
                 break;
-              case 0x0F: /* Cursor MSB */
+              case 0x0F: /* Cursor LSB */
                 value = (m6845.pos >> 0) & 0xFF;
                 break;
             }
