@@ -971,14 +971,12 @@ int mem_read(int address)
         return hrg_read_data();
       }
       if ((sys_byte_2 & (1 << 0)) == 0) {
-        if (sys_byte_2 & (1 << 1) && address <= 0x3700)
-          return memory[address];
+        if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
+          return rom[address];
         if (address >= VIDEO_START && address < RAM_START)
           return mem_video_page_read(address);
         if (address >= 0x37E0 && address <= 0x38FF)
           return trs80_model1_mmio(address);
-        if (address <= 0x2FFF)
-          return rom[address];
       } else {
         /* CP/M mode: Video RAM, Disk I/O, Printer, Keyboard */
         if (address >= 0xFC00)
@@ -1681,12 +1679,10 @@ Uint8 *mem_pointer(int address, int writing)
         /* HRG in low 16K */
         return NULL;
       if ((sys_byte_2 & (1 << 0)) == 0) {
-        if (sys_byte_2 & (1 << 1) && address <= 0x3700)
-          return &memory[address];
+        if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
+          return writing ? NULL : &rom[address];
         if (address >= VIDEO_START && address < RAM_START)
           return mem_video_page_addr(address);
-        if (address <= 0x2FFF && writing == 0)
-          return &rom[address];
       } else {
         /* CP/M mode: Video RAM */
         if (address >= 0xFC00)
