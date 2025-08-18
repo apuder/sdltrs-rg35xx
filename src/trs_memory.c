@@ -385,7 +385,7 @@ Uint8 ct80_ramdisk_in(int port)
     case 7:
       return bank_offset[2];
   }
-  return 0;
+  return 0xFF; /* nonexistent memory address */
 }
 
 void ct80_video_addr(int address)
