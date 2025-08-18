@@ -163,18 +163,6 @@ Uint8 *mem_video_page_addr(int vaddr)
   return NULL;
 }
 
-void mem_video_start(int address)
-{
-  if (video_addr != address) {
-    int i;
-
-    video_addr = address;
-    /* Kludge for Aster CT-80 to scroll the 80*25 video page */
-    for (i = 0; i < 0x800; i++)
-      trs_screen_write_char(i, video[i] = video[i + 80]);
-  }
-}
-
 void mem_bank(int command)
 {
   switch (command) {
@@ -398,6 +386,18 @@ Uint8 ct80_ramdisk_in(int port)
       return bank_offset[2];
   }
   return 0;
+}
+
+void ct80_video_addr(int address)
+{
+  if (video_addr != address) {
+    int i;
+
+    video_addr = address;
+    /* Scroll Aster CT-80 80*25 video page one line up */
+    for (i = 0; i < 0x800; i++)
+      trs_screen_write_char(i, video[i] = video[i + 80]);
+  }
 }
 
 void eg3200_bank_out(int value)

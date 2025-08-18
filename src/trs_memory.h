@@ -36,7 +36,6 @@ extern void   mem_video_page(int offset);
 extern Uint8  mem_video_page_read(int vaddr);
 extern int    mem_video_page_write(int vaddr, Uint8 value);
 extern Uint8 *mem_video_page_addr(int vaddr);
-extern void   mem_video_start(int address);
 
 extern int    get_mem_map(void);
 extern void   mem_bank(int which);
@@ -49,6 +48,7 @@ extern void   megamem_out(int mem_slot, Uint8 value);
 
 extern void   ct80_ramdisk_out(int port, Uint8 byte);
 extern Uint8  ct80_ramdisk_in(int port);
+extern void   ct80_video_addr(int address);
 
 extern void   eg64_mba_out(int value);
 extern void   lnw80_bank_out(int value);

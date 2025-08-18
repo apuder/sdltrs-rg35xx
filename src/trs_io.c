@@ -123,7 +123,7 @@ static void m6845_crtc(int value)
       m6845.sta = ((value & 0xFF) << 0) | (m6845.sta & 0xFF00);
       switch (trs_clones.model) {
         case CT80:
-          mem_video_start(m6845.sta);
+          ct80_video_addr(m6845.sta);
           return;
         case GENIE3S:
           mem_video_page(1024 - m6845.sta);
