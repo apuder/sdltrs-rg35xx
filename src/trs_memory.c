@@ -707,13 +707,12 @@ int get_mem_map(void)
 
 void mem_map(int which)
 {
-  memory_map = which + (trs_model << 4) + (romin << 2);
+  memory_map = which + (trs_model << 4);
 }
 
 void mem_romin(int state)
 {
-  romin = (state & 1);
-  memory_map = (memory_map & ~4) + (romin << 2);
+  romin = state;
 }
 
 /*
@@ -1031,13 +1030,11 @@ int mem_read(int address)
       if (address < trs_rom_size) return rom[address];
       break;
 
-    case 0x54: /* Model 4P map 0, boot ROM in */
-    case 0x55: /* Model 4P map 1, boot ROM in */
-      if (address < trs_rom_size) return rom[address];
-      /* else fall thru */
+    case 0x50: /* Model 4P map 0 */
+    case 0x51: /* Model 4P map 1 */
+      if (romin && address < trs_rom_size) return rom[address];
+      /* Fall through */
     case 0x41: /* Model 4  map 1 */
-    case 0x50: /* Model 4P map 0, boot ROM out */
-    case 0x51: /* Model 4P map 1, boot ROM out */
       if (address >= RAM_START || address < KEYBOARD_START) {
         return memory[address + bank_offset[address >> 15]];
       }
@@ -1046,8 +1043,7 @@ int mem_read(int address)
       break;
 
     case 0x42: /* Model 4  map 2 */
-    case 0x52: /* Model 4P map 2, boot ROM out */
-    case 0x56: /* Model 4P map 2, boot ROM in */
+    case 0x52: /* Model 4P map 2 */
       if (address < 0xF400) {
         return memory[address + bank_offset[address >> 15]];
       }
@@ -1055,8 +1051,7 @@ int mem_read(int address)
       return trs_kb_mem_read(address);
 
     case 0x43: /* Model 4  map 3 */
-    case 0x53: /* Model 4P map 3, boot ROM out */
-    case 0x57: /* Model 4P map 3, boot ROM in */
+    case 0x53: /* Model 4P map 3 */
       return memory[address + bank_offset[address >> 15]];
   }
 
@@ -1433,8 +1428,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x40: /* Model 4  map 0 */
-    case 0x50: /* Model 4P map 0, boot ROM out */
-    case 0x54: /* Model 4P map 0, boot ROM in */
+    case 0x50: /* Model 4P map 0 */
       if (address >= RAM_START) {
         memory[address + bank_offset[address >> 15]] = value;
       } else if (address >= VIDEO_START) {
@@ -1444,8 +1438,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x41: /* Model 4  map 1 */
-    case 0x51: /* Model 4P map 1, boot ROM out */
-    case 0x55: /* Model 4P map 1, boot ROM in */
+    case 0x51: /* Model 4P map 1 */
       if (address >= RAM_START || address < KEYBOARD_START) {
         memory[address + bank_offset[address >> 15]] = value;
       } else if (address >= VIDEO_START) {
@@ -1455,8 +1448,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x42: /* Model 4  map 2 */
-    case 0x52: /* Model 4P map 2, boot ROM out */
-    case 0x56: /* Model 4P map 2, boot ROM in */
+    case 0x52: /* Model 4P map 2 */
       if (address < 0xF400) {
         memory[address + bank_offset[address >> 15]] = value;
       } else if (address >= 0xF800) {
@@ -1465,8 +1457,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x43: /* Model 4  map 3 */
-    case 0x53: /* Model 4P map 3, boot ROM out */
-    case 0x57: /* Model 4P map 3, boot ROM in */
+    case 0x53: /* Model 4P map 3 */
       memory[address + bank_offset[address >> 15]] = value;
       break;
   }
@@ -1728,13 +1719,12 @@ Uint8 *mem_pointer(int address, int writing)
       if (address < trs_rom_size && writing == 0) return &rom[address];
       break;
 
-    case 0x54: /* Model 4P map 0, boot ROM in */
-    case 0x55: /* Model 4P map 1, boot ROM in */
-      if (address < trs_rom_size && writing == 0) return &rom[address];
-      /* else fall thru */
+    case 0x50: /* Model 4P map 0 */
+    case 0x51: /* Model 4P map 1 */
+      if (romin && address < trs_rom_size && writing == 0)
+        return &rom[address];
+      /* Fall through */
     case 0x41: /* Model 4  map 1 */
-    case 0x50: /* Model 4P map 0, boot ROM out */
-    case 0x51: /* Model 4P map 1, boot ROM out */
       if (address >= RAM_START || address < KEYBOARD_START) {
         return &memory[address + bank_offset[address >> 15]];
       }
@@ -1742,8 +1732,7 @@ Uint8 *mem_pointer(int address, int writing)
       break;
 
     case 0x42: /* Model 4  map 2 */
-    case 0x52: /* Model 4P map 2, boot ROM out */
-    case 0x56: /* Model 4P map 2, boot ROM in */
+    case 0x52: /* Model 4P map 2 */
       if (address < 0xF400) {
         return &memory[address + bank_offset[address >> 15]];
       }
@@ -1751,8 +1740,7 @@ Uint8 *mem_pointer(int address, int writing)
       break;
 
     case 0x43: /* Model 4  map 3 */
-    case 0x53: /* Model 4P map 3, boot ROM out */
-    case 0x57: /* Model 4P map 3, boot ROM in */
+    case 0x53: /* Model 4P map 3 */
       return &memory[address + bank_offset[address >> 15]];
   }
 
