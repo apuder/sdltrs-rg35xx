@@ -50,6 +50,8 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support Alpha Technology SuperMem for TRS-80 Model 4/4P
   * Emulate LNW80 Model II banking and 80x24 text mode
   * Emulate Real Time Clock/Calendar Card [RTCC] for TRS-80 Model I
+  * Support Solid State Disk for Aster CT-80
+  * Support 8 Disk Drives for TCS SpeedMaster/Genie IIs and IIIs
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
