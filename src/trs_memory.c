@@ -99,10 +99,9 @@ static Uint32 bank_base = 0x10000;
 static int megamem_addr;
 static Uint32 megamem_base;
 static Uint8 mem_command;
-static int romin; /* Model 4P */
 static int supermem_base;
 static Uint32 supermem_high;
-static int sys_byte;
+static int sys_byte;   /* Various clones and 4P boot ROM */
 static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
@@ -602,9 +601,9 @@ void trs_reset(int poweron)
   megamem_addr = 0;
   megamem_base = 0;
   mem_command = 0;
-  romin = 0;
   supermem_base = 0;
   supermem_high = 0x8000;
+  sys_byte = sys_byte_2 = 0;
   trs_emu_mouse = 0;
 
   /* Close disks opened by Z80 programs */
@@ -646,7 +645,7 @@ void trs_reset(int poweron)
 
   if (trs_model == 5) {
     /* Switch in boot ROM */
-    z80_out(0x9C, 1);
+    sys_byte = 1;
   }
 
   if (trs_model >= 4) {
@@ -675,7 +674,6 @@ void trs_reset(int poweron)
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     bank_base = 0;
-    sys_byte = sys_byte_2 = 0;
     trs_interrupt_latch_clear();
     trs_screen_mode(INVERSE, 0);
     trs_screen_80x24(0);
@@ -712,7 +710,7 @@ void mem_map(int which)
 
 void mem_romin(int state)
 {
-  romin = state;
+  sys_byte = state;
 }
 
 /*
@@ -1032,7 +1030,7 @@ int mem_read(int address)
 
     case 0x50: /* Model 4P map 0 */
     case 0x51: /* Model 4P map 1 */
-      if (romin && address < trs_rom_size) return rom[address];
+      if (sys_byte && address < trs_rom_size) return rom[address];
       /* Fall through */
     case 0x41: /* Model 4  map 1 */
       if (address >= RAM_START || address < KEYBOARD_START) {
@@ -1721,7 +1719,7 @@ Uint8 *mem_pointer(int address, int writing)
 
     case 0x50: /* Model 4P map 0 */
     case 0x51: /* Model 4P map 1 */
-      if (romin && address < trs_rom_size && writing == 0)
+      if (sys_byte && address < trs_rom_size && writing == 0)
         return &rom[address];
       /* Fall through */
     case 0x41: /* Model 4  map 1 */
@@ -1758,7 +1756,6 @@ void trs_mem_save(FILE *file)
   trs_save_int(file, &memory_map, 1);
   trs_save_int(file, bank_offset, 3);
   trs_save_int(file, &video_addr, 1);
-  trs_save_int(file, &romin, 1);
   trs_save_uint32(file, &bank_base, 1);
   trs_save_uint8(file, &mem_command, 1);
   trs_save_int(file, &huffman, 1);
@@ -1786,7 +1783,6 @@ void trs_mem_load(FILE *file)
   trs_load_int(file, &memory_map, 1);
   trs_load_int(file, bank_offset, 3);
   trs_load_int(file, &video_addr, 1);
-  trs_load_int(file, &romin, 1);
   trs_load_uint32(file, &bank_base, 1);
   trs_load_uint8(file, &mem_command, 1);
   trs_load_int(file, &huffman, 1);
