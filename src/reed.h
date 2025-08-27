@@ -1,7 +1,6 @@
 /* Matthew Reed's hard drive format.  Thanks to Matthew for providing
    documentation.  The comments below are copied from his mail
-   messages, with some additions. HDV 1.0 File Format (HDV1):
-   http://www.trs-80emulators.com/hdv1-format/ */
+   messages, with some additions. */
 
 #ifndef _REED_H
 #define _REED_H
@@ -11,8 +10,14 @@
 typedef struct {
   Uint8 id1;       /* 0: Identifier #1: 56H */
   Uint8 id2;       /* 1: Identifier #2: CBH */
-  Uint8 ver;       /* 2: Version of format: 10H = version 1.0 */
-  Uint8 cksum;     /* 3: checksum (not used) */
+  Uint8 ver;       /* 2: Version of format:
+			 10H = version 1.0, created by Reed emulator or xtrs.
+			 11H = version 1.1, created by Keil emulator.
+			 xtrs assumes 1.1 and 1.0 don't differ significantly. */
+  Uint8 cksum;     /* 3: Simple checksum (not used):
+			 To calculate, add together bytes 0 to 31
+			 of header (excepting byte 3), then XOR
+			 result with 4CH */
   Uint8 blks;      /* 4: Number of 256 byte blocks in header: must be 1 */
   Uint8 mb4;       /* 5: Must be 4 */
   Uint8 media;     /* 6: Media type (must be 0 for hard disk) */
