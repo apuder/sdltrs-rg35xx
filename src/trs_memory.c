@@ -643,6 +643,9 @@ void trs_reset(int poweron)
     trs_schedule_event(trs_reset_button_interrupt, 0, 2000);
   }
 
+  /* Set 64*16 video mode */
+  trs_screen_80x24(0);
+
   if (trs_model == 5) {
     /* Switch in boot ROM */
     sys_byte = 1;
@@ -662,7 +665,6 @@ void trs_reset(int poweron)
     grafyx_write_mode(0);
     trs_interrupt_mask_write(0);
     trs_nmi_mask_write(0);
-    trs_screen_80x24(0);
   }
 
   if (trs_model == 3) {
@@ -676,7 +678,6 @@ void trs_reset(int poweron)
     bank_base = 0;
     trs_interrupt_latch_clear();
     trs_screen_mode(INVERSE, 0);
-    trs_screen_80x24(0);
 
     switch (speedup) {
       case 5: /* Aster CT-80 */
