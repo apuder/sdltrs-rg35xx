@@ -128,6 +128,7 @@ extern int  trs_kb_bracket_state;
 
 extern int aspect_ratio;
 extern int border_width;
+extern int lowercase;
 extern int scale;
 extern int resize3;
 extern int resize4;
@@ -204,16 +205,6 @@ extern void trs_disk_debug(void);
 extern void trs_hard_debug(void);
 #endif
 extern int  trs_disk_motoroff(void);
-
-extern int huffman;
-extern int hypermem;
-extern int megamem;
-extern int supermem;
-extern int selector;
-
-extern int lowercase;
-extern int lubomir;
-extern int stringy;
 
 extern void  eg3200_init_out(int value);
 extern void  eg3210_char(int character, int scanline, int byte);

@@ -44,6 +44,7 @@
 #include "trs.h"
 #include "trs_disk.h"
 #include "trs_memory.h"
+#include "trs_stringy.h"
 
 #define BUFFER_SIZE 256
 

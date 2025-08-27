@@ -19,6 +19,13 @@
 #define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
 #define TCS_GENIE3S     (9) /* TCS Genie IIIs 1024 KB */
 
+extern int    huffman;
+extern int    hypermem;
+extern int    lubomir;
+extern int    megamem;
+extern int    selector;
+extern int    supermem;
+
 extern int    trs80_model3_mem_read(int address);
 extern void   trs80_model3_mem_write(int address, int value);
 extern Uint8 *trs80_model3_mem_addr(int address, int writing);
@@ -43,14 +50,13 @@ extern void   mem_map(int which);
 extern void   mem_card_out(int card, int bits);
 extern int    mem_card_in(int card);
 
-extern void   megamem_out(int mem_slot, Uint8 value);
-
 extern void   ct80_ramdisk_out(int port, Uint8 byte);
 extern Uint8  ct80_ramdisk_in(int port);
 extern void   ct80_video_addr(int address);
 
 extern void   eg64_mba_out(int value);
 extern void   lnw80_bank_out(int value);
+extern void   megamem_out(int mem_slot, Uint8 value);
 extern void   s80z_out(int value);
 extern void   sys_byte_out(int value);
 extern void   sys_byte_write(int value);

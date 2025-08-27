@@ -25,6 +25,8 @@
 #ifndef _TRS_STRINGY_H
 #define _TRS_STRINGY_H
 
+extern int  stringy;
+
 extern void stringy_init(void);
 extern const char *stringy_get_name(int unit);
 extern int  stringy_get_writeprotect(int unit);
