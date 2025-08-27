@@ -42,7 +42,6 @@ extern void   mem_bank(int which);
 extern void   mem_map(int which);
 extern void   mem_card_out(int card, int bits);
 extern int    mem_card_in(int card);
-extern void   mem_romin(int state);
 
 extern void   megamem_out(int mem_slot, Uint8 value);
 
@@ -54,6 +53,7 @@ extern void   eg64_mba_out(int value);
 extern void   lnw80_bank_out(int value);
 extern void   s80z_out(int value);
 extern void   sys_byte_out(int value);
+extern void   sys_byte_write(int value);
 extern int    sys_byte_in(void);
 extern int    sys_byte_2_in(void);
 

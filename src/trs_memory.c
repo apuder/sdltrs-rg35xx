@@ -399,11 +399,6 @@ void ct80_video_addr(int address)
   }
 }
 
-void eg3200_bank_out(int value)
-{
-  sys_byte = value & 0x0F;
-}
-
 void eg3200_init_out(int value)
 {
   memory_map = 0x23;
@@ -540,6 +535,11 @@ void sys_byte_out(int value)
       break;
   }
 
+  sys_byte = value;
+}
+
+void sys_byte_write(int value)
+{
   sys_byte = value;
 }
 
@@ -706,11 +706,6 @@ int get_mem_map(void)
 void mem_map(int which)
 {
   memory_map = which + (trs_model << 4);
-}
-
-void mem_romin(int state)
-{
-  sys_byte = state;
 }
 
 /*

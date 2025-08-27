@@ -215,7 +215,6 @@ extern int lowercase;
 extern int lubomir;
 extern int stringy;
 
-extern void  eg3200_bank_out(int value);
 extern void  eg3200_init_out(int value);
 extern void  eg3210_char(int character, int scanline, int byte);
 

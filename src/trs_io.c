@@ -266,7 +266,7 @@ void z80_out(int port, int value)
             m6845_crtc(value);
             break;
           case 0xFA:
-            eg3200_bank_out(value);
+            sys_byte_write(value & 0x0F);
             break;
           case 0xFD:
             trs_printer_write(value);
@@ -589,8 +589,8 @@ void z80_out(int port, int value)
       case 0x9D:
       case 0x9E:
       case 0x9F:
-        if (trs_model == 5 /*4P*/)
-          mem_romin(value & 1);
+        if (trs_model == 5) /* Switch 4P boot ROM in/out */
+          sys_byte_write(value & 1);
         return;
       case 0xE0:
       case 0xE1:
