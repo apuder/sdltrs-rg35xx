@@ -38,7 +38,6 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <SDL_types.h>
 #include "error.h"
 #include "trs.h"
@@ -712,15 +711,10 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
   return LOAD_CMD_OK;
 }
 
-static int hex_byte(const char *string)
+static int hex_byte(const char *hex)
 {
-  char buf[3];
-
-  buf[0] = string[0];
-  buf[1] = string[1];
-  buf[2] = '\0';
-
-  return(strtol(buf, (char **)NULL, 16));
+  return ((hex[0] - (hex[0] <= '9' ? '0' : '7')) * 16)
+         + hex[1] - (hex[1] <= '9' ? '0' : '7');
 }
 
 static int load_hex(FILE *file)
