@@ -2156,9 +2156,10 @@ int disassemble(int pc)
 	printf (code->name, (pc + 1 + (signed char) mem_read(pc)) & 0xFFFF);
 	break;
     }
+
     putchar ('\n');
 
-    pc += arglen(code->args);
-    return pc;  /* return the location of the next instruction */
+    /* return the location of the next instruction */
+    return pc + arglen(code->args);
 }
 #endif
