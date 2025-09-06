@@ -319,19 +319,6 @@ int mem_card_in(int card)
   }
 }
 
-void megamem_out(int mem_slot, Uint8 value)
-{
-  if (mem_slot == 0 && value == 0) {
-    megamem_addr = 0;
-    megamem_base = 0;
-  } else {
-    megamem_addr = (value & 0xC0) * 256;
-    megamem_base = (((value - (value & 0xC0)) * 16)
-                 + (mem_slot * 1024)) * 1024
-                 + MEGAMEM_START;
-  }
-}
-
 void ct80_ramdisk_out(int port, Uint8 byte)
 {
   switch (port & 0x07) {
@@ -500,6 +487,38 @@ void lnw80_bank_out(int value)
   sys_byte_2 = value;
 }
 
+void megamem_out(int mem_slot, Uint8 value)
+{
+  if (mem_slot == 0 && value == 0) {
+    megamem_addr = 0;
+    megamem_base = 0;
+  } else {
+    megamem_addr = (value & 0xC0) * 256;
+    megamem_base = (((value - (value & 0xC0)) * 16)
+                 + (mem_slot * 1024)) * 1024
+                 + MEGAMEM_START;
+  }
+}
+
+void s80z_out(int value)
+{
+  if ((value & (1 << 2)) != (sys_byte & (1 << 2))) {
+    if (value & (1 << 2)) {
+      if (speedup == 4)
+        video_addr = 0x3900; /* Homebrew 80*22 SYS80.SYS */
+      else
+        video_addr = (value & (1 << 1)) ? 0xB000 : 0xF000;
+    } else {
+      video_addr = VIDEO_START;
+    }
+
+    trs_screen_mode(INVERSE, value & (1 << 2));
+  }
+
+  sys_byte = value;
+  memory_map = 0x20;
+}
+
 void sys_byte_out(int value)
 {
   if (value == sys_byte)
@@ -551,25 +570,6 @@ int sys_byte_in(void)
 int sys_byte_2_in(void)
 {
   return sys_byte_2;
-}
-
-void s80z_out(int value)
-{
-  if ((value & (1 << 2)) != (sys_byte & (1 << 2))) {
-    if (value & (1 << 2)) {
-      if (speedup == 4)
-        video_addr = 0x3900; /* Homebrew 80*22 SYS80.SYS */
-      else
-        video_addr = (value & (1 << 1)) ? 0xB000 : 0xF000;
-    } else {
-      video_addr = VIDEO_START;
-    }
-
-    trs_screen_mode(INVERSE, value & (1 << 2));
-  }
-
-  sys_byte = value;
-  memory_map = 0x20;
 }
 
 static void mem_init(void)
