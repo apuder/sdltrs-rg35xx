@@ -776,9 +776,13 @@ static void opt_printer(const char *arg, int intarg, int *stringarg)
     case '0':
       trs_printer = 0;
       break;
-    case 't': /* text */
+    case 'f': /* file */
     case '1':
       trs_printer = 1;
+      break;
+    case 't': /* text */
+    case '2':
+      trs_printer = 2;
       break;
     default:
       error("unknown printer type: '%s'", arg);
@@ -1193,7 +1197,11 @@ int trs_write_config_file(const char *filename)
       trs_model == 5 ? 4 : trs_model, trs_model == 5 ? "P" : "");
 
   fprintf(config_file, "%smousepointer\n", option(mousepointer));
-  fprintf(config_file, "printer=%s\n", trs_printer ? "text" : "none");
+
+  fprintf(config_file, "printer=%s\n",
+      trs_printer == 1 ? "file" :
+      trs_printer == 2 ? "text" : "none");
+
   fprintf(config_file, "printerdir=%s\n", trs_printer_dir);
   fprintf(config_file, "%sresize3\n", option(resize3));
   fprintf(config_file, "%sresize4\n", option(resize4));

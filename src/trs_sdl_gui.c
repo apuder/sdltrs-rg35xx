@@ -2036,7 +2036,7 @@ void gui_misc_menu(void)
    {"Turbo Speed                                             ", ENTRY},
    {"Turbo Paste                                             ", ENTRY},
    {"", 0}};
-  const char *printer[] = {"     None", "     Text"};
+  const char *printer[] = {"     None", "     File", "     Text"};
   int selection = 0;
 
   while (1) {
@@ -2085,7 +2085,7 @@ void gui_misc_menu(void)
         }
         break;
       case 4:
-        trs_printer = !trs_printer;
+        trs_printer = gui_popup("Printer", printer, 3, trs_printer);
         break;
       case 6:
         filename[0] = 0;

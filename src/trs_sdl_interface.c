@@ -491,11 +491,7 @@ static void trs_screen_print(void)
   int pos;
 
   for (pos = 0; pos < screen_chars ;) {
-    int byte = trs_screen[pos] & 0x7F;
-
-    if (byte < ' ') byte = '.';
-    trs_printer_write(byte);
-
+    trs_printer_write(trs_screen[pos]);
     if ((++pos) % cols == 0)
       trs_printer_write('\n');
   }
