@@ -2854,6 +2854,7 @@ static int do_ED_instruction(void)
       case 0x2e:	/* SSPD A (David Keil) */
 	turbo_mode = ((Z80_A & (1 << 2)) != 0);
 	trs_timer_mode(turbo_mode);
+	trs_timer_speed(Z80_A & 0x03);
 	break;
       case 0x2f:	/* emt_debug */
 	if (trs_continuous > 0) trs_continuous = 0;
