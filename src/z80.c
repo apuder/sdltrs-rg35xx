@@ -2352,14 +2352,14 @@ static void do_indexed_instruction(Uint16 *ixp)
 	      T_COUNT(23);
 	      break;
 
-	    case 0x40:  /* bit 0, (ix + offset) */
-	    case 0x48:  /* bit 1, (ix + offset) */
-	    case 0x50:  /* bit 2, (ix + offset) */
-	    case 0x58:  /* bit 3, (ix + offset) */
-	    case 0x60:  /* bit 4, (ix + offset) */
-	    case 0x68:  /* bit 5, (ix + offset) */
-	    case 0x70:  /* bit 6, (ix + offset) */
-	    case 0x78:  /* bit 7, (ix + offset) */
+	    case 0x40:	/* bit 0, (ix + offset) */
+	    case 0x48:	/* bit 1, (ix + offset) */
+	    case 0x50:	/* bit 2, (ix + offset) */
+	    case 0x58:	/* bit 3, (ix + offset) */
+	    case 0x60:	/* bit 4, (ix + offset) */
+	    case 0x68:	/* bit 5, (ix + offset) */
+	    case 0x70:	/* bit 6, (ix + offset) */
+	    case 0x78:	/* bit 7, (ix + offset) */
 	      do_test_bit(sub_instruction, mem_read(*ixp + offset),
 			  (sub_instruction >> 3) & 7);
 	      T_COUNT(20);
@@ -2399,13 +2399,13 @@ static void do_indexed_instruction(Uint16 *ixp)
 	    switch (sub_instruction & 7)
 	    {
 	      /* Undocumented cases */
-	      case 0:  Z80_B = result; break;
-	      case 1:  Z80_C = result; break;
-	      case 2:  Z80_D = result; break;
-	      case 3:  Z80_E = result; break;
-	      case 4:  Z80_H = result; break;
-	      case 5:  Z80_L = result; break;
-	      case 7:  Z80_A = result; break;
+	      case 0:	Z80_B = result; break;
+	      case 1:	Z80_C = result; break;
+	      case 2:	Z80_D = result; break;
+	      case 3:	Z80_E = result; break;
+	      case 4:	Z80_H = result; break;
+	      case 5:	Z80_L = result; break;
+	      case 7:	Z80_A = result; break;
 	    }
 	  }
         }
@@ -2839,27 +2839,27 @@ static int do_ED_instruction(void)
 	break;
 
       /* Emulator traps -- not real Z80 instructions */
-      case 0x28:        /* emt_system */
+      case 0x28:	/* emt_system */
 	do_emt_system();
 	break;
-      case 0x29:        /* emt_mouse */
+      case 0x29:	/* emt_mouse */
 	do_emt_mouse();
 	break;
-      case 0x2a:        /* emt_getddir */
+      case 0x2a:	/* emt_getddir */
 	do_emt_getddir();
 	break;
-      case 0x2b:        /* emt_setddir */
+      case 0x2b:	/* emt_setddir */
 	do_emt_setddir();
 	break;
-      case 0x2e:        /* SSPD A (David Keil) */
+      case 0x2e:	/* SSPD A (David Keil) */
 	turbo_mode = ((Z80_A & (1 << 2)) != 0);
 	trs_timer_mode(turbo_mode);
 	break;
-      case 0x2f:        /* emt_debug */
+      case 0x2f:	/* emt_debug */
 	if (trs_continuous > 0) trs_continuous = 0;
 	debug = 1;
 	break;
-      case 0x30:        /* emt_open */
+      case 0x30:	/* emt_open */
 	do_emt_open();
 	break;
       case 0x31:	/* emt_close */
@@ -2880,7 +2880,7 @@ static int do_ED_instruction(void)
       case 0x36:	/* emt_time */
 	do_emt_time();
 	break;
-      case 0x37:        /* emt_opendir */
+      case 0x37:	/* emt_opendir */
 	do_emt_opendir();
 	break;
       case 0x38:	/* emt_closedir */
@@ -2901,7 +2901,7 @@ static int do_ED_instruction(void)
       case 0x3d:	/* emt_ftruncate */
 	do_emt_ftruncate();
 	break;
-      case 0x3e:        /* emt_opendisk */
+      case 0x3e:	/* emt_opendisk */
 	do_emt_opendisk();
 	break;
       case 0x3f:	/* emt_closedisk */
