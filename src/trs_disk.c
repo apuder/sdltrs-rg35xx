@@ -1443,7 +1443,7 @@ trs_disk_sector_write(Uint8 data)
           state.curdrive = 0;
           return;
         } else {
-          if ((trs_disk_doubler & TRSDISK_PERCOM) ||
+          if ((trs_disk_doubler == TRSDISK_PERCOM) ||
             (trs_clones.model & (EG3200 | LNW80))) {
             DiskState *d = &disk[state.curdrive];
 
