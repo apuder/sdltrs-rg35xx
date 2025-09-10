@@ -1409,7 +1409,7 @@ trs_disk_sector_write(Uint8 data)
   }
 #endif
   if (trs_model == 1) {
-    if (trs_disk_doubler & TRSDISK_TANDY) {
+    if (trs_clones.model == 0 && trs_disk_doubler & TRSDISK_TANDY) {
       /* Emulate Radio Shack doubler */
       switch (data & TRSDISK_RCMDBITS) {
       case TRSDISK_RSIDE0:
