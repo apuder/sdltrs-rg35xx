@@ -222,7 +222,7 @@ void mem_card_out(int card, int bits)
 {
   switch (card) {
     case GENIEPLUS:
-      /* Genieplus Memory Card */
+      /* Select 64K bank: 0 = System, 1 - 7 = Genieplus Card */
       bank_base = (bits & 0x07) << 16;
       if (bank_base) {
         /* Select lower or upper 32K of bank */
