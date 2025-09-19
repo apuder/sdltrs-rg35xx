@@ -1341,10 +1341,10 @@ void gui_disk_options(void)
     gui_clear();
 
     selection = gui_menu(" Floppy Disk Options ", menu, selection);
-    if (selection >= 0 && selection < 8) {
-      trs_disk_setsize(selection, (trs_disk_getsize(selection) == 8) ? 5 : 8);
-    }
-    else switch (selection) {
+    switch (selection) {
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        trs_disk_setsize(selection, (trs_disk_getsize(selection) == 8) ? 5 : 8);
+        break;
       case 9:
         trs_disk_controller = !trs_disk_controller;
         break;
