@@ -145,7 +145,7 @@ static void gui_delete_filelist(void);
 static void gui_add_to_filelist(char *name);
 static int  gui_filename_cmp(const void *nptr1, const void *nptr2);
 static int  gui_read_dir(const char *path, const char *mask, int dir);
-static int  gui_input(const char *title, const char *input, char *output, int limit, int file);
+static int  gui_input(const char *title, const char *input, char *output, int limit, int dir);
 static int  gui_menu(const char *title, const MENU *entry, int selection);
 static int  gui_popup(const char *title, const char **entry, int num, int selection);
 static int  gui_matrix(const char *title, const char **entry, int rows, int cols, int selection);
@@ -744,7 +744,7 @@ done:
   return selection;
 }
 
-int gui_input(const char *title, const char *input, char *output, int limit, int file)
+int gui_input(const char *title, const char *input, char *output, int limit, int dir)
 {
   int insert = 1;
   int pos;
@@ -765,7 +765,7 @@ redraw:
   if (insert)
     gui_text(" INS ", 56, 8, 6, 5);
 
-  if (file)
+  if (dir)
     gui_write(" TAB:Select Directory ", 0, 8, 5);
 
   while (1) {
@@ -830,7 +830,7 @@ redraw:
       case SDLK_DOWN:
       case SDLK_TAB:
       case SDLK_UP:
-        if (file) {
+        if (dir) {
           char directory[FILENAME_MAX];
 
           if (gui_file(input, directory, NULL, 1, "") >= 0) {
