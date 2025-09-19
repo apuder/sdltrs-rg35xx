@@ -800,7 +800,8 @@ redraw:
       case SDLK_END:
       case SDLK_PAGEDOWN:
         pos = len;
-        goto redraw;
+        col = pos > 60 ? pos - 59 : 0;
+        break;
       case SDLK_BACKSPACE:
         if (pos > 0) {
           for (i = pos; i < len; i++)
