@@ -998,8 +998,10 @@ int gui_menu(const char *title, const MENU *entry, int selection)
           }
           return selection;
         case SDLK_SPACE:
-          if (trs_write_protect(entry[selection].type, selection) < 0)
-            gui_error("Write-Protect");
+          if (entry[selection].type < ENTRY) {
+            if (trs_write_protect(entry[selection].type, selection) < 0)
+              gui_error("Write-Protection");
+          }
           return selection;
         case SDLK_BACKSPACE:
         case SDLK_ESCAPE:
