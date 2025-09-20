@@ -1464,7 +1464,7 @@ void gui_hard_menu(void)
       menu[i].text[0] = trs_hard_getwriteprotect(i) ? '*' : ' ';
     }
 
-    if (selection >= 0 && selection < 4)
+    if (selection < 4)
       trs_hard_getgeometry(selection, &cylinders, &heads, &sectors);
 
     snprintf(&menu[8].text[55], 6, "%5d", cylinders);
