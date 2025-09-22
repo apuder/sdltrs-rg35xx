@@ -410,6 +410,15 @@ void z80_out(int port, int value)
             if (selector)
               mem_card_out(SELECTOR, value);
             return;
+          /* X-MEM/80 */
+          case 0x41: /* lower 16K 8000-BFFF */
+          case 0x42: /* upper 16K C000-FFFF */
+          case 0x43: /* both  16K same page */
+            if (supermem == 0) {
+              xmem80_out(port, value & 0x1F);
+              return;
+            }
+            break;
           case 0x85: /* Real Time Clock/Calendar Card */
             rtc_reg = value;
             return;
@@ -887,6 +896,15 @@ int z80_in(int port)
           case 0x04: /* HRG read data byte */
             value = hrg_read_data();
             goto done;
+          /* X-MEM/80 */
+          case 0x41: /* lower 16K 8000-BFFF */
+          case 0x42: /* upper 16K C000-FFFF */
+          case 0x43: /* both  16K same page */
+            if (supermem == 0) {
+              value = xmem80_in(port);
+              goto done;
+            }
+            break;
           case 0x84: /* RTCC */
             value = rtc_read(rtc_reg);
             goto done;

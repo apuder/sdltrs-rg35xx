@@ -572,6 +572,21 @@ int sys_byte_2_in(void)
   return sys_byte_2;
 }
 
+void xmem80_out(int port, int page)
+{
+  bank_offset[port - 0x41] = page << 14;
+  if (port == 0x43)
+    /* Set both 16K pages */
+    bank_offset[0] = bank_offset[1] = bank_offset[2];
+
+  memory_map = 0x18;
+}
+
+int xmem80_in(int port)
+{
+  return bank_offset[port - 0x41] >> 14;
+}
+
 static void mem_init(void)
 {
   /* Initialize RAM & ROM */
@@ -834,6 +849,14 @@ int mem_read(int address)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram(address);
+
+    case 0x18: /* X-MEM/80 16K page */
+      if (address < RAM_START)
+        return trs80_model1_mmio(address);
+      if (address < 0x8000)
+        return memory[address];
+      else
+        return memory[address + bank_offset[(address - 0x8000) >> 14]];
 
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
@@ -1206,6 +1229,15 @@ void mem_write(int address, int value)
       trs80_model1_write_mem(address, value);
       break;
 
+    case 0x18: /* X-MEM/80 16K page */
+      if (address < RAM_START)
+        trs80_model1_write_mmio(address, value);
+      else if (address < 0x8000)
+        memory[address] = value;
+      else
+        memory[address + bank_offset[(address - 0x8000) >> 14]] = value;
+      break;
+
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF) {
@@ -1557,6 +1589,14 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x14: /* Model I: All RAM banking high */
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram_addr(address);
+
+    case 0x18: /* X-MEM/80 16K page */
+      if (address < RAM_START)
+        return trs80_model1_mmio_addr(address, writing);
+      if (address < 0x8000)
+        return &memory[address];
+      else
+        return &memory[address + bank_offset[(address - 0x8000) >> 14]];
 
     case 0x20: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {

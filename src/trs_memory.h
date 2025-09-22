@@ -63,4 +63,7 @@ extern void   sys_byte_write(int value);
 extern int    sys_byte_in(void);
 extern int    sys_byte_2_in(void);
 
+extern void   xmem80_out(int port, int page);
+extern int    xmem80_in(int port);
+
 #endif /* _TRS_MEMORY_H */
