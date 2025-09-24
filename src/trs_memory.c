@@ -818,7 +818,7 @@ int mem_read(int address)
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
     if (!((address ^ supermem_high) & 0x8000))
-      return memory[supermem_base + (address & 0x7FFF) + 32768];
+      return memory[supermem_base + (address & 0x7FFF)];
     /* Otherwise the request comes from the system */
   }
 
@@ -1190,7 +1190,7 @@ void mem_write(int address, int value)
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
     if (!((address ^ supermem_high) & 0x8000)) {
-      memory[supermem_base + (address & 0x7FFF) + 32768] = value;
+      memory[supermem_base + (address & 0x7FFF)] = value;
       return;
     }
     /* Otherwise the request comes from the system */
@@ -1558,7 +1558,7 @@ Uint8 *mem_pointer(int address, int writing)
   /* The SuperMem sits between the system and the Z80 */
   if (supermem && supermem_base) {
     if (!((address ^ supermem_high) & 0x8000))
-      return &memory[supermem_base + (address & 0x7FFF) + 32768];
+      return &memory[supermem_base + (address & 0x7FFF)];
     /* Otherwise the request comes from the system */
   }
 
