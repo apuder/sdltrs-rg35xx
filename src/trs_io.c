@@ -684,7 +684,7 @@ void z80_out(int port, int value)
   /* Ports common to all TRS-80 models */
   switch (port) {
     case 0x43: /* Alpha Technology SuperMem */
-      if (supermem)
+      if ((value & 0x1F) < supermem)
         mem_card_out(SUPERMEM, value);
       break;
     case TRS_HARD_WP:       /* 0xC0 */

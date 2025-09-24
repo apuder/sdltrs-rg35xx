@@ -363,8 +363,8 @@ static const struct {
   { "sr",              opt_intval,        1, 3, NULL                  },
   { "statedir",        opt_dirname,       1, 0, trs_state_dir         },
   { "stringy",         opt_value,         0, 1, &stringy              },
-  { "super",           opt_memory,        0, 8, &supermem             },
-  { "supermem",        opt_memory,        0, 8, &supermem             },
+  { "super",           opt_intval,        1, 8, NULL                  },
+  { "supermem",        opt_intval,        1, 8, NULL                  },
   { "sw",              opt_switches,      1, 0, &trs_uart_switches    },
   { "switches",        opt_switches,      1, 0, &trs_uart_switches    },
   { "t",               opt_value,         0, 1, &turbo_mode           },
@@ -674,6 +674,14 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       if (value >= 0)
         trs_year = value;
       break;
+    case 8: /* supermem */
+      if (value >= 256 && value <= 1024) {
+        supermem = (value / 256) << 3;
+        lubomir = huffman = hypermem = selector = 0;
+      } else {
+        supermem = 0;
+      }
+      break;
     default:
       break;
   }
@@ -729,12 +737,6 @@ static void opt_memory(const char *arg, int intarg, int *variable)
     case SELECTOR:
       lubomir  = 0;
       supermem = 0;
-      break;
-    case SUPERMEM:
-      lubomir  = 0;
-      huffman  = 0;
-      hypermem = 0;
-      selector = 0;
       break;
   }
 }
@@ -1240,7 +1242,7 @@ int trs_write_config_file(const char *filename)
       trs_disk_getstep(4), trs_disk_getstep(5), trs_disk_getstep(6), trs_disk_getstep(7));
 #endif
   fprintf(config_file, "%sstringy\n", option(stringy));
-  fprintf(config_file, "%ssupermem\n", option(supermem));
+  fprintf(config_file, "supermem=%d\n", supermem << 5);
   fprintf(config_file, "switches=0x%x\n", trs_uart_switches);
   fprintf(config_file, "%struedam\n", option(trs_disk_truedam));
   fprintf(config_file, "%sturbo\n", option(turbo_mode));

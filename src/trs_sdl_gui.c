@@ -1712,6 +1712,11 @@ void gui_emulator_menu(void)
                          "    CT-80 Aster",
                          "       LNW80/II",
                          "TCS SpeedMaster"};
+  const char *super[] = {"        No",
+                         "    256 KB",
+                         "    512 KB",
+                         "    768 KB",
+                         "   1024 KB"};
   int selection = 0;
   int model_selection = trs_model == 1 ? 0 : trs_model - 2;
   float clock_mhz[4];
@@ -1732,7 +1737,7 @@ void gui_emulator_menu(void)
     snprintf(&menu[5].text[50], 11, "%s", yes_no[lowercase]);
     snprintf(&menu[6].text[50], 11, "%s", yes_no[lubomir]);
     snprintf(&menu[7].text[50], 11, "%s", yes_no[selector]);
-    snprintf(&menu[8].text[50], 11, "%s", yes_no[supermem]);
+    snprintf(&menu[8].text[50], 11, "%s", super[supermem >> 3]);
     snprintf(&menu[9].text[50], 11, "%s", yes_no[grafyx_microlabs]);
     snprintf(&menu[10].text[50], 11, "%s", yes_no[megamem]);
     snprintf(&menu[11].text[50], 11, "%s", yes_no[huffman]);
@@ -1792,7 +1797,7 @@ void gui_emulator_menu(void)
           lubomir = supermem = 0;
         break;
       case 8:
-        supermem = !supermem;
+        supermem = gui_popup("SuperMem", super, 5, supermem >> 3) << 3;
         if (supermem)
           huffman = hypermem = lubomir = selector = 0;
         break;
