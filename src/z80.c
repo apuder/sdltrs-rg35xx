@@ -3394,14 +3394,6 @@ int z80_run(int continuous)
 		   (see below) we undo this decrement to get out of
 		   the halt state. */
 	        Z80_PC--;
-#if 0 /* Removed for new sdltrs timing scheme */
-		if (continuous > 0 &&
-		    !(z80_state.nmi && !z80_state.nmi_seen) &&
-		    !(z80_state.irq && z80_state.iff1) &&
-		    !trs_event_scheduled()) {
-		    pause();
-		}
-#endif
 	      }
 	    }
 	    T_COUNT(4);
