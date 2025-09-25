@@ -316,6 +316,7 @@ void z80_out(int port, int value)
             trs_disk_data_write(value);
             break;
           case 0xF1:
+            /* Save SIO for GENIE-DOS 2.4 */
             modeimage = value;
             break;
           case 0xF6:
@@ -819,6 +820,7 @@ int z80_in(int port)
             value = trs_disk_data_read();
             break;
           case 0xF1:
+            /* Saved SIO baud rate */
             value = modeimage;
             break;
           case 0xF7:
