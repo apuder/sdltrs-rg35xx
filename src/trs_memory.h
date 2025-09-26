@@ -17,6 +17,7 @@
 #define RAM192B         (6) /* TCS Genie IIs/SpeedMaster 768 KB */
 #define SELECTOR        (7) /* Selector Card for TRS-80 Model I */
 #define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
+#define XMEM80          (9) /* X-MEM/80 M1 16K page 512 KB */
 
 extern int    huffman;
 extern int    hypermem;

@@ -392,7 +392,7 @@ static const struct {
   { "wafer6",          opt_wafer,         1, 6, NULL                  },
   { "wafer7",          opt_wafer,         1, 7, NULL                  },
   { "window",          opt_window,        1, 0, NULL                  },
-  { "xmem80",          opt_value,         0, 1, &xmem80               },
+  { "xmem80",          opt_memory,        0, 9, &xmem80               },
   { "y",               opt_intval,        1, 7, NULL                  },
   { "year",            opt_intval,        1, 7, NULL                  },
 };
@@ -741,6 +741,11 @@ static void opt_memory(const char *arg, int intarg, int *variable)
       lubomir  = 0;
       supermem = 0;
       xmem80   = 0;
+      break;
+    case XMEM80:
+      lubomir  = 0;
+      selector = 0;
+      supermem = 0;
       break;
   }
 }
