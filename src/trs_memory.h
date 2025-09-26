@@ -17,7 +17,6 @@
 #define RAM192B         (6) /* TCS Genie IIs/SpeedMaster 768 KB */
 #define SELECTOR        (7) /* Selector Card for TRS-80 Model I */
 #define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
-#define TCS_GENIE3S     (9) /* TCS Genie IIIs 1024 KB */
 
 extern int    huffman;
 extern int    hypermem;
@@ -56,6 +55,8 @@ extern Uint8  ct80_ramdisk_in(int port);
 extern void   ct80_video_addr(int address);
 
 extern void   eg64_mba_out(int value);
+extern void   genie3s_mem_out(int bits);
+extern int    genie3s_mem_in(void);
 extern void   lnw80_bank_out(int value);
 extern void   megamem_out(int mem_slot, Uint8 value);
 extern void   s80z_out(int value);

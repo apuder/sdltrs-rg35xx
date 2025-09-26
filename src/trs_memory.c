@@ -289,15 +289,6 @@ void mem_card_out(int card, int bits)
          Set bit 5 to map low */
       supermem_high = (bits & 0x20) ? 0x0000 : 0x8000;
       break;
-    case TCS_GENIE3S:
-      if (bits == mem_command)
-        return;
-      mem_command = bits;
-      /* D0/D1: 256K block */
-      bank_offset[0] = (bits & 0x03) << 18;
-      /* D7: Common area */
-      bank_offset[1] = (bits & 0x80) ? bank_offset[0] : 0;
-      break;
     default:
       break;
   }
@@ -309,7 +300,6 @@ int mem_card_in(int card)
     case HUFFMAN:
       return (bank_base >> 16) & 0x1F;
     case RAM192B:
-    case TCS_GENIE3S:
       return (mem_command);
     case SUPERMEM:
       return (supermem_base >> 15) |
@@ -450,6 +440,23 @@ void genie3s_init_out(int value)
   memory_map = 0x24;
   trs_clones_model(GENIE3S);
   trs_timer_init();
+}
+
+void genie3s_mem_out(int bits)
+{
+  if (bits == mem_command)
+    return;
+
+  mem_command = bits;
+  /* D0/D1: 256K block */
+  bank_offset[0] = (bits & 0x03) << 18;
+  /* D7: Common area */
+  bank_offset[1] = (bits & 0x80) ? bank_offset[0] : 0;
+}
+
+int genie3s_mem_in(void)
+{
+  return mem_command;
 }
 
 void genie3s_sys_out(int value)
