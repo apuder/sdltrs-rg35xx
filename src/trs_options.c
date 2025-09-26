@@ -317,6 +317,7 @@ static const struct {
   { "notruedam",       opt_value,         0, 0, &trs_disk_truedam     },
   { "noturbo",         opt_value,         0, 0, &turbo_mode           },
   { "noturbopaste",    opt_value,         0, 0, &turbo_paste          },
+  { "noxmem80",        opt_value,         0, 0, &xmem80               },
   { "pause",           opt_value,         0, 1, &trs_paused           },
   { "p",               opt_printer,       1, 0, NULL                  },
   { "pd",              opt_dirname,       1, 0, trs_printer_dir       },
@@ -391,6 +392,7 @@ static const struct {
   { "wafer6",          opt_wafer,         1, 6, NULL                  },
   { "wafer7",          opt_wafer,         1, 7, NULL                  },
   { "window",          opt_window,        1, 0, NULL                  },
+  { "xmem80",          opt_value,         0, 1, &xmem80               },
   { "y",               opt_intval,        1, 7, NULL                  },
   { "year",            opt_intval,        1, 7, NULL                  },
 };
@@ -677,7 +679,7 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
     case 8: /* supermem */
       if (value >= 256 && value <= 1024) {
         supermem = (value / 256) << 3;
-        lubomir = huffman = hypermem = selector = 0;
+         huffman = hypermem = lubomir = selector = xmem80 = 0;
       } else {
         supermem = 0;
       }
@@ -730,6 +732,7 @@ static void opt_memory(const char *arg, int intarg, int *variable)
     case LUBOMIR:
       selector = 0;
       supermem = 0;
+      xmem80   = 0;
       break;
     case MEGAMEM:
       huffman  = 0;
@@ -737,6 +740,7 @@ static void opt_memory(const char *arg, int intarg, int *variable)
     case SELECTOR:
       lubomir  = 0;
       supermem = 0;
+      xmem80   = 0;
       break;
   }
 }
@@ -1006,6 +1010,7 @@ int trs_load_config_file(void)
   trs_uart_switches = 0x7 | TRS_UART_NOPAR | TRS_UART_WORD8;
   trs_year = 0;
   turbo_paste = 0;
+  xmem80 = 0;
   Z80_HALT = 0;
 
   if (trs_config_file[0] == 0) {
@@ -1254,6 +1259,8 @@ int trs_write_config_file(const char *filename)
 
   trs_get_window(&x, &y, &w, &h);
   fprintf(config_file, "window=%d,%d,%d,%d\n", x, y, w, h);
+
+  fprintf(config_file, "%sxmem80\n", option(xmem80));
   fprintf(config_file, "year=%d\n", trs_year);
 
   fclose(config_file);

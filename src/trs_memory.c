@@ -85,6 +85,7 @@ int lubomir;  /* Lubomir Soft Banker */
 int megamem;  /* Anitek MegaMem (III/4/4P) */
 int selector; /* Selector (TRS-80 Model I) */
 int supermem; /* Alpha Technology SuperMem */
+int xmem80;   /* X-MEM/80 16K page Model I */
 
 /* private data */
 

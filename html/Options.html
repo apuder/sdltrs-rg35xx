@@ -289,7 +289,7 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-lubomir | -lsb</code></td>
     <td>Emulate the Lubomir Soft Banker for the TRS-80 Model I.
-        <b>Disables Selector and SuperMem</b>.</td>
+        <b>Disables Selector, SuperMem and X-MEM/80</b>.</td>
   </tr>
   <tr>
     <td><code>-mega(mem)</code></td>
@@ -451,6 +451,11 @@ will be executed upon startup of the emulator.</p>
         This is the default.</td>
   </tr>
   <tr>
+    <td><code>-noxmem80</code></td>
+    <td>Disable X-MEM/80 16K page Model I memory extension (Michael Wessel).
+        This is the default.</td>
+  </tr>
+  <tr>
     <td><code>-pause</code></td>
     <td>Pause the emulator at startup.</td>
   </tr>
@@ -522,7 +527,7 @@ will be executed upon startup of the emulator.</p>
   <tr>
     <td><code>-sel(ector)</code></td>
     <td>Enable Dutch TRS-80 Users Society Selector memory expansion for Model I.
-        <b>Disables Lubomir and SuperMem</b>.</td>
+        <b>Disables Lubomir, SuperMem and X-MEM/80</b>.</td>
   </tr>
   <tr>
     <td><code>-serial <u>ttyname</u></code></td>
@@ -600,7 +605,7 @@ will be executed upon startup of the emulator.</p>
     <td>Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P
         with <u>size</u> KB: <code>256</code> | <code>512</code> | <code>768
         </code> | <code>1024</code> or <code>0</code> to disable (Default).
-        <b>Disables Huffman, HyperMem, Lubomir and Selector</b>.</td>
+        <b>Disables Huffman, HyperMem, Lubomir, Selector and X-MEM/80</b>.</td>
   </tr>
   <tr>
     <td><code>-sw(itches) <u>value</u></code></td>
@@ -644,6 +649,11 @@ will be executed upon startup of the emulator.</p>
     <td>Specifies the name of the stringy wafer image file to be inserted into
         Wafer<b>N</b> (0 - 7). Use <code>""</code> as <u>filename</u> to remove
         an image from the drive.</td>
+  </tr>
+  <tr>
+    <td><code>-xmem80</code></td>
+    <td>Enable X-MEM/80 16K page Model I memory extension (Michael Wessel).
+        <b>Disables Lubomir, Selector and SuperMem</b>.</td>
   </tr>
   <tr>
     <td><code>-y(ear) <u>year</u></code></td>

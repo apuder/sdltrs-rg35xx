@@ -1694,6 +1694,7 @@ void gui_emulator_menu(void)
    {"Lowercase Modification for Model I                ", ENTRY},
    {"Lubomir Soft Banker Emulation for Model I         ", ENTRY},
    {"Selector (Dutch TRS-80 Users Society) Model I     ", ENTRY},
+   {"X-MEM/80 16K page (Michael Wessel) for Model I    ", ENTRY},
    {"SuperMem (Alpha Technology) I/III/4/4P Memory     ", ENTRY},
    {"Grafyx Solution (Micro-Labs) III/4/4P Graphics    ", ENTRY},
    {"MegaMem (Anitek Software) III/4/4P Memory Board   ", ENTRY},
@@ -1737,11 +1738,12 @@ void gui_emulator_menu(void)
     snprintf(&menu[5].text[50], 11, "%s", yes_no[lowercase]);
     snprintf(&menu[6].text[50], 11, "%s", yes_no[lubomir]);
     snprintf(&menu[7].text[50], 11, "%s", yes_no[selector]);
-    snprintf(&menu[8].text[50], 11, "%s", super[supermem >> 3]);
-    snprintf(&menu[9].text[50], 11, "%s", yes_no[grafyx_microlabs]);
-    snprintf(&menu[10].text[50], 11, "%s", yes_no[megamem]);
-    snprintf(&menu[11].text[50], 11, "%s", yes_no[huffman]);
-    snprintf(&menu[12].text[50], 11, "%s", yes_no[hypermem]);
+    snprintf(&menu[8].text[50], 11, "%s", yes_no[xmem80]);
+    snprintf(&menu[9].text[50], 11, "%s", super[supermem >> 3]);
+    snprintf(&menu[10].text[50], 11, "%s", yes_no[grafyx_microlabs]);
+    snprintf(&menu[11].text[50], 11, "%s", yes_no[megamem]);
+    snprintf(&menu[12].text[50], 11, "%s", yes_no[huffman]);
+    snprintf(&menu[13].text[50], 11, "%s", yes_no[hypermem]);
     gui_clear();
 
     selection = gui_menu(" Emulator Settings ", menu, selection);
@@ -1789,32 +1791,37 @@ void gui_emulator_menu(void)
       case 6:
         lubomir = !lubomir;
         if (lubomir)
-          selector = supermem = 0;
+          selector = supermem = xmem80 = 0;
         break;
       case 7:
         selector = !selector;
         if (selector)
-          lubomir = supermem = 0;
+          lubomir = supermem = xmem80 = 0;
         break;
       case 8:
-        supermem = gui_popup("SuperMem", super, 5, supermem >> 3) << 3;
-        if (supermem)
-          huffman = hypermem = lubomir = selector = 0;
+        xmem80 = !xmem80;
+        if (xmem80)
+          lubomir = selector = supermem = 0;
         break;
       case 9:
-        grafyx_microlabs = !grafyx_microlabs;
+        supermem = gui_popup("SuperMem", super, 5, supermem >> 3) << 3;
+        if (supermem)
+          huffman = hypermem = lubomir = selector = xmem80 = 0;
         break;
       case 10:
+        grafyx_microlabs = !grafyx_microlabs;
+        break;
+      case 11:
         megamem = !megamem;
         if (megamem)
           huffman = 0;
         break;
-      case 11:
+      case 12:
         huffman = !huffman;
         if (huffman)
           megamem = hypermem = supermem = 0;
         break;
-      case 12:
+      case 13:
         hypermem = !hypermem;
         if (hypermem)
           huffman = supermem = 0;

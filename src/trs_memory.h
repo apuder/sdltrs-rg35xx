@@ -25,6 +25,7 @@ extern int    lubomir;
 extern int    megamem;
 extern int    selector;
 extern int    supermem;
+extern int    xmem80;
 
 extern int    trs80_model3_mem_read(int address);
 extern void   trs80_model3_mem_write(int address, int value);

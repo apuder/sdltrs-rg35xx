@@ -195,7 +195,7 @@ Lower Case Modification Kit for TRS-80 Model I (Default).
 .TP
 \fB\-lubomir\fP | \fB\-lsb\fP
 Enable Lubomir Soft Banker for Model I.
-.B Disables Selector and SuperMem.
+.B Disables Selector, SuperMem and X-MEM/80.
 .TP
 .B \-mega(mem)
 Enable MegaMem (Anitek) memory expansion for Model III and 4/4P.
@@ -315,6 +315,9 @@ Switch Turbo mode off (Default).
 .B \-not(urbo)p(aste)
 Disable Turbo mode temporarily while pasting from clipboard (Default).
 .TP
+.B \-noxmem80
+Disable X-MEM/80 16K page memory expansion for Model I (Default).
+.TP
 .B \-pause
 Pause the emulator at startup.
 .TP
@@ -372,7 +375,7 @@ Default: \fI127\fP.
 .TP
 .B \-sel(ector)
 Enable Dutch TRS-80 Users Society Selector memory expansion for Model I.
-.B Disables Lubomir and SuperMem.
+.B Disables Lubomir, SuperMem and X-MEM/80.
 .TP
 \fB\-serial\fP \fIttyname\fP
 Set tty device to be used for I/O to TRS-80's serial port.
@@ -418,7 +421,7 @@ Emulate Exatron Stringy Floppy Drive for Model I.
 Enable SuperMem (Alpha Technology) memory expansion for Model I/III/4/4P
 with \fIsize\fP KB: \fI256\fP | \fI512\fP | \fI768\fP | \fI1024\fP or
 \fI0\fP to disable (Default setting).
-.B Disables Huffman, HyperMem, Lubomir and Selector.
+.B Disables Huffman, HyperMem, Lubomir, Selector and X-MEM/80.
 .TP
 \fB\-sw(itches)\fP \fIvalue\fP
 Set sense switches on Model I serial port card.
@@ -440,6 +443,10 @@ Default: \fI5\fP.
 \fB\-w(afer)\fP\fIN filename\fP
 Specifies name of stringy wafer image file to be inserted into
 Wafer\fIN\fP (0 - 7).
+.TP
+.B \-xmem80
+Enable X-MEM/80 16K page memory expansion (Michael Wessel) for Model I.
+.B Disables Lubomir, Selector and SuperMem.
 .TP
 \fB\-y(ear)\fP \fIyear\fP
 Set \fIyear\fP for TRS-80 time-of-day clock instead of the current year.
