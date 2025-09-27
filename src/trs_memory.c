@@ -1816,6 +1816,7 @@ void trs_mem_save(FILE *file)
   trs_save_uint32(file, &megamem_base, 1);
   trs_save_int(file, &sys_byte, 1);
   trs_save_int(file, &sys_byte_2, 1);
+  trs_save_int(file, &xmem80, 1);
 }
 
 void trs_mem_load(FILE *file)
@@ -1843,4 +1844,5 @@ void trs_mem_load(FILE *file)
   trs_load_uint32(file, &megamem_base, 1);
   trs_load_int(file, &sys_byte, 1);
   trs_load_int(file, &sys_byte_2, 1);
+  trs_load_int(file, &xmem80, 1);
 }
