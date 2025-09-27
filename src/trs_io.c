@@ -229,7 +229,7 @@ void z80_out(int port, int value)
       case EG3200:
         switch (port) {
           case 0x28: /* Genieplus Memory Card */
-            mem_card_out(GENIEPLUS, value);
+            eg3200_genieplus_out(value);
             break;
           case 0x48: /* TRS_HARD_DATA */
           case 0x49: /* TRS_HARD_PRECOMP */

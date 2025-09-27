@@ -9,15 +9,14 @@
 #define RAM_START       (0x4000)
 
 /* Memory Expansion Cards */
-#define GENIEPLUS       (1) /* EACA EG 3200 Genie III 384 KB */
-#define HUFFMAN         (2) /* Dave Huffman (and other) 2 MB (4/4P) */
-#define HYPERMEM        (3) /* Anitek HyperMem 1 MB (4/4P) */
-#define LUBOMIR         (4) /* Lubomir Soft Banker TRS-80 Model I */
-#define MEGAMEM         (5) /* Anitek MegaMem  3 MB (III/4/4P) */
-#define RAM192B         (6) /* TCS Genie IIs/SpeedMaster 768 KB */
-#define SELECTOR        (7) /* Selector Card for TRS-80 Model I */
-#define SUPERMEM        (8) /* Alpha Technology SuperMem 1024 KB */
-#define XMEM80          (9) /* X-MEM/80 M1 16K page 512 KB */
+#define HUFFMAN         (1) /* Dave Huffman (and other) 2 MB (4/4P) */
+#define HYPERMEM        (2) /* Anitek HyperMem 1 MB (4/4P) */
+#define LUBOMIR         (3) /* Lubomir Soft Banker TRS-80 Model I */
+#define MEGAMEM         (4) /* Anitek MegaMem  3 MB (III/4/4P) */
+#define RAM192B         (5) /* TCS Genie IIs/SpeedMaster 768 KB */
+#define SELECTOR        (6) /* Selector Card for TRS-80 Model I */
+#define SUPERMEM        (7) /* Alpha Technology SuperMem 1024 KB */
+#define XMEM80          (8) /* X-MEM/80 M1 16K page 512 KB */
 
 extern int    huffman;
 extern int    hypermem;
@@ -55,6 +54,7 @@ extern void   ct80_ramdisk_out(int port, Uint8 byte);
 extern Uint8  ct80_ramdisk_in(int port);
 extern void   ct80_video_addr(int address);
 
+extern void   eg3200_genieplus_out(int bits);
 extern void   eg64_mba_out(int value);
 extern void   genie3s_mem_out(int bits);
 extern int    genie3s_mem_in(void);

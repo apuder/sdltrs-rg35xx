@@ -222,16 +222,6 @@ void mem_bank(int command)
 void mem_card_out(int card, int bits)
 {
   switch (card) {
-    case GENIEPLUS:
-      /* Select 64K bank: 0 = System, 1 - 7 = Genieplus Card */
-      bank_base = (bits & 0x07) << 16;
-      if (bank_base) {
-        /* Select lower or upper 32K of bank */
-        bank_base += (bits & (1 << 3)) << 12;
-      }
-      bank_offset[0] = bank_base; /* Low 32K for banking */
-      bank_offset[1] = 0;
-      break;
     case HUFFMAN:
       bank_base = (bits & 0x1F) << 16;
       mem_bank(mem_command);
@@ -384,6 +374,18 @@ void eg3200_init_out(int value)
   trs_clones_model(EG3200);
   trs_timer_init();
   trs_screen_init(0);
+}
+
+void eg3200_genieplus_out(int bits)
+{
+  /* Select 64K bank: 0 = System, 1 - 7 = Genieplus Card */
+  bank_base = (bits & 0x07) << 16;
+  if (bank_base) {
+    /* Select lower or upper 32K of bank */
+    bank_base += (bits & (1 << 3)) << 12;
+  }
+  bank_offset[0] = bank_base; /* Low 32K for banking */
+  bank_offset[1] = 0;
 }
 
 void eg64_mba_out(int value)
