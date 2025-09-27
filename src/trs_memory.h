@@ -13,10 +13,9 @@
 #define HYPERMEM        (2) /* Anitek HyperMem 1 MB (4/4P) */
 #define LUBOMIR         (3) /* Lubomir Soft Banker TRS-80 Model I */
 #define MEGAMEM         (4) /* Anitek MegaMem  3 MB (III/4/4P) */
-#define RAM192B         (5) /* TCS Genie IIs/SpeedMaster 768 KB */
-#define SELECTOR        (6) /* Selector Card for TRS-80 Model I */
-#define SUPERMEM        (7) /* Alpha Technology SuperMem 1024 KB */
-#define XMEM80          (8) /* X-MEM/80 M1 16K page 512 KB */
+#define SELECTOR        (5) /* Selector Card for TRS-80 Model I */
+#define SUPERMEM        (6) /* Alpha Technology SuperMem 1024 KB */
+#define XMEM80          (7) /* X-MEM/80 M1 16K page 512 KB */
 
 extern int    huffman;
 extern int    hypermem;
@@ -65,6 +64,7 @@ extern void   sys_byte_out(int value);
 extern void   sys_byte_write(int value);
 extern int    sys_byte_in(void);
 extern int    sys_byte_2_in(void);
+extern void   tcs_ram192b_out(int bits);
 
 extern void   xmem80_out(int port, int page);
 extern int    xmem80_in(int port);

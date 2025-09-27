@@ -374,7 +374,7 @@ void z80_out(int port, int value)
             rtc_reg = value >> 4;
             break;
           case 0x7E:
-            mem_card_out(RAM192B, value);
+            tcs_ram192b_out(value);
             break;
           case 0xFE:
             sys_byte_out(value);
@@ -873,7 +873,7 @@ int z80_in(int port)
             value = rtc_read(rtc_reg);
             break;
           case 0x7E:
-            value = mem_card_in(RAM192B);
+            value = sys_byte_2_in();
             break;
           case 0xFE:
             value = sys_byte_in();

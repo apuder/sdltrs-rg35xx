@@ -103,7 +103,7 @@ static Uint8 mem_command;
 static int supermem_base;
 static Uint32 supermem_high;
 static int sys_byte;   /* Various clones and 4P boot ROM */
-static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
+static int sys_byte_2; /* LNW80 II and TCS Genie IIs/IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -237,13 +237,6 @@ void mem_card_out(int card, int bits)
       memory_map = bits ? 0x22 : 0x10;
       sys_byte = bits;
       break;
-    case RAM192B:
-      /* TCS Genie IIs/SpeedMaster RAM 192 B */
-      bank_base = ((bits & 0x0C) * 192) /* card */
-                + ((bits & 0x30) *  48) /* block */
-                * 1024 + 65536;
-      mem_command = bits;
-      break;
     case SELECTOR:
       /* Not all bits are necessarily really present but hey what
          you can't read back you can't tell */
@@ -289,8 +282,6 @@ int mem_card_in(int card)
   switch (card) {
     case HUFFMAN:
       return (bank_base >> 16) & 0x1F;
-    case RAM192B:
-      return (mem_command);
     case SUPERMEM:
       return (supermem_base >> 15) |
              ((supermem_high == 0) ? 0x20 : 0);
@@ -580,6 +571,15 @@ int sys_byte_in(void)
 int sys_byte_2_in(void)
 {
   return sys_byte_2;
+}
+
+void tcs_ram192b_out(int bits)
+{
+  /* TCS Genie IIs/SpeedMaster RAM 192 B */
+  bank_base = ((bits & 0x0C) * 192) /* card */
+            + ((bits & 0x30) *  48) /* block */
+            * 1024 + 65536;
+  sys_byte_2 = bits;
 }
 
 void xmem80_out(int port, int page)
