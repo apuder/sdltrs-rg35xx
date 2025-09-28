@@ -409,7 +409,7 @@ void z80_out(int port, int value)
           case 0x1F:
           case 0x3F:
             if (selector)
-              mem_card_out(SELECTOR, value);
+              selector_out(value);
             return;
           /* X-MEM/80 */
           case 0x41: /* lower 16K 8000-BFFF */
@@ -431,7 +431,7 @@ void z80_out(int port, int value)
             return;
           case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
             if (lubomir)
-              mem_card_out(LUBOMIR, value);
+              lubomir_out(value);
             return;
           case 0xD0: /* Schmidtke 80-Z Card: 6845 CRTC */
           case 0x10: /* Homebrew 80*22 SYS80.SYS */
@@ -584,7 +584,7 @@ void z80_out(int port, int value)
         /* HyperMem uses bits 4-1 of this port, 0 is the existing
            sound */
         if (trs_model >= 4 && hypermem)
-          mem_card_out(HYPERMEM, value);
+          hypermem_out(value);
         /* Fall through - we affect the sound as well */
       case 0x91:
       case 0x92:
@@ -593,7 +593,7 @@ void z80_out(int port, int value)
         return;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
-          mem_card_out(HUFFMAN, value);
+          huffman_out(value);
         return;
       case 0x9C:
       case 0x9D:
@@ -686,7 +686,7 @@ void z80_out(int port, int value)
   switch (port) {
     case 0x43: /* Alpha Technology SuperMem */
       if ((value & 0x1F) < supermem)
-        mem_card_out(SUPERMEM, value);
+        supermem_out(value);
       break;
     case TRS_HARD_WP:       /* 0xC0 */
     case TRS_HARD_CONTROL:  /* 0xC1 */
@@ -948,7 +948,7 @@ int z80_in(int port)
         goto done;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
-          value = mem_card_in(HUFFMAN);
+          value = huffman_in();
         goto done;
       case 0xE0:
       case 0xE1:
@@ -1007,7 +1007,7 @@ int z80_in(int port)
       goto done;
     case 0x43: /* Supermem memory expansion */
       if (supermem)
-        value = mem_card_in(SUPERMEM);
+        value = supermem_in();
       goto done;
     case TRS_HARD_WP:       /* 0xC0 */
     case TRS_HARD_CONTROL:  /* 0xC1 */

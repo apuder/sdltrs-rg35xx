@@ -198,99 +198,6 @@ void mem_bank(int command)
   mem_command = command;
 }
 
-/*
- * Dave Huffman (and some other) memory expansions. These decode
- * port 0x94 off U50 as follows
- *
- * 7: only used with Z180 board (not emulated - would need Z180 emulation!)
- * 6: write protect - not emulated
- * 5: sometimes used for > 4MHz turbo mod
- * 4-0: Bits A20-A16 of the alt bank
- *
- * Set to 1 on a reset so that you get the 'classic' memory map
- * This port is read-write and the drivers depend upon it
- * (See RAMDV364.ASM)
- *
- * The Hypermem is very similar and also changes the upper
- * 64K bank between multiple banks. However the values
- * are on port 0x90 (sound) bits 4-1, which is a much poorer
- * design IMHO as sound using apps can randomly change the
- * upper bank. Fine for a ramdisc but means other software
- * must take great care.
- */
-
-void mem_card_out(int card, int bits)
-{
-  switch (card) {
-    case HUFFMAN:
-      bank_base = (bits & 0x1F) << 16;
-      mem_bank(mem_command);
-      break;
-    case HYPERMEM:
-      /* HyperMem replaces the upper 64K bank with multiple
-         banks according to port 0x90 bits 4-1.
-         0 base is upper bank of 64K */
-      bank_base = ((bits & 0x1E) + 2) << 15;
-      mem_bank(mem_command);
-      break;
-    case LUBOMIR:
-      memory_map = bits ? 0x22 : 0x10;
-      sys_byte = bits;
-      break;
-    case SELECTOR:
-      /* Not all bits are necessarily really present but hey what
-         you can't read back you can't tell */
-      mem_command = bits;
-      /* 0x10 is already the default tandy map we add 11-17 in the style
-         of the model 4 approach */
-      memory_map = 0x10 + (bits & 7);
-      /* Set default memory map for Selector Modes 6 & 7 */
-      if (memory_map >= 0x16) memory_map = 0x10;
-      /* External RAM enabled */
-      if (bits & 0x8) {
-        /* Effectively the selector bits << 15 */
-        /* Low 64K is the base memory */
-        bank_base = 32768 + ((bits & 0xF0) << 11);
-        /* Now are we mapping it high or low */
-        if (bits & 1) /* Low */
-          bank_base += 32768;
-      } else
-        bank_base = 0;
-      /* Bank low on odd mode */
-      if (bits & 1) {
-        bank_offset[0] = bank_base;
-        bank_offset[1] = 0;
-      } else {
-        bank_offset[0] = 0;
-        bank_offset[1] = bank_base;
-      }
-      break;
-    case SUPERMEM:
-      /* Support 1024 KB which is the full range of the mapping. */
-      supermem_base = (bits & 0x1F) << 15;
-      /* The supermem can flip the low or high 32K.
-         Set bit 5 to map low */
-      supermem_high = (bits & 0x20) ? 0x0000 : 0x8000;
-      break;
-    default:
-      break;
-  }
-}
-
-int mem_card_in(int card)
-{
-  switch (card) {
-    case HUFFMAN:
-      return (bank_base >> 16) & 0x1F;
-    case SUPERMEM:
-      return (supermem_base >> 15) |
-             ((supermem_high == 0) ? 0x20 : 0);
-    default:
-      /* And the HyperMem appears to be write-only */
-      return 0xFF;
-  }
-}
-
 void ct80_ramdisk_out(int port, Uint8 byte)
 {
   switch (port & 0x07) {
@@ -472,6 +379,47 @@ void genie3s_sys_out(int value)
   sys_byte = value;
 }
 
+/*
+ * Dave Huffman (and some other) memory expansions. These decode
+ * port 0x94 off U50 as follows
+ *
+ * 7: only used with Z180 board (not emulated - would need Z180 emulation!)
+ * 6: write protect - not emulated
+ * 5: sometimes used for > 4MHz turbo mod
+ * 4-0: Bits A20-A16 of the alt bank
+ *
+ * Set to 1 on a reset so that you get the 'classic' memory map
+ * This port is read-write and the drivers depend upon it
+ * (See RAMDV364.ASM)
+ */
+void huffman_out(int bits)
+{
+  bank_base = (bits & 0x1F) << 16;
+  mem_bank(mem_command);
+}
+
+int huffman_in(void)
+{
+  return (bank_base >> 16) & 0x1F;
+}
+
+/*
+ * The Hypermem is very similar and also changes the upper
+ * 64K bank between multiple banks. However the values
+ * are on port 0x90 (sound) bits 4-1, which is a much poorer
+ * design IMHO as sound using apps can randomly change the
+ * upper bank. Fine for a ramdisc but means other software
+ * must take great care.
+ */
+void hypermem_out(int bits)
+{
+  /* HyperMem replaces the upper 64K bank with multiple
+     banks according to port 0x90 bits 4-1.
+     0 base is upper bank of 64K */
+  bank_base = ((bits & 0x1E) + 2) << 15;
+  mem_bank(mem_command);
+}
+
 void lnw80_bank_out(int value)
 {
   if (value == sys_byte_2)
@@ -486,6 +434,12 @@ void lnw80_bank_out(int value)
     z80_state.iff1 = z80_state.iff2 = ((value & (1 << 2)) == 0);
 
   sys_byte_2 = value;
+}
+
+void lubomir_out(int bits)
+{
+  memory_map = bits ? 0x22 : 0x10;
+  sys_byte = bits;
 }
 
 void megamem_out(int mem_slot, Uint8 value)
@@ -518,6 +472,51 @@ void s80z_out(int value)
 
   sys_byte = value;
   memory_map = 0x20;
+}
+
+void selector_out(int bits)
+{
+  /* Not all bits are necessarily really present but hey what
+     you can't read back you can't tell */
+  mem_command = bits;
+  /* 0x10 is already the default tandy map we add 11-17 in the style
+     of the model 4 approach */
+  memory_map = 0x10 + (bits & 7);
+  /* Set default memory map for Selector Modes 6 & 7 */
+  if (memory_map >= 0x16) memory_map = 0x10;
+  /* External RAM enabled */
+  if (bits & 0x8) {
+    /* Effectively the selector bits << 15 */
+    /* Low 64K is the base memory */
+    bank_base = 32768 + ((bits & 0xF0) << 11);
+    /* Now are we mapping it high or low */
+    if (bits & 1) /* Low */
+      bank_base += 32768;
+  } else
+    bank_base = 0;
+  /* Bank low on odd mode */
+  if (bits & 1) {
+    bank_offset[0] = bank_base;
+    bank_offset[1] = 0;
+  } else {
+    bank_offset[0] = 0;
+    bank_offset[1] = bank_base;
+  }
+}
+
+void supermem_out(int bits)
+{
+  /* Support 1024 KB which is the full range of the mapping. */
+  supermem_base = (bits & 0x1F) << 15;
+  /* The supermem can flip the low or high 32K.
+     Set bit 5 to map low */
+  supermem_high = (bits & 0x20) ? 0x0000 : 0x8000;
+}
+
+int supermem_in(void)
+{
+  return (supermem_base >> 15) |
+         ((supermem_high == 0) ? 0x20 : 0);
 }
 
 void sys_byte_out(int value)
