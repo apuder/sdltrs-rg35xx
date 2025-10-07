@@ -3,7 +3,7 @@
 
 #include <SDL_types.h>
 
-/* Locations for Model I, Model III, and Model 4 map 0 */
+/* Locations for Model I, Model III, and Model 4/4P map 0 and 1 */
 #define VIDEO_START     (0x3C00)
 #define KEYBOARD_START  (0x3800)
 #define RAM_START       (0x4000)
