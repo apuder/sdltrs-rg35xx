@@ -351,7 +351,6 @@ void z80_out(int port, int value)
       case LNW80:
         switch (port) {
           case 0x1F:
-          case 0x3F:
             lnw80_bank_out(value);
             return;
           case 0xFE:
