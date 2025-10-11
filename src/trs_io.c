@@ -1090,7 +1090,7 @@ int z80_in(int port)
 done:
 #ifdef ZBX
   if (trs_io_debug_flags & IODEBUG_IN)
-    debug("[PC=%04X] in (0x%02X) => 0x%02X\n", Z80_PC, port, value);
+    debug("[PC=%04X] in (0x%02X) = 0x%02X\n", Z80_PC, port, value);
 #endif
 
   return value;
