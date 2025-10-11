@@ -510,6 +510,18 @@ void z80_out(int port, int value)
   } else {
     /* Next, Models III/4/4P only */
     switch (port) {
+      case 0x3C:
+        if (trs_model == 3)
+          m6845_reg = value;
+        return;
+      case 0x3D:
+        if (trs_model == 3)
+          m6845_crtc(value);
+        return;
+      case 0x3F:
+        if (trs_model == 3)
+          vid80_vx3_out(value);
+        return;
       case 0x50: /* MegaMem memory slot */
       case 0x51:
       case 0x52:
@@ -942,6 +954,10 @@ int z80_in(int port)
   } else {
     /* Models III/4/4P only */
     switch (port) {
+      case 0x3F:
+        if (trs_model == 3)
+          value = sys_byte_in();
+        goto done;
       case 0x82:
         value = grafyx_read_data();
         goto done;

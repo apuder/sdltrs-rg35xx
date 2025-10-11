@@ -1986,6 +1986,12 @@ void trs_screen_refresh(void)
         z80_out(0xFD, 0xFF);
       }
       break;
+    case 0x34: /* Holmes VID-80 */
+      if (cols == 80) {
+        z80_out(0x3C, 0x09);
+        z80_out(0x3D, 0xFF);
+      }
+      break;
     default:
       break;
   }

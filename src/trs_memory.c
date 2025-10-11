@@ -59,7 +59,7 @@
 #include "trs_state_save.h"
 #include "trs_uart.h"
 
-#define MAX_ROM_SIZE       (16384)  /* 16K for CP-300/500 */
+#define MAX_ROM_SIZE       (18432)  /* Holmes VID-80 (VX-3) */
 #define MAX_VIDEO_SIZE     (3072)   /* CP-500 M80 has 3K */
 #define MAX_MEMORY_SIZE    (4 * 1024 * 1024) + 65536
 /* Start MegaMem > 1MB to leave space for SuperMem or HyperMem */
@@ -581,6 +581,13 @@ void tcs_ram192b_out(int bits)
   sys_byte_2 = bits;
 }
 
+/* Holmes VID-80 (VX-3) */
+void vid80_vx3_out(int bits)
+{
+  memory_map = 0x34;
+  sys_byte = bits;
+}
+
 void xmem80_out(int port, int page)
 {
   bank_offset[port - 0x41] = page << 14;
@@ -1046,6 +1053,26 @@ int mem_read(int address)
     case 0x33: /* CP-500 M80 80x24 video */
       return cp500_mem_read(address, memory_map, rom, memory);
 
+    case 0x34: /* Holmes VID-80 (VX-3) */
+      if (sys_byte & (1 << 4)) {
+        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
+          return video[address - 0xF800];
+        if ((sys_byte & (1 << 1)) == 0) {
+          if (address >= KEYBOARD_START && address < 0x3900)
+            return trs_kb_mem_read(address);
+        }
+        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
+          return rom[address];
+      } else {
+        if (address >= KEYBOARD_START)
+          return trs80_model3_mem_read(address);
+        if (sys_byte & (1 << 0))
+          /* Model III ROM appended to VID-80 4K ROM */
+          address += 0x1000;
+        return rom[address];
+      }
+      return memory[address];
+
     case 0x40: /* Model 4 map 0 */
       if (address >= RAM_START) {
         return memory[address + bank_offset[address >> 15]];
@@ -1462,6 +1489,18 @@ void mem_write(int address, int value)
       cp500_mem_write(address, value, memory_map, memory);
       break;
 
+    case 0x34: /* Holmes VID-80 (VX-3) */
+      if (sys_byte & (1 << 4)) {
+        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
+          trs80_screen_write_char(address - 0xF800, value);
+          return;
+        }
+        memory[address] = value;
+      } else {
+        trs80_model3_mem_write(address, value);
+      }
+      break;
+
     case 0x40: /* Model 4  map 0 */
     case 0x50: /* Model 4P map 0 */
       if (address >= RAM_START) {
@@ -1753,6 +1792,22 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x32: /* CP-500 M80 64K RAM */
     case 0x33: /* CP-500 M80 80x24 video */
       return cp500_mem_addr(address, memory_map, rom, memory, writing);
+
+    case 0x34: /* Holmes VID-80 (VX-3) */
+      if (sys_byte & (1 << 4)) {
+        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
+          return &video[address - 0xF800];
+        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
+          return writing ? NULL : &rom[address];
+      } else {
+        if (address >= KEYBOARD_START)
+          return trs80_model3_mem_addr(address, writing);
+        if (sys_byte & (1 << 0))
+          /* Model III ROM appended to VID-80 4K ROM */
+          address += 0x1000;
+        return writing ? NULL : &rom[address];
+      }
+      return &memory[address];
 
     case 0x40: /* Model 4 map 0 */
       if (address >= RAM_START) {
