@@ -1462,7 +1462,10 @@ void trs_get_event(int wait)
           }
         } else {
           if (keysym.sym == SDLK_LCTRL && trs_model == 3) {
-            keysym.sym = 0x117; /* Shifted Down Arrow */
+            if (trs_clones.model == CP500_M80)
+              keysym.sym = 0x117; /* Shifted Down Arrow */
+            else
+              keysym.sym = 0x7F;  /* Clear */
             goto done;
           }
         }
