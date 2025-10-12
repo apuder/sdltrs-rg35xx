@@ -908,6 +908,7 @@ int mem_read(int address)
       /* Read from Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
         address += 0x8000;
+
       return memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
@@ -1019,6 +1020,7 @@ int mem_read(int address)
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         address += 0x8000;
+
       return memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1069,6 +1071,7 @@ int mem_read(int address)
         if (sys_byte & (1 << 0))
           /* Model III ROM appended to VID-80 4K ROM */
           address += 0x1000;
+
         return rom[address];
       }
       return memory[address];
@@ -1314,6 +1317,7 @@ void mem_write(int address, int value)
       /* Write to Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
         address += 0x8000;
+
       memory[address] = value;
       break;
 
@@ -1448,6 +1452,7 @@ void mem_write(int address, int value)
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         address += 0x8000;
+
       memory[address] = value;
       break;
 
@@ -1680,6 +1685,7 @@ Uint8 *mem_pointer(int address, int writing)
       /* Read from Expander-RAM */
       if ((sys_byte & (1 << 4)) && address >= 0x8000)
         address += 0x8000;
+
       return &memory[address];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
@@ -1764,6 +1770,7 @@ Uint8 *mem_pointer(int address, int writing)
       /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
       if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
         address += 0x8000;
+
       return &memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1805,6 +1812,7 @@ Uint8 *mem_pointer(int address, int writing)
         if (sys_byte & (1 << 0))
           /* Model III ROM appended to VID-80 4K ROM */
           address += 0x1000;
+
         return writing ? NULL : &rom[address];
       }
       return &memory[address];
