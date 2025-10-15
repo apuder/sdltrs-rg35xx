@@ -493,7 +493,7 @@ static void trs_screen_print(void)
   for (pos = 0; pos < screen_chars ;) {
     trs_printer_write(trs_screen[pos]);
     if ((++pos) % cols == 0)
-      trs_printer_write('\n');
+      trs_printer_write(0x0D);
   }
 }
 
