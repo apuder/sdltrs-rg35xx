@@ -1058,10 +1058,6 @@ int mem_read(int address)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return memory[address + 65536];
-      if (sys_byte & (1 << 3)) {
-        if (address >= VIDEO_START && address < RAM_START)
-          return memory[address];
-      }
       if (sys_byte & (1 << 4)) {
         if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
           return video[address - 0xF800];
@@ -1505,12 +1501,6 @@ void mem_write(int address, int value)
         memory[address + 65536] = value;
         return;
       }
-      if (sys_byte & (1 << 3)) {
-        if (address >= VIDEO_START && address < RAM_START) {
-          memory[address] = value;
-          return;
-        }
-      }
       if (sys_byte & (1 << 4)) {
         if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
           trs80_screen_write_char(address - 0xF800, value);
@@ -1819,10 +1809,6 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return &memory[address + 65536];
-      if (sys_byte & (1 << 3)) {
-        if (address >= VIDEO_START && address < RAM_START)
-          return &memory[address];
-      }
       if (sys_byte & (1 << 4)) {
         if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
           return &video[address - 0xF800];
