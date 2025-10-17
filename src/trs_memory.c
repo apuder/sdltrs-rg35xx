@@ -1058,16 +1058,9 @@ int mem_read(int address)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return memory[address + 65536];
-      if (sys_byte & (1 << 4)) {
-        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
-          return video[address - 0xF800];
-        if ((sys_byte & (1 << 1)) == 0) {
-          if (address >= KEYBOARD_START && address < 0x3900)
-            return trs_kb_mem_read(address);
-        }
-        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
-          return rom[address];
-      } else {
+      if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
+        return video[address - 0xF800];
+      if ((sys_byte & (1 << 4)) == 0) {
         if (address >= KEYBOARD_START)
           return trs80_model3_mem_read(address);
         if (sys_byte & (1 << 0))
@@ -1076,6 +1069,12 @@ int mem_read(int address)
 
         return rom[address];
       }
+      if ((sys_byte & (1 << 1)) == 0) {
+        if (address >= KEYBOARD_START && address < 0x3900)
+          return trs_kb_mem_read(address);
+      }
+      if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
+        return rom[address];
       return memory[address];
 
     case 0x40: /* Model 4 map 0 */
@@ -1501,15 +1500,15 @@ void mem_write(int address, int value)
         memory[address + 65536] = value;
         return;
       }
-      if (sys_byte & (1 << 4)) {
-        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
-          trs80_screen_write_char(address - 0xF800, value);
-          return;
-        }
-        memory[address] = value;
-      } else {
-        trs80_model3_mem_write(address, value);
+      if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
+        trs80_screen_write_char(address - 0xF800, value);
+        return;
       }
+      if (sys_byte & (1 << 3)) {
+        trs80_model3_mem_write(address, value);
+        return;
+      }
+      memory[address] = value;
       break;
 
     case 0x40: /* Model 4  map 0 */
@@ -1809,9 +1808,9 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return &memory[address + 65536];
-      if (sys_byte & (1 << 4)) {
-        if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
-          return &video[address - 0xF800];
+      if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
+        return &video[address - 0xF800];
+      if ((sys_byte & (1 << 4)) == 0) {
         if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
           return writing ? NULL : &rom[address];
       } else {
