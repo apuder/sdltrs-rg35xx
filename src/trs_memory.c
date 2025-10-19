@@ -467,7 +467,7 @@ void s80z_out(int value)
       video_addr = VIDEO_START;
     }
 
-    trs_screen_mode(INVERSE, value & (1 << 2));
+    trs_screen_mode(REVERSE, value & (1 << 6));
   }
 
   sys_byte = value;
