@@ -54,6 +54,7 @@
 #define EXPANDED  1
 #define INVERSE   2
 #define ALTERNATE 4
+#define REVERSE   8
 
 #if defined(__OS2__) || defined(_WIN32)
 #define DIR_SLASH '\\'

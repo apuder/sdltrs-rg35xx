@@ -584,8 +584,11 @@ void tcs_ram192b_out(int bits)
 /* Holmes VID-80 (VX-3) */
 void vid80_vx3_out(int bits)
 {
-  memory_map = 0x34;
+  if ((bits & (1 << 7)) != (sys_byte & (1 << 7)))
+    trs_screen_mode(REVERSE, bits & (1 << 7));
+
   sys_byte = bits;
+  memory_map = 0x34;
 }
 
 void xmem80_out(int port, int page)

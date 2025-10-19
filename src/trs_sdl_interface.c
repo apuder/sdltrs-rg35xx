@@ -2164,6 +2164,7 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
         if (character >= 0xc0)
           character -= 0x40;
       }
+      if (currentmode & REVERSE) expanded += 2;
       if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
         SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
         goto overlay;
@@ -2682,7 +2683,9 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
   if (expanded)
     srcRect.w *= 2;
 
-  expanded += (currentmode & INVERSE) && (cur_char & 0x80) ? 0 : 2;
+  if (!((currentmode & INVERSE) && (cur_char & 0x80)) &&
+      !(currentmode & REVERSE))
+    expanded += 2;
 
   SDL_BlitSurface(trs_char[expanded][cur_char], &srcRect, screen, &dstRect);
   drawnRectCount = MAX_RECTS;
