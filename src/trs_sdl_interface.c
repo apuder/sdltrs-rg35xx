@@ -2143,31 +2143,28 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
   if (expanded)
     srcRect.w *= 2;
 
-  switch (trs_clones.model) {
-    case CT80:
-    case GENIE3S:
-      if (grafyx_overlay == 0) goto overlay;
-      break;
-    default:
-      if (trs_model == 1 && trs_clones.model == 0) {
-        /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */
-        if (character >= 0xc0)
-          character -= 0x40;
+  if (trs_clones.model & (CT80 | GENIE3S)) {
+    if (grafyx_overlay == 0) goto overlay;
+  } else {
+    if (trs_model == 1 && trs_clones.model == 0) {
+      /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */
+      if (character >= 0xc0)
+        character -= 0x40;
+    }
+    if (currentmode & REVERSE) expanded += 2;
+    if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
+      SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+      goto overlay;
+    } else {
+      if (trs_model > 1 && character >= 0xc0 &&
+          (currentmode & (ALTERNATE + INVERSE)) == 0) {
+        character -= 0x40;
       }
-      if (currentmode & REVERSE) expanded += 2;
-      if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
-        SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
-        goto overlay;
-      } else {
-        if (trs_model > 1 && character >= 0xc0 &&
-            (currentmode & (ALTERNATE + INVERSE)) == 0) {
-          character -= 0x40;
-        }
-        if ((currentmode & INVERSE) && (character & 0x80)) {
-          expanded += 2;
-          character &= 0x7f;
-        }
+      if ((currentmode & INVERSE) && (character & 0x80)) {
+        expanded += 2;
+        character &= 0x7f;
       }
+    }
   }
   SDL_BlitSurface(trs_char[expanded][character], &srcRect, screen, &dstRect);
 
