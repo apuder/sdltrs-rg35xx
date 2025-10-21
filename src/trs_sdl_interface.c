@@ -2148,16 +2148,6 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
     case GENIE3S:
       if (grafyx_overlay == 0) goto overlay;
       break;
-    case LNW80:
-      if (rows == 16) {
-        if (currentmode == INVERSE) expanded += 2;
-        if (character >= 0x80 && character <= 0xbf) {
-          SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
-          goto overlay;
-        }
-        break;
-      }
-      /* Fall through - LNW80 II 80x24 text mode */
     default:
       if (trs_model == 1 && trs_clones.model == 0) {
         /* On Model I, 0xc0-0xff is another copy of 0x80-0xbf */

@@ -541,8 +541,6 @@ void sys_byte_out(int value)
     case 6: /* LNW80/II */
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
         trs_screen_80x24(value & (1 << 7));
-      if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
-        trs_screen_mode(INVERSE, value & 1);
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
         hrg_onoff(value & (1 << 1));
       break;
