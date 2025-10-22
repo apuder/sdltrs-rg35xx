@@ -1732,10 +1732,10 @@ void trs_screen_80x24(int flag)
 
   text80x24 = flag;
 
-  if (!grafyx_enable || grafyx_overlay)
+  if (!grafyx_enable || grafyx_overlay) {
+    memset(trs_screen, ' ', SCREEN_SIZE);
     trs_screen_640x240(flag);
-
-  memset(trs_screen, ' ', SCREEN_SIZE);
+  }
 }
 
 static void
