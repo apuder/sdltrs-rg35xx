@@ -552,8 +552,8 @@ void trs_screen_init(int resize)
   int trs_resize = 0;
   SDL_Color colors[2];
 
+  char_height = m6845_raster * scale_factor;
   char_width  = TRS_CHAR_WIDTH;
-  char_height = TRS_CHAR_HEIGHT * 2;
 
   if (trs_model == 1) {
     switch (trs_clones.model) {
@@ -563,9 +563,6 @@ void trs_screen_init(int resize)
       case EG3200:
         /* Use alternate font for Holte-ROM */
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
-        break;
-      case GENIE3S:
-        char_height = m6845_raster * scale_factor;
         break;
       case SPEEDMASTER:
         trs_charset = 17;
