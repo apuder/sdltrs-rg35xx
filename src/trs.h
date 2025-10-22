@@ -133,6 +133,7 @@ extern int lowercase;
 extern int scale;
 extern int resize3;
 extern int resize4;
+extern int text80x24;
 extern int trs_uart_switches;
 extern int trs_show_led;
 extern int trs_hd_boot;

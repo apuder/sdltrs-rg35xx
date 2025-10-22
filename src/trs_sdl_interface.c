@@ -60,6 +60,7 @@
 #define TRS_CHAR_HEIGHT  12
 #define TRS_CHAR_HEIGHT4 10
 
+int text80x24 = 0;
 
 /* Private data */
 #include "trs_chars.c"
@@ -73,7 +74,7 @@ static int rows = 16;
 static int scale_factor = 2;
 static int m6845_raster = 12;
 static int trs_charset;
-static int text80x24, screen640x240;
+static int screen640x240;
 static int drawnRectCount;
 static int top_margin;
 static int left_margin;
@@ -563,6 +564,10 @@ void trs_screen_init(int resize)
       case EG3200:
         /* Use alternate font for Holte-ROM */
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
+        break;
+      case LNW80:
+        if (cols == 80) char_height = 9 * scale_factor;
+        trs_charset = trs_charset1;
         break;
       case SPEEDMASTER:
         trs_charset = 17;

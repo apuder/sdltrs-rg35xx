@@ -426,8 +426,11 @@ void lnw80_bank_out(int value)
     return;
 
   /* LNW80 II 80x24 text mode video page */
-  if (sys_byte & (1 << 7))
-    mem_video_page((value & (1 << 3)) << 7);
+  mem_video_page((value & (1 << 3)) << 7);
+  if ((value & (1 << 3)) && text80x24 == 0) {
+    trs_screen_80x24(1);
+    trs_screen_refresh();
+  }
 
   /* Disable or enable interrupts */
   if ((value & (1 << 2)) != (sys_byte_2 & (1 << 2)))
@@ -1122,7 +1125,7 @@ static void lnw80_screen_write_char(int vaddr, int value)
 {
   if (mem_video_page_write(vaddr, value)) {
     vaddr += video_addr;
-    if (sys_byte & (1 << 7)) {
+    if (text80x24) {
       /* LNW80 II 80x24 text mode */
       if (vaddr >= 1536)
         /* 16x24 text extension region */
