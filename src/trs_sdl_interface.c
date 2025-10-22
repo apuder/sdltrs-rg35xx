@@ -1714,11 +1714,9 @@ static void trs_screen_640x240(int flag)
   if (flag) {
     cols = 80;
     rows = 24;
-    char_height = TRS_CHAR_HEIGHT4 * 2;
   } else {
     cols = 64;
     rows = 16;
-    char_height = TRS_CHAR_HEIGHT * 2;
   }
 
   screen_chars = cols * rows;
