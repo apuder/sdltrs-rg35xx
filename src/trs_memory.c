@@ -425,6 +425,9 @@ void lnw80_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
+  /* LNW80 II 32K Expander-RAM */
+  bank_offset[1] = (value & (1 << 6)) << 9;
+
   /* LNW80 II 80x24 text mode video page */
   mem_video_page((value & (1 << 3)) << 7);
   if ((value & (1 << 3)) && text80x24 == 0)
@@ -1006,26 +1009,28 @@ int mem_read(int address)
         return hrg_read_data();
       }
       if ((sys_byte_2 & (1 << 0)) == 0) {
-        if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
-          return rom[address];
-        if (address >= VIDEO_START && address < RAM_START)
-          return mem_video_page_read(address);
-        if (address >= 0x37E0 && address <= 0x38FF)
-          return trs80_model1_mmio(address);
+        if ((sys_byte_2 & (1 << 4)) == 0 && address < RAM_START) {
+          if (address >= VIDEO_START)
+            return mem_video_page_read(address);
+          if (address >= 0x37E0 && address <= 0x38FF)
+             return trs80_model1_mmio(address);
+          if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
+            return rom[address];
+        }
       } else {
-        /* CP/M mode: Video RAM, Disk I/O, Printer, Keyboard */
-        if (address >= 0xFC00)
-          return mem_video_page_read(address & 0x3FFF);
-        if (address >= 0xF7E0 && address <= 0xF8FF)
+        /* CP/M mode */
+        if (sys_byte_2 & (1 << 1)) {
+          if (address >= 0xFC00)
+            return mem_video_page_read(address & 0x3FFF);
+          if (address >= 0xF900)
+            return memory[address + 0x8000];
+          if (address >= 0xF800)
+            return trs_kb_mem_read(address);
+        }
+        if (address >= 0xF7E0 && address <= 0xF7FF)
           return trs80_model1_mmio(address & 0x3FFF);
-        if (sys_byte_2 & (1 << 1) && address >= 0xF900)
-          return memory[address + 0x8000];
       }
-      /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
-        address += 0x8000;
-
-      return memory[address];
+      return memory[address + bank_offset[address >> 15]];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit */
@@ -1429,36 +1434,38 @@ void mem_write(int address, int value)
         return;
       }
       if ((sys_byte_2 & (1 << 0)) == 0) {
-        if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
-          return;
-        if (address >= VIDEO_START && address < RAM_START) {
-          lnw80_screen_write_char(address, value);
-          return;
-        }
-        if (address >= 0x37E0 && address <= 0x37EF) {
-          trs80_model1_write_mmio(address, value);
-          return;
+        if (address < RAM_START) {
+          if (sys_byte_2 & (1 << 7) && address <= 0x2FFF)
+            return;
+          if ((sys_byte_2 & (1 << 4)) == 0) {
+            if (address >= VIDEO_START) {
+              lnw80_screen_write_char(address, value);
+              return;
+            }
+            if (address >= 0x37E0 && address <= 0x37EF) {
+              trs80_model1_write_mmio(address, value);
+              return;
+            }
+          }
         }
       } else {
-        /* CP/M mode: Video RAM, Disk I/O, Printer */
-        if (address >= 0xFC00) {
-          lnw80_screen_write_char(address & 0x3FFF, value);
-          return;
+        /* CP/M mode */
+        if (sys_byte_2 & (1 << 1)) {
+          if (address >= 0xFC00) {
+            lnw80_screen_write_char(address & 0x3FFF, value);
+            return;
+          }
+          if (address >= 0xF900) {
+            memory[address + 0x8000] = value;
+            return;
+          }
         }
-        if (address >= 0xF7E0 && address <= 0xF7EF) {
+        if (address >= 0xF7E0 && address <= 0xF7FF) {
           trs80_model1_write_mmio(address & 0x3FFF, value);
           return;
         }
-        if ((sys_byte_2 & (1 << 1)) && address >= 0xF900) {
-          memory[address + 0x8000] = value;
-          return;
-        }
       }
-      /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
-        address += 0x8000;
-
-      memory[address] = value;
+      memory[address + bank_offset[address >> 15]] = value;
       break;
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1763,22 +1770,22 @@ Uint8 *mem_pointer(int address, int writing)
         /* HRG in low 16K */
         return NULL;
       if ((sys_byte_2 & (1 << 0)) == 0) {
-        if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
-          return writing ? NULL : &rom[address];
-        if (address >= VIDEO_START && address < RAM_START)
-          return mem_video_page_addr(address);
+        if ((sys_byte_2 & (1 << 4)) == 0 && address < RAM_START) {
+          if (address >= VIDEO_START)
+            return mem_video_page_addr(address);
+          if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
+            return writing ? NULL : &rom[address];
+        }
       } else {
-        /* CP/M mode: Video RAM */
-        if (address >= 0xFC00)
-          return mem_video_page_addr(address & 0x3FFF);
-        if (sys_byte_2 & (1 << 1) && address >= 0xF900)
-          return &memory[address + 0x8000];
+        if (sys_byte_2 & (1 << 1)) {
+          /* CP/M mode */
+          if (address >= 0xFC00)
+            return mem_video_page_addr(address & 0x3FFF);
+          if (address >= 0xF900)
+            return &memory[address + 0x8000];
+        }
       }
-      /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
-          address += 0x8000;
-
-      return &memory[address];
+      return &memory[address + bank_offset[address >> 15]];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit */
