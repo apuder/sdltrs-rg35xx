@@ -425,10 +425,6 @@ void lnw80_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
-  /* Kludge to limit the 32K Expander-RAM in CP/M mode */
-  if (value & (1 << 1))
-    bank_base = 0xF700;
-
   /* LNW80 II 80x24 text mode video page */
   mem_video_page((value & (1 << 3)) << 7);
   if ((value & (1 << 3)) && text80x24 == 0)
@@ -1023,12 +1019,13 @@ int mem_read(int address)
           return mem_video_page_read(address & 0x3FFF);
         if (address >= 0xF7E0 && address <= 0xF8FF)
           return trs80_model1_mmio(address & 0x3FFF);
+        if (sys_byte_2 & (1 << 1) && address >= 0xF900)
+          return memory[address + 0x8000];
       }
       /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
-        if (address < bank_base)
-          address += 0x8000;
-      }
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
+        address += 0x8000;
+
       return memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1457,12 +1454,15 @@ void mem_write(int address, int value)
           trs80_model1_write_mmio(address & 0x3FFF, value);
           return;
         }
+        if ((sys_byte_2 & (1 << 1)) && address >= 0xF900) {
+          memory[address + 0x8000] = value;
+          return;
+        }
       }
       /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
-        if (address < bank_base)
-          address += 0x8000;
-      }
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
+        address += 0x8000;
+
       memory[address] = value;
       break;
 
@@ -1780,12 +1780,13 @@ Uint8 *mem_pointer(int address, int writing)
         /* CP/M mode: Video RAM */
         if (address >= 0xFC00)
           return mem_video_page_addr(address & 0x3FFF);
+        if (sys_byte_2 & (1 << 1) && address >= 0xF900)
+          return &memory[address + 0x8000];
       }
       /* LNW80 II 32K Expander-RAM */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
-        if (address < bank_base)
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000)
           address += 0x8000;
-      }
+
       return &memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
