@@ -425,6 +425,10 @@ void lnw80_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
+  /* Kludge to limit the 32K Expander-RAM in CP/M mode */
+  if (value & (1 << 1))
+    bank_base = 0xF700;
+
   /* LNW80 II 80x24 text mode video page */
   mem_video_page((value & (1 << 3)) << 7);
   if ((value & (1 << 3)) && text80x24 == 0)
@@ -710,7 +714,6 @@ void trs_reset(int poweron)
 
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
-    bank_base = 0;
     trs_interrupt_latch_clear();
     trs_screen_mode(INVERSE, 0);
 
@@ -1021,10 +1024,11 @@ int mem_read(int address)
         if (address >= 0xF7E0 && address <= 0xF8FF)
           return trs80_model1_mmio(address & 0x3FFF);
       }
-      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        address += 0x8000;
-
+      /* LNW80 II 32K Expander-RAM */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
+        if (address < bank_base)
+          address += 0x8000;
+      }
       return memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
@@ -1454,10 +1458,11 @@ void mem_write(int address, int value)
           return;
         }
       }
-      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        address += 0x8000;
-
+      /* LNW80 II 32K Expander-RAM */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
+        if (address < bank_base)
+          address += 0x8000;
+      }
       memory[address] = value;
       break;
 
@@ -1776,10 +1781,11 @@ Uint8 *mem_pointer(int address, int writing)
         if (address >= 0xFC00)
           return mem_video_page_addr(address & 0x3FFF);
       }
-      /* LNW80 II 32K Expander-RAM without CP/M MMIO area */
-      if (sys_byte_2 & (1 << 6) && address >= 0x8000 && address <= 0xF6FF)
-        address += 0x8000;
-
+      /* LNW80 II 32K Expander-RAM */
+      if (sys_byte_2 & (1 << 6) && address >= 0x8000) {
+        if (address < bank_base)
+          address += 0x8000;
+      }
       return &memory[address];
 
     case 0x27: /* TCS Genie IIs/SpeedMaster */
