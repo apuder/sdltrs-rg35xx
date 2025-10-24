@@ -219,7 +219,7 @@ void ct80_ramdisk_out(int port, Uint8 byte)
       break;
     case 6:
     case 7:
-      bank_offset[2] = byte & 0x3F;
+      bank_offset[2] = byte;
       break;
    }
    /* RAM disk starting at 64 KB */
