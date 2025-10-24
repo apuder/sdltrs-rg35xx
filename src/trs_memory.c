@@ -439,6 +439,9 @@ void lnw80_bank_out(int value)
 
 void lubomir_out(int bits)
 {
+  /* 32K Expander-RAM */
+  bank_offset[1] = (bits & (1 << 4)) << 11;
+
   memory_map = bits ? 0x22 : 0x10;
   sys_byte = bits;
 }
@@ -908,11 +911,7 @@ int mem_read(int address)
         else
           return trs80_model1_mmio(address);
       }
-      /* Read from Expander-RAM */
-      if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        address += 0x8000;
-
-      return memory[address];
+      return memory[address + bank_offset[address >> 15]];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       /* Bit 0 - Bank 1: ROM/EPROM */
@@ -1320,11 +1319,7 @@ void mem_write(int address, int value)
           trs80_model1_write_mmio(address, value);
         return;
       }
-      /* Write to Expander-RAM */
-      if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        address += 0x8000;
-
-      memory[address] = value;
+      memory[address + bank_offset[address >> 15]] = value;
       break;
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
@@ -1696,11 +1691,7 @@ Uint8 *mem_pointer(int address, int writing)
         else
           return trs80_model1_mmio_addr(address, writing);
       }
-      /* Read from Expander-RAM */
-      if ((sys_byte & (1 << 4)) && address >= 0x8000)
-        address += 0x8000;
-
-      return &memory[address];
+      return &memory[address + bank_offset[address >> 15]];
 
     case 0x23: /* EG 3200: bit set to 0 => bank enabled */
       /* Bit 0 - Bank 1: ROM/EPROM */
