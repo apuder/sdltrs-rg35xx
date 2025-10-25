@@ -990,7 +990,7 @@ int mem_read(int address)
               return video[(address - video_addr) & 0x7FF];
             /* Keyboard */
             if (address >= 0xF400)
-              return trs_kb_mem_read(address - 0xBC00);
+              return trs_kb_mem_read(address);
             /* Disk and Printer MMIO */
             if (address >= 0xEFE0 && address <= 0xEFEF)
               return trs80_model1_mmio(address - 0xB800);
