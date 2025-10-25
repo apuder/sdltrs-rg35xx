@@ -1820,9 +1820,6 @@ Uint8 *mem_pointer(int address, int writing)
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return &video[address - 0xF800];
       if ((sys_byte & (1 << 4)) == 0) {
-        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
-          return writing ? NULL : &rom[address];
-      } else {
         if (address >= KEYBOARD_START)
           return trs80_model3_mem_addr(address, writing);
         if (sys_byte & (1 << 0))
