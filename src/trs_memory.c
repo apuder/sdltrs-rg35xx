@@ -1072,11 +1072,9 @@ int mem_read(int address)
       if ((sys_byte & (1 << 4)) == 0) {
         if (address >= KEYBOARD_START)
           return trs80_model3_mem_read(address);
-        if (sys_byte & (1 << 0))
+        else
           /* Model III ROM appended to VID-80 4K ROM */
-          address += 0x1000;
-
-        return rom[address];
+          return rom[address + ((sys_byte & (1 << 0)) << 12)];
       }
       if ((sys_byte & (1 << 1)) == 0) {
         if (address >= KEYBOARD_START && address < 0x3900)
@@ -1084,6 +1082,7 @@ int mem_read(int address)
       }
       if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
         return rom[address];
+
       return memory[address];
 
     case 0x40: /* Model 4 map 0 */
@@ -1820,13 +1819,13 @@ Uint8 *mem_pointer(int address, int writing)
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return &video[address - 0xF800];
       if ((sys_byte & (1 << 4)) == 0) {
-        if (address >= KEYBOARD_START)
+        if (address >= VIDEO_START)
           return trs80_model3_mem_addr(address, writing);
-        if (sys_byte & (1 << 0))
+        if (writing == 0)
           /* Model III ROM appended to VID-80 4K ROM */
-          address += 0x1000;
-
-        return writing ? NULL : &rom[address];
+          return &rom[address + ((sys_byte & (1 << 0)) << 12)];
+        else
+          return NULL;
       }
       return &memory[address];
 
