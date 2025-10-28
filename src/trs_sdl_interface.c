@@ -637,6 +637,10 @@ void trs_screen_init(int resize)
       SDL_RenderSetLogicalSize(render, 0, 0); /* Disable aspect */
 
     SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
+
+    screen_chars = cols * rows;
+    if (screen_chars > SCREEN_SIZE)
+      screen_chars = SCREEN_SIZE;
   }
 
 #if defined(big_endian) && !defined(__linux__)
@@ -1721,8 +1725,6 @@ static void trs_screen_640x240(int flag)
     rows = 16;
   }
 
-  screen_chars = cols * rows;
-
   trs_screen_init(1);
 }
 
@@ -2699,10 +2701,6 @@ void m6845_screen(int chars, int lines, int raster, int factor)
   if (changed) {
     if (screen_chars < SCREEN_SIZE)
       memset(&trs_screen[screen_chars], ' ', SCREEN_SIZE - screen_chars - 1);
-
-    screen_chars = cols * rows;
-    if (screen_chars > SCREEN_SIZE)
-      screen_chars = SCREEN_SIZE;
 
     trs_screen_init(1);
   }
