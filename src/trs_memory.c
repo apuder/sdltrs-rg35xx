@@ -1820,7 +1820,7 @@ Uint8 *mem_pointer(int address, int writing)
       if ((sys_byte & (1 << 4)) == 0) {
         if (address >= VIDEO_START)
           return trs80_model3_mem_addr(address, writing);
-        if (writing == 0)
+        if (address < KEYBOARD_START && writing == 0)
           /* Model III ROM appended to VID-80 4K ROM */
           return &rom[address + ((sys_byte & (1 << 0)) << 12)];
         else
