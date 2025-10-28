@@ -566,7 +566,7 @@ void trs_screen_init(int resize)
         trs_charset = trs_rom_size > 2048 ? 16 : 15;
         break;
       case LNW80:
-        if (cols == 80) char_height = 9 * scale_factor;
+        if (cols == 80) char_height = 10 * scale_factor;
         trs_charset = trs_charset1;
         break;
       case SPEEDMASTER:
