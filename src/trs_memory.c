@@ -283,7 +283,6 @@ void eg3200_genieplus_out(int bits)
     bank_base += (bits & (1 << 3)) << 12;
   }
   bank_offset[0] = bank_base; /* Low 32K for banking */
-  bank_offset[1] = 0;
 }
 
 void eg64_mba_out(int value)
