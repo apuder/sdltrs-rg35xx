@@ -424,7 +424,7 @@ void lnw80_bank_out(int value)
   if (value == sys_byte_2)
     return;
 
-  /* LNW80 II 32K Expander-RAM */
+  /* LNW80 II additional 32K RAM */
   bank_offset[1] = (value & (1 << 6)) << 9;
 
   /* LNW80 II 80x24 text mode video page */
@@ -1012,22 +1012,24 @@ int mem_read(int address)
           if (address >= VIDEO_START)
             return mem_video_page_read(address);
           if (address >= 0x37E0 && address <= 0x38FF)
-             return trs80_model1_mmio(address);
+            return trs80_model1_mmio(address);
           if ((sys_byte_2 & (1 << 1)) == 0 && address <= 0x2FFF)
             return rom[address];
         }
       } else {
         /* CP/M mode */
-        if (sys_byte_2 & (1 << 1)) {
+        if (address >= 0xC000) {
+          if ((sys_byte_2 & (1 << 1)) == 0)
+            return trs80_model1_mmio(address - 0xC000);
           if (address >= 0xFC00)
             return mem_video_page_read(address & 0x3FFF);
           if (address >= 0xF900)
             return memory[address + 0x8000];
           if (address >= 0xF800)
             return trs_kb_mem_read(address);
+          if (address >= 0xF7E0 && address <= 0xF7FF)
+            return trs80_model1_mmio(address & 0x3FFF);
         }
-        if (address >= 0xF7E0 && address <= 0xF7FF)
-          return trs80_model1_mmio(address & 0x3FFF);
       }
       return memory[address + bank_offset[address >> 15]];
 
@@ -1448,7 +1450,11 @@ void mem_write(int address, int value)
         }
       } else {
         /* CP/M mode */
-        if (sys_byte_2 & (1 << 1)) {
+        if (address >= 0xF7E0) {
+          if ((sys_byte_2 & (1 << 1)) == 0) {
+            trs80_model1_write_mmio(address & 0x3FFF, value);
+            return;
+          }
           if (address >= 0xFC00) {
             lnw80_screen_write_char(address & 0x3FFF, value);
             return;
@@ -1457,10 +1463,10 @@ void mem_write(int address, int value)
             memory[address + 0x8000] = value;
             return;
           }
-        }
-        if (address >= 0xF7E0 && address <= 0xF7FF) {
-          trs80_model1_write_mmio(address & 0x3FFF, value);
-          return;
+          if (address >= 0xF7E0 && address <= 0xF7FF) {
+            trs80_model1_write_mmio(address & 0x3FFF, value);
+            return;
+          }
         }
       }
       memory[address + bank_offset[address >> 15]] = value;
@@ -1775,8 +1781,10 @@ Uint8 *mem_pointer(int address, int writing)
             return writing ? NULL : &rom[address];
         }
       } else {
-        if (sys_byte_2 & (1 << 1)) {
-          /* CP/M mode */
+        /* CP/M mode */
+        if (address >= 0xC000) {
+          if ((sys_byte_2 & (1 << 1)) == 0)
+            return trs80_model1_mmio_addr(address, writing);
           if (address >= 0xFC00)
             return mem_video_page_addr(address & 0x3FFF);
           if (address >= 0xF900)
