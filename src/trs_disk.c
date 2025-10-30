@@ -1254,9 +1254,9 @@ trs_disk_select_write(Uint8 data)
     /* EG 3200 and TCS Genie IIs/IIIs/SpeedMaster uses bit 4 to select side */
     if (trs_clones.model & (EG3200 | GENIE3S | SPEEDMASTER)) {
       state.curside = (data & 0x10) != 0;
-    } else if (trs_clones.model & CT80) {
-      /* Select Side/Density/Controller for Aster CT-80 */
+    } else if (trs_clones.model & (CT80 | LNW80)) {
       state.curside = (data & 0x08) != 0;
+      /* Select Disk Density/Controller for Aster CT-80 */
       if (data & 0x80) {
         state.density = (data & 0x20) != 0;
         trs_disk_set_controller(state.density ? TRSDISK_P1791 : TRSDISK_P1771);
