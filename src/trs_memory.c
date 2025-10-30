@@ -1789,7 +1789,7 @@ Uint8 *mem_pointer(int address, int writing)
         /* CP/M mode */
         if (address >= 0xC000) {
           if ((sys_byte_2 & (1 << 1)) == 0)
-            return trs80_model1_mmio_addr(address, writing);
+            return trs80_model1_mmio_addr(address & 0x3FFF, writing);
           if (address >= 0xFC00)
             return mem_video_page_addr(address & 0x3FFF);
           if (address >= 0xF900)
