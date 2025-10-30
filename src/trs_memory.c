@@ -428,9 +428,11 @@ void lnw80_bank_out(int value)
   bank_offset[1] = (value & (1 << 6)) << 9;
 
   /* LNW80 II 80x24 text mode video page */
-  mem_video_page((value & (1 << 3)) << 7);
-  if ((value & (1 << 3)) && text80x24 == 0)
-    trs_screen_80x24(1);
+  if ((sys_byte & (1 << 1)) == 0) {
+    mem_video_page((value & (1 << 3)) << 7);
+    if ((value & (1 << 3)) && text80x24 == 0)
+      trs_screen_80x24(1);
+  }
 
   /* Disable or enable interrupts */
   if ((value & (1 << 2)) != (sys_byte_2 & (1 << 2)))
@@ -549,8 +551,11 @@ void sys_byte_out(int value)
         trs_screen_80x24(value & (1 << 7));
         trs_screen_mode(INVERSE, value & (1 << 7));
       }
-      if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
+      if ((value & (1 << 1)) != (sys_byte & (1 << 1))) {
+        if ((value & (1 << 1)) && text80x24)
+          trs_screen_80x24(0);
         hrg_onoff(value & (1 << 1));
+      }
       break;
     case 7: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
