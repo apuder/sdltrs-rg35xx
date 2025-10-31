@@ -2585,13 +2585,16 @@ hrg_onoff(int enable)
 {
   if (hrg_enable == enable) return; /* State does not change. */
 
-  hrg_enable = enable;
-  grafyx_enable = enable;
-  grafyx_overlay = enable;
+  hrg_enable = grafyx_enable = grafyx_overlay = enable;
 
   if (speedup > 4) {
-    if (hrg_enable) memset(grafyx, 0, G_YSIZE * G_XSIZE);
-    trs_screen_init(1);
+    if (hrg_enable)
+      memset(grafyx, 0, G_YSIZE * G_XSIZE);
+
+    if (text80x24)
+      trs_screen_80x24(0);
+    else
+      trs_screen_init(1);
   } else
     trs_screen_refresh();
 }

@@ -551,11 +551,8 @@ void sys_byte_out(int value)
         trs_screen_80x24(value & (1 << 7));
         trs_screen_mode(INVERSE, value & (1 << 7));
       }
-      if ((value & (1 << 1)) != (sys_byte & (1 << 1))) {
-        if ((value & (1 << 1)) && text80x24)
-          trs_screen_80x24(0);
+      if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
         hrg_onoff(value & (1 << 1));
-      }
       break;
     case 7: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
