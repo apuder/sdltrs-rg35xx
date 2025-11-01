@@ -1132,8 +1132,9 @@ int mem_read(int address)
 
 static void lnw80_screen_write_char(int vaddr, int value)
 {
-  if (mem_video_page_write(vaddr, value)) {
-    vaddr += video_addr;
+  vaddr += video_addr;
+
+  if (mem_video_write(vaddr, value)) {
     if (text80x24) {
       /* LNW80 II 80x24 text mode */
       if (vaddr >= 1536)
