@@ -1956,8 +1956,8 @@ void trs_screen_refresh(void)
   } else {
     int i;
 
-    /* Redraw HRG screen */
-    if (hrg_enable) {
+    /* Redraw 480*192 HRG */
+    if (hrg_enable == 2) {
       memset(grafyx_unscaled, 0, G_YSIZE * G_XSIZE);
 
       grafyx_overlay = 0;
