@@ -999,7 +999,8 @@ int z80_in(int port)
         value = trs_disk_data_read();
         goto done;
       case 0xF4:
-        value = cp500_switch_mode(Z80_A);
+        if (trs_model == 3)
+          value = cp500_switch_mode(Z80_A);
         goto done;
       case 0xF8:
       case 0xF9:
