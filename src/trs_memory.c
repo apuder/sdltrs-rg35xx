@@ -1033,7 +1033,7 @@ int mem_read(int address)
             return memory[address + 0x8000];
           if (address >= 0xF800)
             return trs_kb_mem_read(address);
-          if (address >= 0xF7E0 && address <= 0xF7FF)
+          if (address >= 0xF700 && address <= 0xF7FF)
             return trs80_model1_mmio(address & 0x3FFF);
         }
       }
@@ -1457,7 +1457,7 @@ void mem_write(int address, int value)
         }
       } else {
         /* CP/M mode */
-        if (address >= 0xF7E0) {
+        if (address >= 0xF700) {
           if ((sys_byte_2 & (1 << 1)) == 0) {
             trs80_model1_write_mmio(address & 0x3FFF, value);
             return;
@@ -1470,7 +1470,7 @@ void mem_write(int address, int value)
             memory[address + 0x8000] = value;
             return;
           }
-          if (address >= 0xF7E0 && address <= 0xF7FF) {
+          if (address >= 0xF700 && address <= 0xF7FF) {
             trs80_model1_write_mmio(address & 0x3FFF, value);
             return;
           }
