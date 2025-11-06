@@ -425,6 +425,9 @@ void lnw80_bank_out(int value)
     return;
 
   /* LNW80 II additional 32K RAM */
+  if (value & (1 << 5))
+    bank_offset[1] = 0;
+  /* Banking high overrides D5 */
   bank_offset[1] = (value & (1 << 6)) << 9;
 
   /* LNW80 II 80x24 text mode video page */
