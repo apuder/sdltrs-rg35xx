@@ -217,8 +217,8 @@ Uint8 *cp500_mem_addr(int address, int mem_map, Uint8 *rom, Uint8 *ram, int writ
 {
   switch (mem_map) {
     case 0x31: /* 3000-37FF = extra 2K in EPROM 4 */
-      if (address >= 0x3000 && address <= 0x37FF && writing == 0)
-        return &rom[address | 0x0800];
+      if (address >= 0x3000 && address <= 0x37FF)
+        return writing ? NULL : &rom[address | 0x0800];
       else
         return trs80_model3_mem_addr(address, writing);
 
