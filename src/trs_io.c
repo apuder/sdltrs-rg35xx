@@ -151,6 +151,10 @@ static void m6845_crtc(int value)
 static int m6845_read(void)
 {
   switch (m6845_reg) {
+    case 0x0A: /* Cursor Start */
+      return m6845.csr;
+    case 0x0B: /* Cursor End */
+      return m6845.cer;
     case 0x0E: /* Cursor MSB */
       return (m6845.pos >> 8) & 0xFF;
     case 0x0F: /* Cursor LSB */
@@ -952,6 +956,10 @@ int z80_in(int port)
   } else {
     /* Models III/4/4P only */
     switch (port) {
+      case 0x3D:
+        if (trs_model == 3)
+          value = m6845_read();
+        goto done;
       case 0x3F:
         if (trs_model == 3)
           value = sys_byte_in();
