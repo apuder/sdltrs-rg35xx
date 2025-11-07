@@ -148,6 +148,18 @@ static void m6845_crtc(int value)
   m6845_cursor(m6845.pos - m6845.sta, m6845.csr, m6845.cer, m6845.vis);
 }
 
+static int m6845_read(void)
+{
+  switch (m6845_reg) {
+    case 0x0E: /* Cursor MSB */
+      return (m6845.pos >> 8) & 0xFF;
+    case 0x0F: /* Cursor LSB */
+      return (m6845.pos >> 0) & 0xFF;
+    default:
+      return 0xFF;
+  }
+}
+
 static int rtc_read(int port)
 {
   const time_t time_secs = time(NULL) + trs_timeoffset;
@@ -774,14 +786,7 @@ int z80_in(int port)
             value = rtc_read(rtc_reg);
             break;
           case 0xF7:
-            switch (m6845_reg) {
-              case 0x0E: /* Cursor MSB */
-                value = (m6845.pos >> 8) & 0xFF;
-                break;
-              case 0x0F: /* Cursor LSB */
-                value = (m6845.pos >> 0) & 0xFF;
-                break;
-            }
+            value = m6845_read();
             break;
           case 0xFD:
             value = trs_printer_read();
@@ -835,14 +840,7 @@ int z80_in(int port)
             value = modeimage;
             break;
           case 0xF7:
-            switch (m6845_reg) {
-              case 0x0E: /* Cursor MSB */
-                value = (m6845.pos >> 8) & 0xFF;
-                break;
-              case 0x0F: /* Cursor LSB */
-                value = (m6845.pos >> 0) & 0xFF;
-                break;
-            }
+            value = m6845_read();
             break;
           case 0xF9:
             value = sys_byte_2_in();
