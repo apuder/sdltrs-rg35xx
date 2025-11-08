@@ -1077,12 +1077,14 @@ int mem_read(int address)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return memory[address + 65536];
-      if ((sys_byte & (1 << 4)) == 0 && address < RAM_START) {
-        if (address >= KEYBOARD_START)
-          return trs80_model3_mem_read(address);
-        if (sys_byte & (1 << 0))
+      if ((sys_byte & (1 << 4)) == 0) {
+        if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
           /* Model III ROM appended to VID-80 4K ROM */
           return rom[address + 0x1000];
+      }
+      if ((sys_byte & (1 << 3)) && address < RAM_START) {
+        if (address >= VIDEO_START)
+          return video[address - VIDEO_START];
       }
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return video[address - 0xF800];
@@ -1525,8 +1527,13 @@ void mem_write(int address, int value)
         memory[address + 65536] = value;
         return;
       }
-      if (sys_byte & (1 << 3)) {
-        trs80_model3_mem_write(address, value);
+      if ((sys_byte & (1 << 3)) && address < RAM_START) {
+        if (address >= VIDEO_START) {
+          if (sys_byte & (1 << 5))
+            video[address - VIDEO_START] = value;
+          else
+            trs80_screen_write_char(address - VIDEO_START, value);
+        }
         return;
       }
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
@@ -1833,15 +1840,17 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return &memory[address + 65536];
-      if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
-        return &video[address - 0xF800];
       if ((sys_byte & (1 << 4)) == 0) {
-        if (address >= VIDEO_START)
-          return trs80_model3_mem_addr(address, writing);
         if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
           /* Model III ROM appended to VID-80 4K ROM */
           return writing ? NULL : &rom[address + 0x1000];
       }
+      if ((sys_byte & (1 << 3)) && address < RAM_START) {
+        if (address >= VIDEO_START)
+          return &video[address - VIDEO_START];
+      }
+      if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
+        return &video[address - 0xF800];
       if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
         return writing ? NULL : &rom[address];
 
