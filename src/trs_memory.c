@@ -1077,24 +1077,23 @@ int mem_read(int address)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return memory[address + 65536];
-      if ((sys_byte & (1 << 4)) == 0) {
-        if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
-          /* Model III ROM appended to VID-80 4K ROM */
-          return rom[address + 0x1000];
-      }
-      if ((sys_byte & (1 << 3)) && address < RAM_START) {
-        if (address >= VIDEO_START)
-          return video[address - VIDEO_START];
-      }
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return video[address - 0xF800];
-      if ((sys_byte & (1 << 1)) == 0) {
-        if (address >= KEYBOARD_START && address < 0x3900)
-          return trs_kb_mem_read(address);
+      if (address < RAM_START) {
+        if ((sys_byte & (1 << 4)) == 0) {
+          if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
+            /* Model III ROM appended to VID-80 4K ROM */
+            return rom[address + 0x1000];
+        }
+        if ((sys_byte & (1 << 3)) && address >= VIDEO_START)
+          return video[address - VIDEO_START];
+        if ((sys_byte & (1 << 1)) == 0) {
+          if (address >= KEYBOARD_START && address < 0x3900)
+            return trs_kb_mem_read(address);
+        }
+        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
+          return rom[address];
       }
-      if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
-        return rom[address];
-
       return memory[address];
 
     case 0x40: /* Model 4 map 0 */
@@ -1840,20 +1839,19 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x34: /* Holmes VID-80 (VX-3) */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return &memory[address + 65536];
-      if ((sys_byte & (1 << 4)) == 0) {
-        if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
-          /* Model III ROM appended to VID-80 4K ROM */
-          return writing ? NULL : &rom[address + 0x1000];
-      }
-      if ((sys_byte & (1 << 3)) && address < RAM_START) {
-        if (address >= VIDEO_START)
-          return &video[address - VIDEO_START];
-      }
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return &video[address - 0xF800];
-      if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
-        return writing ? NULL : &rom[address];
-
+      if (address < RAM_START) {
+        if ((sys_byte & (1 << 4)) == 0) {
+          if ((sys_byte & (1 << 0)) && address < KEYBOARD_START)
+            /* Model III ROM appended to VID-80 4K ROM */
+            return writing ? NULL : &rom[address + 0x1000];
+        }
+        if ((sys_byte & (1 << 3)) && address >= VIDEO_START)
+          return &video[address - VIDEO_START];
+        if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
+          return writing ? NULL : &rom[address];
+      }
       return &memory[address];
 
     case 0x40: /* Model 4 map 0 */
