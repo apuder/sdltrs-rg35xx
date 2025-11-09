@@ -60,7 +60,7 @@
 #define TRS_CHAR_HEIGHT  12
 #define TRS_CHAR_HEIGHT4 10
 
-int text80x24 = 0;
+int text80x24;
 
 /* Private data */
 #include "trs_chars.c"
