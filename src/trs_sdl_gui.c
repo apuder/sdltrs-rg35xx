@@ -1975,9 +1975,7 @@ void gui_display_menu(void)
         if (gui_input(" Enter Window border width in pixels (0 to 50) ",
             input, input, 2, 0) > 0) {
           value = atoi(input);
-          if (value != border_width) {
-            if (value < 0 || value > 50)
-              value = 2;
+          if (value != border_width && value >= 0 && value <= 50) {
             border_width = value;
             resize = 1;
           }
