@@ -746,7 +746,7 @@ done:
 
 int gui_input(const char *title, const char *input, char *output, int limit, int dir)
 {
-  int insert = 1;
+  int ins = 1;
   int pos;
   int len;
   int col;
@@ -762,7 +762,7 @@ redraw:
   gui_rect(1, 6, 62, 3, 1);
   gui_write(title, 0, 6, 4);
 
-  if (insert)
+  if (ins)
     gui_text(" INS ", 56, 8, 6, 5);
 
   if (dir)
@@ -822,7 +822,7 @@ redraw:
         }
         break;
       case SDLK_INSERT:
-        insert = !insert;
+        ins = !ins;
         goto redraw;
       case SDLK_RETURN:
         return len;
@@ -849,7 +849,7 @@ redraw:
         break;
       default:
         if (key >= ' ' && key <= 0xFF && pos < limit) {
-          if (insert && len < limit) {
+          if (ins && len < limit) {
             for (i = len; i > pos; i--)
               output[i] = output[i - 1];
             len++;
