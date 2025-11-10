@@ -949,30 +949,32 @@ int mem_read(int address)
       return memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
-        if (sys_byte & (1 << 4)) {
-          /* 2K Video RAM */
-          if (address >= KEYBOARD_START)
-            return video[(address + video_addr) & 0x7FF];
-        } else {
-          if (address >= VIDEO_START)
-            return video[address + video_addr];
-          if (address >= KEYBOARD_START && address <= 0x38FF)
-            return trs_kb_mem_read(address);
+      if (address < RAM_START) {
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (sys_byte & (1 << 4)) {
+            /* 2K Video RAM */
+            if (address >= KEYBOARD_START)
+              return video[(address + video_addr) & 0x7FF];
+          } else {
+            if (address >= VIDEO_START)
+              return video[address + video_addr];
+            if (address >= KEYBOARD_START && address <= 0x38FF)
+              return trs_kb_mem_read(address);
+          }
+          /* Disk I/O */
+          if (address >= 0x37E0 && address <= 0x37EF)
+            return trs80_model1_mmio(address);
         }
-        /* Disk I/O */
-        if (address >= 0x37E0 && address <= 0x37EF)
-          return trs80_model1_mmio(address);
+        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
+          return rom[address];
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) == 0)
+          return memory[address + bank_offset[1]];
       }
-      /* ROM/EPROM */
-      if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-        return rom[address];
-      /* HRG */
       if ((sys_byte & (1 << 3)) && address >= 0x8000)
         return genie3s_hrg_read(address - 0x8000);
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
+      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
         return memory[address + bank_offset[1]];
       else
         return memory[address + bank_offset[0] + bank_base];
@@ -1373,33 +1375,39 @@ void mem_write(int address, int value)
       break;
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
-        if (sys_byte & (1 << 4)) {
-          /* 2K Video RAM */
-          if (address >= KEYBOARD_START) {
-            trs80_screen_write_char((address + video_addr) & 0x7FF, value);
-            return;
+      if (address < RAM_START) {
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (sys_byte & (1 << 4)) {
+            /* 2K Video RAM */
+            if (address >= KEYBOARD_START) {
+              trs80_screen_write_char((address + video_addr) & 0x7FF, value);
+              return;
+            }
+          } else {
+            if (address >= VIDEO_START) {
+              trs80_screen_write_char(address + video_addr, value);
+              return;
+            }
           }
-        } else {
-          if (address >= VIDEO_START) {
-            trs80_screen_write_char(address + video_addr, value);
+          /* Disk I/O */
+          if (address >= 0x37E0 && address <= 0x37EF) {
+            trs80_model1_write_mmio(address, value);
             return;
           }
         }
-        /* Disk I/O */
-        if (address >= 0x37E0 && address <= 0x37EF) {
-          trs80_model1_write_mmio(address, value);
+        /* Write protect "Pseudo-ROM" */
+        if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
+          return;
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) == 0) {
+          memory[address + bank_offset[1]] = value;
           return;
         }
       }
-      /* HRG */
       if ((sys_byte & (1 << 3)) && address >= 0x8000) {
         genie3s_hrg_write(address - 0x8000, value);
         return;
       }
-      /* Write protect "Pseudo-ROM" */
-      if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
-        return;
       /* Write to Font-SRAM */
       if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
         genie3s_char(video[(VIDEO_START + video_addr)],
@@ -1407,8 +1415,7 @@ void mem_write(int address, int value)
         return;
       }
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
+      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
         memory[address + bank_offset[1]] = value;
       else
         memory[address + bank_offset[0] + bank_base] = value;
@@ -1742,22 +1749,25 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
-      if ((sys_byte & (1 << 0)) == 0 && address < RAM_START) {
-        if (sys_byte & (1 << 4)) {
-          /* 2K Video RAM */
-          if (address >= KEYBOARD_START)
-            return &video[(address + video_addr) & 0x7FF];
-        } else {
-          if (address >= VIDEO_START)
-            return &video[address + video_addr];
+      if (address < RAM_START) {
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (sys_byte & (1 << 4)) {
+            /* 2K Video RAM */
+            if (address >= KEYBOARD_START)
+              return &video[(address + video_addr) & 0x7FF];
+          } else {
+            if (address >= VIDEO_START)
+              return &video[address + video_addr];
+          }
         }
+        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
+          return writing ? NULL : &rom[address];
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) == 0)
+          return &memory[address + bank_offset[1]];
       }
-      /* ROM */
-      if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-        return writing ? NULL : &rom[address];
       /* "Constant bit" points to Bank 0 */
-      if ((address <= 0x3FFF && (sys_byte_2 & (1 << 0)) == 0) ||
-          (address >= 0xE000 && (sys_byte_2 & (1 << 0))))
+      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
         return &memory[address + bank_offset[1]];
       else
         return &memory[address + bank_offset[0] + bank_base];
