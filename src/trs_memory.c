@@ -1052,17 +1052,19 @@ int mem_read(int address)
           /* Load BASIC in ROM-Card */
           return rom[(address & 0x2FFF) | 0x1000];
       }
-      /* HRG in low 16K */
-      if ((sys_byte & (1 << 3)) && address < RAM_START) {
-        hrg_write_addr(address, 0x3FFF);
-        return hrg_read_data();
-      }
-      /* ROM and MMIO */
-      if ((sys_byte & (1 << 0)) == 0) {
-        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-          return rom[address];
-        if (address >= 0x3400 && address < RAM_START)
-          return trs80_model1_mmio(address);
+      if (address < RAM_START) {
+        /* HRG in low 16K */
+        if (sys_byte & (1 << 3)) {
+          hrg_write_addr(address, 0x3FFF);
+          return hrg_read_data();
+        }
+        /* MMIO and ROM */
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (address >= 0x3400)
+            return trs80_model1_mmio(address);
+          if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
+            return rom[address];
+        }
       }
       return memory[address];
 
@@ -1492,21 +1494,23 @@ void mem_write(int address, int value)
           return;
         }
       }
-      /* HRG in low 16K */
-      if ((sys_byte & (1 << 3)) && address < RAM_START) {
-        hrg_write_addr(address, 0x3FFF);
-        hrg_write_data(value);
-        return;
-      }
-      /* MMIO */
-      if ((sys_byte & (1 << 0)) == 0) {
-        if (address >= 0x3400 && address < RAM_START) {
-          trs80_model1_write_mmio(address, value);
+      if (address < RAM_START) {
+        /* HRG in low 16K */
+        if (sys_byte & (1 << 3)) {
+          hrg_write_addr(address, 0x3FFF);
+          hrg_write_data(value);
           return;
         }
-        /* Write protect "Pseudo-ROM" */
-        if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
-          return;
+        /* MMIO */
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (address >= 0x3400) {
+            trs80_model1_write_mmio(address, value);
+            return;
+          }
+          /* Write protect "Pseudo-ROM" */
+          if ((sys_byte & (1 << 5)) && address <= 0x2FFF)
+            return;
+        }
       }
       memory[address] = value;
       break;
@@ -1819,12 +1823,16 @@ Uint8 *mem_pointer(int address, int writing)
           /* Load BASIC in ROM-Card */
           return writing ? NULL : &rom[(address & 0x2FFF) | 0x1000];
       }
-      /* ROM and MMIO */
-      if ((sys_byte & (1 << 0)) == 0) {
-        if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
-          return writing ? NULL : &rom[address];
-        if (address >= 0x3400 && address < RAM_START)
-          return trs80_model1_mmio_addr(address, writing);
+      if (address < RAM_START) {
+        if (sys_byte & (1 << 3)) /* HRG */
+          return NULL;
+        /* MMIO and ROM */
+        if ((sys_byte & (1 << 0)) == 0) {
+          if (address >= 0x3400)
+            return trs80_model1_mmio_addr(address, writing);
+          if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
+            return writing ? NULL : &rom[address];
+        }
       }
       return &memory[address];
 
