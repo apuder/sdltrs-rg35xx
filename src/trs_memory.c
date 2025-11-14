@@ -1035,7 +1035,7 @@ int mem_read(int address)
             return memory[address + 0x8000];
           if (address >= 0xF800)
             return trs_kb_mem_read(address);
-          if (address >= 0xF700 && address <= 0xF7FF)
+          if (address >= 0xF700)
             return trs80_model1_mmio(address & 0x3FFF);
         }
       }
