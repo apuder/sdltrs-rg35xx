@@ -1477,7 +1477,7 @@ void mem_write(int address, int value)
             memory[address + 0x8000] = value;
             return;
           }
-          if (address >= 0xF700 && address <= 0xF7FF) {
+          if (address <= 0xF7FF) {
             trs80_model1_write_mmio(address & 0x3FFF, value);
             return;
           }
