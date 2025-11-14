@@ -951,16 +951,13 @@ int mem_read(int address)
     case 0x24: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
-          if (sys_byte & (1 << 4)) {
+          if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START)
             /* 2K Video RAM */
-            if (address >= KEYBOARD_START)
-              return video[(address + video_addr) & 0x7FF];
-          } else {
-            if (address >= VIDEO_START)
-              return video[address + video_addr];
-            if (address >= KEYBOARD_START && address <= 0x38FF)
-              return trs_kb_mem_read(address);
-          }
+            return video[(address + video_addr) & 0x7FF];
+          if (address >= VIDEO_START)
+            return video[address + video_addr];
+          if (address >= KEYBOARD_START && address <= 0x38FF)
+            return trs_kb_mem_read(address);
           /* Disk I/O */
           if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio(address);
@@ -1377,17 +1374,14 @@ void mem_write(int address, int value)
     case 0x24: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
-          if (sys_byte & (1 << 4)) {
+          if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START) {
             /* 2K Video RAM */
-            if (address >= KEYBOARD_START) {
-              trs80_screen_write_char((address + video_addr) & 0x7FF, value);
-              return;
-            }
-          } else {
-            if (address >= VIDEO_START) {
-              trs80_screen_write_char(address + video_addr, value);
-              return;
-            }
+            trs80_screen_write_char((address + video_addr) & 0x7FF, value);
+            return;
+          }
+          if (address >= VIDEO_START) {
+            trs80_screen_write_char(address + video_addr, value);
+            return;
           }
           /* Disk I/O */
           if (address >= 0x37E0 && address <= 0x37EF) {
@@ -1751,14 +1745,11 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x24: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
-          if (sys_byte & (1 << 4)) {
+          if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START)
             /* 2K Video RAM */
-            if (address >= KEYBOARD_START)
-              return &video[(address + video_addr) & 0x7FF];
-          } else {
-            if (address >= VIDEO_START)
-              return &video[address + video_addr];
-          }
+            return &video[(address + video_addr) & 0x7FF];
+          if (address >= VIDEO_START)
+            return &video[address + video_addr];
         }
         if ((sys_byte & (1 << 2)) == 0 && address <= 0x2FFF)
           return writing ? NULL : &rom[address];
