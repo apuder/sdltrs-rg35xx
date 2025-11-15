@@ -96,7 +96,7 @@ static Uint8 rom[MAX_ROM_SIZE + 1];
 static int memory_map;
 static int video_addr = -VIDEO_START;
 static int bank_offset[3];
-static Uint32 bank_base = 0x10000;
+static Uint32 bank_base;
 static int megamem_addr;
 static Uint32 megamem_base;
 static Uint8 mem_command;
