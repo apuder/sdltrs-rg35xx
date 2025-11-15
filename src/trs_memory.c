@@ -925,7 +925,7 @@ int mem_read(int address)
       return memory[address + bank_offset[address >> 15]];
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
-      if (address <= 0x43FF) {
+      if (address <= 0x43FF && sys_byte != 0x0F) {
         /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
           return rom[address];
@@ -1339,7 +1339,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
-      if (address <= 0x47FF) {
+      if (address <= 0x47FF && sys_byte != 0x0F) {
         /* Bank 2: Video RAM 0 = 1K, 64x16, TRS-80 M1 compatible */
         if ((sys_byte & (1 << 1)) == 0) {
           if (address >= VIDEO_START && address < RAM_START) {
@@ -1726,7 +1726,7 @@ Uint8 *mem_pointer(int address, int writing)
       return &memory[address + bank_offset[address >> 15]];
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
-      if (address <= 0x43FF) {
+      if (address <= 0x43FF && sys_byte != 0x0F) {
         /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
           return writing ? NULL : &rom[address];
