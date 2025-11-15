@@ -725,7 +725,7 @@ void trs_reset(int poweron)
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     trs_interrupt_latch_clear();
-    trs_screen_mode(INVERSE, 0);
+    trs_screen_mode(INVERSE + REVERSE, 0);
 
     switch (speedup) {
       case 5: /* Aster CT-80 */
