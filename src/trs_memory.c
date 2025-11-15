@@ -926,26 +926,25 @@ int mem_read(int address)
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x43FF) {
-        /* Bit 0 - Bank 1: ROM */
+        /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
           return rom[address];
-        /* Bit 1 - Bank 2: Video RAM 0 (1K, 64x16, TRS-80 M1 compatible) */
+        /* Bank 2: Video RAM 0 = 1K, 64x16, TRS-80 M1 compatible */
         if ((sys_byte & (1 << 1)) == 0) {
           if (address >= VIDEO_START && address < RAM_START)
             return video[address - VIDEO_START];
         }
-        /* Bit 2 - Bank 3: Video RAM 1 (additional 1K for 80x24 video mode) */
+        /* Bank 3: Video RAM 1 = additional 1K for 80x24 video mode */
         if ((sys_byte & (1 << 2)) == 0 && address >= RAM_START)
           return video[address - VIDEO_START];
-        /* Bit 3 - Bank 4: Disk I/O and Keyboard */
-        if ((sys_byte & (1 << 3)) == 0) {
+        /* Bank 4: Disk I/O and Keyboard */
+        if ((sys_byte & (1 << 3)) == 0 && address < VIDEO_START) {
           if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio(address);
-          if (address >= KEYBOARD_START && address <= 0x3BFF)
+          if (address >= KEYBOARD_START)
             return trs_kb_mem_read(address);
         }
       }
-      /* Bank 0: RAM */
       return memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
@@ -1341,15 +1340,15 @@ void mem_write(int address, int value)
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x47FF) {
-        /* Bit 1 - Bank 2: Video RAM 0 (1K, 64x16, TRS-80 M1 compatible) */
+        /* Bank 2: Video RAM 0 = 1K, 64x16, TRS-80 M1 compatible */
         if ((sys_byte & (1 << 1)) == 0) {
           if (address >= VIDEO_START && address < RAM_START) {
             trs80_screen_write_char(address - VIDEO_START, value);
             return;
           }
         }
-        /* Bit 2 - Bank 3: Video RAM 1 (additional 1K for 80x24 video mode)
-         *                 Video RAM 2 (EG 3210 Programmable Graphics Adaptor) */
+        /* Bank 3: Video RAM 1 = additional 1K for 80x24 video mode
+         *         Video RAM 2 = EG 3210 Programmable Graphics Adaptor */
         if ((sys_byte & (1 << 2)) == 0) {
           if (address >= RAM_START && address <= 0x43FF) {
             trs80_screen_write_char(address - VIDEO_START, value);
@@ -1361,7 +1360,7 @@ void mem_write(int address, int value)
             return;
           }
         }
-        /* Bit 3 - Bank 4: Disk I/O */
+        /* Bank 4: Disk I/O */
         if ((sys_byte & (1 << 3)) == 0) {
           if (address >= 0x37E0 && address <= 0x37EF) {
             trs80_model1_write_mmio(address, value);
@@ -1369,7 +1368,6 @@ void mem_write(int address, int value)
           }
         }
       }
-      /* Bank 0: RAM */
       memory[address + bank_offset[address >> 15]] = value;
       break;
 
@@ -1729,19 +1727,18 @@ Uint8 *mem_pointer(int address, int writing)
 
     case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x43FF) {
-        /* Bit 0 - Bank 1: ROM */
+        /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
           return writing ? NULL : &rom[address];
-        /* Bit 1 - Bank 2: Video RAM 0 (1K, 64x16, TRS-80 M1 compatible) */
+        /* Bank 2: Video RAM 0 = 1K, 64x16, TRS-80 M1 compatible */
         if ((sys_byte & (1 << 1)) == 0) {
           if (address >= VIDEO_START && address < RAM_START)
             return &video[address - VIDEO_START];
         }
-        /* Bit 2 - Bank 3: Video RAM 1 (additional 1K for 80x24 video mode) */
+        /* Bank 3: Video RAM 1 = additional 1K for 80x24 video mode */
         if ((sys_byte & (1 << 2)) == 0 && address >= RAM_START)
           return &video[address - VIDEO_START];
       }
-      /* Bank 0: RAM */
       return &memory[address + bank_offset[address >> 15]];
 
     case 0x24: /* TCS Genie IIIs */
