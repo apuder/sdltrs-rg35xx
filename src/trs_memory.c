@@ -1077,8 +1077,10 @@ int mem_read(int address)
       return cp500_mem_read(address, memory_map, rom, memory);
 
     case 0x34: /* Holmes VID-80 (VX-3) */
+      /* 48 KB extended memory */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return memory[address + 65536];
+      /* 80*24 Video RAM */
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return video[address - 0xF800];
       if (address < RAM_START) {
@@ -1529,6 +1531,7 @@ void mem_write(int address, int value)
       break;
 
     case 0x34: /* Holmes VID-80 (VX-3) */
+      /* 48 KB extended memory */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF) {
         memory[address + 65536] = value;
         return;
@@ -1542,6 +1545,7 @@ void mem_write(int address, int value)
         }
         return;
       }
+      /* 80*24 Video RAM */
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800) {
         trs80_screen_write_char(address - 0xF800, value);
         return;
@@ -1847,8 +1851,10 @@ Uint8 *mem_pointer(int address, int writing)
       return cp500_mem_addr(address, memory_map, rom, memory, writing);
 
     case 0x34: /* Holmes VID-80 (VX-3) */
+      /* 48 KB extended memory */
       if ((sys_byte & (1 << 6)) && address <= 0xBFFF)
         return &memory[address + 65536];
+      /* 80*24 Video RAM */
       if ((sys_byte & (1 << 2)) == 0 && address >= 0xF800)
         return &video[address - 0xF800];
       if (address < RAM_START) {
