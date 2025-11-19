@@ -2681,6 +2681,9 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
       !(currentmode & REVERSE))
     expanded += 2;
 
+  if (currentmode & INVERSE)
+    cur_char &= 0x7F;
+
   SDL_BlitSurface(trs_char[expanded][cur_char], &srcRect, screen, &dstRect);
   drawnRectCount = MAX_RECTS;
 }
