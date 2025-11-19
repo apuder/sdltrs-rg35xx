@@ -93,7 +93,7 @@ Lupi's fork of [RetroPie-Setup] ...
 [AUR]: https://aur.archlinux.org/packages/sdl2trs/
 [BUILDING.md]: BUILDING.md
 [Documentation]: https://jengun.gitlab.io/sdltrs
-[EtchedPixels]: https://www.github.com/EtchedPixels/xtrs
+[EtchedPixels]: https://codeberg.org/EtchedPixels/xtrs
 [RetroPie]: https://github.com/RetroPie
 [RetroPie-Setup]: https://github.com/valerino/RetroPie-Setup
 [RTCC]: https://electrickery.nl/comp/trs80/rtccc/
