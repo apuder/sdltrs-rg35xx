@@ -1233,6 +1233,9 @@ void trs_get_event(int wait)
               selectAll = mousepointer = 1;
               SDL_ShowCursor(SDL_ENABLE);
               break;
+            case SDLK_BACKSPACE:
+              trs_timer_init();
+              break;
             case SDLK_DELETE:
               trs_reset(SDL_GetModState() & KMOD_SHIFT);
               break;
