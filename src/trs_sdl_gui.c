@@ -249,10 +249,6 @@ int gui_key(void)
 {
   SDL_Event event;
 
-  /* Stop Text input first to prevent double chars */
-  SDL_StopTextInput();
-  SDL_StartTextInput();
-
   while (1) {
     SDL_WaitEvent(&event);
     switch (event.type) {
@@ -281,7 +277,6 @@ int gui_key(void)
           return SDLK_DOWN;
         break;
       case SDL_TEXTINPUT:
-        SDL_StopTextInput();
         return event.text.text[0];
       case SDL_KEYDOWN:
         if (event.key.keysym.mod & KMOD_ALT) {
@@ -2750,6 +2745,7 @@ void gui_main_menu(void)
 
 void gui_function(int function)
 {
+  SDL_FlushEvent(SDL_TEXTINPUT);
   SDL_PauseAudio(1);
 
   switch (function) {

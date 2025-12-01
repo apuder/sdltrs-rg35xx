@@ -1043,10 +1043,8 @@ static void trs_fullscreen(int on_off)
  */
 void trs_get_event(int wait)
 {
-  SDL_Event event;
+  SDL_Event  event;
   SDL_Keysym keysym;
-
-  SDL_StartTextInput();
 
   if (trs_model > 1)
     (void)trs_uart_check_avail();
@@ -1703,7 +1701,6 @@ done:
       gui_pause();
 
   } while (!wait);
-  SDL_StopTextInput();
 }
 
 void trs_screen_mode(int mode, int flag)
@@ -2968,6 +2965,8 @@ void trs_sdl_init(void)
                                    1, G_XSIZE, 1, 1, 1, 0);
   if (image == NULL)
     fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+
+  SDL_StartTextInput();
 }
 
 int trs_sdl_savebmp(const char *filename)
