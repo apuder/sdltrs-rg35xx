@@ -88,6 +88,7 @@ Lupi's fork of [RetroPie-Setup] ...
 ![screenshot](screenshots/sdltrs04.png)
 ![screenshot](screenshots/sdltrs05.png)
 ![screenshot](screenshots/sdltrs06.png)
+![screenshot](screenshots/sdltrs07.png)
 
 [Aster CT-80]: https://electrickery.nl/comp/trs80/aster/
 [AUR]: https://aur.archlinux.org/packages/sdl2trs/
