@@ -23,7 +23,7 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Load and Save TRS-80 memory in debugger
   * Patch Model I ROM to boot from hard disk drive
   * Support EACA EG 3200 Genie III system
-  * 480x192 HRG resolution for LNW80 and TCS SpeedMaster/Genie IIs
+  * 480x192 HRG resolution for LNW80/II and TCS SpeedMaster/Genie IIs
   * CP/M banking support for TRS-80 Model I clones
   * Support EG-64 Memory-Banking-Adaptor from TCS
   * Support Lubomir Soft Banker for TRS-80 Model I
@@ -46,12 +46,15 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Support 5" / 8" disk size switch commands of Percom doubler
   * Select action for Z80 HALT instruction
   * Support 1024 KB memory for TCS Genie IIIs
-  * Support 1024 KB memory for Alpha Technology SuperMem
+  * Support 256/512/768/1024 KB memory for Alpha Technology SuperMem
   * Support Alpha Technology SuperMem for TRS-80 Model 4/4P
   * Emulate LNW80 Model II banking and 80x24 text mode
   * Emulate Real Time Clock/Calendar Card [RTCC] for TRS-80 Model I
   * Support Solid State Disk for Aster CT-80
   * Support 8 Disk Drives for TCS SpeedMaster/Genie IIs and IIIs
+  * Emulate Holmes Engineering, Inc. VID-80 (VX-3) for TRS-80 Model III
+  * Support 48 KB extended memory for Holmes VID-80 (VX-3)
+  * Support Michael Wessel's Model I [X-MEM/80] 16K page memory extension
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the
@@ -101,4 +104,5 @@ Lupi's fork of [RetroPie-Setup] ...
 [SDL]: https://www.libsdl.org
 [SDLTRS]: http://sdltrs.sourceforge.net
 [SlackBuilds]: http://slackbuilds.org/repository/15.0/system/sdl2trs/
+[X-MEM/80]: https://github.com/lambdamikel/x-mem-80
 [xtrs]: https://www.tim-mann.org/xtrs.html
