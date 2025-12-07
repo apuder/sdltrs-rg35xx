@@ -1,3 +1,13 @@
+## Version 1.2.34 Release 12-07-2025:
+
+ * Added Holmes VID-80 (VX-3) support for TRS-80 Model III.
+ * Added 48 KB extended memory for Holmes VID-80 (VX-3).
+ * Added 256/512/768/1024 KB for Alpha Technology SuperMem.
+ * Added X-MEM/80 (Michael Wessel) 16K page Model I memory extension.
+ * Added printer type for text only output.
+ * Fixed LNW80 Model II banking and 80x24 text mode support.
+ * Fixed some bugs and internal improvements.
+
 ## Version 1.2.33 Release 08-09-2025:
 
  * Added Solid State Disk (RAM-Disk) for Aster CT-80.
