@@ -1705,8 +1705,12 @@ done:
 
 void trs_screen_mode(int mode, int flag)
 {
-  if ((currentmode ^ (flag ? mode : 0)) & mode) {
-    currentmode ^= mode;
+  mode = flag
+    ? currentmode |  mode
+    : currentmode & ~mode;
+
+  if (currentmode != mode) {
+    currentmode = mode;
     trs_screen_refresh();
   }
 }
