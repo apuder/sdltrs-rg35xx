@@ -739,14 +739,15 @@ void trs_xlate_keysym(int keysym)
 
 static void change_keystate(int action)
 {
-  int key_down, was_down;
-  int i;
 #ifdef KBDEBUG
   debug("change_keystate: action 0x%X\n", action);
 #endif
 
   switch (action) {
     case TK_AllKeysUp:
+    {
+      int i;
+
       /* force all keys up */
       for (i = 0; i < 8; i++) {
         keystate[i] = 0;
@@ -755,6 +756,7 @@ static void change_keystate(int action)
       keys_down = 0;
       z80_state.keypress = 0;
       break;
+    }
 
     case TK_Neutral:
     case TK_ForceShift:
@@ -764,8 +766,10 @@ static void change_keystate(int action)
       break;
 
     default:
-      key_down = TK_DOWN(action);
-      was_down = (keystate[TK_ADDR(action)] & (1 << TK_DATA(action))) != 0;
+    {
+      int const key_down = TK_DOWN(action);
+      int const was_down = (keystate[TK_ADDR(action)] & (1 << TK_DATA(action))) != 0;
+
       if (key_down != was_down) {
         if (key_down) {
           keystate[TK_ADDR(action)] |= (1 << TK_DATA(action));
@@ -776,6 +780,7 @@ static void change_keystate(int action)
         }
         z80_state.keypress = keys_down ? turbo_mode : 0;
       }
+    }
   }
 }
 
