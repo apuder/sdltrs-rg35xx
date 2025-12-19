@@ -103,7 +103,7 @@ static Uint8 mem_command;
 static int supermem_base;
 static Uint32 supermem_high;
 static int sys_byte;   /* Various clones and 4P boot ROM */
-static int sys_byte_2; /* LNW80 II and TCS Genie IIs/IIIs */
+static int sys_byte_2; /* LNW80 II and TCS Genie IIIs */
 
 static Uint8 mem_video_read(int vaddr)
 {
@@ -353,11 +353,6 @@ void genie3s_mem_out(int bits)
   bank_offset[1] = (bits & 0x80) ? bank_offset[0] : 0;
 }
 
-int genie3s_mem_in(void)
-{
-  return mem_command;
-}
-
 void genie3s_sys_out(int value)
 {
   if (value == sys_byte)
@@ -595,7 +590,7 @@ void tcs_ram192b_out(int bits)
   bank_base = ((bits & 0x0C) * 192) /* card */
             + ((bits & 0x30) *  48) /* block */
             * 1024 + 65536;
-  sys_byte_2 = bits;
+  mem_command = bits;
 }
 
 /* Holmes VID-80 (VX-3) */
@@ -747,6 +742,11 @@ void trs_reset(int poweron)
         break;
     }
   }
+}
+
+int get_mem_cmd(void)
+{
+  return mem_command;
 }
 
 int get_mem_map(void)

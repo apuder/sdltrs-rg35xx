@@ -43,6 +43,7 @@ extern Uint8  mem_video_page_read(int vaddr);
 extern int    mem_video_page_write(int vaddr, Uint8 value);
 extern Uint8 *mem_video_page_addr(int vaddr);
 
+extern int    get_mem_cmd(void);
 extern int    get_mem_map(void);
 extern void   mem_bank(int which);
 extern void   mem_map(int which);
@@ -54,7 +55,6 @@ extern void   ct80_video_addr(int address);
 extern void   eg3200_genieplus_out(int bits);
 extern void   eg64_mba_out(int value);
 extern void   genie3s_mem_out(int bits);
-extern int    genie3s_mem_in(void);
 extern void   huffman_out(int bits);
 extern int    huffman_in(void);
 extern void   hypermem_out(int bits);

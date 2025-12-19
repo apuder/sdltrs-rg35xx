@@ -305,8 +305,8 @@ static void print_registers(void)
 	   Z80_H, Z80_L, Z80_SP, Z80_HL_PRIME);
     printf("I R: %.2x %.2x\n", Z80_I, Z80_R7 | (Z80_R & 0x7F));
 
-    printf("\nMemory map used: 0x%X", get_mem_map());
-    printf("\nSystem Byte 1/2: 0x%X / 0x%X", sys_byte_in(), sys_byte_2_in());
+    printf("\nMem map/command: %02X / %02X", get_mem_map(), get_mem_cmd());
+    printf("\nSystem Byte 1/2: %02X / %02X", sys_byte_in(), sys_byte_2_in());
     printf("\nT-state counter: %" TSTATE_T_LEN "", z80_state.t_count);
     printf("\nZ80 Clock Speed: %.2f MHz\n", z80_state.clockMHz);
 }

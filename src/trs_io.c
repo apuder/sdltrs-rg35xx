@@ -854,7 +854,7 @@ int z80_in(int port)
             value = sys_byte_in();
             break;
           case 0xFB:
-            value = genie3s_mem_in();
+            value = get_mem_cmd();
             break;
           case 0xFD:
             value = trs_printer_read();
@@ -887,7 +887,7 @@ int z80_in(int port)
             value = rtc_read(rtc_reg);
             break;
           case 0x7E:
-            value = sys_byte_2_in();
+            value = get_mem_cmd();
             break;
           case 0xFE:
             value = sys_byte_in();
