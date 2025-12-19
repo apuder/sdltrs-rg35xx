@@ -60,6 +60,7 @@
 int trs_io_debug_flags;
 #endif
 
+static int hrg_addr;        /* HRG1B memory address */
 static int modesel;         /* Model I/III/4/4P */
 static int modeimage = 0x8; /* Model III/4/4P & SIO */
 static int m6845_reg;       /* M6845 CRTC register */
@@ -412,13 +413,13 @@ void z80_out(int port, int value)
             hrg_onoff(port);
             return;
           case 0x02: /* HRG write address low byte */
-            hrg_write_addr(value, 0xFF);
+            hrg_addr = ((value & 0xFF) << 0) | (hrg_addr & 0xFF00);
             return;
           case 0x03: /* HRG write address high byte */
-            hrg_write_addr(value << 8, 0x3F00);
+            hrg_addr = ((value & 0x3F) << 8) | (hrg_addr & 0x00FF);
             return;
           case 0x05: /* HRG write data byte */
-            hrg_write_data(value);
+            hrg_write_data(hrg_addr, value);
             return;
             /* Selector doesn't decode A5 */
           case 0x1F:
@@ -909,7 +910,7 @@ int z80_in(int port)
             hrg_onoff(port);
             goto done;
           case 0x04: /* HRG read data byte */
-            value = hrg_read_data();
+            value = hrg_read_data(hrg_addr);
             goto done;
           /* X-MEM/80 */
           case 0x41: /* lower 16K 8000-BFFF */
@@ -1120,6 +1121,7 @@ done:
 
 void trs_io_save(FILE *file)
 {
+  trs_save_int(file, &hrg_addr, 1);
   trs_save_int(file, &modesel, 1);
   trs_save_int(file, &modeimage, 1);
   trs_save_int(file, &m6845_reg, 1);
@@ -1136,6 +1138,7 @@ void trs_io_save(FILE *file)
 
 void trs_io_load(FILE *file)
 {
+  trs_load_int(file, &hrg_addr, 1);
   trs_load_int(file, &modesel, 1);
   trs_load_int(file, &modeimage, 1);
   trs_load_int(file, &m6845_reg, 1);

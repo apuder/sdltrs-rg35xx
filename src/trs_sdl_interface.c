@@ -167,7 +167,6 @@ static int grafyx_xoffset, grafyx_yoffset;
 #define HRG_MEMSIZE (1024 * 16)        /* 16k * 8 bit graphics memory */
 static Uint8 hrg_screen[HRG_MEMSIZE];
 static int hrg_enable;
-static int hrg_addr;
 
 /* Private routines */
 static void bitmap_char(int character, int ram);
@@ -1966,10 +1965,8 @@ void trs_screen_refresh(void)
 
       grafyx_overlay = 0;
 
-      for (i = 0; i <= 0x3FFF; i++) {
-        hrg_write_addr(i, 0x3FFF);
-        hrg_write_data(hrg_screen[i]);
-      }
+      for (i = 0; i <= 0x3FFF; i++)
+        hrg_write_data(i, hrg_screen[i]);
 
       grafyx_overlay = 1;
     }
@@ -2603,43 +2600,36 @@ hrg_onoff(int enable)
     trs_screen_refresh();
 }
 
-/* Write address to latch. */
-void
-hrg_write_addr(int addr, int mask)
-{
-  hrg_addr = (hrg_addr & ~mask) | (addr & mask);
-}
-
 /* Write byte to HRG memory. */
 void
-hrg_write_data(int data)
+hrg_write_data(int address, int data)
 {
-  if (hrg_addr >= HRG_MEMSIZE) return; /* nonexistent address */
+  if (address >= HRG_MEMSIZE) return; /* nonexistent address */
 
-  hrg_screen[hrg_addr] = data;
+  hrg_screen[address] = data;
 
   if (!hrg_enable) return;
-  if ((currentmode & EXPANDED) && (hrg_addr & 1)) return;
+  if ((currentmode & EXPANDED) && (address & 1)) return;
 
   data = mirror_bits(expand6to8(data));
 
   /* Check for 96*192 extension region */
-  if ((hrg_addr & 0x3000) == 0x3000) {
-    grafyx_write_byte(64 + (hrg_addr & 0x0F), ((hrg_addr >> 6) & 0x0F) * 12
-        + (4 * ((hrg_addr >> 4) & 0x03) + ((hrg_addr >> 10) & 0x03)), data);
+  if ((address & 0x3000) == 0x3000) {
+    grafyx_write_byte(64 + (address & 0x0F), ((address >> 6) & 0x0F) * 12
+        + (4 * ((address >> 4) & 0x03) + ((address >> 10) & 0x03)), data);
   } else { /* 384*192 inner region */
-    grafyx_write_byte((hrg_addr & 0x3FF) % 64, ((hrg_addr & 0x3FF) / 64) * 12
-        + (hrg_addr >> 10), data); /* bits 0-9: "PRINT @" position */
+    grafyx_write_byte((address & 0x3FF) % 64, ((address & 0x3FF) / 64) * 12
+        + (address >> 10), data); /* bits 0-9: "PRINT @" position */
   }
 }
 
 /* Read byte from HRG memory. */
 int
-hrg_read_data(void)
+hrg_read_data(int address)
 {
-  if (hrg_addr >= HRG_MEMSIZE) return 0xff; /* nonexistent address */
+  if (address >= HRG_MEMSIZE) return 0xff; /* nonexistent address */
 
-  return hrg_screen[hrg_addr];
+  return hrg_screen[address];
 }
 
 void m6845_cursor(unsigned int position, int start, int end, int visible)
@@ -2889,7 +2879,6 @@ void trs_main_save(FILE *file)
   trs_save_int(file, &grafyx_yoffset, 1);
   trs_save_uint8(file, hrg_screen, HRG_MEMSIZE);
   trs_save_int(file, &hrg_enable, 1);
-  trs_save_int(file, &hrg_addr, 1);
   trs_save_int(file, &lowe_le18, 1);
 }
 
@@ -2916,7 +2905,6 @@ void trs_main_load(FILE *file)
   trs_load_int(file, &grafyx_yoffset, 1);
   trs_load_uint8(file, hrg_screen, HRG_MEMSIZE);
   trs_load_int(file, &hrg_enable, 1);
-  trs_load_int(file, &hrg_addr, 1);
   trs_load_int(file, &lowe_le18, 1);
 }
 

@@ -248,9 +248,8 @@ extern Uint8 grafyx_m3_read_byte(unsigned int position);
 extern int   grafyx_m3_write_byte(unsigned int position, int value);
 
 extern void  hrg_onoff(int enable);
-extern void  hrg_write_addr(int addr, int mask);
-extern void  hrg_write_data(int data);
-extern int   hrg_read_data(void);
+extern void  hrg_write_data(int address, int data);
+extern int   hrg_read_data(int address);
 
 extern int   lowe_le18;
 extern int   lowe_le18_read(void);

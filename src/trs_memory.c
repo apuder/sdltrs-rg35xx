@@ -1011,11 +1011,9 @@ int mem_read(int address)
       return memory[address];
 
     case 0x26: /* LNW80/II */
-      if (sys_byte & (1 << 3) && address < RAM_START) {
+      if (sys_byte & (1 << 3) && address < RAM_START)
         /* HRG in low 16K */
-        hrg_write_addr(address, 0x3FFF);
-        return hrg_read_data();
-      }
+        return hrg_read_data(address);
       if ((sys_byte_2 & (1 << 0)) == 0) {
         if ((sys_byte_2 & (1 << 4)) == 0 && address < RAM_START) {
           if (address >= VIDEO_START)
@@ -1054,10 +1052,8 @@ int mem_read(int address)
       }
       if (address < RAM_START) {
         /* HRG in low 16K */
-        if (sys_byte & (1 << 3)) {
-          hrg_write_addr(address, 0x3FFF);
-          return hrg_read_data();
-        }
+        if (sys_byte & (1 << 3))
+          return hrg_read_data(address);
         /* MMIO and ROM */
         if ((sys_byte & (1 << 0)) == 0) {
           if (address >= 0x3400)
@@ -1447,8 +1443,7 @@ void mem_write(int address, int value)
     case 0x26: /* LNW80/II */
       if (sys_byte & (1 << 3) && address < RAM_START) {
         /* HRG in low 16K */
-        hrg_write_addr(address, 0x3FFF);
-        hrg_write_data(value);
+        hrg_write_data(address, value);
         return;
       }
       if ((sys_byte_2 & (1 << 0)) == 0) {
@@ -1502,8 +1497,7 @@ void mem_write(int address, int value)
       if (address < RAM_START) {
         /* HRG in low 16K */
         if (sys_byte & (1 << 3)) {
-          hrg_write_addr(address, 0x3FFF);
-          hrg_write_data(value);
+          hrg_write_data(address, value);
           return;
         }
         /* MMIO */
