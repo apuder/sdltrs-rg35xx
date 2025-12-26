@@ -596,6 +596,7 @@ void tcs_ram192b_out(int bits)
 /* Holmes VID-80 (VX-3) */
 void vid80_vx3_out(int bits)
 {
+  if (bits == sys_byte) return;
   if ((bits & (1 << 7)) != (sys_byte & (1 << 7)))
     trs_screen_mode(INVERSE, bits & (1 << 7));
 
