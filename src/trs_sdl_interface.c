@@ -163,7 +163,7 @@ static int grafyx_xoffset, grafyx_yoffset;
 #define G3_COMMAND  0x20
 #define G3_YLOW(v)  (((v) & 0x1e) >> 1)
 
-/* HRG1B, LE18, LNW80 and TCS Genie IIs/SpeedMaster */
+/* HRG1B, LNW80/II and TCS Genie IIs/SpeedMaster */
 #define HRG_MEMSIZE (1024 * 16)        /* 16k * 8 bit graphics memory */
 static Uint8 hrg_screen[HRG_MEMSIZE];
 static int hrg_enable;
@@ -2567,7 +2567,7 @@ void lowe_le18_write_control(int value)
  * only 192*192 pixels. Pixels with an odd column address (i.e.
  * every second group of 6 pixels) are suppressed.
  *
- * The LNW80 and later TCS models (Genie IIs/SpeedMaster) uses
+ * The LNW80/II and later TCS models (Genie IIs/SpeedMaster) uses
  * the 480*192 screen resolution with 96*192 "extension region":
  *    Bits 0-3:   additional character column address (0-15)
  *    Bits 4-5:   MSB of line within character cell (0-11)

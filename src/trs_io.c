@@ -445,7 +445,7 @@ void z80_out(int port, int value)
           case 0xB9: /* Orchestra-85 left channel */
             trs_orch90_out(1, value);
             return;
-          case 0xC0: /* Lubomir Soft Banker or EG 64.3 */
+          case 0xC0: /* Lubomir Soft Banker (EG 64.3) */
             if (lubomir)
               lubomir_out(value);
             return;
@@ -515,7 +515,6 @@ void z80_out(int port, int value)
             /* screen mode select is on D3 line */
             modesel = (value >> 3) & 1;
             trs_screen_mode(EXPANDED, modesel);
-            /* do cassette emulation */
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
             return;
@@ -702,7 +701,6 @@ void z80_out(int port, int value)
           /* do Model III Micro-Labs graphics card */
           grafyx_m3_write_mode(value);
         else
-          /* do cassette emulation */
           trs_cassette_out(value & 3);
         return;
       default:
@@ -945,7 +943,7 @@ int z80_in(int port)
               value = stringy_in(port & 7);
             goto done;
           case 0xFD:
-            /* GENIE location of printer port */
+            /* Printer port of EACA Genie/System 80 */
             value = trs_printer_read();
             goto done;
           case 0xFF:
@@ -1028,7 +1026,7 @@ int z80_in(int port)
     case 0x00:
       value = trs_joystick_in();
       goto done;
-    case 0x43: /* Supermem memory expansion */
+    case 0x43: /* Alpha Technology SuperMem */
       if (supermem)
         value = supermem_in();
       goto done;
