@@ -1168,7 +1168,7 @@ trs_sound_out(int value)
 }
 
 void
-orch90_flush(int dummy)
+trs_orch90_flush(int dummy)
 {
   trs_orch90_out(0, FLUSH);
 }
@@ -1217,14 +1217,14 @@ trs_orch90_out(int channels, int value)
     put_sample(orch90_right, 1, cassette_file);
   }
 
-  if (trs_event_scheduled() == orch90_flush ||
+  if (trs_event_scheduled() == trs_orch90_flush ||
       trs_event_scheduled() == assert_state_void) {
     trs_cancel_event();
   }
   if (value == FLUSH) {
     trs_schedule_event(assert_state_void, CLOSE, 5000000);
   } else {
-    trs_schedule_event(orch90_flush, FLUSH,
+    trs_schedule_event(trs_orch90_flush, FLUSH,
 		       (int)(250000 * z80_state.clockMHz));
   }
 

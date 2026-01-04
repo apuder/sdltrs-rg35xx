@@ -51,7 +51,6 @@ extern int   trs_get_cassette_length(void);
 extern int   trs_get_cassette_position(void);
 extern void  trs_set_cassette_position(int pos);
 extern void  trs_cassette_kickoff(int dummy);
-extern void  orch90_flush(int dummy);
 extern void  trs_cassette_update(int dummy);
 
 #endif /* _TRS_CASSETTE_H */

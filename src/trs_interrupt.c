@@ -743,7 +743,7 @@ void trs_interrupt_save(FILE *file)
     event = 2;
   else if (event_func == trs_cassette_kickoff)
     event = 3;
-  else if (event_func == orch90_flush)
+  else if (event_func == trs_orch90_flush)
     event = 4;
   else if (event_func == trs_cassette_fall_interrupt)
     event = 5;
@@ -791,7 +791,7 @@ void trs_interrupt_load(FILE *file)
       event_func = trs_cassette_kickoff;
       break;
     case 4:
-      event_func = orch90_flush;
+      event_func = trs_orch90_flush;
       break;
     case 5:
       event_func = trs_cassette_fall_interrupt;
