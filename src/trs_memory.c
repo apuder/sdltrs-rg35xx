@@ -532,21 +532,21 @@ void sys_byte_out(int value)
   if (value == sys_byte)
     return;
 
-  switch (speedup) {
-    case 4: /* Banking-Modification from Martin Doppelbauer */
-      if (memory_map == 0x20) {
-        /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
-        sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
-        return;
-      }
-      else
-        memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
+  switch (memory_map) {
+    case 0x20:
+      /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
+      sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
+      return;
+    case 0x10:
+    case 0x14:
+      /* Banking-Modification from Martin Doppelbauer */
+      memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
       /* Fall through - Accept speed up kit on bit 0 */
-    case 5: /* Aster CT-80 */
+    case 0x25: /* Aster CT-80 */
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_timer_speed(value & 1);
       break;
-    case 6: /* LNW80/II */
+    case 0x26: /* LNW80/II */
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
         trs_screen_mode(INVERSE, value & (1 << 7));
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
@@ -558,7 +558,7 @@ void sys_byte_out(int value)
           trs_screen_mode(REVERSE, value & 1);
       }
       break;
-    case 7: /* TCS Genie IIs/SpeedMaster */
+    case 0x27: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
         hrg_onoff(value & (1 << 1));
       if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
