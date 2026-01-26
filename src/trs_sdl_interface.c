@@ -535,9 +535,12 @@ void trs_screen_caption(void)
     static const char *trs_name[] = {
         "TRS-80 Model I", "", "TRS-80 Model III", "TRS-80 Model 4", "TRS-80 Model 4P" };
 
-    snprintf(title, 79, "%s%s (%.2f MHz)%s%s",
+    snprintf(title, 79, "%s%s %d KB (%.2f MHz)%s%s",
              turbo_mode ? "Turbo " : "",
              trs_clones.name ? trs_clones.name : trs_name[trs_model - 1],
+             trs_clones.name ? trs_clones.memory
+                             : trs_model >= 4 ? 128
+                             : (trs_mem_size - RAM_START) >> 10,
              z80_state.clockMHz,
              trs_paused ? " PAUSED" : "",
              trs_sound ? "" : " (Mute)");

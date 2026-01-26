@@ -19,6 +19,10 @@ struct trs_clones {
    * Name of the clone:
    */
   const char *name;
+  /*
+   * Base Memory Size:
+   */
+  int memory;
 };
 
 extern struct trs_clones trs_clones;
