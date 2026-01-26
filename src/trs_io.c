@@ -520,64 +520,53 @@ void z80_out(int port, int value)
             return;
           default:
             break;
-        }
+      }
     }
-
   } else {
-    /* Next, Models III/4/4P only */
-    switch (port) {
-      case 0x3C:
-        if (trs_model == 3)
+    if (trs_model == 3) {
+      switch (port) {
+        case 0x3C:
           m6845_reg = value;
-        return;
-      case 0x3D:
-        if (trs_model == 3)
+          return;
+        case 0x3D:
           m6845_crtc(value);
-        return;
-      case 0x3F:
-        if (trs_model == 3)
+          return;
+        case 0x3F:
           vid80_vx3_out(value);
-        return;
-      case 0x50: /* MegaMem memory slot */
-      case 0x51:
-      case 0x52:
-      case 0x60:
-      case 0x61:
-      case 0x62:
-        if (megamem)
-          megamem_out(port & 0x0F, value);
-        return;
-      case 0x5F: /* Sprinter III */
-        if (trs_model == 3)
+          return;
+        case 0x5F: /* Sprinter III */
           trs_timer_speed(value);
-        return;
-      case 0x75: /* Orchestra-90 right channel */
-        trs_orch90_out(2, value);
-        return;
-      case 0x79: /* Orchestra-90 left channel */
-        trs_orch90_out(1, value);
-        return;
-      case 0x80:
-        if (trs_model == 3 && grafyx_microlabs) return;
-        grafyx_write_x(value);
-        return;
-      case 0x81:
-        if (trs_model == 3 && grafyx_microlabs) return;
-        grafyx_write_y(value);
-        return;
-      case 0x82:
-        if (trs_model == 3 && grafyx_microlabs) return;
-        grafyx_write_data(value);
-        return;
-      case 0x83:
-        if (trs_model == 3 && grafyx_microlabs) return;
-        grafyx_write_mode(value);
-        return;
-      case 0x84:
-      case 0x85:
-      case 0x86:
-      case 0x87:
-        if (trs_model >= 4) {
+          return;
+        case 0x80:
+        case 0x81:
+        case 0x82:
+        case 0x83:
+          if (grafyx_microlabs) return;
+          break;
+        case 0xE6:
+          /* RTC of Holmes FDC DX-3D board */
+          rtc_reg = value >> 4;
+          return;
+        case 0xFC:
+        case 0xFD:
+        case 0xFE:
+        case 0xFF:
+          if (value & 0x20 && grafyx_microlabs)
+            /* do Model III Micro-Labs graphics card */
+            grafyx_m3_write_mode(value);
+          else
+            trs_cassette_out(value & 3);
+          return;
+        default:
+          break;
+      }
+    } else {
+      switch (port) {
+        case 0x84:
+        case 0x85:
+        case 0x86:
+        case 0x87:
+        {
           int const changes = value ^ modesel;
 
           if (changes & 0x80)
@@ -599,27 +588,27 @@ void z80_out(int port, int value)
         }
         return;
       case 0x8C:
-        if (trs_model >= 4) grafyx_write_xoffset(value);
+        grafyx_write_xoffset(value);
         return;
       case 0x8D:
-        if (trs_model >= 4) grafyx_write_yoffset(value);
+        grafyx_write_yoffset(value);
         return;
       case 0x8E:
-        if (trs_model >= 4) grafyx_write_overlay(value);
+        grafyx_write_overlay(value);
         return;
       case 0x90:
         /* HyperMem uses bits 4-1 of this port, 0 is the existing
            sound */
-        if (trs_model >= 4 && hypermem)
+        if (hypermem)
           hypermem_out(value);
         /* Fall through - we affect the sound as well */
       case 0x91:
       case 0x92:
       case 0x93:
-        if (trs_model >= 4) trs_sound_out(value & 1);
+        trs_sound_out(value & 1);
         return;
       case 0x94: /* Huffman memory expansion */
-        if (trs_model >= 4 && huffman)
+        if (huffman)
           huffman_out(value);
         return;
       case 0x9C:
@@ -629,6 +618,38 @@ void z80_out(int port, int value)
         if (trs_model == 5) /* Switch 4P boot ROM in/out */
           sys_byte_write(value & 1);
         return;
+      default:
+        break;
+      }
+    }
+    switch (port) {
+      case 0x50: /* MegaMem memory slot */
+      case 0x51:
+      case 0x52:
+      case 0x60:
+      case 0x61:
+      case 0x62:
+        if (megamem)
+          megamem_out(port & 0x0F, value);
+        return;
+      case 0x75: /* Orchestra-90 right channel */
+        trs_orch90_out(2, value);
+        return;
+      case 0x79: /* Orchestra-90 left channel */
+        trs_orch90_out(1, value);
+        return;
+      case 0x80:
+        grafyx_write_x(value);
+        return;
+      case 0x81:
+        grafyx_write_y(value);
+        return;
+      case 0x82:
+        grafyx_write_data(value);
+        return;
+      case 0x83:
+        grafyx_write_mode(value);
+        return;
       case 0xE0:
       case 0xE1:
       case 0xE2:
@@ -637,15 +658,9 @@ void z80_out(int port, int value)
         return;
       case TRSDISK3_INTERRUPT: /* 0xE4 */
       case 0xE5:
+      case 0xE6:
       case 0xE7:
         trs_nmi_mask_write(value);
-        return;
-      case 0xE6:
-        /* RTC of Holmes FDC DX-3D board */
-        if (trs_model == 3)
-          rtc_reg = value >> 4;
-        else
-          trs_nmi_mask_write(value);
         return;
       case 0xEC:
       case 0xED:
@@ -697,11 +712,7 @@ void z80_out(int port, int value)
       case 0xFD:
       case 0xFE:
       case 0xFF:
-        if (trs_model == 3 && (value & 0x20) && grafyx_microlabs)
-          /* do Model III Micro-Labs graphics card */
-          grafyx_m3_write_mode(value);
-        else
-          trs_cassette_out(value & 3);
+        trs_cassette_out(value & 3);
         return;
       default:
         break;
