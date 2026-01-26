@@ -78,6 +78,7 @@
 
 int lowercase = 1;
 int trs_model = 1;
+int trs_mem_size = Z80_ADDRESS_LIMIT;
 int trs_rom_size;
 int huffman;  /* Dave Huffman (4/4P) */
 int hypermem; /* Anitek HyperMem (4/4P) */
@@ -771,6 +772,8 @@ void rom_write(int address, int value)
 
 static int trs80_model1_ram(int address)
 {
+  if (address >= trs_mem_size) return 0xFF; /* nonexistent memory address */
+
   if (selector) {
     int const bank = bank_offset[address >> 15];
 
@@ -810,6 +813,7 @@ static int trs80_model1_mmio(int address)
 
 int trs80_model3_mem_read(int address)
 {
+  if (address >= trs_mem_size) return 0xFF; /* nonexistent memory address */
   if (address >= RAM_START) return memory[address];
   if (address >= VIDEO_START) return grafyx_m3_read_byte(address - VIDEO_START);
   if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
@@ -1600,6 +1604,8 @@ void mem_write_word(int address, int value)
 
 static Uint8 *trs80_model1_ram_addr(int address)
 {
+  if (address >= trs_mem_size) return NULL; /* nonexistent memory address */
+
   if (selector) {
     int const bank = bank_offset[address >> 15];
 
@@ -1628,6 +1634,7 @@ static Uint8 *trs80_model1_mmio_addr(int address, int writing)
 
 Uint8 *trs80_model3_mem_addr(int address, int writing)
 {
+  if (address >= trs_mem_size) return NULL; /* nonexistent memory address */
   if (address >= RAM_START) return &memory[address];
   if (address >= VIDEO_START) return &video[address - VIDEO_START];
   if (address < trs_rom_size && writing == 0) return &rom[address];
@@ -1907,6 +1914,7 @@ void trs_mem_save(FILE *file)
   trs_save_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_save_uint8(file, video, MAX_VIDEO_SIZE + 1);
   trs_save_int(file, &trs_model, 1);
+  trs_save_int(file, &trs_mem_size, 1);
   trs_save_int(file, &trs_rom_size, 1);
   trs_save_int(file, &lowercase, 1);
   trs_save_int(file, &memory_map, 1);
@@ -1935,6 +1943,7 @@ void trs_mem_load(FILE *file)
   trs_load_uint8(file, rom, MAX_ROM_SIZE + 1);
   trs_load_uint8(file, video, MAX_VIDEO_SIZE + 1);
   trs_load_int(file, &trs_model, 1);
+  trs_load_int(file, &trs_mem_size, 1);
   trs_load_int(file, &trs_rom_size, 1);
   trs_load_int(file, &lowercase, 1);
   trs_load_int(file, &memory_map, 1);

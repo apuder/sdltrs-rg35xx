@@ -261,6 +261,8 @@ static const struct {
   { "m4p",             opt_value,         0, 5, &trs_model            },
   { "mega",            opt_memory,        0, 4, &megamem              },
   { "megamem",         opt_memory,        0, 4, &megamem              },
+  { "mem",             opt_intval,        1, 9, NULL                  },
+  { "memsize",         opt_intval,        1, 9, NULL                  },
   { "m",               opt_model,         1, 0, NULL                  },
   { "model",           opt_model,         1, 0, NULL                  },
   { "mouse",           opt_value,         0, 1, &mousepointer         },
@@ -686,6 +688,12 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
         supermem = 0;
       }
       break;
+    case 9: /* memsize */
+      if (value >= 4 && value <= 32)
+        trs_mem_size = (value << 10) + RAM_START;
+      else
+        trs_mem_size = Z80_ADDRESS_LIMIT; /* 48/64 KB */
+      break;
     default:
       break;
   }
@@ -1010,6 +1018,7 @@ int trs_load_config_file(void)
   trs_joystick = 0;
   trs_kb_bracket(0);
   trs_keypad_joystick = 1;
+  trs_mem_size = Z80_ADDRESS_LIMIT;
   trs_model = 1;
   trs_printer = 0;
   trs_show_led = 1;
@@ -1205,6 +1214,7 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%slowercase\n", option(lowercase));
   fprintf(config_file, "%slubomir\n", option(lubomir));
   fprintf(config_file, "%smegamem\n", option(megamem));
+  fprintf(config_file, "memsize=%d\n", (trs_mem_size - RAM_START) >> 10);
   fprintf(config_file, "%smicrolabs\n", option(grafyx_microlabs));
 
   fprintf(config_file, "model=%d%s\n",

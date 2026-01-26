@@ -158,6 +158,7 @@ extern int  trs_cassette_in(void);
 extern void trs_sound_out(int value);
 extern int  trs_joystick_in(void);
 
+extern int  trs_mem_size;
 extern int  trs_rom_size;
 
 extern void  trs_interrupt_latch_clear(void);
