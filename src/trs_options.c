@@ -641,10 +641,8 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
 
   switch (intarg) {
     case 1: /* borderwidth */
-      if (value < 0 || value > 50)
-        value = 2;
-
-      border_width = value;
+      if (value >= 0 && value <= 50)
+        border_width = value;
       break;
     case 2: /* keystretch */
       if (value < 0)
@@ -653,10 +651,8 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       stretch_amount = value;
       break;
     case 3: /* samplerate */
-      if (value < 0 || value > MAX_SAMPLE_RATE)
-        value = MAX_SAMPLE_RATE;
-
-      cassette_default_sample_rate = value;
+      if (value >= 0 && value < MAX_SAMPLE_RATE)
+        cassette_default_sample_rate = value;
       break;
     case 4: /* scale */
       if (value <= 0)
@@ -684,15 +680,11 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       if (value >= 256 && value <= 1024) {
         supermem = (value / 256) << 3;
          huffman = hypermem = lubomir = selector = xmem80 = 0;
-      } else {
-        supermem = 0;
       }
       break;
     case 9: /* memsize */
       if (value >= 4 && value <= 32)
         trs_mem_size = (value << 10) + RAM_START;
-      else
-        trs_mem_size = Z80_ADDRESS_LIMIT; /* 48/64 KB */
       break;
     default:
       break;
