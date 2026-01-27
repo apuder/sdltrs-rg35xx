@@ -1681,7 +1681,7 @@ void gui_cassette_menu(void)
 void gui_emulator_menu(void)
 {
   MENU menu[] =
-  {{"Model                                             ", ENTRY},
+  {{"Model and Memory Size                             ", ENTRY},
    {"CPU Clock Speed                                   ", ENTRY},
    {"Speedup Kit or Banking for Model I/III/4/4P       ", ENTRY},
    {"Exatron Stringy Floppy Emulation for Model I      ", ENTRY},
@@ -1713,8 +1713,9 @@ void gui_emulator_menu(void)
                          "    512 KB",
                          "    768 KB",
                          "   1024 KB"};
+  int model_trs = trs_model == 1 ? 0 : trs_model - 2;
+  int reset_trs = 0;
   int selection = 0;
-  int model_selection = trs_model == 1 ? 0 : trs_model - 2;
   float clock_mhz[4];
 
   clock_mhz[0] = clock_mhz_1;
@@ -1725,8 +1726,8 @@ void gui_emulator_menu(void)
   while (1) {
     char input[8];
 
-    snprintf(&menu[0].text[44], 17, "%s", model[model_selection]);
-    snprintf(&menu[1].text[50], 11, "%6.2f MHz", clock_mhz[model_selection]);
+    snprintf(&menu[0].text[44], 17, "%s", model[model_trs]);
+    snprintf(&menu[1].text[50], 11, "%6.2f MHz", clock_mhz[model_trs]);
     snprintf(&menu[2].text[45], 16, "%s", speed[speedup]);
     snprintf(&menu[3].text[50], 11, "%s", yes_no[stringy]);
     snprintf(&menu[4].text[50], 11, "%s", yes_no[lowe_le18]);
@@ -1744,17 +1745,31 @@ void gui_emulator_menu(void)
     selection = gui_menu(" Emulator Settings ", menu, selection);
     switch (selection) {
       case 0:
-        model_selection = gui_popup("Model", model, 4, model_selection);
+        model_trs = gui_popup("Model", model, 4, model_trs);
+        if (model_trs <= 1) {
+          int const memsize = (trs_mem_size - RAM_START) >> 10;
+
+          snprintf(input, 3, "%d", memsize);
+          if (gui_input(" Enter Memory Size in KB (4 - 48) ",
+              input, input, 2, 0) > 0) {
+            int const value = atoi(input);
+
+            if (value != memsize && value >= 4 && value <= 48) {
+              trs_mem_size = (value << 10) + RAM_START;
+              reset_trs = 1;
+            }
+          }
+        }
         break;
       case 1:
-        snprintf(input, 6, "%.2f", clock_mhz[model_selection]);
+        snprintf(input, 6, "%.2f", clock_mhz[model_trs]);
         if (gui_input(" Enter CPU Clock Speed in MHz ",
             input, input, 6, 0) > 0) {
           float const value = atof(input);
 
           if (value >= 0.1 && value <= 99.0) {
-            clock_mhz[model_selection] = value;
-            switch (model_selection) {
+            clock_mhz[model_trs] = value;
+            switch (model_trs) {
               case 0:
               default:
                 clock_mhz_1 = value;
@@ -1822,11 +1837,13 @@ void gui_emulator_menu(void)
           huffman = supermem = 0;
         break;
       case -1:
-        model_selection = (model_selection == 0 ? 1 : model_selection + 2);
-        if (trs_model != model_selection) {
-          trs_model = model_selection;
-          trs_reset(1);
+        model_trs = model_trs == 0 ? 1 : model_trs + 2;
+        if (trs_model != model_trs) {
+          trs_model = model_trs;
+          reset_trs = 1;
         }
+        if (reset_trs)
+          trs_reset(1);
         return;
     }
   }
