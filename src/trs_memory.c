@@ -268,7 +268,6 @@ void ct80_video_addr(int address)
 
 void eg3200_init_out(int value)
 {
-  memory_map = 0x23;
   sys_byte = value;
   trs_clones_model(EG3200);
   trs_timer_init();
@@ -302,7 +301,7 @@ void eg64_mba_out(int value)
     /* ROM access */
     sys_byte &= ~(1 << (value & 7));
 
-  memory_map = 0x21;
+  memory_map = 0x18;
 }
 
 void genie3s_bank_out(int value)
@@ -337,7 +336,6 @@ void genie3s_init_out(int value)
 {
   genie3s_bank_out(value);
   mem_video_page(0);
-  memory_map = 0x24;
   trs_clones_model(GENIE3S);
   trs_timer_init();
 }
@@ -447,7 +445,7 @@ void lubomir_out(int bits)
   /* 32K Expander-RAM */
   bank_offset[1] = (bits & (1 << 4)) << 11;
 
-  memory_map = bits ? 0x22 : 0x10;
+  memory_map = bits ? 0x19 : 0x10;
   sys_byte = bits;
 }
 
@@ -475,12 +473,11 @@ void s80z_out(int value)
     } else {
       video_addr = VIDEO_START;
     }
-
     trs_screen_mode(REVERSE, value & (1 << 6));
   }
 
   sys_byte = value;
-  memory_map = 0x20;
+  memory_map = 0x17;
 }
 
 void selector_out(int bits)
@@ -534,7 +531,7 @@ void sys_byte_out(int value)
     return;
 
   switch (memory_map) {
-    case 0x20:
+    case 0x17:
       /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
       sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
       return;
@@ -543,11 +540,11 @@ void sys_byte_out(int value)
       /* Banking-Modification from Martin Doppelbauer */
       memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
       /* Fall through - Accept speed up kit on bit 0 */
-    case 0x25: /* Aster CT-80 */
+    case 0x1C: /* Aster CT-80 */
       if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
         trs_timer_speed(value & 1);
       break;
-    case 0x26: /* LNW80/II */
+    case 0x1D: /* LNW80/II */
       if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
         trs_screen_mode(INVERSE, value & (1 << 7));
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
@@ -559,7 +556,7 @@ void sys_byte_out(int value)
           trs_screen_mode(REVERSE, value & 1);
       }
       break;
-    case 0x27: /* TCS Genie IIs/SpeedMaster */
+    case 0x1E: /* TCS Genie IIs/SpeedMaster */
       if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
         hrg_onoff(value & (1 << 1));
       if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
@@ -612,7 +609,7 @@ void xmem80_out(int port, int page)
     /* Set both 16K pages */
     bank_offset[0] = bank_offset[1] = bank_offset[2];
 
-  memory_map = 0x18;
+  memory_map = 0x16;
 }
 
 int xmem80_in(int port)
@@ -717,7 +714,6 @@ void trs_reset(int poweron)
 
   if (trs_model == 3) {
     grafyx_m3_reset();
-    mem_map(0);
     trs_clones_model(0);
   }
 
@@ -729,16 +725,13 @@ void trs_reset(int poweron)
     switch (speedup) {
       case 5: /* Aster CT-80 */
         m6845_text(80);
-        memory_map = 0x25;
         trs_clones_model(CT80);
         trs_screen_init(0);
         break;
       case 6: /* LNW80/II */
-        memory_map = 0x26;
         trs_clones_model(LNW80);
         break;
       case 7: /* TCS SpeedMaster 5.3 */
-        memory_map = 0x27;
         trs_clones_model(SPEEDMASTER);
         trs_screen_init(0);
         break;
@@ -890,7 +883,7 @@ int mem_read(int address)
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram(address);
 
-    case 0x18: /* X-MEM/80 16K page */
+    case 0x16: /* X-MEM/80 16K page */
       if (address < RAM_START)
         return trs80_model1_mmio(address);
       if (address < 0x8000)
@@ -898,7 +891,7 @@ int mem_read(int address)
       else
         return memory[address + bank_offset[(address - 0x8000) >> 14]];
 
-    case 0x20: /* Schmidtke 80-Z Video Card */
+    case 0x17: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF)
           return video[((address - video_addr) & 0x7FF)];
@@ -908,7 +901,7 @@ int mem_read(int address)
       else
         return trs80_model1_mmio(address);
 
-    case 0x21: /* EG-64 Memory-Banking-Adaptor */
+    case 0x18: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 0)) && address <= 0x2FFF) ||
             ((sys_byte & (1 << 2)) && address >= 0x3000 && address <= 0x35FF) ||
@@ -921,7 +914,7 @@ int mem_read(int address)
       }
       return memory[address];
 
-    case 0x22: /* Lubomir Soft Banker */
+    case 0x19: /* Lubomir Soft Banker */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 6)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
@@ -931,7 +924,7 @@ int mem_read(int address)
       }
       return memory[address + bank_offset[address >> 15]];
 
-    case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
+    case 0x1A: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x43FF && sys_byte != 0x0F) {
         /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
@@ -954,7 +947,7 @@ int mem_read(int address)
       }
       return memory[address + bank_offset[address >> 15]];
 
-    case 0x24: /* TCS Genie IIIs */
+    case 0x1B: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
           if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START)
@@ -982,7 +975,7 @@ int mem_read(int address)
       else
         return memory[address + bank_offset[0] + bank_base];
 
-    case 0x25: /* Aster CT-80 */
+    case 0x1C: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
         if (address <= 0x2FFF) {
           /* Boot-ROM */
@@ -1015,7 +1008,7 @@ int mem_read(int address)
       }
       return memory[address];
 
-    case 0x26: /* LNW80/II */
+    case 0x1D: /* LNW80/II */
       if (sys_byte & (1 << 3) && address < RAM_START)
         /* HRG in low 16K */
         return hrg_read_data(address);
@@ -1045,7 +1038,7 @@ int mem_read(int address)
       }
       return memory[address + bank_offset[address >> 15]];
 
-    case 0x27: /* TCS Genie IIs/SpeedMaster */
+    case 0x1E: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit */
       if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
         if (sys_byte & (1 << 0))
@@ -1294,7 +1287,7 @@ void mem_write(int address, int value)
       trs80_model1_write_mem(address, value);
       break;
 
-    case 0x18: /* X-MEM/80 16K page */
+    case 0x16: /* X-MEM/80 16K page */
       if (address < RAM_START)
         trs80_model1_write_mmio(address, value);
       else if (address < 0x8000)
@@ -1303,7 +1296,7 @@ void mem_write(int address, int value)
         memory[address + bank_offset[(address - 0x8000) >> 14]] = value;
       break;
 
-    case 0x20: /* Schmidtke 80-Z Video Card */
+    case 0x17: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF) {
           trs80_screen_write_char(((address - video_addr) & 0x7FF), value);
@@ -1316,7 +1309,7 @@ void mem_write(int address, int value)
         trs80_model1_write_mmio(address, value);
       break;
 
-    case 0x21: /* EG-64 Memory-Banking-Adaptor */
+    case 0x18: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 1)) && address <= 0x2FFF) ||
             ((sys_byte & (1 << 3)) && address >= 0x3000 && address <= 0x35FF) ||
@@ -1331,7 +1324,7 @@ void mem_write(int address, int value)
       memory[address] = value;
       break;
 
-    case 0x22: /* Lubomir Soft Banker */
+    case 0x19: /* Lubomir Soft Banker */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 7)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
@@ -1343,7 +1336,7 @@ void mem_write(int address, int value)
       memory[address + bank_offset[address >> 15]] = value;
       break;
 
-    case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
+    case 0x1A: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x47FF && sys_byte != 0x0F) {
         /* Bank 2: Video RAM 0 = 1K, 64x16, TRS-80 M1 compatible */
         if ((sys_byte & (1 << 1)) == 0) {
@@ -1376,7 +1369,7 @@ void mem_write(int address, int value)
       memory[address + bank_offset[address >> 15]] = value;
       break;
 
-    case 0x24: /* TCS Genie IIIs */
+    case 0x1B: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
           if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START) {
@@ -1420,7 +1413,7 @@ void mem_write(int address, int value)
         memory[address + bank_offset[0] + bank_base] = value;
       break;
 
-    case 0x25: /* Aster CT-80 */
+    case 0x1C: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
         if ((sys_byte & (1 << 3)) == 0) {
           /* TRS-80 mode */
@@ -1445,7 +1438,7 @@ void mem_write(int address, int value)
       memory[address] = value;
       break;
 
-    case 0x26: /* LNW80/II */
+    case 0x1D: /* LNW80/II */
       if (sys_byte & (1 << 3) && address < RAM_START) {
         /* HRG in low 16K */
         hrg_write_data(address, value);
@@ -1490,7 +1483,7 @@ void mem_write(int address, int value)
       memory[address + bank_offset[address >> 15]] = value;
       break;
 
-    case 0x27: /* TCS Genie IIs/SpeedMaster */
+    case 0x1E: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit */
       if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
         if (sys_byte & (1 << 0)) {
@@ -1692,7 +1685,7 @@ Uint8 *mem_pointer(int address, int writing)
     case 0x15: /* Model I: All RAM banking low */
       return trs80_model1_ram_addr(address);
 
-    case 0x18: /* X-MEM/80 16K page */
+    case 0x16: /* X-MEM/80 16K page */
       if (address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
       if (address < 0x8000)
@@ -1700,7 +1693,7 @@ Uint8 *mem_pointer(int address, int writing)
       else
         return &memory[address + bank_offset[(address - 0x8000) >> 14]];
 
-    case 0x20: /* Schmidtke 80-Z Video Card */
+    case 0x17: /* Schmidtke 80-Z Video Card */
       if (sys_byte & (1 << 0)) {
         if (address >= video_addr && address <= video_addr + 0xFFF)
           return &video[((address - video_addr) & 0x7FF)];
@@ -1710,7 +1703,7 @@ Uint8 *mem_pointer(int address, int writing)
       else
         return trs80_model1_mmio_addr(address, writing);
 
-    case 0x21: /* EG-64 Memory-Banking-Adaptor */
+    case 0x18: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 0)) && address <= 0x2FFF) ||
             ((sys_byte & (1 << 2)) && address >= 0x3000 && address <= 0x35FF) ||
@@ -1723,7 +1716,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address];
 
-    case 0x22: /* Lubomir Soft Banker */
+    case 0x19: /* Lubomir Soft Banker */
       if (address < RAM_START) {
         if (((sys_byte & (1 << 6)) && address <= 0x37DF) ||
             ((sys_byte & (1 << 5)) && address >= 0x37E0))
@@ -1733,7 +1726,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address + bank_offset[address >> 15]];
 
-    case 0x23: /* EACA EG 3200: bit set to 0 => bank enabled */
+    case 0x1A: /* EACA EG 3200: bit set to 0 => bank enabled */
       if (address <= 0x43FF && sys_byte != 0x0F) {
         /* Bank 1: ROM */
         if ((sys_byte & (1 << 0)) == 0 && address < trs_rom_size)
@@ -1749,7 +1742,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address + bank_offset[address >> 15]];
 
-    case 0x24: /* TCS Genie IIIs */
+    case 0x1B: /* TCS Genie IIIs */
       if (address < RAM_START) {
         if ((sys_byte & (1 << 0)) == 0) {
           if ((sys_byte & (1 << 4)) && address >= KEYBOARD_START)
@@ -1770,7 +1763,7 @@ Uint8 *mem_pointer(int address, int writing)
       else
         return &memory[address + bank_offset[0] + bank_base];
 
-    case 0x25: /* Aster CT-80 */
+    case 0x1C: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
         if (address <= 0x2FFF) {
           /* Boot-ROM */
@@ -1797,7 +1790,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address];
 
-    case 0x26: /* LNW80/II */
+    case 0x1D: /* LNW80/II */
       if (sys_byte & (1 << 3) && address < RAM_START)
         /* HRG in low 16K */
         return NULL;
@@ -1821,7 +1814,7 @@ Uint8 *mem_pointer(int address, int writing)
       }
       return &memory[address + bank_offset[address >> 15]];
 
-    case 0x27: /* TCS Genie IIs/SpeedMaster */
+    case 0x1E: /* TCS Genie IIs/SpeedMaster */
       /* Expansions bit */
       if ((sys_byte & (1 << 7)) && address <= 0xBFFF) {
         if (sys_byte & (1 << 0))

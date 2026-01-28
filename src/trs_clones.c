@@ -1,21 +1,22 @@
 #include <stdio.h>
 #include "trs.h"
 #include "trs_clones.h"
+#include "trs_memory.h"
 #include "trs_state_save.h"
 
 struct trs_clones trs_clones;
 static const struct trs_clones clones[] = {
   /*
-   * Clone       Name of clone
+   * Clone       Name of clone and memory size  Map
    */
-  { 0,           NULL,                       0 },
-  { CP500,       "Prologica CP-500",        48 },
-  { CP500_M80,   "Prologica CP-500 M80",    64 },
-  { CT80,        "Aster CT-80",             64 },
-  { EG3200,      "EACA EG 3200 Genie III",  64 },
-  { GENIE3S,     "TCS Genie IIIs",         256 },
-  { LNW80,       "LNW Research LNW80/II",   96 },
-  { SPEEDMASTER, "TCS SpeedMaster",         64 },
+  { 0,           NULL,                       0, 0x00 },
+  { CP500,       "Prologica CP-500",        48, 0x01 },
+  { CP500_M80,   "Prologica CP-500 M80",    64, 0x02 },
+  { CT80,        "Aster CT-80",             64, 0x0C },
+  { EG3200,      "EACA EG 3200 Genie III",  64, 0x0A },
+  { GENIE3S,     "TCS Genie IIIs",         256, 0x0B },
+  { LNW80,       "LNW Research LNW80/II",   96, 0x0D },
+  { SPEEDMASTER, "TCS SpeedMaster",         64, 0x0E },
 };
 
 static int current_clone;
@@ -33,8 +34,9 @@ void trs_clones_model(int clone)
     }
 
     trs_clones = clones[bit];
-
     trs_screen_caption();
+
+    mem_map(trs_clones.map);
   }
 }
 
