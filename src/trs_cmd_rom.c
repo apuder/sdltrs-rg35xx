@@ -890,9 +890,6 @@ void trs_rom_init(void)
     case 5:
       if (trs_load_rom(romfile4p) != 0)
         trs_load_compiled_rom(0, sizeof(trs_rom4p), trs_rom4p);
-      if (trs_rom_size > 0x1000)
-        error("Model 4P boot ROM '%s' size %d exceeds 4 KB",
-            romfile4p, trs_rom_size);
       break;
   }
 
