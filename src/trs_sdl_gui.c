@@ -1747,12 +1747,12 @@ void gui_emulator_menu(void)
       case 0:
         model_trs = gui_popup("Model", model, 4, model_trs);
         if (model_trs <= 1) {
-          int const memsize = (trs_mem_size - RAM_START) >> 10;
+          int unsigned const memsize = (trs_mem_size - RAM_START) >> 10;
 
           snprintf(input, 3, "%d", memsize);
           if (gui_input(" Enter Memory Size in KB (4 - 48) ",
               input, input, 2, 0) > 0) {
-            int const value = atoi(input);
+            int unsigned const value = atoi(input);
 
             if (value != memsize && value >= 4 && value <= 48) {
               trs_mem_size = (value << 10) + RAM_START;
