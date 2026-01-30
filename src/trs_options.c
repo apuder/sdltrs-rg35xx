@@ -44,6 +44,7 @@
 #include "trs_uart.h"
 
 #define MAX_SCALE   4
+#define OPTIONS     (int)(sizeof(options) / sizeof(options[0]))
 
 #define BLACK       0
 #define GREEN       0x344843
@@ -400,8 +401,6 @@ static const struct {
   { "y",               opt_intval,        1, 7, NULL                  },
   { "year",            opt_intval,        1, 7, NULL                  },
 };
-
-static const int num_options = sizeof(options) / sizeof(options[0]);
 
 static void strip(char *inputStr)
 {
@@ -1051,7 +1050,7 @@ int trs_load_config_file(void)
 
     strip(line);
 
-    for (i = 0; i < num_options; i++) {
+    for (i = 0; i < OPTIONS; i++) {
       if (strcasecmp(line, options[i].name) == 0) {
         if (options[i].hasArg) {
           if (arg)
@@ -1084,7 +1083,7 @@ int trs_parse_command_line(int argc, char **argv)
 
   for (i = 1; i < argc; i++) {
     if (argv[i][0] == '-') {
-      for (j = 0; j < num_options; j++) {
+      for (j = 0; j < OPTIONS; j++) {
         if (strcasecmp(&argv[i][1], options[j].name) == 0) {
           if (options[j].hasArg)
             i++;
@@ -1110,7 +1109,7 @@ int trs_parse_command_line(int argc, char **argv)
   for (i = 1; i < argc; i++) {
     int const argAvail = ((i + 1) < argc); /* is argument available? */
 
-    for (j = 0; j < num_options; j++) {
+    for (j = 0; j < OPTIONS; j++) {
       if (argv[i][0] == '-') {
         if (strcasecmp(&argv[i][1], options[j].name) == 0) {
           if (options[j].hasArg) {
@@ -1123,7 +1122,7 @@ int trs_parse_command_line(int argc, char **argv)
       }
     }
 
-    if (j == num_options && argv[i][0] == '-')
+    if (j == OPTIONS && argv[i][0] == '-')
       error("unrecognized option: '%s'", argv[i]);
   }
 
