@@ -138,9 +138,13 @@ void trs_hard_debug(void)
   printf("  status:0x%02X, command:0x%02X, control:0x%02X, data:0x%02X, error:0x%02X\n",
       state.status, state.command, state.control, state.data, state.error);
 
-  for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
-    printf("hard%d: heads:%d, cyls:%4d, secs:%4d, writeprot:%d\n",
-        i, state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
+  for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
+    if (state.d[i].file) {
+      printf("\nhard%d: '%s'\n", i, state.d[i].filename);
+      printf("\theads %d, cyls %4d, secs %4d, writeprot %d\n",
+          state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
+    }
+  }
 }
 #endif
 

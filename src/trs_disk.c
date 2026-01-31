@@ -325,8 +325,13 @@ trs_disk_debug(void)
 {
   int i;
 
-  puts("Floppy disk controller state:");
-  printf("  status 0x%02X, track %d (0x%02X), sector %d (0x%02X), "
+  printf("Floppy disk controller state:");
+  if (trs_disk_controller == 0) {
+    puts(" DISABLED");
+    return;
+  }
+
+  printf("\n  status 0x%02X, track %d (0x%02X), sector %d (0x%02X), "
 	 "data 0x%02X\n", state.status, state.track, state.track,
 	 state.sector, state.sector, state.data);
   printf("  currcommand 0x%02X, bytecount left %d, last step direction %d\n",
@@ -345,34 +350,32 @@ trs_disk_debug(void)
   for (i = 0; i < NDRIVES; i++) {
     const DiskState *d = &disk[i];
 
-    printf("Drive %d state: "
-	   "writeprot %d, phytrack %d (0x%02X), inches %d, step %d, type ",
-	   i, d->writeprot, d->phytrack, d->phytrack, d->inches, d->real_step);
-    if (d->file == NULL) {
-      puts("EMPTY");
-    } else {
-      switch (d->emutype) {
+   if (d->file) {
+     printf("\ndisk%d: '%s'\n", i, d->filename);
+     printf("\twriteprot %d, phytrack %d (0x%02X), inches %d, step %d, type ",
+	   d->writeprot, d->phytrack, d->phytrack, d->inches, d->real_step);
+     switch (d->emutype) {
       case JV1:
 	puts("JV1");
 	break;
       case JV3:
 	puts("JV3");
-	printf("  last used id %d, id blocks %d\n",
+	printf("\tlast used id %d, id blocks %d\n",
 	       d->u.jv3.last_used_id, d->u.jv3.nblocks);
 	break;
       case DMK:
 	puts("DMK");
-	printf("  ntracks %d (0x%02X), tracklen 0x%04X, nsides %d, sden %d, "
+	printf("\tntracks %d (0x%02X), tracklen 0x%04X, nsides %d, sden %d, "
 	       "ignden %d\n", d->u.dmk.ntracks, d->u.dmk.ntracks,
 	       d->u.dmk.tracklen, d->u.dmk.nsides, d->u.dmk.sden,
 	       d->u.dmk.ignden);
-	printf("  buffered track %d, side %d, curbyte %d, nextidam %d\n",
+	printf("\tbuffered track %d, side %d, curbyte %d, nextidam %d\n",
 	       d->u.dmk.curtrack, d->u.dmk.curside, d->u.dmk.curbyte,
 	       d->u.dmk.nextidam);
 	break;
       case REAL:
 	puts("REAL");
-	printf("  rpm %d, empty %d, last size code %d, last fmt fill 0x%02X\n",
+	printf("\trpm %d, empty %d, last size code %d, last fmt fill 0x%02X\n",
 	       d->u.real.rps * 60, d->u.real.empty, d->u.real.size_code,
 	       d->u.real.fmt_fill);
 	break;
