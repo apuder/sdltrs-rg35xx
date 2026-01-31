@@ -997,7 +997,6 @@ int z80_in(int port)
       case 0xEE:
       case 0xEF:
         trs_timer_interrupt(0); /* acknowledge */
-        value = 0xFF;
         goto done;
       case TRSDISK3_INTERRUPT: /* 0xE4 */
         value = trs_nmi_latch_read();
