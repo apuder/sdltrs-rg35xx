@@ -27,7 +27,8 @@ typedef struct {
   Uint8 crtr;      /* 10: Created by:
 			  14H = HDFORMAT
 			  42H = xtrs mkdisk
-			  80H = Cervasio xtrshard port to Vavasour M4 emulator */
+			  80H = Cervasio xtrshard port to Vavasour M4 emulator
+			  FFH = David M. Keil emulator */
   Uint8 dfmt;      /* 11: DOS type (only needed for auto-boot):
 			  0 = Model 4 LS-DOS
 			  1 = Model I/III LDOS
