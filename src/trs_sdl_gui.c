@@ -1713,8 +1713,8 @@ void gui_emulator_menu(void)
                          "    512 KB",
                          "    768 KB",
                          "   1024 KB"};
+  int model_mem = (trs_mem_size - RAM_START) >> 10;
   int model_trs = trs_model == 1 ? 0 : trs_model - 2;
-  int reset_trs = 0;
   int selection = 0;
   float clock_mhz[4];
 
@@ -1747,17 +1747,13 @@ void gui_emulator_menu(void)
       case 0:
         model_trs = gui_popup("Model", model, 4, model_trs);
         if (model_trs <= 1) {
-          int unsigned const memsize = (trs_mem_size - RAM_START) >> 10;
-
-          snprintf(input, 3, "%d", memsize);
+          snprintf(input, 3, "%d", model_mem);
           if (gui_input(" Enter Memory Size in KB (4 - 48) ",
               input, input, 2, 0) > 0) {
-            int unsigned const value = atoi(input);
+            int const value = atoi(input);
 
-            if (value != memsize && value >= 4 && value <= 48) {
-              trs_mem_size = (value << 10) + RAM_START;
-              reset_trs = 1;
-            }
+            if (value != model_mem && value >= 4 && value <= 48)
+              model_mem = value;
           }
         }
         break;
@@ -1837,13 +1833,13 @@ void gui_emulator_menu(void)
           huffman = supermem = 0;
         break;
       case -1:
+        model_mem = (model_mem << 10) + RAM_START;
         model_trs = model_trs == 0 ? 1 : model_trs + 2;
-        if (trs_model != model_trs) {
+        if (trs_model != model_trs || trs_mem_size != model_mem) {
+          trs_mem_size = model_mem;
           trs_model = model_trs;
-          reset_trs = 1;
-        }
-        if (reset_trs)
           trs_reset(1);
+        }
         return;
     }
   }
