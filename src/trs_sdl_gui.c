@@ -2129,16 +2129,14 @@ void gui_misc_menu(void)
         }
         break;
       case 8:
-        trs_kb_bracket_state = !trs_kb_bracket_state;
-        trs_kb_bracket(trs_kb_bracket_state);
+        trs_kb_bracket(!trs_kb_bracket_state);
         break;
       case 9:
         trs_sound = !trs_sound;
         trs_screen_caption();
         break;
       case 10:
-        turbo_mode = !turbo_mode;
-        trs_timer_mode(turbo_mode);
+        trs_timer_mode(!turbo_mode);
         break;
       case 11:
         snprintf(input, 11, "%d", turbo_rate);
