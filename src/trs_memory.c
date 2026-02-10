@@ -958,6 +958,8 @@ int mem_read(int address)
           if (address >= KEYBOARD_START && address <= 0x38FF)
             return trs_kb_mem_read(address);
           /* Disk I/O */
+          if (TRS_INTLATCH(address))
+            return genie3s_latch_read(trs_interrupt_latch_read());
           if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio(address);
         }

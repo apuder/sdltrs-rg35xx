@@ -332,7 +332,6 @@ trs_interrupt_latch_read(void)
 
   if (trs_model == 1) {
     interrupt_latch = z80_state.irq = 0;
-    if (trs_clones.model & GENIE3S) return genie3s_latch_read(tmp);
     return tmp;
   } else {
     /* In some clones (like CP-500/M80) reading from the

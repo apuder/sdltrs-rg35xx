@@ -829,7 +829,7 @@ int z80_in(int port)
           case 0xE1:
           case 0xE2:
           case 0xE3:
-            value = trs_interrupt_latch_read();
+            value = genie3s_latch_read(trs_interrupt_latch_read());
             break;
           case 0xE8:
           case 0xE9:
