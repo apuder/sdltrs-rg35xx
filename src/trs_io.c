@@ -152,8 +152,8 @@ static void m6845_crtc(int value)
 static int m6845_read(void)
 {
   switch (m6845_reg) {
-    case 0x0A: /* Cursor Start */
-      return m6845.csr;
+    case 0x0A: /* Cursor Start / Visible */
+      return m6845.csr | (m6845.vis ? 0x00 : 0x20);
     case 0x0B: /* Cursor End */
       return m6845.cer;
     case 0x0E: /* Cursor MSB */
