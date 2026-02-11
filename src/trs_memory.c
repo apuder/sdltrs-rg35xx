@@ -427,10 +427,8 @@ void lnw80_bank_out(int value)
   /* LNW80 II 80x24 text mode video page */
   if ((sys_byte & (1 << 1)) == 0) {
     mem_video_page((value & (1 << 3)) << 7);
-    if ((value & (1 << 3)) && text80x24 == 0) {
-      memset(video, ' ', MAX_VIDEO_SIZE);
+    if ((value & (1 << 3)) && text80x24 == 0)
       trs_screen_80x24(1);
-    }
   }
 
   /* Disable or enable interrupts */
