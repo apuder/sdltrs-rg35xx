@@ -178,7 +178,7 @@ void trs_save_uint32(FILE *file, const Uint32 *buffer, int count)
 void trs_load_uint32(FILE *file, Uint32 *buffer, int count)
 {
   int i;
-  Uint8 byte0, byte1, byte2, byte3;
+  Uint8 byte0 = 0, byte1 = 0, byte2 = 0, byte3 = 0;
 
   for (i = 0; i < count; i++) {
     fread(&byte0, 1, 1, file);
