@@ -788,7 +788,7 @@ static int kb_mem_value(int address)
 {
   int data = 0;
 
-  if ((trs_clones.model & (EG3200 | GENIE3S)) && (address & 0x00e0) >= 0x00a0) {
+  if ((address & 0x00e0) >= 0x00a0 && (trs_clones.model & (EG3200 | GENIE3S))) {
     if ((address & 0x00e0) == 0x00a0) {
       /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
       return keystate[8];
