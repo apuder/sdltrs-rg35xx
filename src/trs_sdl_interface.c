@@ -2315,7 +2315,7 @@ void grafyx_write_x(int value)
 void grafyx_write_y(int value)
 {
   /* Genie III VideoExtension HRG */
-  if (trs_clones.model == EG3200 && grafyx_x & 0x80)
+  if (grafyx_x & 0x80 && trs_clones.model == EG3200)
     value |= 1 << 8; /* Y MSB in X-Reg */
 
   grafyx_y = value;
