@@ -594,16 +594,16 @@ void trs_screen_init(int resize)
   }
 
   if (trs_model >= 3 && !trs_resize) {
-    OrigWidth = char_width * 80 + 2 * border_width;
+      OrigWidth = char_width * 80 + 2 * border_width;
     left_margin = char_width * (80 - cols) / 2 + border_width;
-    OrigHeight = TRS_CHAR_HEIGHT4 * 2 * 24 + 2 * border_width + led_height;
-    top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 - char_height * rows)
-               / 2 + border_width;
+     OrigHeight = TRS_CHAR_HEIGHT4 * 2 * 24 + 2 * border_width + led_height;
+     top_margin = (TRS_CHAR_HEIGHT4 * 2 * 24 - char_height * rows) / 2
+                  + border_width;
   } else {
-    OrigWidth = char_width * (hrg_enable == 2 ? 80 : cols) + 2 * border_width;
+      OrigWidth = char_width * (hrg_enable == 2 ? 80 : cols) + 2 * border_width;
     left_margin = border_width;
-    OrigHeight = char_height * rows + 2 * border_width + led_height;
-    top_margin = border_width;
+     OrigHeight = char_height * rows + 2 * border_width + led_height;
+     top_margin = border_width;
   }
 
   screen_height = OrigHeight - led_height;
@@ -2035,26 +2035,28 @@ void trs_disk_led(int drive, int on_off)
       rect.x += 24;
     }
     drawnRectCount = MAX_RECTS;
+    return;
   }
-  else if (on_off) {
+
+  if (on_off) {
     if (countdown[drive] == 0) {
       rect.x += 24 * drive;
       SDL_FillRect(screen, &rect, bright_red);
       drawnRectCount = MAX_RECTS;
     }
     countdown[drive] = 2 * timer_hz;
+    return;
   }
-  else {
-    for (i = 0; i < 8; i++) {
-      if (countdown[i]) {
-        countdown[i]--;
-        if (countdown[i] == 0) {
-          SDL_FillRect(screen, &rect, light_red);
-          drawnRectCount = MAX_RECTS;
-        }
+
+  for (i = 0; i < 8; i++) {
+    if (countdown[i]) {
+      countdown[i]--;
+      if (countdown[i] == 0) {
+        SDL_FillRect(screen, &rect, light_red);
+        drawnRectCount = MAX_RECTS;
       }
-      rect.x += 24;
     }
+    rect.x += 24;
   }
 }
 
@@ -2078,26 +2080,28 @@ void trs_hard_led(int drive, int on_off)
       rect.x += 24;
     }
     drawnRectCount = MAX_RECTS;
+    return;
   }
-  else if (on_off) {
+
+  if (on_off) {
     if (countdown[drive] == 0) {
       rect.x += 24 * drive;
       SDL_FillRect(screen, &rect, bright_red);
       drawnRectCount = MAX_RECTS;
     }
     countdown[drive] = timer_hz / 2;
+    return;
   }
-  else {
-    for (i = 0; i < 4; i++) {
-      if (countdown[i]) {
-        countdown[i]--;
-        if (countdown[i] == 0) {
-          SDL_FillRect(screen, &rect, light_red);
-          drawnRectCount = MAX_RECTS;
-        }
+
+  for (i = 0; i < 4; i++) {
+    if (countdown[i]) {
+      countdown[i]--;
+      if (countdown[i] == 0) {
+        SDL_FillRect(screen, &rect, light_red);
+        drawnRectCount = MAX_RECTS;
       }
-      rect.x += 24;
     }
+    rect.x += 24;
   }
 }
 
@@ -2713,7 +2717,6 @@ void m6845_text(int onoff)
 {
   if (grafyx_overlay != onoff) {
     grafyx_overlay = onoff;
-
     trs_screen_refresh();
   }
 }
@@ -2739,7 +2742,6 @@ void genie3s_char(int character, int scanline, int byte)
 void genie3s_hrg(int value)
 {
   grafyx_enable = value;
-
   trs_screen_refresh();
 }
 
