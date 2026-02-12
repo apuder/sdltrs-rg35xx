@@ -1247,10 +1247,8 @@ void trs_get_event(int wait)
               break;
             case SDLK_HOME:
               trs_fullscreen(0);
-              if (scale != 1) {
-                scale = 1;
-                SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
-              }
+              scale = 1;
+              SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
               break;
             case SDLK_PAGEDOWN:
               trs_fullscreen(0);
