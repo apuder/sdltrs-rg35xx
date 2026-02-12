@@ -2236,26 +2236,18 @@ static void trs_screen_rect(int x, int y, int w, int h, int color)
 
 void gui_rect(int x, int y, int w, int h, int frame)
 {
-  /* Add offsets to center */
-  if (rows != 16) {
-    x += (cols - 64) / 2;
-    y += (rows - 16) / 2;
-  } else if (hrg_enable == 2) {
-    x += 8;
-  }
-
-  x = x * char_width + left_margin;
-  y = y * char_height + top_margin;
+  x = (OrigWidth / 2) - ((32 - x) * char_width);
+  y = (OrigHeight / 2) - ((8 - y) * TRS_CHAR_HEIGHT4 * 2);
   w = w * char_width;
-  h = h * char_height;
+  h = h * TRS_CHAR_HEIGHT4 * 2;
 
   trs_screen_rect(x, y, w, h, gui_background);
 
   if (frame) {
     x += 4;
-    y += TRS_CHAR_HEIGHT4 * scale_factor / 2 - scale_factor;
+    y += TRS_CHAR_HEIGHT4 - 2;
     w -= 8;
-    h -= char_height - (scale_factor * 2);
+    h -= TRS_CHAR_HEIGHT4 * 2 - 2;
 
     trs_screen_rect(x, y, w, 2, gui_foreground);
     trs_screen_rect(x, y, 2, h, gui_foreground);
@@ -2268,20 +2260,12 @@ void gui_text(const char *text, int col, int row, int len, int font)
 {
   SDL_Rect srcRect, dstRect;
 
-  /* Add offsets to center */
-  if (rows != 16) {
-    col += (cols - 64) / 2;
-    row += (rows - 16) / 2;
-  } else if (hrg_enable == 2) {
-    col += 8;
-  }
-
   srcRect.x = 0;
   srcRect.y = 0;
   srcRect.w = char_width;
-  srcRect.h = TRS_CHAR_HEIGHT4 * scale_factor;
-  dstRect.x = srcRect.w * col + left_margin;
-  dstRect.y = char_height * row + top_margin;
+  srcRect.h = TRS_CHAR_HEIGHT4 * 2;
+  dstRect.x = (OrigWidth / 2) - ((32 - col) * srcRect.w);
+  dstRect.y = (OrigHeight / 2) - ((8 - row) * srcRect.h);
 
   while (len-- && *text) {
     SDL_BlitSurface(trs_char[font][(Uint8)*text++], &srcRect, screen, &dstRect);
