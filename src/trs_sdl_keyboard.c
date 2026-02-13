@@ -784,53 +784,6 @@ static void change_keystate(int action)
   }
 }
 
-static int kb_mem_value(int address)
-{
-  int data = 0;
-
-  if ((address & 0x00e0) >= 0x00a0 && (trs_clones.model & (EG3200 | GENIE3S))) {
-    if ((address & 0x00e0) == 0x00a0) {
-      /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
-      return keystate[8];
-    }
-  } else {
-    int i, bitpos;
-
-    for (i = 0, bitpos = 1; i < 7; i++, bitpos <<= 1) {
-      if (address & bitpos) {
-        data |= keystate[i];
-      }
-    }
-
-    if (address & 0x80) {
-      int tmp = keystate[7];
-
-      if (trs_model == 1) {
-        if (force_shift == TK_ForceNoShift) {
-          /* deactivate shift key */
-          tmp &= ~1;
-        } else if (force_shift != TK_Neutral) {
-          /* activate shift key */
-          tmp |= 1;
-        }
-      } else {
-        if (force_shift == TK_ForceNoShift) {
-          /* deactivate both shift keys */
-          tmp &= ~3;
-        } else if (force_shift != TK_Neutral) {
-          /* if no shift keys are down, activate left shift key */
-          if ((tmp & 3) == 0)
-            tmp |= 1;
-        }
-      }
-
-      data |= tmp;
-    }
-  }
-
-  return data;
-}
-
 int trs_kb_mem_read(int address)
 {
   int key = -1;
@@ -861,7 +814,48 @@ int trs_kb_mem_read(int address)
 
   key_heartbeat = 0;
 
-  return kb_mem_value(address);
+  if ((address & 0x00e0) >= 0x00a0 && (trs_clones.model & (EG3200 | GENIE3S))) {
+    if ((address & 0x00e0) == 0x00a0) {
+      /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
+      return keystate[8];
+    }
+  } else {
+    int data = 0;
+    int i, bitpos;
+
+    for (i = 0, bitpos = 1; i < 7; i++, bitpos <<= 1) {
+      if (address & bitpos) {
+        data |= keystate[i];
+      }
+    }
+
+    if (address & 0x80) {
+      int tmp = keystate[7];
+
+      if (trs_model == 1) {
+        if (force_shift == TK_ForceNoShift) {
+          /* deactivate shift key */
+          tmp &= ~1;
+        } else if (force_shift != TK_Neutral) {
+          /* activate shift key */
+          tmp |= 1;
+        }
+      } else {
+        if (force_shift == TK_ForceNoShift) {
+          /* deactivate both shift keys */
+          tmp &= ~3;
+        } else if (force_shift != TK_Neutral) {
+          /* if no shift keys are down, activate left shift key */
+          if ((tmp & 3) == 0)
+            tmp |= 1;
+        }
+      }
+      data |= tmp;
+    }
+    return data;
+  }
+
+  return 0;
 }
 
 void clear_key_queue(void)
