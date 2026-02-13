@@ -821,11 +821,11 @@ int trs_kb_mem_read(int address)
     }
   } else {
     int data = 0;
-    int i, bitpos;
+    int bit;
 
-    for (i = 0, bitpos = 1; i < 7; i++, bitpos <<= 1) {
-      if (address & bitpos) {
-        data |= keystate[i];
+    for (bit = 0; bit < 7; bit++) {
+      if (address & (1 << bit)) {
+        data |= keystate[bit];
       }
     }
 
