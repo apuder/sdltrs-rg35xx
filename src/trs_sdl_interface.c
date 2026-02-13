@@ -2296,7 +2296,7 @@ static void grafyx_write_byte(int x, int y, Uint8 byte)
     grafyx_unscaled[y][x] = byte;
     grafyx[position] = byte;
 
-    if (scale_factor == 2)
+    if (srcRect.h == 2)
       grafyx[position + G_XSIZE] = byte;
 
     if (grafyx_enable && on_screen) {
