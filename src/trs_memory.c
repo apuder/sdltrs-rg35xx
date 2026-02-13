@@ -627,9 +627,7 @@ static void mem_init(void)
   memset(&rom, 0xFF, MAX_ROM_SIZE);
 
   mem_map(0);
-  mem_bank(0);
   mem_video_page(0);
-
   clear_key_queue(); /* init the key queue */
 }
 
