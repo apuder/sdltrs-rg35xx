@@ -2109,7 +2109,7 @@ void trs_turbo_led(void)
 
   rect.w = 16;
   rect.h = 4;
-  rect.x = (OrigWidth - border_width) / 2 - 8;
+  rect.x = OrigWidth / 2 - 8;
   rect.y = OrigHeight - rect.h;
 
   SDL_FillRect(screen, &rect, turbo_mode ? bright_orange : light_orange);
