@@ -857,7 +857,11 @@ trs_disk_insert(int drive, const char *diskname)
 
     /* Read first block of ids */
     fseek(d->file, JV3_IDSTART, 0);
-    (void)fread((void*)&d->u.jv3.id[0], 3, JV3_SECSPERBLK, d->file);
+    if (fread((void*)&d->u.jv3.id[0], 3, JV3_SECSPERBLK, d->file)
+        != JV3_SECSPERBLK) {
+      error("Failed to read first JV3 IDs: disk%d: '%s'", drive, diskname);
+      return;
+    }
 
     /* Scan to find their offsets */
     ofst = JV3_SECSTART;
