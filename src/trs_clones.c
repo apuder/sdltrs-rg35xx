@@ -28,7 +28,7 @@ void trs_clones_model(int clone)
 
     current_clone = clone;
 
-    while ((clone & 1) == 0 && clone > 0) {
+    while (clone > 0 && (clone & 1) == 0) {
       clone >>= 1;
       bit++;
     }
