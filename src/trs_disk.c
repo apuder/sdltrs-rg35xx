@@ -303,7 +303,6 @@ static const Uint8 jv1_interleave[10] = {0, 5, 1, 6, 2, 7, 3, 8, 4, 9};
 
 /* Forward */
 static void real_verify(void);
-static void real_restore(int curdrive);
 static void real_seek(void);
 static void real_read(void);
 static void real_write(void);
@@ -312,6 +311,7 @@ static void real_readtrk(void);
 static void real_writetrk(void);
 #ifdef __linux__
 static int  real_rate(const DiskState *d);
+static void real_restore(int curdrive);
 static void real_error(DiskState *d, unsigned int flags, const char *msg);
 static void real_ok(DiskState *d);
 #endif
@@ -2404,7 +2404,9 @@ trs_disk_command_write(Uint8 cmd)
     d->phytrack = 0;
     state.track = 0;
     state.status = TRSDISK_TRKZERO|TRSDISK_BUSY;
+#if __linux
     if (d->emutype == REAL) real_restore(state.curdrive);
+#endif
     /* Should this set lastdirection? */
     if (cmd & TRSDISK_VBIT) verify();
     trs_schedule_event(trs_disk_done, 0, 2000);
@@ -3326,10 +3328,10 @@ real_verify(void)
   /*!! ignore for now*/
 }
 
+#if __linux__
 void
 real_restore(int curdrive)
 {
-#if __linux__
   DiskState *d = &disk[curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3343,10 +3345,8 @@ real_restore(int curdrive)
     state.status |= TRSDISK_SEEKERR;
     return;
   }
-#else
-  trs_disk_unimpl(state.currcommand, "restore real floppy");
-#endif
 }
+#endif
 
 void
 real_seek(void)
