@@ -378,10 +378,10 @@ int gui_select(const char *text, int x, int y)
   key = gui_key();
   gui_write(text, x, y, 4);
 
-  if (isalpha(key))
-    key = toupper(key);
-
-  return key;
+  if (key >= 'a' && key <= 'z')
+    return key - ' ';
+  else
+    return key;
 }
 
 void gui_error(const char *name)
