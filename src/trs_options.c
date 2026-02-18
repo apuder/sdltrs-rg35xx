@@ -1031,6 +1031,9 @@ int trs_load_config_file(void)
     if ((config_file = fopen(trs_config_file, "r")) == NULL) {
       debug("create default configuration: '%s'\n", trs_config_file);
       trs_disk_setsizes(); /* Set default disk sizes */
+#if __linux__
+      trs_disk_setsteps(); /* Set default disk steps */
+#endif
       trs_write_config_file(trs_config_file);
       return -1;
     }
