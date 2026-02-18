@@ -378,10 +378,7 @@ int gui_select(const char *text, int x, int y)
   key = gui_key();
   gui_write(text, x, y, 4);
 
-  if (key >= 'a' && key <= 'z')
-    return key - ' ';
-  else
-    return key;
+  return TOUPPER(key);
 }
 
 void gui_error(const char *name)
@@ -620,7 +617,7 @@ read_dir:
       do {
         if (++sel >= filelistcount)
           sel = 0;
-      } while (sel != selection && (toupper((int)filelist[sel][1]) != key));
+      } while (sel != selection && (TOUPPER((int)filelist[sel][1]) != key));
 
       if (sel < 13) {
         top = 0;
