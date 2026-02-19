@@ -695,10 +695,7 @@ static void opt_joybuttonmap(const char *arg, int intarg, int *stringarg)
   int i;
 
   for (i = 0; i < JOY_BUTTONS; i++) {
-    char *ptr = strchr(arg, ',');
-
-    if (ptr != NULL)
-      *ptr = '\0';
+    const char *ptr = strchr(arg, ',');
 
     if (sscanf(arg, "%d", &jbutton_map[i]) == 0)
       jbutton_map[i] = -1;
