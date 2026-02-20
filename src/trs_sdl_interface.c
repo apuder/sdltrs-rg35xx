@@ -1025,6 +1025,7 @@ void trs_exit(int confirm)
       recursion = 0;
       return;
     }
+    SDL_Delay(7);
   }
 
   exit(EXIT_SUCCESS);
