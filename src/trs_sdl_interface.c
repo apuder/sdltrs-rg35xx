@@ -666,6 +666,7 @@ void trs_screen_init(int resize)
   SDL_RenderFillRect(render, NULL);
   SDL_SetPaletteColors(image->format->palette, colors, 0, 2);
   SDL_ShowCursor(mousepointer ? SDL_ENABLE : SDL_DISABLE);
+  SDL_ShowWindow(window);
 
   BlitMap(image->format->palette, screen->format);
   trs_screen_refresh();
@@ -2906,7 +2907,7 @@ void trs_sdl_init(void)
   window = SDL_CreateWindow(NULL,
                             window_x, window_y,
                             640, 480,
-                            SDL_WINDOW_RESIZABLE);
+                            SDL_WINDOW_RESIZABLE|SDL_WINDOW_HIDDEN);
   if (window == NULL)
     fatal("SDL_CreateWindow failed: %s", SDL_GetError());
 
