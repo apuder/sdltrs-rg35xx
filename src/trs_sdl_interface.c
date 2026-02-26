@@ -2161,12 +2161,10 @@ void trs_screen_write_char(unsigned int position, Uint8 character)
       if (character >= 0xc0)
         character -= 0x40;
     }
-    if (!(currentmode & INVERSE)) {
-      if (currentmode & REVERSE) expanded += 2;
-      if (character >= 0x80 && character <= 0xbf) {
-        SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
-        goto overlay;
-      }
+    if ((currentmode & REVERSE) && !(currentmode & INVERSE)) expanded += 2;
+    if (!(currentmode & INVERSE) && character >= 0x80 && character <= 0xbf) {
+      SDL_BlitSurface(trs_box[expanded][character - 0x80], &srcRect, screen, &dstRect);
+      goto overlay;
     } else {
       if (trs_model > 1 && character >= 0xc0 &&
           (currentmode & (ALTERNATE + INVERSE)) == 0) {
