@@ -1726,7 +1726,8 @@ void gui_emulator_menu(void)
   while (1) {
     char input[8];
 
-    snprintf(&menu[0].text[44], 17, "%s", model[model_trs]);
+    snprintf(&menu[0].text[37], 18, "%s", model[model_trs]);
+    snprintf(&menu[0].text[53], 8, " %3d KB", model_trs < 2 ? model_mem : 128);
     snprintf(&menu[1].text[50], 11, "%6.2f MHz", clock_mhz[model_trs]);
     snprintf(&menu[2].text[45], 16, "%s", speed[speedup]);
     snprintf(&menu[3].text[50], 11, "%s", yes_no[stringy]);
