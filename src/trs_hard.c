@@ -571,7 +571,7 @@ static void find_sector(int newstatus)
     return;
   }
 
-  if (fseek(d->file,
+  if (d->file && fseek(d->file,
 	sizeof(ReedHardHeader) +
 	state.secsize * (state.cyl * d->heads * d->secs +
 			 state.head * d->secs +
