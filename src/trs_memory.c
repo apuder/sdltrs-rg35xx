@@ -697,8 +697,6 @@ void trs_reset(int poweron)
     z80_out(0x84, 0);
     if (huffman)
       z80_out(0x94, 0);
-    if (hypermem)
-      z80_out(0x90, 0);
   }
 
   if (trs_model >= 3) {
