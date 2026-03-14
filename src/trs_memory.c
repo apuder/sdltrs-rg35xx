@@ -696,7 +696,7 @@ void trs_reset(int poweron)
     /* Turn off various memory map and video mode bits */
     z80_out(0x84, 0);
     if (huffman)
-      z80_out(0x94, 0);
+      bank_base = 0;
   }
 
   if (trs_model >= 3) {
