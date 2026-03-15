@@ -221,7 +221,7 @@ void z80_out(int port, int value)
           case 0xD5:
           case 0xD6:
           case 0xD7:
-            ct80_ramdisk_out(port, value);
+            ct80_ramdisk_out(port & 7, value);
             return;
           case 0xFC:
             m6845_reg = value;
@@ -768,7 +768,7 @@ int z80_in(int port)
           case 0xD5:
           case 0xD6:
           case 0xD7:
-            value = ct80_ramdisk_in(port);
+            value = ct80_ramdisk_in(port & 7);
             goto done;
           case 0xFF:
             value = (modesel ? 0x3F : 0x7F) | trs_cassette_in();

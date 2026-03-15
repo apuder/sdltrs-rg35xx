@@ -201,7 +201,7 @@ void mem_bank(int command)
 
 void ct80_ramdisk_out(int port, Uint8 byte)
 {
-  switch (port & 0x07) {
+  switch (port) {
     case 0:
       if (bank_base < MAX_MEMORY_SIZE)
         memory[bank_base] = byte;
@@ -210,18 +210,9 @@ void ct80_ramdisk_out(int port, Uint8 byte)
       if (bank_base < MAX_MEMORY_SIZE - 1)
         memory[bank_base++] = byte;
       return;
-    case 2:
-    case 3:
-      bank_offset[0] = byte;
-      break;
-    case 4:
-    case 5:
-      bank_offset[1] = byte;
-      break;
-    case 6:
-    case 7:
-      bank_offset[2] = byte;
-      break;
+    default:
+      /* Port 2/3 = 0, 4/5 = 1, 6/7 = 2 */
+      bank_offset[(port >> 1) - 1] = byte;
    }
    /* RAM disk starting at 64 KB */
    bank_base = (bank_offset[0]
@@ -232,7 +223,7 @@ void ct80_ramdisk_out(int port, Uint8 byte)
 
 Uint8 ct80_ramdisk_in(int port)
 {
-  switch (port & 0x07) {
+  switch (port) {
     case 0:
       if (bank_base < MAX_MEMORY_SIZE)
         return memory[bank_base];
@@ -241,15 +232,9 @@ Uint8 ct80_ramdisk_in(int port)
       if (bank_base < MAX_MEMORY_SIZE - 1)
         return memory[bank_base++];
       break;
-    case 2:
-    case 3:
-      return bank_offset[0];
-    case 4:
-    case 5:
-      return bank_offset[1];
-    case 6:
-    case 7:
-      return bank_offset[2];
+    default:
+      /* Port 2/3 = 0, 4/5 = 1, 6/7 = 2 */
+      return bank_offset[(port >> 1) - 1];
   }
   return 0xFF; /* nonexistent memory address */
 }
