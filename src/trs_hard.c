@@ -594,9 +594,7 @@ static int hard_data_in(void)
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
-      const Drive *d = &state.d[state.drive];
-
-      state.data = getc(d->file);
+      state.data = getc(state.d[state.drive].file);
       state.bytesdone++;
     }
   }
