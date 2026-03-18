@@ -603,27 +603,24 @@ static int hard_data_in(void)
 
 static void hard_data_out(int value)
 {
-  int res = 0;
-
   state.data = value;
 
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
       const Drive *d = &state.d[state.drive];
+      int res = putc(state.data, d->file);
 
-      res = putc(state.data, d->file);
       state.bytesdone++;
       if (res != EOF && state.bytesdone == state.secsize) {
 	res = fflush(d->file);
       }
+      if (res == EOF) {
+        file_error("writing on hard%d", state.drive);
+        state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
+        state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+      }
     }
-  }
-
-  if (res == EOF) {
-    file_error("writing on hard%d", state.drive);
-    state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-    state.error = TRS_HARD_DATAERR; /* arbitrary choice */
   }
 
   if (trs_show_led)
