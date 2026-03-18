@@ -578,6 +578,9 @@ static void find_sector(int newstatus)
 			(state.secnum % d->secs)),
 	0) != 0) {
 		file_error("hard%d: fseek '%s'", state.drive, d->filename);
+		state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
+		state.error = TRS_HARD_NFERR;
+		return;
 	}
 
   state.status = newstatus;
