@@ -29,6 +29,7 @@
  */
 
 #include <errno.h>
+#include <string.h>
 #include "error.h"
 #include "reed.h"
 #include "trs.h"
@@ -38,6 +39,7 @@
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
+#define SECTORSIZE (1024)
 
 /* Private types and data */
 
@@ -70,6 +72,7 @@ typedef struct {
   Uint8  sdh;
   Uint8  status;
   Uint8  command;
+  Uint8  secbuf[SECTORSIZE];
 
   /* Number of bytes already done in current read/write */
   int bytesdone;
@@ -91,7 +94,7 @@ static void hard_format(void);
 static void hard_init(int cmd);
 static void hard_seek(void);
 static int  open_drive(int drive);
-static void find_sector(int newstatus);
+static int  find_sector(int newstatus);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -163,6 +166,7 @@ void trs_hard_init(int poweron)
   state.sdh = 0;
   state.status = 0;
   state.command = 0;
+  memset(state.secbuf, 0, SECTORSIZE);
 
   if (poweron) {
     int i;
@@ -322,7 +326,7 @@ void trs_hard_out(int port, int value)
   case TRS_HARD_SDH:
     state.sdh = value;
     state.secsize = 256 << ((value & TRS_HARD_SIZEMASK) >> TRS_HARD_SIZESHIFT);
-    if (state.secsize > 1024) state.secsize = 128;
+    if (state.secsize > SECTORSIZE) state.secsize = 128;
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
     state.head = (value & TRS_HARD_HEADMASK) >> TRS_HARD_HEADSHIFT;
 #if 0
@@ -394,7 +398,14 @@ static void hard_read(int cmd)
     state.error = TRS_HARD_ABRTERR;
     return;
   }
-  find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
+  if (find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
+    if (fread(state.secbuf, 1, state.secsize, state.d[state.drive].file)
+        != state.secsize) {
+      file_error("reading on hard%d", state.drive);
+      state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
+      state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+    }
+  }
 }
 
 static void hard_write(int cmd)
@@ -552,15 +563,15 @@ fail:
 
 /*
  * Check whether the current position is in bounds for the geometry.
- * If not, set the controller error status and return.  If so, fseek
+ * If not, set the controller error status and return -1.  If so, fseek
  * the file to the start of the current sector and set the controller
- * status to newstatus.
+ * status to newstatus and return 0.
  */
-static void find_sector(int newstatus)
+static int find_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL && open_drive(state.drive) != 0) return;
+  if (d->file == NULL && open_drive(state.drive) != 0) return -1;
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
@@ -569,7 +580,7 @@ static void find_sector(int newstatus)
 	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
     state.error = TRS_HARD_NFERR;
-    return;
+    return -1;
   }
 
   if (d->file && fseek(d->file,
@@ -581,7 +592,7 @@ static void find_sector(int newstatus)
 		file_error("hard%d: fseek '%s'", state.drive, d->filename);
 		state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
 		state.error = TRS_HARD_NFERR;
-		return;
+		return -1;
 	}
 
   state.status = newstatus;
@@ -589,6 +600,7 @@ static void find_sector(int newstatus)
   if (trs_show_led)
     trs_hard_led(state.drive, 1);
 
+  return 0;
 }
 
 static int hard_data_in(void)
@@ -596,7 +608,7 @@ static int hard_data_in(void)
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
-      state.data = getc(state.d[state.drive].file);
+      state.data = state.secbuf[state.bytesdone];
       state.bytesdone++;
     }
   }
@@ -610,17 +622,15 @@ static void hard_data_out(int value)
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
-      const Drive *d = &state.d[state.drive];
-      int res = putc(state.data, d->file);
-
+      state.secbuf[state.bytesdone] = value;
       state.bytesdone++;
-      if (res != EOF && state.bytesdone == state.secsize) {
-	res = fflush(d->file);
-      }
-      if (res == EOF) {
-        file_error("writing on hard%d", state.drive);
-        state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-        state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+      if (state.bytesdone == state.secsize) {
+        if (fwrite(state.secbuf, 1, state.secsize, state.d[state.drive].file)
+            != state.secsize) {
+          file_error("writing on hard%d", state.drive);
+          state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
+          state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+        }
       }
     }
   }
