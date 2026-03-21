@@ -683,6 +683,7 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.status, 1);
   trs_save_uint8(file, &state.command, 1);
+  trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_int(file, &state.bytesdone, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
@@ -711,6 +712,7 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.status, 1);
   trs_load_uint8(file, &state.command, 1);
+  trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_int(file, &state.bytesdone, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
