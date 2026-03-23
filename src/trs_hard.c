@@ -399,8 +399,9 @@ static void hard_read(int cmd)
     return;
   }
   if (find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
-    if (fread(state.secbuf, 1, state.secsize, state.d[state.drive].file)
-        != state.secsize) {
+    FILE *f = state.d[state.drive].file;
+
+    if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
       file_error("reading on hard%d", state.drive);
       state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
       state.error = TRS_HARD_DATAERR; /* arbitrary choice */
@@ -625,8 +626,9 @@ static void hard_data_out(int value)
       state.secbuf[state.bytesdone] = value;
       state.bytesdone++;
       if (state.bytesdone == state.secsize) {
-        if (fwrite(state.secbuf, 1, state.secsize, state.d[state.drive].file)
-            != state.secsize) {
+        FILE *f = state.d[state.drive].file;
+
+        if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
           file_error("writing on hard%d", state.drive);
           state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
           state.error = TRS_HARD_DATAERR; /* arbitrary choice */
