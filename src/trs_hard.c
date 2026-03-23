@@ -244,10 +244,10 @@ int trs_hard_in(int port)
 
       v = 0;
       for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
-	open_drive(i);
-	if (state.d[i].writeprot) {
-	  v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
-	}
+        open_drive(i);
+        if (state.d[i].writeprot) {
+          v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
+        }
       }
       break; }
     case TRS_HARD_CONTROL:
@@ -542,7 +542,7 @@ static int open_drive(int drive)
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     debug("open_drive:%d, cyls:%d, heads:%d, secs:%d\n",
-	drive, d->cyls, d->heads, d->secs);
+          drive, d->cyls, d->heads, d->secs);
 #endif
 
   if ((rhh.sec % d->secs) != 0 ||
@@ -581,21 +581,20 @@ static int find_sector(int newstatus)
       state.head >= d->heads ||
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
     error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
-	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
+        state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     hard_error(TRS_HARD_NFERR);
     return -1;
   }
 
   if (d->file && fseek(d->file,
-	sizeof(ReedHardHeader) +
-	state.secsize * (state.cyl * d->heads * d->secs +
-			 state.head * d->secs +
-			(state.secnum % d->secs)),
-	0) != 0) {
-		file_error("hard%d: fseek '%s'", state.drive, d->filename);
-		hard_error(TRS_HARD_NFERR);
-		return -1;
-	}
+    sizeof(ReedHardHeader) +
+    state.secsize * (state.cyl * d->heads * d->secs
+                  +  state.head * d->secs
+                  + (state.secnum % d->secs)), 0) != 0) {
+      file_error("hard%d: fseek '%s'", state.drive, d->filename);
+      hard_error(TRS_HARD_NFERR);
+      return -1;
+  }
 
   state.status = newstatus;
 

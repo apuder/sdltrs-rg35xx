@@ -213,12 +213,12 @@ void ct80_ramdisk_out(int port, Uint8 byte)
     default:
       /* Port 2/3 = 0, 4/5 = 1, 6/7 = 2 */
       bank_offset[(port >> 1) - 1] = byte;
-   }
-   /* RAM disk starting at 64 KB */
-   bank_base = (bank_offset[0]
-             | (bank_offset[1] << 8)
-             | (bank_offset[2] << 16))
-             + 65536;
+  }
+  /* RAM disk starting at 64 KB */
+  bank_base = (bank_offset[0]
+            | (bank_offset[1] << 8)
+            | (bank_offset[2] << 16))
+            + 65536;
 }
 
 Uint8 ct80_ramdisk_in(int port)
