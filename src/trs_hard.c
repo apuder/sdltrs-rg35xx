@@ -84,6 +84,7 @@ typedef struct {
 static State state;
 
 /* Forward */
+static void hard_error(int error);
 static int  hard_data_in(void);
 static void hard_data_out(int value);
 static void hard_restore(void);
@@ -375,6 +376,12 @@ void trs_hard_out(int port, int value)
   }
 }
 
+static void hard_error(int error)
+{
+  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
+  state.error  = error;
+}
+
 static void hard_restore(void)
 {
 #if ZBX
@@ -394,8 +401,7 @@ static void hard_read(int cmd)
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
-    state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-    state.error = TRS_HARD_ABRTERR;
+    hard_error(TRS_HARD_ABRTERR);
     return;
   }
   if (find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
@@ -403,8 +409,7 @@ static void hard_read(int cmd)
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
       file_error("reading on hard%d", state.drive);
-      state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-      state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
     }
   }
 }
@@ -417,8 +422,7 @@ static void hard_write(int cmd)
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
-    state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-    state.error = TRS_HARD_ABRTERR;
+    hard_error(TRS_HARD_ABRTERR);
     return;
   }
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
@@ -557,8 +561,7 @@ fail:
   if (d->file) fclose(d->file);
   d->file = NULL;
   d->filename[0] = 0;
-  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-  state.error = TRS_HARD_NFERR;
+  hard_error(TRS_HARD_NFERR);
   return err;
 }
 
@@ -579,8 +582,7 @@ static int find_sector(int newstatus)
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
     error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
 	  state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
-    state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-    state.error = TRS_HARD_NFERR;
+    hard_error(TRS_HARD_NFERR);
     return -1;
   }
 
@@ -591,8 +593,7 @@ static int find_sector(int newstatus)
 			(state.secnum % d->secs)),
 	0) != 0) {
 		file_error("hard%d: fseek '%s'", state.drive, d->filename);
-		state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-		state.error = TRS_HARD_NFERR;
+		hard_error(TRS_HARD_NFERR);
 		return -1;
 	}
 
@@ -630,8 +631,7 @@ static void hard_data_out(int value)
 
         if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
           file_error("writing on hard%d", state.drive);
-          state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-          state.error = TRS_HARD_DATAERR; /* arbitrary choice */
+          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
         }
       }
     }
