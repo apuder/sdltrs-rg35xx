@@ -331,6 +331,8 @@ static const struct {
   { "r1",              opt_rom,           1, 1, NULL                  },
   { "r3",              opt_rom,           1, 3, NULL                  },
   { "r4p",             opt_rom,           1, 5, NULL                  },
+  { "ram",             opt_intval,        1, 9, NULL                  },
+  { "ramsize",         opt_intval,        1, 9, NULL                  },
   { "resize3",         opt_value,         0, 1, &resize3              },
   { "resize4",         opt_value,         0, 1, &resize4              },
   { "rom",             opt_rom,           1, 0, NULL                  },
