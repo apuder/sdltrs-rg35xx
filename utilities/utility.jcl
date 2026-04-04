@@ -21,6 +21,7 @@ import -n cd.ccc cd/ccc:#D#
 import -n pwd.ccc pwd/ccc:#D#
 import -n unix.ccc unix/ccc:#D#
 import -n mount.ccc mount/ccc:#D#
+import -n truedam.ccc truedam/ccc:#D#
 import -n umount.ccc umount/ccc:#D#
 import cd.cmd cd/cmd:#D#
 import pwd.cmd pwd/cmd:#D#
