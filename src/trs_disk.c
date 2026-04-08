@@ -2404,7 +2404,7 @@ trs_disk_command_write(Uint8 cmd)
     d->phytrack = 0;
     state.track = 0;
     state.status = TRSDISK_TRKZERO|TRSDISK_BUSY;
-#if __linux
+#if __linux__
     if (d->emutype == REAL) real_restore(state.curdrive);
 #endif
     /* Should this set lastdirection? */
