@@ -656,12 +656,8 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
         cassette_default_sample_rate = value;
       break;
     case 4: /* scale */
-      if (value <= 0)
-        value = 1;
-      else if (value > MAX_SCALE)
-        value = MAX_SCALE;
-
-      scale = value;
+      if (value >= 1 && value <= MAX_SCALE)
+        scale = value;
       break;
     case 5: /* scanshade */
       scanshade = value & 255;
