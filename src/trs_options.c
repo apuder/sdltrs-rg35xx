@@ -154,9 +154,11 @@ static const struct {
   { "charset1",        opt_charset,       1, 1, NULL                  },
   { "charset3",        opt_charset,       1, 3, NULL                  },
   { "charset4",        opt_charset,       1, 4, NULL                  },
+  { "cl",              opt_clock,         1, 0, NULL                  },
   { "cl1",             opt_clock,         1, 1, NULL                  },
   { "cl3",             opt_clock,         1, 3, NULL                  },
   { "cl4",             opt_clock,         1, 4, NULL                  },
+  { "clock",           opt_clock,         1, 0, NULL                  },
   { "clock1",          opt_clock,         1, 1, NULL                  },
   { "clock3",          opt_clock,         1, 3, NULL                  },
   { "clock4",          opt_clock,         1, 4, NULL                  },
@@ -535,7 +537,7 @@ static void opt_clock(const char *arg, int intarg, int *stringarg)
   float const clock_mhz = atof(arg);
 
   if (clock_mhz >= 0.1 && clock_mhz <= 99.0) {
-    switch (intarg) {
+    switch (intarg ? intarg : trs_model) {
       case 1:
         clock_mhz_1 = clock_mhz;
         break;
