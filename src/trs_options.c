@@ -545,6 +545,7 @@ static void opt_clock(const char *arg, int intarg, int *stringarg)
         clock_mhz_3 = clock_mhz;
         break;
       case 4:
+      case 5:
         clock_mhz_4 = clock_mhz;
         break;
     }
