@@ -448,7 +448,7 @@ void do_emt_opendir(void)
     Z80_A = errno;
     Z80_F &= ~ZERO_MASK;
   } else {
-    strncpy(dir[i].pathname, dirname, FILENAME_MAX);
+    snprintf(dir[i].pathname, FILENAME_MAX, "%s", dirname);
     Z80_DE = i;
     Z80_A = 0;
     Z80_F |= ZERO_MASK;

@@ -517,7 +517,7 @@ void debug_shell(void)
 		{
 		    add_history(line);
 		}
-		strncpy(input, line, MAXLINE - 1);
+		snprintf(input, MAXLINE - 1, "%s", line);
 		free(line);
 	    }
 	    else
