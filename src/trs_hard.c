@@ -244,6 +244,7 @@ int trs_hard_in(int port)
 
       v = 0;
       for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
+        open_drive(i);
         if (state.d[i].writeprot) {
           v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
         }
@@ -574,7 +575,7 @@ static int find_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL) return -1;
+  if (d->file == NULL && open_drive(state.drive) != 0) return -1;
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
@@ -585,7 +586,7 @@ static int find_sector(int newstatus)
     return -1;
   }
 
-  if (fseek(d->file,
+  if (d->file && fseek(d->file,
     sizeof(ReedHardHeader) +
     state.secsize * (state.cyl * d->heads * d->secs
                   +  state.head * d->secs
