@@ -189,10 +189,11 @@ void trs_hard_attach(int drive, const char *diskname)
 {
   snprintf(state.d[drive].filename, FILENAME_MAX, "%s", diskname);
 
-  if (open_drive(drive) < 0)
+  if (open_drive(drive) == 0)
+    trs_impexp_xtrshard_attach(drive);
+  else
     trs_hard_remove(drive);
 
-  trs_impexp_xtrshard_attach(drive);
 }
 
 void trs_hard_remove(int drive)
@@ -469,7 +470,7 @@ static void hard_seek(void)
 
 /*
  * 1) Make sure the file for the current drive is open.  If the file
- * cannot be opened, return 0 and set the controller error status.
+ * cannot be opened, return -1 and set the controller error status.
  *
  * 2) If newly opening the file, establish the hardware write protect
  * status and geometry in the Drive structure.
@@ -484,7 +485,7 @@ static int open_drive(int drive)
   Drive *d = &state.d[drive];
   ReedHardHeader rhh;
   size_t res;
-  int err = 0;
+  int err = -1;
   int secs;
 
   if (d->filename[0] == 0)
@@ -515,7 +516,6 @@ static int open_drive(int drive)
   res = fread(&rhh, sizeof(rhh), 1, d->file);
   if (res != 1 || rhh.id1 != 0x56 || rhh.id2 != 0xcb || rhh.ver >= 0x20) {
     error("unrecognized hard%d drive image: '%s'", drive, d->filename);
-    err = -1;
     goto fail;
   }
 
@@ -549,7 +549,6 @@ static int open_drive(int drive)
       d->heads <= 0 || d->heads > TRS_HARD_MAXHEADS) {
     error("unusable geometry (%d heads/%d secs) in hard%d image: '%s'",
           d->heads, d->secs, drive, d->filename);
-    err = -1;
     goto fail;
   }
 
