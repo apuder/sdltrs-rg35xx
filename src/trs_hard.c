@@ -250,9 +250,10 @@ int trs_hard_in(int port)
 
       v = 0;
       for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
-        open_drive(i);
-        if (state.d[i].writeprot) {
-          v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
+        if (open_drive(i) == 0) {
+          if (state.d[i].writeprot) {
+            v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
+          }
         }
       }
       break; }
@@ -337,7 +338,7 @@ void trs_hard_out(int port, int value)
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
     state.head = (value & TRS_HARD_HEADMASK) >> TRS_HARD_HEADSHIFT;
 #if 0
-    if (open_drive(state.drive) < 0) state.status &= ~TRS_HARD_READY;
+    if (open_drive(state.drive) == 0) state.status &= ~TRS_HARD_READY;
 #else
     /* Ready, but perhaps not able!  This way seems to work better; it
      * avoids a long delay in the Model 4P boot ROM when there is no
