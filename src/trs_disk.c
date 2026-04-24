@@ -312,7 +312,7 @@ static int  real_rate(const DiskState *d);
 static void real_restore(int curdrive);
 static void real_error(DiskState *d, unsigned int flags, const char *msg);
 static void real_ok(DiskState *d);
-static int  real_check_empty(DiskState *d);
+static void real_check_empty(DiskState *d);
 #endif
 static void trs_disk_set_controller(int controller);
 
@@ -3298,18 +3298,18 @@ real_ok(DiskState *d)
   d->u.real.empty = 0;
 }
 
-int
+void
 real_check_empty(DiskState *d)
 {
   int reset_now = 0;
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
 
-  if (time(NULL) <= d->u.real.empty_timeout) return d->u.real.empty;
+  if (time(NULL) <= d->u.real.empty_timeout) return;
 
   if (d->file == NULL) {
     d->u.real.empty = 1;
-    return 1;
+    return;
   }
 
   ioctl(fileno(d->file), FDRESET, &reset_now);
@@ -3329,7 +3329,6 @@ real_check_empty(DiskState *d)
   } else {
     real_ok(d);
   }
-  return d->u.real.empty;
 }
 
 void
