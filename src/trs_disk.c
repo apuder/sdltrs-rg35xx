@@ -302,20 +302,18 @@ static DiskState disk[NDRIVES];
 static const Uint8 jv1_interleave[10] = {0, 5, 1, 6, 2, 7, 3, 8, 4, 9};
 
 /* Forward */
-static void real_verify(void);
+#ifdef __linux__
 static void real_seek(void);
 static void real_read(void);
 static void real_write(void);
 static void real_readadr(void);
-static void real_readtrk(void);
 static void real_writetrk(void);
-#ifdef __linux__
 static int  real_rate(const DiskState *d);
 static void real_restore(int curdrive);
 static void real_error(DiskState *d, unsigned int flags, const char *msg);
 static void real_ok(DiskState *d);
-#endif
 static int  real_check_empty(DiskState *d);
+#endif
 static void trs_disk_set_controller(int controller);
 
 #ifdef ZBX
@@ -1166,8 +1164,11 @@ verify(void)
   const DiskState *d = &disk[state.curdrive];
 
   if (d->emutype == REAL) {
-    real_verify();
-  } else if (d->emutype == JV1) {
+    /* Verify that head is on the expected track */
+    /*!! ignore for now*/
+    return;
+  }
+  if (d->emutype == JV1) {
     if (d->file == NULL) {
       state.status |= TRSDISK_NOTFOUND;
     } if (state.density == 1) {
@@ -1336,15 +1337,19 @@ trs_disk_select_write(Uint8 data)
 
   /* If a drive was selected... */
   if (!(state.status & TRSDISK_NOTRDY)) {
+#if __linux__
     DiskState *d = &disk[state.curdrive];
+#endif
 
     /* Retrigger emulated motor timeout */
     state.motor_timeout = z80_state.t_count +
       MOTOR_USEC * z80_state.clockMHz;
     trs_disk_motoroff_interrupt(0);
 
+#if __linux__
     /* Update our knowledge of whether there is a real disk present */
     if (d->emutype == REAL) real_check_empty(d);
+#endif
   }
 }
 
@@ -1659,6 +1664,7 @@ trs_disk_data_write(Uint8 data)
   switch (state.currcommand & TRSDISK_CMDMASK) {
   case TRSDISK_WRITE:
     if (state.bytecount > 0) {
+#if __linux__
       if (d->emutype == REAL) {
 	d->u.real.buf[size_code_to_size(d->u.real.size_code)
 		     - state.bytecount] = data;
@@ -1668,6 +1674,7 @@ trs_disk_data_write(Uint8 data)
 	}
 	break;
       }
+#endif
       c = putc(data, d->file);
       if (c == EOF) state.status |= TRSDISK_WRITEFLT;
       if (d->emutype == DMK) {
@@ -1914,12 +1921,16 @@ trs_disk_data_write(Uint8 data)
 #endif
       state.format = FMT_DONE;
       state.status &= ~TRSDISK_DRQ;
+#if __linux__
       if (d->emutype == REAL) {
 	real_writetrk();
       } else {
+#endif
 	c = fflush(d->file);
 	if (c == EOF) state.status |= TRSDISK_WRITEFLT;
+#if __linux__
       }
+#endif
       trs_disk_drq_interrupt();
       if (trs_event_scheduled() == trs_disk_lostdata) {
 	trs_cancel_event();
@@ -2428,7 +2439,9 @@ trs_disk_command_write(Uint8 cmd)
     } else {
       state.status = TRSDISK_BUSY;
     }
+#if __linux__
     if (d->emutype == REAL) real_seek();
+#endif
     /* Should this set lastdirection? */
     if (cmd & TRSDISK_VBIT) verify();
     trs_schedule_event(trs_disk_done, 0, 2000);
@@ -2456,7 +2469,9 @@ trs_disk_command_write(Uint8 cmd)
     } else {
       state.status = TRSDISK_BUSY;
     }
+#if __linux__
     if (d->emutype == REAL) real_seek();
+#endif
     if (cmd & TRSDISK_VBIT) verify();
     trs_schedule_event(trs_disk_done, 0, 2000);
     break;
@@ -2511,10 +2526,12 @@ trs_disk_command_write(Uint8 cmd)
 	goal_side = (cmd & TRSDISK_BBIT) != 0;
       }
     }
+#if __linux__
     if (d->emutype == REAL) {
       real_read();
       break;
     }
+#endif
     id_index = search(state.sector, goal_side);
     if (id_index == -1) {
       state.status |= TRSDISK_BUSY;
@@ -2933,10 +2950,13 @@ trs_disk_command_write(Uint8 cmd)
     } else {
       state.crc = 0xef21;  /* CRC of fe */
     }
+#if __linux__
     if (d->emutype == REAL) {
       real_readadr();
       break;
-    } else if (d->emutype == JV1 || d->emutype == JV3) {
+    }
+#endif
+    if (d->emutype == JV1 || d->emutype == JV3) {
       int totbyt, i, ts, denok;
       float a, b, bytlen;
 
@@ -3111,10 +3131,6 @@ trs_disk_command_write(Uint8 cmd)
       state.bytecount = 0;
       break;
     }
-    if (d->emutype == REAL) {
-      real_readtrk();
-      break;
-    }
     if (d->emutype != DMK) {
       trs_disk_unimpl(cmd, "read track");
       break;
@@ -3281,12 +3297,10 @@ real_ok(DiskState *d)
   d->u.real.empty_timeout = time(NULL) + EMPTY_TIMEOUT;
   d->u.real.empty = 0;
 }
-#endif
 
 int
 real_check_empty(DiskState *d)
 {
-#if __linux__
   int reset_now = 0;
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3315,20 +3329,9 @@ real_check_empty(DiskState *d)
   } else {
     real_ok(d);
   }
-#else
-  trs_disk_unimpl(state.currcommand, "check for empty on real floppy");
-#endif
   return d->u.real.empty;
 }
 
-void
-real_verify(void)
-{
-  /* Verify that head is on the expected track */
-  /*!! ignore for now*/
-}
-
-#if __linux__
 void
 real_restore(int curdrive)
 {
@@ -3346,12 +3349,10 @@ real_restore(int curdrive)
     return;
   }
 }
-#endif
 
 void
 real_seek(void)
 {
-#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3379,15 +3380,11 @@ real_seek(void)
     state.status |= TRSDISK_SEEKERR;
     return;
   }
-#else
-  trs_disk_unimpl(state.currcommand, "seek real floppy");
-#endif
 }
 
 void
 real_read(void)
 {
-#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i, retry, new_status;
@@ -3468,15 +3465,11 @@ real_read(void)
   /* Sector not found; fail */
   state.status = TRSDISK_BUSY;
   trs_schedule_event(trs_disk_done, new_status, 512);
-#else
-  trs_disk_unimpl(state.currcommand, "read real floppy");
-#endif
 }
 
 void
 real_write(void)
 {
-#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i = 0;
@@ -3556,15 +3549,11 @@ real_write(void)
     trs_cancel_event();
   }
   trs_schedule_event(trs_disk_done, 0, 512);
-#else
-  trs_disk_unimpl(state.currcommand, "write real floppy");
-#endif
 }
 
 void
 real_readadr(void)
 {
-#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int i, new_status;
@@ -3612,21 +3601,11 @@ real_readadr(void)
   /* Sector not found; fail */
   state.status = TRSDISK_BUSY;
   trs_schedule_event(trs_disk_done, new_status, 200000 * z80_state.clockMHz);
-#else
-  trs_disk_unimpl(state.currcommand, "read address on real floppy");
-#endif
-}
-
-void
-real_readtrk(void)
-{
-  trs_disk_unimpl(state.currcommand, "read track on real floppy");
 }
 
 void
 real_writetrk(void)
 {
-#if __linux__
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int gap3;
@@ -3720,10 +3699,8 @@ real_writetrk(void)
     trs_cancel_event();
   }
   trs_schedule_event(trs_disk_done, 0, 512);
-#else
-  trs_disk_unimpl(state.currcommand, "write track on real floppy");
-#endif
 }
+#endif
 
 int trs_diskset_save(const char *filename)
 {
