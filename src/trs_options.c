@@ -475,7 +475,7 @@ static void opt_charset(const char *arg, int intarg, int *stringarg)
     intarg = trs_model;
 
   if (intarg == 1) {
-    switch (TOLOWER((int)*arg)) {
+    switch (TOLOWER(*arg)) {
       case 'e': /* early */
         trs_charset1 = 0;
         break;
@@ -510,7 +510,7 @@ static void opt_charset(const char *arg, int intarg, int *stringarg)
   } else {
     int charset;
 
-    switch (TOLOWER((int)*arg)) {
+    switch (TOLOWER(*arg)) {
       case 'k': /* katakana */
         charset = 4;
         break;
@@ -588,7 +588,7 @@ static void opt_dirname(const char *arg, int intarg, int *stringarg)
 
 static void opt_doubler(const char *arg, int intarg, int *stringarg)
 {
-  switch (TOLOWER((int)*arg)) {
+  switch (TOLOWER(*arg)) {
     case 'p':
       trs_disk_doubler = TRSDISK_PERCOM;
       break;
@@ -626,7 +626,7 @@ static void opt_stepmap(const char *arg, int intarg, int *stringarg)
 static void opt_halt(const char *arg, int intarg, int *stringarg)
 {
   if (arg[0])
-    Z80_HALT = TOLOWER((int)*arg);
+    Z80_HALT = TOLOWER(*arg);
   else
     Z80_HALT = 0;
 }
@@ -781,7 +781,7 @@ static void opt_rom(const char *arg, int intarg, int *stringarg)
 
 static void opt_printer(const char *arg, int intarg, int *stringarg)
 {
-  switch (TOLOWER((int)*arg)) {
+  switch (TOLOWER(*arg)) {
     case 'n': /* none */
     case '0':
       trs_printer = 0;
@@ -831,7 +831,7 @@ static void opt_sizemap(const char *arg, int intarg, int *stringarg)
 
 static void opt_speedup(const char *arg, int intarg, int *stringarg)
 {
-  switch (TOLOWER((int)*arg)) {
+  switch (TOLOWER(*arg)) {
     case 'n': /* None */
       speedup = 0;
       break;

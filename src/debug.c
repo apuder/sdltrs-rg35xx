@@ -1002,7 +1002,7 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %c", &halt) == 1)
 		{
-		    Z80_HALT = TOLOWER((int)halt);
+		    Z80_HALT = TOLOWER(halt);
 		}
 		switch (Z80_HALT) {
 		    case 'd':

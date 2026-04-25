@@ -617,7 +617,7 @@ read_dir:
       do {
         if (++sel >= filelistcount)
           sel = 0;
-      } while (sel != selection && (TOUPPER((int)filelist[sel][1]) != key));
+      } while (sel != selection && (TOUPPER(filelist[sel][1]) != key));
 
       if (sel < 13) {
         top = 0;
