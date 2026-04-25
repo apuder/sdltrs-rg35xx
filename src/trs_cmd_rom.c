@@ -645,7 +645,7 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
     if (count == 0) count = 256;
 
     switch (c) {
-    case 1: /* load bytes into memory */
+    case 0x01: /* load bytes into memory */
       a1 = getc(f);
       if (a1 == EOF) return LOAD_CMD_EOF;
       a2 = getc(f);
@@ -666,7 +666,7 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       }
       break;
 
-    case 2: /* transfer address and end of file */
+    case 0x02: /* transfer address and end of file */
       if (count != 2) return c;
       a1 = getc(f);
       if (a1 == EOF) return LOAD_CMD_EOF;
@@ -676,15 +676,15 @@ load_cmd(FILE* f, Uint8 memory[65536], int *xferaddr)
       if (xferaddr) *xferaddr = a1 + a2 * 256;
       return LOAD_CMD_OK;
 
-    case 3: /* end of file with no transfer address */
+    case 0x03: /* end of file with no transfer address */
       while (count-- > 0) {
         if (getc(f) == EOF) return LOAD_CMD_EOF;
       }
       return LOAD_CMD_OK;
 
-    case 0: /* used by Model I TRSDOS BOOT/SYS easter egg */
-    case 5: /* module header */
-    case 7: /* Patch name header */
+    case 0x00: /* used by Model I TRSDOS BOOT/SYS easter egg */
+    case 0x05: /* module header */
+    case 0x07: /* Patch name header */
     case 0x1F: /* copyright block */
       while (count-- > 0) {
         if (getc(f) == EOF) return LOAD_CMD_EOF;
