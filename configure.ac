@@ -13,7 +13,7 @@ AC_FUNC_ERROR_AT_LINE
 dnl AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 dnl AC_FUNC_REALLOC
-AC_CHECK_HEADERS([fcntl.h limits.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h limits.h strings.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h])
 AC_CHECK_FUNCS([atexit ftruncate getcwd gettimeofday localtime_r memmove memset putenv \
                 strcasecmp strchr strcspn strdup strerror strncasecmp strrchr strstr strtol])
 
