@@ -894,7 +894,7 @@ int gui_menu(const char *title, const MENU *entry, int selection)
       do {
         if (++selection > num)
           selection = 0;
-      } while (selection != sel && (int)*entry[selection].text != key);
+      } while (selection != sel && *entry[selection].text != key);
 
       while (entry[selection].type == TITLE) {
         if (selection < num)
