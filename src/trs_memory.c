@@ -436,7 +436,7 @@ void megamem_out(int mem_slot, Uint8 value)
     megamem_base = 0;
   } else {
     megamem_addr = (value & 0xC0) * 256;
-    megamem_base = (((value - (value & 0xC0)) * 16)
+    megamem_base = ((value & 0x3F) * 16
                  + (mem_slot * 1024)) * 1024
                  + MEGAMEM_START;
   }
