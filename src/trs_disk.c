@@ -234,6 +234,7 @@ typedef struct {
   int track_start[MAXTRACKS][JV3_SIDES];
 } JV3State;
 
+#if __linux__
 typedef struct {
   int rps;                        /* phys rotations/sec; emutype REAL only */
   int size_code;                  /* most recent sector size; REAL only */
@@ -243,6 +244,7 @@ typedef struct {
   int fmt_fill;                   /* fill byte for data sectors */
   Uint8 buf[MAXSECSIZE];
 } RealState;
+#endif
 
 /* Some constants for DMK format */
 #define DMK_WRITEPROT     0
@@ -291,7 +293,9 @@ typedef struct {
   char filename[FILENAME_MAX];
   union {
     JV3State jv3;                 /* valid if emutype = JV3 */
+#if __linux__
     RealState real;               /* valid if emutype = REAL */
+#endif
     DMKState dmk;                 /* valid if emutype = DMK */
   } u;
 } DiskState;
@@ -371,12 +375,14 @@ trs_disk_debug(void)
 	       d->u.dmk.curtrack, d->u.dmk.curside, d->u.dmk.curbyte,
 	       d->u.dmk.nextidam);
 	break;
+#if __linux__
       case REAL:
 	puts("REAL");
 	printf("\trpm %d, empty %d, last size code %d, last fmt fill 0x%02X\n",
 	       d->u.real.rps * 60, d->u.real.empty, d->u.real.size_code,
 	       d->u.real.fmt_fill);
 	break;
+#endif
       default:
 	puts("UNKNOWN");
 	break;
@@ -1163,11 +1169,13 @@ verify(void)
   /* Verify that head is on the expected track */
   const DiskState *d = &disk[state.curdrive];
 
+#if __linux__
   if (d->emutype == REAL) {
     /* Verify that head is on the expected track */
     /*!! ignore for now*/
     return;
   }
+#endif
   if (d->emutype == JV1) {
     if (d->file == NULL) {
       state.status |= TRSDISK_NOTFOUND;
@@ -1218,7 +1226,11 @@ type1_status(void)
     return;
   }
 
-  if (d->file == NULL || (d->emutype == REAL && d->u.real.empty)) {
+  if (d->file == NULL
+#if __linux__
+    || (d->emutype == REAL && d->u.real.empty)
+#endif
+  ) {
     state.status |= TRSDISK_INDEX;
   } else {
     if (angle() < trs_disk_holewidth) {
@@ -1483,10 +1495,13 @@ trs_disk_data_read(void)
     if (state.bytecount > 0 && (state.status & TRSDISK_DRQ)) {
       int c;
 
+#if __linux__
       if (d->emutype == REAL) {
 	c = d->u.real.buf[size_code_to_size(d->u.real.size_code)
 			 - state.bytecount];
-      } else if (d->emutype == DMK) {
+      } else
+#endif
+      if (d->emutype == DMK) {
 	c = d->u.dmk.buf[d->u.dmk.curbyte];
 	state.crc = calc_crc(state.crc, c);
 	d->u.dmk.curbyte += dmk_incr(d);
@@ -1528,10 +1543,12 @@ trs_disk_data_read(void)
       break;
     }
 
+#if __linux__
     if (d->emutype == REAL) {
       state.data = d->u.real.buf[6 - state.bytecount];
-
-    } else if (d->emutype == DMK) {
+    } else
+#endif
+    if (d->emutype == DMK) {
       state.data = d->u.dmk.buf[d->u.dmk.curbyte];
       d->u.dmk.curbyte += dmk_incr(d);
 
@@ -1975,6 +1992,7 @@ trs_disk_data_write(Uint8 data)
       }
       break;
     case FMT_TRACKID:
+#if __linux__
       if (d->emutype == REAL) {
 	if (d->u.real.fmt_nbytes >= sizeof(d->u.real.buf)) {
 	  /* Data structure full */
@@ -1987,16 +2005,22 @@ trs_disk_data_write(Uint8 data)
 	  state.format = FMT_HEADID;
 	}
       } else {
+#endif
 	if (data != d->phytrack) {
 	  trs_disk_unimpl(state.currcommand, "false track number");
 	}
 	state.format = FMT_HEADID;
+#if __linux__
       }
+#endif
       break;
     case FMT_HEADID:
+#if __linux__
       if (d->emutype == REAL) {
 	d->u.real.buf[d->u.real.fmt_nbytes++] = data;
-      } else if (d->emutype == JV1) {
+      } else
+#endif
+      if (d->emutype == JV1) {
 	if (data != 0) {
 	  trs_disk_unimpl(state.currcommand, "JV1 double sided");
 	}
@@ -2011,9 +2035,12 @@ trs_disk_data_write(Uint8 data)
       state.format = FMT_SECID;
       break;
     case FMT_SECID:
+#if __linux__
       if (d->emutype == REAL) {
 	d->u.real.buf[d->u.real.fmt_nbytes++] = data;
-      } else if (d->emutype == JV1) {
+      } else
+#endif
+      if (d->emutype == JV1) {
 	if (data >= JV1_SECPERTRK) {
 	  trs_disk_unimpl(state.currcommand, "JV1 sector number >= 10");
 	}
@@ -2044,7 +2071,7 @@ trs_disk_data_write(Uint8 data)
 	  (state.curside ? JV3_SIDE : 0) | (state.density ? JV3_DENSITY : 0) |
 	  ((data & 3) ^ 1);
 	state.format_sec = id_index;
-
+#if __linux__
       } else if (d->emutype == REAL) {
 	d->u.real.buf[d->u.real.fmt_nbytes++] = data;
 	if (d->u.real.size_code != -1 && d->u.real.size_code != data) {
@@ -2052,6 +2079,7 @@ trs_disk_data_write(Uint8 data)
 			  "varying sector size on same track on real floppy");
 	}
 	d->u.real.size_code = data;
+#endif
       } else {
 	if (data != 0x01) {
 	  trs_disk_unimpl(state.currcommand, "sector size != 256");
@@ -2062,7 +2090,8 @@ trs_disk_data_write(Uint8 data)
     case FMT_GAP2:
       if ((data & 0xfc) == 0xf8) {
 	/* Found a DAM */
-        if (d->emutype == REAL) {
+#if __linux__
+	if (d->emutype == REAL) {
 	  switch (data) {
 	  case 0xfb:  /* Standard DAM */
 	    break;
@@ -2093,7 +2122,9 @@ trs_disk_data_write(Uint8 data)
 	    error("format DAM F8 on real floppy");
 	    break;
 	  }
-	} else if (d->emutype == JV1) {
+	} else
+#endif
+	if (d->emutype == JV1) {
           switch (data) {
 	  case 0xf9:
 	    trs_disk_unimpl(state.currcommand, "JV1 DAM cannot be F9");
@@ -2151,8 +2182,10 @@ trs_disk_data_write(Uint8 data)
 	  state.format_bytecount = id_index_to_size(d, state.format_sec);
 	} else if (d->emutype == JV1) {
 	  state.format_bytecount = JV1_SECSIZE;
+#if __linux__
 	} else if (d->emutype == REAL) {
 	  state.format_bytecount = size_code_to_size(d->u.real.size_code);
+#endif
 	}
 	state.format_gap[2] = state.format_gapcnt;
 	state.format_gapcnt = 0;
@@ -2203,8 +2236,10 @@ trs_disk_data_write(Uint8 data)
       if (d->emutype == JV3) {
 	c = putc(data, d->file);
 	if (c == EOF) state.status |= TRSDISK_WRITEFLT;
+#if __linux__
       } else if (d->emutype == REAL) {
 	d->u.real.fmt_fill = data;
+#endif
       }
       if (--state.format_bytecount <= 0) {
 	state.format = FMT_DCRC;
@@ -2507,9 +2542,11 @@ trs_disk_command_write(Uint8 cmd)
 		state.curdrive, state.curside, state.track, state.sector);
 	}
 #endif
+#if __linux__
 	if (d->emutype == REAL) {
 	  trs_disk_unimpl(cmd, "non-IBM read on real floppy");
 	}
+#endif
 	non_ibm = 1;
       } else {
 #ifdef ZBX
@@ -2717,9 +2754,11 @@ trs_disk_command_write(Uint8 cmd)
 		state.curdrive, state.curside, state.track, state.sector);
 	}
 #endif
+#if __linux__
 	if (d->emutype == REAL) {
 	  trs_disk_unimpl(cmd, "non-IBM write on real floppy");
 	}
+#endif
 	non_ibm = 1;
       } else {
 #ifdef ZBX
@@ -2736,6 +2775,7 @@ trs_disk_command_write(Uint8 cmd)
 	goal_side = (cmd & TRSDISK_BBIT) != 0;
       }
     }
+#if __linux__
     if (d->emutype == REAL) {
       state.status = TRSDISK_BUSY|TRSDISK_DRQ;
       trs_disk_drq_interrupt();
@@ -2744,6 +2784,7 @@ trs_disk_command_write(Uint8 cmd)
       state.bytecount = size_code_to_size(d->u.real.size_code);
       break;
     }
+#endif
     if (d->writeprot) {
       state.status = TRSDISK_WRITEPRT;
       break;
@@ -3168,7 +3209,11 @@ trs_disk_command_write(Uint8 cmd)
       }
 #endif
       /* Yes; a real write track */
-      if (d->emutype != REAL && d->writeprot) {
+      if (d->writeprot
+#if __linux
+	&& d->emutype != REAL
+#endif
+      ) {
 	state.status = TRSDISK_WRITEPRT;
 	break;
       }
@@ -3189,9 +3234,11 @@ trs_disk_command_write(Uint8 cmd)
 	    jv3_free_sector(d, i);
 	  }
 	}
+#if __linux__
       } else if (d->emutype == REAL) {
 	d->u.real.size_code = -1; /* watch for first, then check others match*/
 	d->u.real.fmt_nbytes = 0; /* size of PC formatting command buffer */
+#endif
       } else if (d->emutype == DMK) {
 	if (state.density && d->u.dmk.sden) {
 	  error("DMK disk created as single density only");
@@ -3891,6 +3938,7 @@ static void trs_load_dmkstate(FILE *file, DMKState *dmk)
   trs_load_uint8(file, dmk->buf, DMK_TRACKLEN_MAX);
 }
 
+#if __linux__
 static void trs_save_realstate(FILE *file, RealState *real)
 {
   trs_save_int(file, &real->rps, 1);
@@ -3912,6 +3960,7 @@ static void trs_load_realstate(FILE *file, RealState *real)
   trs_load_int(file, &real->fmt_fill, 1);
   trs_load_uint8(file, real->buf, MAXSECSIZE);
 }
+#endif
 
 static void trs_save_diskstate(FILE *file, DiskState *d)
 {
@@ -3927,8 +3976,10 @@ static void trs_save_diskstate(FILE *file, DiskState *d)
 
   if (d->emutype == JV3)
     trs_save_jv3state(file, &d->u.jv3);
+#if __linux__
   else if (d->emutype == REAL)
     trs_save_realstate(file, &d->u.real);
+#endif
   else
     trs_save_dmkstate(file, &d->u.dmk);
 }
@@ -3952,8 +4003,10 @@ static void trs_load_diskstate(FILE *file, DiskState *d)
 
   if (d->emutype == JV3)
     trs_load_jv3state(file, &d->u.jv3);
+#if __linux__
   else if (d->emutype == REAL)
     trs_load_realstate(file, &d->u.real);
+#endif
   else
     trs_load_dmkstate(file, &d->u.dmk);
 }
