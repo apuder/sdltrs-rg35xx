@@ -1079,7 +1079,6 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
 int gui_matrix(const char *title, const char **entry, int rows, int cols, int selection)
 {
   int const len = strlen(entry[0]) + 1;
-  int const num = rows * cols;
   int const width = cols * len - 1;
   int const x = (64 - width) / 2;
   int const y = (16 - rows) / 2;
@@ -1091,11 +1090,6 @@ int gui_matrix(const char *title, const char **entry, int rows, int cols, int se
   for (row = 0; row < rows; row++)
     for (col = 0; col < cols; col++)
       gui_text(entry[row * cols + col], x + col * len, y + row, len, 4);
-
-  if (selection < 0)
-    selection = 0;
-  else if (selection >= num)
-    selection = num - 1;
 
   row = selection / cols;
   col = selection % cols;
