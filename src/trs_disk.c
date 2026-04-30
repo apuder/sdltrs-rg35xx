@@ -3210,7 +3210,7 @@ trs_disk_command_write(Uint8 cmd)
 #endif
       /* Yes; a real write track */
       if (d->writeprot
-#if __linux
+#if __linux__
 	&& d->emutype != REAL
 #endif
       ) {
