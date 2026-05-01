@@ -29,21 +29,21 @@
 
 extern int  trs_state_save(const char *filename);
 extern void trs_save_filename(FILE *file, const char *filename);
-extern void trs_save_float(FILE *file, const float *buffer, int count);
+extern void trs_save_float(FILE *file, const float *buffer);
 extern void trs_save_int(FILE *file, const int *buffer, int count);
 extern void trs_save_uint8(FILE *file, const Uint8 *buffer, int count);
-extern void trs_save_uint16(FILE *file, const Uint16 *buffer, int count);
-extern void trs_save_uint32(FILE *file, const Uint32 *buffer, int count);
-extern void trs_save_uint64(FILE *file, const Uint64 *buffer, int count);
+extern void trs_save_uint16(FILE *file, const Uint16 *buffer);
+extern void trs_save_uint32(FILE *file, const Uint32 *buffer);
+extern void trs_save_uint64(FILE *file, const Uint64 *buffer);
 
 extern int  trs_state_load(const char *filename);
 extern void trs_load_filename(FILE *file, char *filename);
-extern void trs_load_float(FILE *file, float *buffer, int count);
+extern void trs_load_float(FILE *file, float *buffer);
 extern void trs_load_int(FILE *file, int *buffer, int count);
 extern void trs_load_uint8(FILE *file, Uint8 *buffer, int count);
-extern void trs_load_uint16(FILE *file, Uint16 *buffer, int count);
-extern void trs_load_uint32(FILE *file, Uint32 *buffer, int count);
-extern void trs_load_uint64(FILE *file, Uint64 *buffer, int count);
+extern void trs_load_uint16(FILE *file, Uint16 *buffer);
+extern void trs_load_uint32(FILE *file, Uint32 *buffer);
+extern void trs_load_uint64(FILE *file, Uint64 *buffer);
 
 extern void trs_cassette_save(FILE *file);
 extern void trs_clone_save(FILE *file);

@@ -41,7 +41,7 @@ int trs_state_save(const char *filename)
 
   if (file) {
     trs_save_uint8(file, (Uint8 *)stateFileBanner, stateFileBannerLen);
-    trs_save_uint32(file, &stateVersionNumber, 1);
+    trs_save_uint32(file, &stateVersionNumber);
     trs_main_save(file);
     trs_cassette_save(file);
     trs_clone_save(file);
@@ -81,7 +81,7 @@ int trs_state_load(const char *filename)
       return -1;
     }
 
-    trs_load_uint32(file, &version, 1);
+    trs_load_uint32(file, &version);
 
     if (version != stateVersionNumber) {
       error("unsupported version %d of State file '%s'", version, filename);
@@ -122,104 +122,80 @@ void trs_load_uint8(FILE *file, Uint8 *buffer, int count)
   fread(buffer, count, 1, file);
 }
 
-void trs_save_uint16(FILE *file, const Uint16 *buffer, int count)
+void trs_save_uint16(FILE *file, const Uint16 *buffer)
 {
-  int i;
+  Uint16 temp = *buffer;
+  Uint8  byte = temp & 0xFF;
 
-  for (i = 0; i < count; i++) {
-    Uint16 temp = *buffer++;
-    Uint8  byte = temp & 0xFF;
-
-    fwrite(&byte, 1, 1, file);
-    byte = temp >> 8;
-    fwrite(&byte, 1, 1, file);
-  }
+  fwrite(&byte, 1, 1, file);
+  byte = temp >> 8;
+  fwrite(&byte, 1, 1, file);
 }
 
-void trs_load_uint16(FILE *file, Uint16 *buffer, int count)
+void trs_load_uint16(FILE *file, Uint16 *buffer)
 {
-  int i;
+  Uint8 byte[2] = { 0 };
 
-  for (i = 0; i < count; i++) {
-    Uint8 byte[2] = { 0 };
-
-    fread(&byte, 1, 2, file);
-    *buffer++ = (byte[1] << 8) | byte[0];
-  }
+  fread(&byte, 1, 2, file);
+  *buffer++ = (byte[1] << 8) | byte[0];
 }
 
-void trs_save_uint32(FILE *file, const Uint32 *buffer, int count)
+void trs_save_uint32(FILE *file, const Uint32 *buffer)
+{
+  unsigned int temp = *buffer;
+  Uint8 byte = temp & 0xFF;
+
+  fwrite(&byte, 1, 1, file);
+
+  temp >>= 8;
+  byte = temp & 0xFF;
+  fwrite(&byte, 1, 1, file);
+
+  temp >>= 8;
+  byte = temp & 0xFF;
+  fwrite(&byte, 1, 1, file);
+
+  temp >>= 8;
+  byte = temp & 0xFF;
+  fwrite(&byte, 1, 1, file);
+}
+
+void trs_load_uint32(FILE *file, Uint32 *buffer)
+{
+  Uint8 byte[4] = { 0 };
+
+  fread(&byte, 1, 4, file);
+  *buffer++ = (byte[3] << 24) | (byte[2] << 16) | (byte[1] << 8) | byte[0];
+}
+
+void trs_save_uint64(FILE *file, const Uint64 *buffer)
 {
   int i;
+  Uint64 temp = *buffer;
 
-  for (i = 0; i < count; i++) {
-    unsigned int temp = *buffer++;
+  for (i = 0; i < 8; i++) {
     Uint8 byte = temp & 0xFF;
 
     fwrite(&byte, 1, 1, file);
-
-    temp >>= 8;
-    byte = temp & 0xFF;
-    fwrite(&byte, 1, 1, file);
-
-    temp >>= 8;
-    byte = temp & 0xFF;
-    fwrite(&byte, 1, 1, file);
-
-    temp >>= 8;
-    byte = temp & 0xFF;
-    fwrite(&byte, 1, 1, file);
+    temp = temp >> 8;
   }
 }
 
-void trs_load_uint32(FILE *file, Uint32 *buffer, int count)
+void trs_load_uint64(FILE *file, Uint64 *buffer)
 {
   int i;
+  Uint64 temp = 0;
+  Uint8 byte[8] = { 0 };
 
-  for (i = 0; i < count; i++) {
-    Uint8 byte[4] = { 0 };
+  fread(&byte, 1, 8, file);
 
-    fread(&byte, 1, 4, file);
-    *buffer++ = (byte[3] << 24) | (byte[2] << 16) | (byte[1] << 8) | byte[0];
+  for (i = 7; i >= 0; i--) {
+    temp |= byte[i];
+    if (i)
+      temp = temp << 8;
   }
-}
 
-void trs_save_uint64(FILE *file, const Uint64 *buffer, int count)
-{
-  int i;
-
-  for (i = 0; i < count; i++) {
-    int j;
-    Uint64 temp = *buffer++;
-
-    for (j = 0; j < 8; j++) {
-      Uint8 byte = temp & 0xFF;
-
-      fwrite(&byte, 1, 1, file);
-      temp = temp >> 8;
-    }
-  }
-}
-
-void trs_load_uint64(FILE *file, Uint64 *buffer, int count)
-{
-  int i;
-
-  for (i = 0; i < count; i++) {
-    int j;
-    Uint64 temp = 0;
-    Uint8 byte[8] = { 0 };
-
-    fread(&byte, 1, 8, file);
-
-    for (j = 7; j >= 0; j--) {
-      temp |= byte[j];
-      if (j)
-        temp = temp << 8;
-    }
-
-    *buffer++ = temp;
-  }
+  *buffer++ = temp;
 }
 
 void trs_save_int(FILE *file, const int *buffer, int count)
@@ -275,35 +251,27 @@ void trs_load_int(FILE *file, int *buffer, int count)
   }
 }
 
-void trs_save_float(FILE *file, const float *buffer, int count)
+void trs_save_float(FILE *file, const float *buffer)
 {
-  int i;
+  char float_buff[21];
 
-  for (i = 0; i < count; i++) {
-    char float_buff[21];
-
-    snprintf(float_buff, 21, "%20f", *buffer++);
-    trs_save_uint8(file, (Uint8 *)float_buff, 20);
-  }
+  snprintf(float_buff, 21, "%20f", *buffer++);
+  trs_save_uint8(file, (Uint8 *)float_buff, 20);
 }
 
-void trs_load_float(FILE *file, float *buffer, int count)
+void trs_load_float(FILE *file, float *buffer)
 {
-  int i;
+  char float_buff[21];
 
-  for (i = 0; i < count; i++) {
-    char float_buff[21];
-
-    trs_load_uint8(file, (Uint8 *)float_buff, 20);
-    sscanf(float_buff, "%f", buffer++);
-  }
+  trs_load_uint8(file, (Uint8 *)float_buff, 20);
+  sscanf(float_buff, "%f", buffer++);
 }
 
 void trs_save_filename(FILE *file, const char *filename)
 {
   Uint16 length = strlen(filename);
 
-  trs_save_uint16(file, &length, 1);
+  trs_save_uint16(file, &length);
   trs_save_uint8(file, (Uint8 *)filename, length);
 }
 
@@ -311,7 +279,7 @@ void trs_load_filename(FILE *file, char *filename)
 {
   Uint16 length;
 
-  trs_load_uint16(file, &length, 1);
+  trs_load_uint16(file, &length);
   trs_load_uint8(file, (Uint8 *)filename, length);
   filename[length] = 0;
 }

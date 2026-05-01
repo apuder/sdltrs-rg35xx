@@ -735,7 +735,7 @@ void trs_interrupt_save(FILE *file)
   trs_save_uint8(file, &interrupt_mask, 1);
   trs_save_uint8(file, &nmi_latch, 1);
   trs_save_int(file, &timer_hz, 1);
-  trs_save_uint32(file, &cycles_per_timer, 1);
+  trs_save_uint32(file, &cycles_per_timer);
   trs_save_int(file, &timer_on, 1);
 
   if (event_func == assert_state_void)
@@ -777,7 +777,7 @@ void trs_interrupt_load(FILE *file)
   trs_load_uint8(file, &interrupt_mask, 1);
   trs_load_uint8(file, &nmi_latch, 1);
   trs_load_int(file, &timer_hz, 1);
-  trs_load_uint32(file, &cycles_per_timer, 1);
+  trs_load_uint32(file, &cycles_per_timer);
   trs_load_int(file, &timer_on, 1);
   trs_load_int(file, &event, 1);
 

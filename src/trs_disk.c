@@ -3824,14 +3824,14 @@ static void trs_fdc_save(FILE *file, FDCState *fdc)
   trs_save_int(file, &fdc->format_sec, 1);
   trs_save_int(file, &fdc->format_gapcnt, 1);
   trs_save_int(file, fdc->format_gap, 5);
-  trs_save_uint16(file, &fdc->crc, 1);
+  trs_save_uint16(file, &fdc->crc);
   trs_save_int(file, &fdc->curdrive, 1);
   trs_save_int(file, &fdc->curside, 1);
   trs_save_int(file, &fdc->density, 1);
   trs_save_uint8(file, &fdc->inches, 1);
   trs_save_uint8(file, &fdc->controller, 1);
   trs_save_int(file, &fdc->last_readadr, 1);
-  trs_save_uint64(file, &fdc->motor_timeout, 1);
+  trs_save_uint64(file, &fdc->motor_timeout);
 }
 
 static void trs_fdc_load(FILE *file, FDCState *fdc)
@@ -3848,14 +3848,14 @@ static void trs_fdc_load(FILE *file, FDCState *fdc)
   trs_load_int(file, &fdc->format_sec, 1);
   trs_load_int(file, &fdc->format_gapcnt, 1);
   trs_load_int(file, fdc->format_gap, 5);
-  trs_load_uint16(file, &fdc->crc, 1);
+  trs_load_uint16(file, &fdc->crc);
   trs_load_int(file, &fdc->curdrive, 1);
   trs_load_int(file, &fdc->curside, 1);
   trs_load_int(file, &fdc->density, 1);
   trs_load_uint8(file, &fdc->inches, 1);
   trs_load_uint8(file, &fdc->controller, 1);
   trs_load_int(file, &fdc->last_readadr, 1);
-  trs_load_uint64(file, &fdc->motor_timeout, 1);
+  trs_load_uint64(file, &fdc->motor_timeout);
 }
 
 static void trs_save_sectorid(FILE *file, SectorId *id)
@@ -3944,8 +3944,8 @@ static void trs_save_realstate(FILE *file, RealState *real)
   trs_save_int(file, &real->rps, 1);
   trs_save_int(file, &real->size_code, 1);
   trs_save_int(file, &real->empty, 1);
-  trs_save_uint64(file, (Uint64 *)&real->empty_timeout, 1);
-  trs_save_uint32(file, &real->fmt_nbytes, 1);
+  trs_save_uint64(file, (Uint64 *)&real->empty_timeout);
+  trs_save_uint32(file, &real->fmt_nbytes);
   trs_save_int(file, &real->fmt_fill, 1);
   trs_save_uint8(file, real->buf, MAXSECSIZE);
 }
@@ -3955,8 +3955,8 @@ static void trs_load_realstate(FILE *file, RealState *real)
   trs_load_int(file, &real->rps, 1);
   trs_load_int(file, &real->size_code, 1);
   trs_load_int(file, &real->empty, 1);
-  trs_load_uint64(file, (Uint64 *)&real->empty_timeout, 1);
-  trs_load_uint32(file, &real->fmt_nbytes, 1);
+  trs_load_uint64(file, (Uint64 *)&real->empty_timeout);
+  trs_load_uint32(file, &real->fmt_nbytes);
   trs_load_int(file, &real->fmt_fill, 1);
   trs_load_uint8(file, real->buf, MAXSECSIZE);
 }

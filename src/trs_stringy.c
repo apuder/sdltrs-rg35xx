@@ -660,17 +660,17 @@ static void trs_save_stringy(FILE *file, stringy_info_t *d)
 
   trs_save_int(file, &file_not_null, 1);
   trs_save_filename(file, d->name);
-  trs_save_uint32(file, &d->length, 1);
-  trs_save_uint32(file, &d->eotWidth, 1);
-  trs_save_uint32(file, &d->pos, 1);
-  trs_save_uint64(file, &d->pos_time, 1);
-  trs_save_uint32(file, &d->flux_change_pos, 1);
+  trs_save_uint32(file, &d->length);
+  trs_save_uint32(file, &d->eotWidth);
+  trs_save_uint32(file, &d->pos);
+  trs_save_uint64(file, &d->pos_time);
+  trs_save_uint32(file, &d->flux_change_pos);
   trs_save_int(file, &d->flux_change_to, 1);
   trs_save_uint8(file, &d->in_port, 1);
   trs_save_uint8(file, &d->out_port, 1);
   trs_save_uint8(file, &d->format, 1);
-  trs_save_uint32(file, &d->esf_bytelen, 1);
-  trs_save_uint32(file, &d->esf_bytepos, 1);
+  trs_save_uint32(file, &d->esf_bytelen);
+  trs_save_uint32(file, &d->esf_bytepos);
   trs_save_uint8(file, &d->esf_bytebuf, 1);
   trs_save_uint8(file, &d->esf_bitpos, 1);
 }
@@ -687,17 +687,17 @@ static void trs_load_stringy(FILE *file, stringy_info_t *d)
     d->file = NULL;
 
   trs_load_filename(file, d->name);
-  trs_load_uint32(file, &d->length, 1);
-  trs_load_uint32(file, &d->eotWidth, 1);
-  trs_load_uint32(file, &d->pos, 1);
-  trs_load_uint64(file, &d->pos_time, 1);
-  trs_load_uint32(file, &d->flux_change_pos, 1);
+  trs_load_uint32(file, &d->length);
+  trs_load_uint32(file, &d->eotWidth);
+  trs_load_uint32(file, &d->pos);
+  trs_load_uint64(file, &d->pos_time);
+  trs_load_uint32(file, &d->flux_change_pos);
   trs_load_int(file, &d->flux_change_to, 1);
   trs_load_uint8(file, &d->in_port, 1);
   trs_load_uint8(file, &d->out_port, 1);
   trs_load_uint8(file, &d->format, 1);
-  trs_load_uint32(file, &d->esf_bytelen, 1);
-  trs_load_uint32(file, &d->esf_bytepos, 1);
+  trs_load_uint32(file, &d->esf_bytelen);
+  trs_load_uint32(file, &d->esf_bytepos);
   trs_load_uint8(file, &d->esf_bytebuf, 1);
   trs_load_uint8(file, &d->esf_bitpos, 1);
 }

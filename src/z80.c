@@ -4286,18 +4286,18 @@ void z80_reset(void)
 
 void trs_z80_save(FILE *file)
 {
-  trs_save_uint16(file, &z80_state.af.word, 1);
-  trs_save_uint16(file, &z80_state.bc.word, 1);
-  trs_save_uint16(file, &z80_state.de.word, 1);
-  trs_save_uint16(file, &z80_state.hl.word, 1);
-  trs_save_uint16(file, &z80_state.ix.word, 1);
-  trs_save_uint16(file, &z80_state.iy.word, 1);
-  trs_save_uint16(file, &z80_state.sp.word, 1);
-  trs_save_uint16(file, &z80_state.pc.word, 1);
-  trs_save_uint16(file, &z80_state.af_prime.word, 1);
-  trs_save_uint16(file, &z80_state.bc_prime.word, 1);
-  trs_save_uint16(file, &z80_state.de_prime.word, 1);
-  trs_save_uint16(file, &z80_state.hl_prime.word, 1);
+  trs_save_uint16(file, &z80_state.af.word);
+  trs_save_uint16(file, &z80_state.bc.word);
+  trs_save_uint16(file, &z80_state.de.word);
+  trs_save_uint16(file, &z80_state.hl.word);
+  trs_save_uint16(file, &z80_state.ix.word);
+  trs_save_uint16(file, &z80_state.iy.word);
+  trs_save_uint16(file, &z80_state.sp.word);
+  trs_save_uint16(file, &z80_state.pc.word);
+  trs_save_uint16(file, &z80_state.af_prime.word);
+  trs_save_uint16(file, &z80_state.bc_prime.word);
+  trs_save_uint16(file, &z80_state.de_prime.word);
+  trs_save_uint16(file, &z80_state.hl_prime.word);
   trs_save_uint8(file, &z80_state.i, 1);
   trs_save_uint8(file, &z80_state.r, 1);
   trs_save_uint8(file, &z80_state.r7, 1);
@@ -4308,26 +4308,26 @@ void trs_z80_save(FILE *file)
   trs_save_int(file, &z80_state.nmi, 1);
   trs_save_int(file, &z80_state.nmi_seen, 1);
   trs_save_int(file, &z80_state.keypress, 1);
-  trs_save_uint64(file, &z80_state.t_count, 1);
-  trs_save_float(file, &z80_state.clockMHz, 1);
-  trs_save_uint64(file, &z80_state.sched, 1);
-  trs_save_uint64(file, &last_t_count, 1);
+  trs_save_uint64(file, &z80_state.t_count);
+  trs_save_float(file, &z80_state.clockMHz);
+  trs_save_uint64(file, &z80_state.sched);
+  trs_save_uint64(file, &last_t_count);
 }
 
 void trs_z80_load(FILE *file)
 {
-  trs_load_uint16(file, &z80_state.af.word, 1);
-  trs_load_uint16(file, &z80_state.bc.word, 1);
-  trs_load_uint16(file, &z80_state.de.word, 1);
-  trs_load_uint16(file, &z80_state.hl.word, 1);
-  trs_load_uint16(file, &z80_state.ix.word, 1);
-  trs_load_uint16(file, &z80_state.iy.word, 1);
-  trs_load_uint16(file, &z80_state.sp.word, 1);
-  trs_load_uint16(file, &z80_state.pc.word, 1);
-  trs_load_uint16(file, &z80_state.af_prime.word, 1);
-  trs_load_uint16(file, &z80_state.bc_prime.word, 1);
-  trs_load_uint16(file, &z80_state.de_prime.word, 1);
-  trs_load_uint16(file, &z80_state.hl_prime.word, 1);
+  trs_load_uint16(file, &z80_state.af.word);
+  trs_load_uint16(file, &z80_state.bc.word);
+  trs_load_uint16(file, &z80_state.de.word);
+  trs_load_uint16(file, &z80_state.hl.word);
+  trs_load_uint16(file, &z80_state.ix.word);
+  trs_load_uint16(file, &z80_state.iy.word);
+  trs_load_uint16(file, &z80_state.sp.word);
+  trs_load_uint16(file, &z80_state.pc.word);
+  trs_load_uint16(file, &z80_state.af_prime.word);
+  trs_load_uint16(file, &z80_state.bc_prime.word);
+  trs_load_uint16(file, &z80_state.de_prime.word);
+  trs_load_uint16(file, &z80_state.hl_prime.word);
   trs_load_uint8(file, &z80_state.i, 1);
   trs_load_uint8(file, &z80_state.r, 1);
   trs_load_uint8(file, &z80_state.r7, 1);
@@ -4338,9 +4338,9 @@ void trs_z80_load(FILE *file)
   trs_load_int(file, &z80_state.nmi, 1);
   trs_load_int(file, &z80_state.nmi_seen, 1);
   trs_load_int(file, &z80_state.keypress, 1);
-  trs_load_uint64(file, &z80_state.t_count, 1);
-  trs_load_float(file, &z80_state.clockMHz, 1);
-  trs_load_uint64(file, &z80_state.sched, 1);
-  trs_load_uint64(file, &last_t_count, 1);
+  trs_load_uint64(file, &z80_state.t_count);
+  trs_load_float(file, &z80_state.clockMHz);
+  trs_load_uint64(file, &z80_state.sched);
+  trs_load_uint64(file, &last_t_count);
 }
 
