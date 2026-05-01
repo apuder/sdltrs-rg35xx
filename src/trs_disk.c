@@ -395,7 +395,7 @@ trs_disk_debug(void)
 void
 trs_disk_setsize(int unit, int value)
 {
-  if (unit < 0 || unit > 7) return;
+  if (unit < 0 || unit >= NDRIVES) return;
   disk[unit].inches = (value == 8) ? 8 : 5;
 }
 
@@ -403,7 +403,7 @@ trs_disk_setsize(int unit, int value)
 void
 trs_disk_setstep(int unit, int value)
 {
-  if (unit < 0 || unit > 7) return;
+  if (unit < 0 || unit >= NDRIVES) return;
   disk[unit].real_step = (value == 2) ? 2 : 1;
 }
 #endif
@@ -411,7 +411,7 @@ trs_disk_setstep(int unit, int value)
 int
 trs_disk_getsize(int unit)
 {
-  if (unit < 0 || unit > 7) return 0;
+  if (unit < 0 || unit >= NDRIVES) return 0;
   return disk[unit].inches;
 }
 
@@ -437,7 +437,7 @@ trs_disk_getwriteprotect(int unit)
 int
 trs_disk_getstep(int unit)
 {
-  if (unit < 0 || unit > 7) return 0;
+  if (unit < 0 || unit >= NDRIVES) return 0;
   return disk[unit].real_step;
 }
 #endif
