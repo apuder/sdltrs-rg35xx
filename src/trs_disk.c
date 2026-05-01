@@ -1349,18 +1349,17 @@ trs_disk_select_write(Uint8 data)
 
   /* If a drive was selected... */
   if (!(state.status & TRSDISK_NOTRDY)) {
-#if __linux__
-    DiskState *d = &disk[state.curdrive];
-#endif
-
     /* Retrigger emulated motor timeout */
     state.motor_timeout = z80_state.t_count +
       MOTOR_USEC * z80_state.clockMHz;
     trs_disk_motoroff_interrupt(0);
 
 #if __linux__
-    /* Update our knowledge of whether there is a real disk present */
-    if (d->emutype == REAL) real_check_empty(d);
+    {
+      DiskState *d = &disk[state.curdrive];
+      /* Update our knowledge of whether there is a real disk present */
+      if (d->emutype == REAL) real_check_empty(d);
+    }
 #endif
   }
 }
