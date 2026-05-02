@@ -255,7 +255,7 @@ void trs_save_float(FILE *file, const float *buffer)
 {
   char float_buff[21];
 
-  snprintf(float_buff, 21, "%20f", *buffer++);
+  snprintf(float_buff, 21, "%20f", *buffer);
   trs_save_uint8(file, (Uint8 *)float_buff, 20);
 }
 
@@ -264,7 +264,7 @@ void trs_load_float(FILE *file, float *buffer)
   char float_buff[21];
 
   trs_load_uint8(file, (Uint8 *)float_buff, 20);
-  sscanf(float_buff, "%f", buffer++);
+  sscanf(float_buff, "%f", buffer);
 }
 
 void trs_save_filename(FILE *file, const char *filename)
