@@ -114,12 +114,12 @@ int trs_state_load(const char *filename)
 
 void trs_save_uint8(FILE *file, const Uint8 *buffer, int count)
 {
-  fwrite(buffer, count, 1, file);
+  fwrite(buffer, 1, count, file);
 }
 
 void trs_load_uint8(FILE *file, Uint8 *buffer, int count)
 {
-  fread(buffer, count, 1, file);
+  fread(buffer, 1, count, file);
 }
 
 void trs_save_uint16(FILE *file, const Uint16 *buffer)
