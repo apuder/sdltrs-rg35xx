@@ -399,6 +399,13 @@ trs_disk_setsize(int unit, int value)
   disk[unit].inches = (value == 8) ? 8 : 5;
 }
 
+int
+trs_disk_getsize(int unit)
+{
+  if (unit < 0 || unit >= NDRIVES) return 0;
+  return disk[unit].inches;
+}
+
 #ifdef __linux__
 void
 trs_disk_setstep(int unit, int value)
@@ -406,14 +413,14 @@ trs_disk_setstep(int unit, int value)
   if (unit < 0 || unit >= NDRIVES) return;
   disk[unit].real_step = (value == 2) ? 2 : 1;
 }
-#endif
 
 int
-trs_disk_getsize(int unit)
+trs_disk_getstep(int unit)
 {
   if (unit < 0 || unit >= NDRIVES) return 0;
-  return disk[unit].inches;
+  return disk[unit].real_step;
 }
+#endif
 
 const char*
 trs_disk_getfilename(int unit)
@@ -432,15 +439,6 @@ trs_disk_getwriteprotect(int unit)
 {
   return disk[unit].writeprot;
 }
-
-#ifdef __linux__
-int
-trs_disk_getstep(int unit)
-{
-  if (unit < 0 || unit >= NDRIVES) return 0;
-  return disk[unit].real_step;
-}
-#endif
 
 void
 trs_disk_init(int poweron)
