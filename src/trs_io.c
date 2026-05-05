@@ -975,7 +975,10 @@ int z80_in(int port)
           value = sys_byte_in();
         goto done;
       case 0x82:
-        value = grafyx_read_data();
+        if (trs_model == 3 && grafyx_microlabs)
+          goto done;
+        else
+          value = grafyx_read_data();
         goto done;
       case 0x94: /* Huffman memory expansion */
         if (trs_model >= 4 && huffman)
