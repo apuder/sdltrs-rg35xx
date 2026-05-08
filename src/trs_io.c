@@ -61,9 +61,9 @@ int trs_io_debug_flags;
 #endif
 
 static int hrg_addr;        /* HRG1B memory address */
-static int modesel;         /* Model I/III/4/4P */
-static int modeimage = 0x8; /* Model III/4/4P & SIO */
 static int m6845_reg;       /* M6845 CRTC register */
+static int modeimage = 0x8; /* Model III/4/4P & SIO */
+static int modesel;         /* Model I/III/4/4P */
 static int rtc_reg;         /* RTC address/data */
 
 /* 6845 CRTC */
@@ -1133,8 +1133,6 @@ done:
 void trs_io_save(FILE *file)
 {
   trs_save_int(file, &hrg_addr, 1);
-  trs_save_int(file, &modesel, 1);
-  trs_save_int(file, &modeimage, 1);
   trs_save_int(file, &m6845_reg, 1);
   trs_save_int(file, &m6845.csr, 1);
   trs_save_int(file, &m6845.cer, 1);
@@ -1144,14 +1142,14 @@ void trs_io_save(FILE *file)
   trs_save_int(file, &m6845.ilm, 1);
   trs_save_int(file, &m6845.ras, 1);
   trs_save_int(file, &m6845.sta, 1);
+  trs_save_int(file, &modeimage, 1);
+  trs_save_int(file, &modesel, 1);
   trs_save_int(file, &rtc_reg, 1);
 }
 
 void trs_io_load(FILE *file)
 {
   trs_load_int(file, &hrg_addr, 1);
-  trs_load_int(file, &modesel, 1);
-  trs_load_int(file, &modeimage, 1);
   trs_load_int(file, &m6845_reg, 1);
   trs_load_int(file, &m6845.csr, 1);
   trs_load_int(file, &m6845.cer, 1);
@@ -1161,6 +1159,8 @@ void trs_io_load(FILE *file)
   trs_load_int(file, &m6845.ilm, 1);
   trs_load_int(file, &m6845.ras, 1);
   trs_load_int(file, &m6845.sta, 1);
+  trs_load_int(file, &modeimage, 1);
+  trs_load_int(file, &modesel, 1);
   trs_load_int(file, &rtc_reg, 1);
 }
 

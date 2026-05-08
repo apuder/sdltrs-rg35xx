@@ -48,6 +48,11 @@
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
+int stretch_amount = STRETCH_AMOUNT;
+int trs_joystick;
+int trs_keypad_joystick = 1;
+int trs_kb_bracket_state;
+
 static void queue_key(int state);
 static int dequeue_key(void);
 
@@ -502,13 +507,8 @@ static int force_shift = TK_Neutral;
 static int joystate;
 static int keys_down;
 static int key_heartbeat;
-int trs_joystick;
-int trs_keypad_joystick = 1;
-
 /* Avoid changing state too fast so keystrokes aren't lost. */
 static tstate_t key_stretch_timeout;
-int stretch_amount = STRETCH_AMOUNT;
-int trs_kb_bracket_state;
 
 void trs_kb_reset(void)
 {
@@ -803,9 +803,9 @@ int trs_kb_mem_read(int address)
      and so that we don't tickle the bugs in some common TRS-80 keyboard
      drivers that strike if two keys change simultaneously */
   if (key_stretch_timeout - z80_state.t_count > TSTATE_T_MID) {
+    key_stretch_timeout = z80_state.t_count + stretch_amount;
     /* Get the next key */
     key = dequeue_key();
-    key_stretch_timeout = z80_state.t_count + stretch_amount;
   }
 
   if (key >= 0) {
