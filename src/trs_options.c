@@ -683,7 +683,7 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       }
       break;
     case 9: /* memsize */
-      if (value >= 4 && value <= 32)
+      if (value >= 4 && value <= 48)
         trs_mem_size = (value << 10) + RAM_START;
       break;
     default:
