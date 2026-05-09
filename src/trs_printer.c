@@ -41,10 +41,10 @@
 #include "error.h"
 #include "trs.h"
 
-int trs_printer = 0;
+int trs_printer;
 
 static FILE *printer;
-static int printer_open = 0;
+static int printer_open;
 
 int trs_printer_reset(void)
 {
