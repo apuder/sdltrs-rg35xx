@@ -66,6 +66,9 @@ Select Model III/4/4P charset:
 Defaults are \fIkatakana\fP for Model III and \fIinternational\fP
 for Model 4/4P.
 .TP
+\fB\-cl(ock)\fP \fIMHz\fP
+Set clock speed in MHz of the selected TRS-80 Model with \fB-m(odel)\fP.
+.TP
 \fB\-cl(ock)1\fP \fIMHz\fP
 .TQ
 \fB\-cl(ock)3\fP \fIMHz\fP
@@ -200,6 +203,10 @@ Enable Lubomir Soft Banker for Model I.
 .B \-mega(mem)
 Enable MegaMem (Anitek) memory expansion for Model III and 4/4P.
 .B Disables Dave Huffman memory expansion.
+.TP
+\fB\-mem(size)\fP | \fB\-ram(size)\fP \fIKB\fP
+Select memory size in KB (4 - 48) - Only for TRS-80 Model I/III.
+Default: \fI48\fP.
 .TP
 .B \-micro(labs)
 Model III or 4/4P: emulate Micro-Labs Grafyx Solution Hi-Res
