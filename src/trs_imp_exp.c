@@ -566,7 +566,7 @@ void do_emt_misc(void)
 {
   switch (Z80_A) {
   case 0:
-  /* Removed for sdltrs - mdg */
+    /* disk change REMOVED */
     Z80_HL = 0;
     break;
   case 1:
@@ -583,6 +583,7 @@ void do_emt_misc(void)
     trs_reset(0);
     break;
   case 4:
+    /* query disk change count REMOVED */
     Z80_HL = 0;
     break;
   case 5:
