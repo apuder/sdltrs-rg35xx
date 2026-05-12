@@ -904,37 +904,29 @@ int gui_menu(const char *title, const MENU *entry, int selection)
       }
     } else {
       switch (key) {
-        case SDLK_DOWN:
-        case SDLK_RIGHT:
-          do {
-            selection++;
-            if (selection > num)
-              selection = 0;
-          } while (entry[selection].type == TITLE);
-          break;
-        case SDLK_UP:
-        case SDLK_LEFT:
-          do {
-            selection--;
-            if (selection < 0)
-              selection = num;
-          } while (entry[selection].type == TITLE);
-          break;
         case SDLK_HOME:
         case SDLK_PAGEUP:
-          selection = 0;
-          while (entry[selection].type == TITLE) {
-            if (selection < num)
-              selection++;
-          }
+          selection = (selection == 0) ? num - 1 : -1;
+          /* Fall through */
+        case SDLK_DOWN:
+        case SDLK_RIGHT:
+          selection++;
+          if (selection > num)
+            selection = 0;
+          while (entry[selection].type == TITLE)
+            selection++;
           break;
         case SDLK_END:
         case SDLK_PAGEDOWN:
-          selection = num;
-          while (entry[selection].type == TITLE) {
-            if (selection > 0)
-              selection--;
-          }
+          selection = (selection == num) ? +1 : num + 1;
+          /* Fall through */
+        case SDLK_UP:
+        case SDLK_LEFT:
+          selection--;
+          while (entry[selection].type == TITLE)
+            selection--;
+          if (selection < 0)
+            selection = num;
           break;
         case SDLK_DELETE:
           switch (entry[selection].type) {
@@ -1057,11 +1049,11 @@ int gui_popup(const char *title, const char **entry, int num, int selection)
           break;
         case SDLK_HOME:
         case SDLK_PAGEUP:
-          selection = 0;
+          selection = (selection == 0) ? num : 0;
           break;
         case SDLK_END:
         case SDLK_PAGEDOWN:
-          selection = num;
+          selection = (selection == num) ? 0 : num;
           break;
         case SDLK_INSERT:
         case SDLK_RETURN:
@@ -1127,16 +1119,16 @@ int gui_matrix(const char *title, const char **entry, int rows, int cols, int se
           row--;
         break;
       case SDLK_HOME:
-        col = 0;
+        col = (col == 0) ? cols - 1 : 0;
         break;
       case SDLK_END:
-        col = cols - 1;
+        col = (col == cols - 1) ? 0 : cols - 1;
         break;
       case SDLK_PAGEUP:
-        row = 0;
+        row = (row == 0) ? rows - 1 : 0;
         break;
       case SDLK_PAGEDOWN:
-        row = rows - 1;
+        row = (row == rows - 1) ? 0 : rows - 1;
         break;
       case SDLK_INSERT:
       case SDLK_RETURN:
