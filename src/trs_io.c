@@ -569,6 +569,9 @@ void z80_out(int port, int value)
         {
           int const changes = value ^ modesel;
 
+          /* Skip unchanged OPREG */
+          if (changes == 0) return;
+
           if (changes & 0x80)
             mem_video_page((value & 0x80) << 3);
 
