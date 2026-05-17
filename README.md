@@ -55,6 +55,7 @@ Updated version of Mark Grebe's [SDLTRS]:
   * Emulate Holmes Engineering, Inc. VID-80 (VX-3) for TRS-80 Model III
   * Support 48 KB extended memory for Holmes VID-80 (VX-3)
   * Support Michael Wessel's Model I [X-MEM/80] 16K page memory extension
+  * Select the memory size (4 - 48 KB) for TRS-80 Model I/III
 
 SDL(2)TRS is based on Tim Mann's excellent TRS-80 emulator [xtrs] and also
 has very low system requirements: it works on all platforms supported by the

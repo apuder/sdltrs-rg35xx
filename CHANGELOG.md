@@ -1,3 +1,10 @@
+## Version 1.2.35 Release 05-17-2026:
+
+ * Added memory size selection for TRS-80 Model I/III.
+ * Added CPU clock rate option for selected TRS-80 Model.
+ * Fixed TRS-80 Model 4/4P character display.
+ * Fixed bugs and internal improvements.
+
 ## Version 1.2.34 Release 12-07-2025:
 
  * Added Holmes VID-80 (VX-3) support for TRS-80 Model III.
