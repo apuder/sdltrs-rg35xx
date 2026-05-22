@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "error.h"
+
 #include "trs.h"
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
