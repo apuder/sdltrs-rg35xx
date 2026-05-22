@@ -15,7 +15,7 @@ license="BSD-2-Clause"
 homepage="https://gitlab.com/jengun/sdltrs"
 
 do_fetch() {
-	git clone -b ${branch} ${homepage} ${wrksrc}
+	git clone --depth 1 -b ${branch} ${homepage} ${wrksrc}
 	cd ${wrksrc}
 }
 
