@@ -503,13 +503,11 @@ void z80_out(int port, int value)
             trs_printer_write(value);
             return;
           case 0xFE:
-            /* Speedup kit or Banking */
-            if (speedup) {
-              if (speedup < 4)
-                trs_timer_speed(value);
-              else
-                sys_byte_out(value);
-            }
+            /* Speedup/Banking */
+            if (speedup < 4)
+              trs_timer_speed(value);
+            else
+              sys_byte_out(value);
             return;
           case 0xFF:
             /* screen mode select is on D3 line */

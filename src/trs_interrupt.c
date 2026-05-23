@@ -576,71 +576,55 @@ trs_timer(int on_off)
 void
 trs_timer_speed(int fast)
 {
-  if (speedup == 3) {
-    /* The Seatronics Super Speed-Up uses bits 7 and 6
-     * of port 0xec to select the Z80 CPU clock rate:
-     *
-     * Bit 7:  Bit 6:
-     *   0       0     = 2 MHz
-     *   0       1     = 4 MHz
-     *   1       0     = 5 MHz
-     *   1       1     = 8 MHz
-     */
-    static const float seatronics_MHz[] =
-        { CLOCK_2_MHZ, CLOCK_4_MHZ, CLOCK_5_MHZ, CLOCK_8_MHZ };
-
-    z80_state.clockMHz = seatronics_MHz[(fast & 0xC0) >> 6];
-  } else {
-    switch (trs_model) {
-      case 1:
-        switch (trs_clones.model) {
-          case EG3200:
-            z80_state.clockMHz = fast ? EG_3200_MHZ : CLOCK_1_MHZ;
-            break;
-          case GENIE3S:
-            z80_state.clockMHz = fast ? TCS_G3S_MHZ : CLOCK_1_MHZ;
-            break;
-          case LNW80:
-            z80_state.clockMHz = fast ? CLOCK_4_MHZ : CLOCK_1_MHZ;
-            break;
-          case SPEEDMASTER:
-            z80_state.clockMHz = fast ? TCS_SPM_MHZ : CLOCK_1_MHZ;
-            break;
-          default:
-            switch (speedup) {
-              case 1: /* Archbold */
-              case 4: /* Banking */
-              case 5: /* CT-80 */
-                z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
-                break;
-              case 2: /* Holmes Sprinter II */
-                z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
-                break;
-              default:
-                break;
-            }
-        }
-        break;
-      case 3:
-        if (speedup == 2)
-          /* Switch to fastest possible speed of Sprinter III */
-          z80_state.clockMHz = fast ? CLOCK_5_MHZ : clock_mhz_3;
-        else
-          z80_state.clockMHz = fast ? CLOCK_4_MHZ : clock_mhz_3;
-        break;
-      default:
-        /* Model 4/4P */
-        z80_state.clockMHz = fast ? clock_mhz_4 : clock_mhz_3;
+  switch (speedup) {
+    case 0:
+      return;
+    case 2: /* Holmes Sprinter */
+      if (trs_model == 1)
+        z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
+      else
+        /* Switch to fastest possible speed of Sprinter III */
+        z80_state.clockMHz = fast ? CLOCK_5_MHZ : clock_mhz_3;
       break;
-    }
+    case 3: {
+      /* The Seatronics Super Speed-Up uses bit 7 and 6
+       * of port 0xec to select the Z80 CPU clock rate:
+       *
+       * Bit 7:  Bit 6:
+       *   0       0     = 2 MHz
+       *   0       1     = 4 MHz
+       *   1       0     = 5 MHz
+       *   1       1     = 8 MHz
+       */
+      static const float seatronics_MHz[] =
+          { CLOCK_2_MHZ, CLOCK_4_MHZ, CLOCK_5_MHZ, CLOCK_8_MHZ };
+
+      z80_state.clockMHz = seatronics_MHz[(fast & 0xC0) >> 6]; }
+      break;
+    default:
+      switch (trs_clones.model) {
+        case EG3200:
+          z80_state.clockMHz = fast ? EG_3200_MHZ : CLOCK_1_MHZ;
+          break;
+        case GENIE3S:
+          z80_state.clockMHz = fast ? TCS_G3S_MHZ : CLOCK_1_MHZ;
+          break;
+        case LNW80:
+          z80_state.clockMHz = fast ? CLOCK_4_MHZ : CLOCK_1_MHZ;
+          break;
+        case SPEEDMASTER:
+          z80_state.clockMHz = fast ? TCS_SPM_MHZ : CLOCK_1_MHZ;
+          break;
+        default:
+          if (trs_model == 1)
+            z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
+          else
+            z80_state.clockMHz = fast ? clock_mhz_4 : clock_mhz_3;
+      }
   }
 
-  if (trs_model >= 4) {
-    if ((fast & 0x80) || (fast & 0x40))
-      timer_hz = TIMER_HZ_4;
-    else
-      timer_hz = TIMER_HZ_3;
-  }
+  if (trs_model >= 4)
+    timer_hz = (fast & 0xC0) ? TIMER_HZ_4 : TIMER_HZ_3;
 
   trs_timer_mode(-1);
 }
