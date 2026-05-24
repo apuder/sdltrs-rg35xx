@@ -122,7 +122,6 @@ static void opt_printer(const char *arg, int intarg, int *stringarg);
 static void opt_rom(const char *arg, int intarg, int *stringarg);
 static void opt_scalequality(const char *arg, int intarg, int *stringarg);
 static void opt_serial(const char *arg, int intarg, int *stringarg);
-static void opt_shiftbracket(const char *arg, int intarg, int *stringarg);
 static void opt_sizemap(const char *arg, int intarg, int *stringarg);
 static void opt_speedup(const char *arg, int intarg, int *stringarg);
 static void opt_switches(const char *arg, int intarg, int *stringarg);
@@ -307,12 +306,12 @@ static const struct {
   { "nors3",           opt_value,         0, 0, &resize3              },
   { "nors4",           opt_value,         0, 0, &resize4              },
   { "nosafe",          opt_value,         0, 0, &trs_emtsafe          },
-  { "nosb",            opt_shiftbracket,  0, 0, NULL                  },
+  { "nosb",            opt_value,         0, 0, &trs_kb_bracket_state },
   { "noscan",          opt_value,         0, 0, &scanlines            },
   { "noscanlines",     opt_value,         0, 0, &scanlines            },
   { "nosel",           opt_value,         0, 0, &selector             },
   { "noselector",      opt_value,         0, 0, &selector             },
-  { "noshiftbracket",  opt_shiftbracket,  0, 0, NULL                  },
+  { "noshiftbracket",  opt_value,         0, 0, &trs_kb_bracket_state },
   { "nosound",         opt_value,         0, 0, &trs_sound            },
   { "nostringy",       opt_value,         0, 0, &stringy              },
   { "nosuper",         opt_value,         0, 0, &supermem             },
@@ -350,7 +349,7 @@ static const struct {
   { "s",               opt_speedup,       1, 0, NULL                  },
   { "safe",            opt_value,         0, 1, &trs_emtsafe          },
   { "samplerate",      opt_intval,        1, 3, NULL                  },
-  { "sb",              opt_shiftbracket,  0, 1, NULL                  },
+  { "sb",              opt_value,         0, 1, &trs_kb_bracket_state },
   { "sc",              opt_intval,        1, 4, NULL                  },
   { "scale",           opt_intval,        1, 4, NULL                  },
   { "scalequality",    opt_scalequality,  1, 0, NULL                  },
@@ -362,7 +361,7 @@ static const struct {
   { "selector",        opt_memory,        0, 5, &selector             },
   { "serial",          opt_serial,        1, 0, NULL                  },
   { "shade",           opt_intval,        1, 5, NULL                  },
-  { "shiftbracket",    opt_shiftbracket,  0, 1, NULL                  },
+  { "shiftbracket",    opt_value,         0, 1, &trs_kb_bracket_state },
   { "showled",         opt_value,         0, 1, &trs_show_led         },
   { "size",            opt_sizemap,       1, 0, NULL                  },
   { "sizemap",         opt_sizemap,       1, 0, NULL                  },
@@ -817,11 +816,6 @@ static void opt_serial(const char *arg, int intarg, int *stringarg)
   snprintf(trs_uart_name, FILENAME_MAX, "%s", arg);
 }
 
-static void opt_shiftbracket(const char *arg, int intarg, int *stringarg)
-{
-  trs_kb_bracket(intarg);
-}
-
 static void opt_sizemap(const char *arg, int intarg, int *stringarg)
 {
   sscanf(arg, "%d,%d,%d,%d,%d,%d,%d,%d",
@@ -1005,7 +999,7 @@ int trs_load_config_file(void)
   trs_emtsafe = 1;
   trs_hd_boot = 0;
   trs_joystick = 0;
-  trs_kb_bracket(0);
+  trs_kb_bracket_state = 0;
   trs_keypad_joystick = 1;
   trs_mem_size = Z80_ADDRESS_LIMIT;
   trs_model = 1;
@@ -1070,7 +1064,7 @@ int trs_load_config_file(void)
 #ifdef __linux__
   trs_disk_setsteps();
 #endif
-
+  trs_kb_bracket(trs_kb_bracket_state);
   return 0;
 }
 
@@ -1132,6 +1126,7 @@ int trs_parse_command_line(int argc, char **argv)
 #ifdef __linux__
   trs_disk_setsteps();
 #endif
+  trs_kb_bracket(trs_kb_bracket_state);
   return debugger;
 }
 
