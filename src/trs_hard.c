@@ -558,7 +558,6 @@ static int open_drive(int drive)
     goto fail;
   }
 
-  state.seccnt = d->secs;
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
   return 0;
 
