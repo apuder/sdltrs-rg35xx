@@ -128,7 +128,7 @@ static const char *hard_cmd(int port)
 
 static void hard_debug(const char *cmd)
 {
-  debug("hard_%s: drive:%d, head:%d, cyl:%4d, sec:%3d/%3d\n",
+  debug("hard_%s: drive:%d, head:%d, cyl:%4d, secnum:%3d, seccnt:%3d\n",
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
@@ -142,7 +142,7 @@ void trs_hard_debug(void)
     return;
   }
 
-  printf("\n  hard drive:%d, head:%d, cyl:%d, sec:%d/%d, secsize:%d\n",
+  printf("\n  hard drive:%d, head:%d, cyl:%d, secnum:%d, seccnt:%d, secsize:%d\n",
       state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
   printf("  status:0x%02X, command:0x%02X, control:0x%02X, data:0x%02X, error:0x%02X\n",
       state.status, state.command, state.control, state.data, state.error);
