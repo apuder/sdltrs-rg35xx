@@ -128,7 +128,7 @@ static const char *hard_cmd(int port)
 
 static void hard_debug(const char *cmd)
 {
-  debug("%s: drive:%d, head:%d, cyl:%4d, sec:%3d/%3d\n",
+  debug("hard_%s: drive:%d, head:%d, cyl:%4d, sec:%3d/%3d\n",
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
@@ -404,7 +404,7 @@ static void hard_read(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_read");
+    hard_debug("read");
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
@@ -425,7 +425,7 @@ static void hard_write(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_write");
+    hard_debug("write");
 #endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
@@ -439,7 +439,7 @@ static void hard_verify(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_verify");
+    hard_debug("verify");
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
@@ -448,7 +448,7 @@ static void hard_format(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_format");
+    hard_debug("format");
 #endif
   /* !!should probably set up to read skew table here */
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
@@ -458,7 +458,7 @@ static void hard_init(int cmd)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_init");
+    hard_debug("init");
 #endif
   /* I don't know what this command does */
   error("trs_hard: init command (0x%02X) not implemented", cmd);
@@ -469,7 +469,7 @@ static void hard_seek(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("hard_seek");
+    hard_debug("seek");
 #endif
   find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
