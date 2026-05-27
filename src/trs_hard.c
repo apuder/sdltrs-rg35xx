@@ -28,7 +28,9 @@
  * mapped at ports 0xc8-0xcf, plus control registers at 0xc0-0xc1.
  */
 
+#include <ctype.h>
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include "error.h"
 #include "reed.h"
@@ -130,6 +132,27 @@ static void hard_debug(const char *cmd)
 {
   debug("hard_%s: drive:%d, head:%d, cyl:%4d, secnum:%3d, seccnt:%3d\n",
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
+}
+
+static void sector_buf(const char *cmd)
+{
+  int byte[16];
+  int i;
+
+
+  for (i = 0; i < state.secsize; i += 16) {
+    int j;
+
+    debug("hard_%s: %04x: ", cmd, i);
+    for (j = 0; j < 16; j++)
+      printf("%02x ", (byte[j] = state.secbuf[i + j]));
+
+    printf("   ");
+    for (j = 0; j < 16; j++)
+      putchar(isprint(byte[j]) ? byte[j] : '.');
+
+    putchar('\n');
+  }
 }
 
 void trs_hard_debug(void)
@@ -402,10 +425,6 @@ static void hard_restore(void)
 
 static void hard_read(int cmd)
 {
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("read");
-#endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
     hard_error(TRS_HARD_ABRTERR);
@@ -419,6 +438,12 @@ static void hard_read(int cmd)
       hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
     }
   }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2) {
+    hard_debug("read");
+    sector_buf("read");
+  }
+#endif
 }
 
 static void hard_write(int cmd)
@@ -636,6 +661,11 @@ static void hard_data_out(int value)
           file_error("writing on hard%d", state.drive);
           hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
         }
+#if ZBX
+        if (trs_io_debug_flags & HARDDEBUG2)
+          sector_buf("write");
+#endif
+
       }
     }
   }
