@@ -102,25 +102,25 @@ static const char *hard_cmd(int port)
 {
   switch (port) {
     case TRS_HARD_WP:
-      return "WP";
+      return "c0:WP";
     case TRS_HARD_CONTROL:
-      return "CONTROL";
+      return "c1:CONTROL";
     case TRS_HARD_DATA:
-      return "DATA";
+      return "c8:DATA";
     case TRS_HARD_PRECOMP:
-      return "PRECOMP/ERROR";
+      return "c9:PRECOMP/ERROR";
     case TRS_HARD_SECCNT:
-      return "SECCNT";
+      return "ca:SECCNT";
     case TRS_HARD_SECNUM:
-      return "SECNUM";
+      return "cb:SECNUM";
     case TRS_HARD_CYLLO:
-      return "CYLLO";
+      return "cc:CYLLO";
     case TRS_HARD_CYLHI:
-      return "CYLHI";
+      return "cd:CYLHI";
     case TRS_HARD_SDH:
-      return "SDH";
+      return "ce:SDH";
     case TRS_HARD_COMMAND:
-      return "COMMAND/STATUS";
+      return "cf:COMMAND/STATUS";
     default:
       return "";
   }
