@@ -951,9 +951,11 @@ int z80_in(int port)
           case 0xF5:
           case 0xF6:
           case 0xF7:
-            if (stringy)
+            if (stringy) {
               value = stringy_in(port & 7);
-            goto done;
+              goto done;
+            }
+            break;
           case 0xFD:
             /* Printer port of EACA Genie/System 80 */
             value = trs_printer_read();
@@ -1038,6 +1040,8 @@ int z80_in(int port)
   /* Ports common to all TRS-80 models */
   switch (port) {
     case 0x00:
+    case 0x13:
+    case 0xF7:
       value = trs_joystick_in();
       goto done;
     case 0x43: /* Alpha Technology SuperMem */
