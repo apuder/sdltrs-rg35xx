@@ -342,7 +342,7 @@ static void print_memory(int address, int num_bytes, int peek)
 
 	for(i = 0; i < bytes_to_print; ++i)
 	{
-	    putchar(isprint(byte[i]) ? byte[i] : '.');
+	    putchar(TOPRINT(byte[i]));
 	}
 
 	putchar('\n');

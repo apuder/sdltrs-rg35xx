@@ -90,8 +90,7 @@ void trs_printer_write(int value)
         fputc('\n', printer);
       } else {
         if (trs_printer == 2) {
-          value &= 0x7F;
-          if (value < ' ') value = '.';
+          value = TOPRINT((value & 0x7F));
         }
         fputc(value, printer);
       }

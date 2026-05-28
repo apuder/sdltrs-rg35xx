@@ -28,7 +28,6 @@
  * mapped at ports 0xc8-0xcf, plus control registers at 0xc0-0xc1.
  */
 
-#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -149,7 +148,7 @@ static void sector_buf(const char *cmd)
 
     printf("   ");
     for (j = 0; j < 16; j++)
-      putchar(isprint(byte[j]) ? byte[j] : '.');
+      putchar(TOPRINT(byte[j]));
 
     putchar('\n');
   }

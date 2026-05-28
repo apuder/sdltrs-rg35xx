@@ -58,6 +58,7 @@
 
 #define TOUPPER(a)   ((a >= 'a' && a <= 'z') ? a - ' ' : a)
 #define TOLOWER(a)   ((a >= 'A' && a <= 'Z') ? a + ' ' : a)
+#define TOPRINT(a)   ((a >= ' ' && a <= '~') ? a : '.')
 
 #if defined(__OS2__) || defined(_WIN32)
 #define DIR_SLASH '\\'
