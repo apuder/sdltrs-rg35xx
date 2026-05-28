@@ -96,7 +96,7 @@ static void hard_verify(void);
 static void hard_format(void);
 static void hard_init(int cmd);
 static void hard_seek(void);
-static int  open_drive(int drive);
+static int  hard_open(int drive);
 static int  find_sector(int newstatus);
 
 #ifdef ZBX
@@ -208,7 +208,7 @@ void trs_hard_init(int poweron)
       state.d[i].heads = 0;
       state.d[i].secs = 0;
 
-      if (open_drive(i) == 0) state.present = 1;
+      if (hard_open(i) == 0) state.present = 1;
     }
   }
 }
@@ -217,7 +217,7 @@ void trs_hard_attach(int drive, const char *diskname)
 {
   snprintf(state.d[drive].filename, FILENAME_MAX, "%s", diskname);
 
-  if (open_drive(drive) == 0)
+  if (hard_open(drive) == 0)
     trs_impexp_xtrshard_attach(drive);
   else
     trs_hard_remove(drive);
@@ -273,7 +273,7 @@ int trs_hard_in(int port)
 
       v = 0;
       for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
-        if (open_drive(i) == 0) {
+        if (hard_open(i) == 0) {
           if (state.d[i].writeprot) {
             v |= TRS_HARD_WPBIT(i) | TRS_HARD_WPSOME;
           }
@@ -361,7 +361,7 @@ void trs_hard_out(int port, int value)
     state.drive = (value & TRS_HARD_DRIVEMASK) >> TRS_HARD_DRIVESHIFT;
     state.head = (value & TRS_HARD_HEADMASK) >> TRS_HARD_HEADSHIFT;
 #if 0
-    if (open_drive(state.drive) == 0) state.status &= ~TRS_HARD_READY;
+    if (hard_open(state.drive) == 0) state.status &= ~TRS_HARD_READY;
 #else
     /* Ready, but perhaps not able!  This way seems to work better; it
      * avoids a long delay in the Model 4P boot ROM when there is no
@@ -511,7 +511,7 @@ static void hard_seek(void)
  *
  * 4) Return 0 if OK, -1 if invalid header, errno value otherwise.
  */
-static int open_drive(int drive)
+static int hard_open(int drive)
 {
   Drive *d = &state.d[drive];
   ReedHardHeader rhh;
@@ -572,7 +572,7 @@ static int open_drive(int drive)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("open_drive:%d, cyls:%d, heads:%d, secs:%d\n",
+    debug("hard_open: drive:%d, cyls:%d, heads:%d, secs:%d\n",
           drive, d->cyls, d->heads, d->secs);
 #endif
 
@@ -604,7 +604,7 @@ static int find_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL && open_drive(state.drive) != 0) return -1;
+  if (d->file == NULL && hard_open(state.drive) != 0) return -1;
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads ||
