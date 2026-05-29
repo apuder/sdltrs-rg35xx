@@ -648,10 +648,8 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
         border_width = value;
       break;
     case 2: /* keystretch */
-      if (value < 0)
-        value = STRETCH_AMOUNT;
-
-      stretch_amount = value;
+      if (value >= 0)
+        stretch_amount = value;
       break;
     case 3: /* samplerate */
       if (value >= 0 && value < MAX_SAMPLE_RATE)
