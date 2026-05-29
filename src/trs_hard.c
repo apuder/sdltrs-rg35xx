@@ -144,13 +144,13 @@ static void sector_buf(const char *cmd)
 
     debug("hard_%s: %04x: ", cmd, i);
     for (j = 0; j < 16; j++)
-      printf("%02x ", (byte[j] = state.secbuf[i + j]));
+      fprintf(stderr, "%02x ", (byte[j] = state.secbuf[i + j]));
 
-    printf("   ");
+    fprintf(stderr, "   ");
     for (j = 0; j < 16; j++)
-      putchar(TOPRINT(byte[j]));
+      putc(TOPRINT(byte[j]), stderr);
 
-    putchar('\n');
+    putc('\n', stderr);
   }
 }
 
