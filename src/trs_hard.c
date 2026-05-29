@@ -424,6 +424,10 @@ static void hard_restore(void)
 
 static void hard_read(int cmd)
 {
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    hard_debug("read");
+#endif
   if (cmd & TRS_HARD_MULTI) {
     error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
     hard_error(TRS_HARD_ABRTERR);
@@ -436,11 +440,9 @@ static void hard_read(int cmd)
       file_error("reading on hard%d", state.drive);
       hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
     }
-  }
 #if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2) {
-    hard_debug("read");
-    sector_buf("read");
+    if (trs_io_debug_flags & HARDDEBUG2)
+      sector_buf("read");
   }
 #endif
 }
