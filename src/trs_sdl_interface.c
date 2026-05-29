@@ -1658,34 +1658,35 @@ done:
 
       case SDL_MOUSEMOTION:
         if (!mousepointer) {
-          SDL_MouseMotionEvent motion = event.motion;
+          int const xrel = event.motion.xrel;
+          int const yrel = event.motion.yrel;
 
-          if (motion.xrel != 0) {
+          if (xrel != 0) {
             if (jaxis_mapped) {
-              if (abs(motion.xrel) > 2) {
-                int const key = motion.xrel < 0 ? 0x114 : 0x113;
-                int i;
+              if (abs(xrel) > 2) {
+                int const key = xrel < 0 ? 0x114 : 0x113;
+                int i = abs(xrel);
 
-                for (i = abs(motion.xrel); i--;)
+                while (i--)
                   trs_xlate_keysym(key);
               }
             } else
-              trs_joy_axis(0, motion.xrel, 1);
+              trs_joy_axis(0, xrel, 1);
           } else
             if (jaxis_mapped)
               trs_xlate_keysym(0x10000);
 
-          if (motion.yrel != 0) {
+          if (yrel != 0) {
             if (jaxis_mapped) {
-              if (abs(motion.yrel) > 2) {
-                int const key = motion.yrel < 0 ? 0x111 : 0x112;
-                int i;
+              if (abs(yrel) > 2) {
+                int const key = yrel < 0 ? 0x111 : 0x112;
+                int i = abs(yrel);
 
-                for (i = abs(motion.yrel); i--;)
+                while (i--)
                   trs_xlate_keysym(key);
               }
             } else
-              trs_joy_axis(1, motion.yrel, 2);
+              trs_joy_axis(1, yrel, 2);
           } else
             if (jaxis_mapped)
               trs_xlate_keysym(0x10000);

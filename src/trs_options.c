@@ -133,8 +133,8 @@ static void opt_window(const char *arg, int intarg, int *stringarg);
 static const struct {
   const char *name;
   void (*handler)(const char *, int, int *);
-  int hasArg;
-  int intArg;
+  int const hasArg;
+  int const intArg;
   void *strArg;
 } options[] = {
   { "a",               opt_value,         0, 1, &aspect_ratio         },
@@ -640,7 +640,7 @@ static void opt_hard(const char *arg, int intarg, int *stringarg)
 
 static void opt_intval(const char *arg, int intarg, int *stringarg)
 {
-  int value = atoi(arg);
+  int const value = atoi(arg);
 
   switch (intarg) {
     case 1: /* borderwidth */
@@ -664,10 +664,11 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       break;
     case 6: /* turborate */
       if (value <= 0) {
-        value = 5;
         turbo_mode = 0;
+        turbo_rate = 5;
+      } else {
+        turbo_rate = value;
       }
-      turbo_rate = value;
       break;
     case 7: /* year */
       if (value >= 0)
