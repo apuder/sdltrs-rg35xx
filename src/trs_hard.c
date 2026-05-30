@@ -437,10 +437,8 @@ static void hard_read(int cmd)
     FILE *f = state.d[state.drive].file;
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
-      if (errno) {
-        file_error("reading on hard%d", state.drive);
-        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-      }
+      file_error("reading hard%d", state.drive);
+      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
     }
 #if ZBX
     if (trs_io_debug_flags & HARDDEBUG2)
@@ -474,11 +472,26 @@ static void hard_verify(void)
 
 static void hard_format(void)
 {
+  FILE *f = state.d[state.drive].file;
+
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     hard_debug("format");
+
+  if (f) {
+    int cnt = state.seccnt;
+
+    memset(state.secbuf, 0, SECTORSIZE);
+    while (cnt--) {
+      if (fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
+        file_error("formatting hard%d", state.drive);
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      }
+    }
+  }
 #endif
   /* !!should probably set up to read skew table here */
+  state.seccnt = 0;
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
 }
 
@@ -658,11 +671,12 @@ static void hard_data_out(int value)
     state.secbuf[state.bytesdone] = value;
     state.bytesdone++;
     if ((state.bytesdone == state.secsize) &&
+        (state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
         (state.status & TRS_HARD_ERR) == 0) {
       FILE *f = state.d[state.drive].file;
 
       if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-        file_error("writing on hard%d", state.drive);
+        file_error("writing hard%d", state.drive);
         hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
       }
 #if ZBX
