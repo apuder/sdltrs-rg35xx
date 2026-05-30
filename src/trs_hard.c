@@ -437,8 +437,10 @@ static void hard_read(int cmd)
     FILE *f = state.d[state.drive].file;
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
-      file_error("reading on hard%d", state.drive);
-      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      if (errno) {
+        file_error("reading on hard%d", state.drive);
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      }
     }
 #if ZBX
     if (trs_io_debug_flags & HARDDEBUG2)
@@ -641,6 +643,7 @@ static int hard_data_in(void)
     if (state.bytesdone < state.secsize) {
       state.data = state.secbuf[state.bytesdone];
       state.bytesdone++;
+      state.status &= ~TRS_HARD_DRQ;
     }
   }
   return state.data;
@@ -649,25 +652,23 @@ static int hard_data_in(void)
 static void hard_data_out(int value)
 {
   state.data = value;
+  state.status &= ~TRS_HARD_DRQ;
 
-  if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
-      (state.status & TRS_HARD_ERR) == 0) {
-    if (state.bytesdone < state.secsize) {
-      state.secbuf[state.bytesdone] = value;
-      state.bytesdone++;
-      if (state.bytesdone == state.secsize) {
-        FILE *f = state.d[state.drive].file;
+  if (state.bytesdone < state.secsize) {
+    state.secbuf[state.bytesdone] = value;
+    state.bytesdone++;
+    if ((state.bytesdone == state.secsize) &&
+        (state.status & TRS_HARD_ERR) == 0) {
+      FILE *f = state.d[state.drive].file;
 
-        if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-          file_error("writing on hard%d", state.drive);
-          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-        }
-#if ZBX
-        if (trs_io_debug_flags & HARDDEBUG2)
-          sector_buf("write");
-#endif
-
+      if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
+        file_error("writing on hard%d", state.drive);
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
       }
+#if ZBX
+      if (trs_io_debug_flags & HARDDEBUG2)
+        sector_buf("write");
+#endif
     }
   }
 }
