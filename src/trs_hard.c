@@ -96,7 +96,7 @@ static void hard_format(void);
 static void hard_init(int cmd);
 static void hard_seek(void);
 static int  hard_open(int drive);
-static int  find_sector(int newstatus);
+static int  hard_sector(int newstatus);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -433,7 +433,7 @@ static void hard_read(int cmd)
     hard_error(TRS_HARD_ABRTERR);
     return;
   }
-  if (find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
+  if (hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
     FILE *f = state.d[state.drive].file;
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
@@ -458,7 +458,7 @@ static void hard_write(int cmd)
     hard_error(TRS_HARD_ABRTERR);
     return;
   }
-  find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
 }
 
 static void hard_verify(void)
@@ -467,7 +467,7 @@ static void hard_verify(void)
   if (trs_io_debug_flags & HARDDEBUG2)
     hard_debug("verify");
 #endif
-  find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
 
 static void hard_format(void)
@@ -512,7 +512,7 @@ static void hard_seek(void)
   if (trs_io_debug_flags & HARDDEBUG2)
     hard_debug("seek");
 #endif
-  find_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
 
 /*
@@ -616,7 +616,7 @@ fail:
  * the file to the start of the current sector and set the controller
  * status to newstatus and return 0.
  */
-static int find_sector(int newstatus)
+static int hard_sector(int newstatus)
 {
   const Drive *d = &state.d[state.drive];
 
