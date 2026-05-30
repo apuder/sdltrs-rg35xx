@@ -443,8 +443,8 @@ static void hard_read(int cmd)
 #if ZBX
     if (trs_io_debug_flags & HARDDEBUG2)
       sector_buf("read");
-  }
 #endif
+  }
 }
 
 static void hard_write(int cmd)
@@ -477,6 +477,7 @@ static void hard_format(void)
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     hard_debug("format");
+#endif
 
   if (f) {
     int cnt = state.seccnt;
@@ -489,7 +490,6 @@ static void hard_format(void)
       }
     }
   }
-#endif
   /* !!should probably set up to read skew table here */
   state.seccnt = 0;
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
