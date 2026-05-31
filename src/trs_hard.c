@@ -62,7 +62,6 @@ typedef struct {
 
   /* Controller register images */
   Uint8  control;
-  Uint8  data;
   Uint8  error;
   Uint8  seccnt;
   Uint8  secnum;
@@ -166,8 +165,8 @@ void trs_hard_debug(void)
 
   printf("\n  hard drive:%d, head:%d, cyl:%d, secnum:%d, seccnt:%d, secsize:%d\n",
       state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
-  printf("  status:0x%02X, command:0x%02X, control:0x%02X, data:0x%02X, error:0x%02X\n",
-      state.status, state.command, state.control, state.data, state.error);
+  printf("  status:0x%02X, command:0x%02X, control:0x%02X, error:0x%02X\n",
+      state.status, state.command, state.control, state.error);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     if (state.d[i].file) {
@@ -183,7 +182,6 @@ void trs_hard_debug(void)
 void trs_hard_init(int poweron)
 {
   state.control = 0;
-  state.data = 0;
   state.error = 0;
   state.secnum = 0;
   state.secsize = 0;
@@ -654,17 +652,15 @@ static int hard_data_in(void)
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
-      state.data = state.secbuf[state.bytesdone];
-      state.bytesdone++;
       state.status &= ~TRS_HARD_DRQ;
+      return state.secbuf[state.bytesdone++];
     }
   }
-  return state.data;
+  return 0;
 }
 
 static void hard_data_out(int value)
 {
-  state.data = value;
   state.status &= ~TRS_HARD_DRQ;
 
   if (state.bytesdone < state.secsize) {
@@ -723,7 +719,6 @@ void trs_hard_save(FILE *file)
 
   trs_save_int(file, &state.present, 1);
   trs_save_uint8(file, &state.control, 1);
-  trs_save_uint8(file, &state.data, 1);
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
@@ -752,7 +747,6 @@ void trs_hard_load(FILE *file)
 
   trs_load_int(file, &state.present, 1);
   trs_load_uint8(file, &state.control, 1);
-  trs_load_uint8(file, &state.data, 1);
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
