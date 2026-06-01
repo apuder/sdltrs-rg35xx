@@ -886,7 +886,7 @@ static void opt_window(const char *arg, int intarg, int *stringag)
 }
 
 
-static void trs_disk_setsizes(void)
+static void trs_disk_setparam(void)
 {
   int i;
 
@@ -895,23 +895,16 @@ static void trs_disk_setsizes(void)
       trs_disk_setsize(i, disksizes[i]);
     else
       error("bad value %d for disk %d size", disksizes[i], i);
-  }
-}
 
 #ifdef __linux__
-static void trs_disk_setsteps(void)
-{
-  int i;
-
-  /* Disk Steps are 1 for Single Step or 2 for Double Step */
-  for (i = 0; i < 8; i++) {
+    /* Disk Steps are 1 for Single Step or 2 for Double Step */
     if (disksteps[i] == 1 || disksteps[i] == 2)
       trs_disk_setstep(i, disksteps[i]);
     else
       error("bad value %d for disk %d single/double step", disksteps[i], i);
+#endif
   }
 }
-#endif
 
 int trs_load_config_file(void)
 {
@@ -1021,10 +1014,7 @@ int trs_load_config_file(void)
 
     if ((config_file = fopen(trs_config_file, "r")) == NULL) {
       debug("create default configuration: '%s'\n", trs_config_file);
-      trs_disk_setsizes(); /* Set default disk sizes */
-#if __linux__
-      trs_disk_setsteps(); /* Set default disk steps */
-#endif
+      trs_disk_setparam(); /* Set default disk parameters */
       trs_write_config_file(trs_config_file);
       return -1;
     }
@@ -1059,10 +1049,7 @@ int trs_load_config_file(void)
 
   fclose(config_file);
 
-  trs_disk_setsizes();
-#ifdef __linux__
-  trs_disk_setsteps();
-#endif
+  trs_disk_setparam();
   trs_kb_bracket(trs_kb_bracket_state);
   return 0;
 }
@@ -1121,10 +1108,7 @@ int trs_parse_command_line(int argc, char **argv)
       error("unrecognized option: '%s'", argv[i]);
   }
 
-  trs_disk_setsizes();
-#ifdef __linux__
-  trs_disk_setsteps();
-#endif
+  trs_disk_setparam();
   trs_kb_bracket(trs_kb_bracket_state);
   return debugger;
 }
