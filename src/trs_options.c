@@ -99,34 +99,25 @@ static int disksizes[8];
 static int disksteps[8];
 #endif
 
-static void opt_cass(const char *arg, int intarg, int *stringarg);
 static void opt_charset(const char *arg, int intarg, int *stringarg);
 static void opt_clock(const char *arg, int intarg, int *stringarg);
-static void opt_color(const char *arg, int intarg, int *color);
-static void opt_disk(const char *arg, int intarg, int *stringarg);
-static void opt_diskset(const char *arg, int intarg, int *stringarg);
 static void opt_dirname(const char *arg, int intarg, int *stringarg);
 static void opt_doubler(const char *arg, int intarg, int *stringarg);
 #ifdef __linux__
 static void opt_doublestep(const char *arg, int intarg, int *stringarg);
 static void opt_stepmap(const char *arg, int intarg, int *stringarg);
 #endif
-static void opt_halt(const char *arg, int intarg, int *stringarg);
-static void opt_hard(const char *arg, int intarg, int *stringarg);
-static void opt_intval(const char *arg, int intarg, int *stringarg);
+static void opt_file(const char *arg, int intarg, int *stringarg);
+static void opt_hexval(const char *arg, int intarg, int *variable);
+static void opt_intval(const char *arg, int intarg, int *variable);
 static void opt_joybuttonmap(const char *arg, int intarg, int *stringarg);
-static void opt_joystick(const char *arg, int intarg, int *stringarg);
 static void opt_memory(const char *arg, int intarg, int *variable);
 static void opt_model(const char *arg, int intarg, int *stringarg);
 static void opt_printer(const char *arg, int intarg, int *stringarg);
-static void opt_rom(const char *arg, int intarg, int *stringarg);
 static void opt_scalequality(const char *arg, int intarg, int *stringarg);
-static void opt_serial(const char *arg, int intarg, int *stringarg);
 static void opt_sizemap(const char *arg, int intarg, int *stringarg);
 static void opt_speedup(const char *arg, int intarg, int *stringarg);
-static void opt_switches(const char *arg, int intarg, int *stringarg);
 static void opt_value(const char *arg, int intarg, int *variable);
-static void opt_wafer(const char *arg, int intarg, int *stringarg);
 static void opt_window(const char *arg, int intarg, int *stringarg);
 
 /* Option handling */
@@ -140,14 +131,14 @@ static const struct {
   { "a",               opt_value,         0, 1, &aspect_ratio         },
   { "aspect",          opt_value,         0, 1, &aspect_ratio         },
   { "aspectratio",     opt_value,         0, 1, &aspect_ratio         },
-  { "background",      opt_color,         1, 0, &background           },
-  { "bg",              opt_color,         1, 0, &background           },
+  { "background",      opt_hexval,        1, 0, &background           },
+  { "bg",              opt_hexval,        1, 0, &background           },
   { "borderwidth",     opt_intval,        1, 1, NULL                  },
   { "bw",              opt_intval,        1, 1, NULL                  },
-  { "c",               opt_cass,          1, 0, NULL                  },
-  { "cass",            opt_cass,          1, 0, NULL                  },
+  { "c",               opt_file,          1, 0, "c"                   },
+  { "cass",            opt_file,          1, 0, "c"                   },
   { "cassdir",         opt_dirname,       1, 0, trs_cass_dir          },
-  { "cassette",        opt_cass,          1, 0, NULL                  },
+  { "cassette",        opt_file,          1, 0, "c"                   },
   { "cd",              opt_dirname,       1, 0, trs_cass_dir          },
   { "charset",         opt_charset,       1, 0, NULL                  },
   { "charset1",        opt_charset,       1, 1, NULL                  },
@@ -168,39 +159,39 @@ static const struct {
 #ifdef ZBX
   { "debug",           opt_value,         0, 1, &debugger             },
   { "nodebug",         opt_value,         0, 0, &debugger             },
-  { "di",              opt_switches,      1, 1, &trs_disk_debug_flags },
-  { "diskdebug",       opt_switches,      1, 1, &trs_disk_debug_flags },
-  { "io",              opt_switches,      1, 2, &trs_io_debug_flags   },
-  { "iodebug",         opt_switches,      1, 2, &trs_io_debug_flags   },
+  { "di",              opt_hexval,        1, 0, &trs_disk_debug_flags },
+  { "diskdebug",       opt_hexval,        1, 0, &trs_disk_debug_flags },
+  { "io",              opt_hexval,        1, 0, &trs_io_debug_flags   },
+  { "iodebug",         opt_hexval,        1, 0, &trs_io_debug_flags   },
   { "noz",             opt_value,         0, 0, &debugger             },
   { "nozbx",           opt_value,         0, 0, &debugger             },
   { "z",               opt_value,         0, 1, &debugger             },
   { "zbx",             opt_value,         0, 1, &debugger             },
 #endif
   { "d",               opt_doubler,       1, 0, NULL                  },
-  { "d0",              opt_disk,          1, 0, NULL                  },
-  { "d1",              opt_disk,          1, 1, NULL                  },
-  { "d2",              opt_disk,          1, 2, NULL                  },
-  { "d3",              opt_disk,          1, 3, NULL                  },
-  { "d4",              opt_disk,          1, 4, NULL                  },
-  { "d5",              opt_disk,          1, 5, NULL                  },
-  { "d6",              opt_disk,          1, 6, NULL                  },
-  { "d7",              opt_disk,          1, 7, NULL                  },
+  { "d0",              opt_file,          1, 0, "d"                   },
+  { "d1",              opt_file,          1, 1, "d"                   },
+  { "d2",              opt_file,          1, 2, "d"                   },
+  { "d3",              opt_file,          1, 3, "d"                   },
+  { "d4",              opt_file,          1, 4, "d"                   },
+  { "d5",              opt_file,          1, 5, "d"                   },
+  { "d6",              opt_file,          1, 6, "d"                   },
+  { "d7",              opt_file,          1, 7, "d"                   },
   { "dam",             opt_value,         0, 1, &trs_disk_truedam     },
   { "dd",              opt_dirname,       1, 0, trs_disk_dir          },
-  { "disk0",           opt_disk,          1, 0, NULL                  },
-  { "disk1",           opt_disk,          1, 1, NULL                  },
-  { "disk2",           opt_disk,          1, 2, NULL                  },
-  { "disk3",           opt_disk,          1, 3, NULL                  },
-  { "disk4",           opt_disk,          1, 4, NULL                  },
-  { "disk5",           opt_disk,          1, 5, NULL                  },
-  { "disk6",           opt_disk,          1, 6, NULL                  },
-  { "disk7",           opt_disk,          1, 7, NULL                  },
+  { "disk0",           opt_file,          1, 0, "d"                   },
+  { "disk1",           opt_file,          1, 1, "d"                   },
+  { "disk2",           opt_file,          1, 2, "d"                   },
+  { "disk3",           opt_file,          1, 3, "d"                   },
+  { "disk4",           opt_file,          1, 4, "d"                   },
+  { "disk5",           opt_file,          1, 5, "d"                   },
+  { "disk6",           opt_file,          1, 6, "d"                   },
+  { "disk7",           opt_file,          1, 7, "d"                   },
   { "diskdir",         opt_dirname,       1, 0, trs_disk_dir          },
-  { "diskset",         opt_diskset,       1, 0, NULL                  },
+  { "diskset",         opt_file,          1, 0, "s"                   },
   { "disksetdir",      opt_dirname,       1, 0, trs_disk_set_dir      },
   { "doubler",         opt_doubler,       1, 0, NULL                  },
-  { "ds",              opt_diskset,       1, 0, NULL                  },
+  { "ds",              opt_file,          1, 0, "s"                   },
   { "dsd",             opt_dirname,       1, 0, trs_disk_set_dir      },
 #ifdef __linux__
   { "double",          opt_doublestep,    0, 2, NULL                  },
@@ -214,23 +205,23 @@ static const struct {
   { "esf",             opt_value,         0, 1, &stringy              },
   { "fdc",             opt_value,         0, 1, &trs_disk_controller  },
   { "floppy",          opt_value,         0, 1, &trs_disk_controller  },
-  { "fg",              opt_color,         1, 0, &foreground           },
-  { "foreground",      opt_color,         1, 0, &foreground           },
+  { "fg",              opt_hexval,        1, 0, &foreground           },
+  { "foreground",      opt_hexval,        1, 0, &foreground           },
   { "fullscreen",      opt_value,         0, 1, &fullscreen           },
   { "fs",              opt_value,         0, 1, &fullscreen           },
-  { "guibackground",   opt_color,         1, 0, &gui_background       },
-  { "guibg",           opt_color,         1, 0, &gui_background       },
-  { "guifg",           opt_color,         1, 0, &gui_foreground       },
-  { "guiforeground",   opt_color,         1, 0, &gui_foreground       },
-  { "halt",            opt_halt,          1, 0, NULL                  },
-  { "h0",              opt_hard,          1, 0, NULL                  },
-  { "h1",              opt_hard,          1, 1, NULL                  },
-  { "h2",              opt_hard,          1, 2, NULL                  },
-  { "h3",              opt_hard,          1, 3, NULL                  },
-  { "hard0",           opt_hard,          1, 0, NULL                  },
-  { "hard1",           opt_hard,          1, 1, NULL                  },
-  { "hard2",           opt_hard,          1, 2, NULL                  },
-  { "hard3",           opt_hard,          1, 3, NULL                  },
+  { "guibackground",   opt_hexval,        1, 0, &gui_background       },
+  { "guibg",           opt_hexval,        1, 0, &gui_background       },
+  { "guifg",           opt_hexval,        1, 0, &gui_foreground       },
+  { "guiforeground",   opt_hexval,        1, 0, &gui_foreground       },
+  { "halt",            opt_value,         1, 0, &Z80_HALT             },
+  { "h0",              opt_file,          1, 0, "h"                   },
+  { "h1",              opt_file,          1, 1, "h"                   },
+  { "h2",              opt_file,          1, 2, "h"                   },
+  { "h3",              opt_file,          1, 3, "h"                   },
+  { "hard0",           opt_file,          1, 0, "h"                   },
+  { "hard1",           opt_file,          1, 1, "h"                   },
+  { "hard2",           opt_file,          1, 2, "h"                   },
+  { "hard3",           opt_file,          1, 3, "h"                   },
   { "harddir",         opt_dirname,       1, 0, trs_hard_dir          },
   { "hd",              opt_dirname,       1, 0, trs_hard_dir          },
   { "hdboot",          opt_value,         0, 1, &trs_hd_boot          },
@@ -241,9 +232,9 @@ static const struct {
   { "hypermem",        opt_memory,        0, 2, &hypermem             },
   { "joyaxismapped",   opt_value,         0, 1, &jaxis_mapped         },
   { "joybuttonmap",    opt_joybuttonmap,  1, 0, NULL                  },
-  { "joystick",        opt_joystick,      1, 0, NULL                  },
-  { "joysticknum",     opt_joystick,      1, 0, NULL                  },
-  { "js",              opt_joystick,      1, 0, NULL                  },
+  { "joystick",        opt_intval,        1, 5, NULL                  },
+  { "joysticknum",     opt_intval,        1, 5, NULL                  },
+  { "js",              opt_intval,        1, 5, NULL                  },
   { "keypadjoy",       opt_value,         0, 1, &trs_keypad_joystick  },
   { "kp",              opt_value,         0, 1, &trs_keypad_joystick  },
   { "keystretch",      opt_intval,        1, 2, NULL                  },
@@ -328,22 +319,22 @@ static const struct {
   { "pd",              opt_dirname,       1, 0, trs_printer_dir       },
   { "printer",         opt_printer,       1, 0, NULL                  },
   { "printerdir",      opt_dirname,       1, 0, trs_printer_dir       },
-  { "r",               opt_rom,           1, 0, NULL                  },
-  { "r1",              opt_rom,           1, 1, NULL                  },
-  { "r3",              opt_rom,           1, 3, NULL                  },
-  { "r4p",             opt_rom,           1, 5, NULL                  },
+  { "r",               opt_file,          1, 0, "r"                   },
+  { "r1",              opt_file,          1, 0, romfile1              },
+  { "r3",              opt_file,          1, 0, romfile3              },
+  { "r4p",             opt_file,          1, 0, romfile4p             },
   { "ram",             opt_intval,        1, 9, NULL                  },
   { "ramsize",         opt_intval,        1, 9, NULL                  },
   { "resize3",         opt_value,         0, 1, &resize3              },
   { "resize4",         opt_value,         0, 1, &resize4              },
-  { "rom",             opt_rom,           1, 0, NULL                  },
-  { "rom1",            opt_rom,           1, 1, NULL                  },
-  { "rom3",            opt_rom,           1, 3, NULL                  },
-  { "rom4p",           opt_rom,           1, 5, NULL                  },
-  { "romfile",         opt_rom,           1, 0, NULL                  },
-  { "romfile1",        opt_rom,           1, 1, NULL                  },
-  { "romfile3",        opt_rom,           1, 3, NULL                  },
-  { "romfile4p",       opt_rom,           1, 5, NULL                  },
+  { "rom",             opt_file,          1, 0, "r"                   },
+  { "rom1",            opt_file,          1, 0, romfile1              },
+  { "rom3",            opt_file,          1, 0, romfile3              },
+  { "rom4p",           opt_file,          1, 0, romfile4p             },
+  { "romfile",         opt_file,          1, 0, "r"                   },
+  { "romfile1",        opt_file,          1, 0, romfile1              },
+  { "romfile3",        opt_file,          1, 0, romfile3              },
+  { "romfile4p",       opt_file,          1, 0, romfile4p             },
   { "rs3",             opt_value,         0, 1, &resize3              },
   { "rs4",             opt_value,         0, 1, &resize4              },
   { "s",               opt_speedup,       1, 0, NULL                  },
@@ -355,12 +346,12 @@ static const struct {
   { "scalequality",    opt_scalequality,  1, 0, NULL                  },
   { "scan",            opt_value,         0, 1, &scanlines            },
   { "scanlines",       opt_value,         0, 1, &scanlines            },
-  { "scanshade",       opt_intval,        1, 5, NULL                  },
+  { "scanshade",       opt_intval,        1, 0, &scanshade            },
   { "sd",              opt_dirname,       1, 0, trs_state_dir         },
   { "sel",             opt_memory,        0, 5, &selector             },
   { "selector",        opt_memory,        0, 5, &selector             },
-  { "serial",          opt_serial,        1, 0, NULL                  },
-  { "shade",           opt_intval,        1, 5, NULL                  },
+  { "serial",          opt_file,          1, 0, trs_uart_name         },
+  { "shade",           opt_intval,        1, 0, &scanshade            },
   { "shiftbracket",    opt_value,         0, 1, &trs_kb_bracket_state },
   { "showled",         opt_value,         0, 1, &trs_show_led         },
   { "size",            opt_sizemap,       1, 0, NULL                  },
@@ -373,8 +364,8 @@ static const struct {
   { "stringy",         opt_value,         0, 1, &stringy              },
   { "super",           opt_intval,        1, 8, NULL                  },
   { "supermem",        opt_intval,        1, 8, NULL                  },
-  { "sw",              opt_switches,      1, 0, &trs_uart_switches    },
-  { "switches",        opt_switches,      1, 0, &trs_uart_switches    },
+  { "sw",              opt_hexval,        1, 0, &trs_uart_switches    },
+  { "switches",        opt_hexval,        1, 0, &trs_uart_switches    },
   { "t",               opt_value,         0, 1, &turbo_mode           },
   { "tp",              opt_value,         0, 1, &turbo_paste          },
   { "tr",              opt_intval,        1, 6, NULL                  },
@@ -382,22 +373,22 @@ static const struct {
   { "turbo",           opt_value,         0, 1, &turbo_mode           },
   { "turbopaste",      opt_value,         0, 1, &turbo_paste          },
   { "turborate",       opt_intval,        1, 6, NULL                  },
-  { "w0",              opt_wafer,         1, 0, NULL                  },
-  { "w1",              opt_wafer,         1, 1, NULL                  },
-  { "w2",              opt_wafer,         1, 2, NULL                  },
-  { "w3",              opt_wafer,         1, 3, NULL                  },
-  { "w4",              opt_wafer,         1, 4, NULL                  },
-  { "w5",              opt_wafer,         1, 5, NULL                  },
-  { "w6",              opt_wafer,         1, 6, NULL                  },
-  { "w7",              opt_wafer,         1, 7, NULL                  },
-  { "wafer0",          opt_wafer,         1, 0, NULL                  },
-  { "wafer1",          opt_wafer,         1, 1, NULL                  },
-  { "wafer2",          opt_wafer,         1, 2, NULL                  },
-  { "wafer3",          opt_wafer,         1, 3, NULL                  },
-  { "wafer4",          opt_wafer,         1, 4, NULL                  },
-  { "wafer5",          opt_wafer,         1, 5, NULL                  },
-  { "wafer6",          opt_wafer,         1, 6, NULL                  },
-  { "wafer7",          opt_wafer,         1, 7, NULL                  },
+  { "w0",              opt_file,          1, 0, "w"                   },
+  { "w1",              opt_file,          1, 1, "w"                   },
+  { "w2",              opt_file,          1, 2, "w"                   },
+  { "w3",              opt_file,          1, 3, "w"                   },
+  { "w4",              opt_file,          1, 4, "w"                   },
+  { "w5",              opt_file,          1, 5, "w"                   },
+  { "w6",              opt_file,          1, 6, "w"                   },
+  { "w7",              opt_file,          1, 7, "w"                   },
+  { "wafer0",          opt_file,          1, 0, "w"                   },
+  { "wafer1",          opt_file,          1, 1, "w"                   },
+  { "wafer2",          opt_file,          1, 2, "w"                   },
+  { "wafer3",          opt_file,          1, 3, "w"                   },
+  { "wafer4",          opt_file,          1, 4, "w"                   },
+  { "wafer5",          opt_file,          1, 5, "w"                   },
+  { "wafer6",          opt_file,          1, 6, "w"                   },
+  { "wafer7",          opt_file,          1, 7, "w"                   },
   { "window",          opt_window,        1, 0, NULL                  },
   { "xmem",            opt_memory,        0, 7, &xmem80               },
   { "xmem80",          opt_memory,        0, 7, &xmem80               },
@@ -460,14 +451,6 @@ static const char *option(int trs_option)
   return trs_option ? "" : "no";
 }
 
-static void opt_cass(const char *arg, int intarg, int *stringarg)
-{
-  if (arg[0])
-    trs_cassette_insert(arg);
-  else
-    trs_cassette_remove();
-}
-
 static void opt_charset(const char *arg, int intarg, int *stringarg)
 {
   if (intarg == 0)
@@ -504,7 +487,7 @@ static void opt_charset(const char *arg, int intarg, int *stringarg)
         trs_charset1 = 14;
         break;
       default:
-        error("unknown charset1: '%s'", arg);
+        goto fail;
     }
   } else {
     int charset;
@@ -520,8 +503,7 @@ static void opt_charset(const char *arg, int intarg, int *stringarg)
         charset = 6;
         break;
       default:
-        error("unknown charset%d: '%s'", intarg, arg);
-        return;
+        goto fail;
     }
 
     if (intarg == 3)
@@ -529,6 +511,11 @@ static void opt_charset(const char *arg, int intarg, int *stringarg)
     else
       trs_charset4 = charset + 3;
   }
+
+  return;
+
+fail:
+  error("unknown charset%d: '%s'", intarg, arg);
 }
 
 static void opt_clock(const char *arg, int intarg, int *stringarg)
@@ -543,31 +530,10 @@ static void opt_clock(const char *arg, int intarg, int *stringarg)
       case 3:
         clock_mhz_3 = clock_mhz;
         break;
-      case 4:
-      case 5:
+      default:
         clock_mhz_4 = clock_mhz;
-        break;
     }
   }
-}
-
-static void opt_color(const char *arg, int intarg, int *color)
-{
-  *color = strtol(arg, NULL, 16);
-}
-
-static void opt_disk(const char *arg, int intarg, int *stringarg)
-{
-  if (arg[0])
-    trs_disk_insert(intarg, arg);
-  else
-    trs_disk_remove(intarg);
-}
-
-static void opt_diskset(const char *arg, int intarg, int *stringarg)
-{
-  if (arg[0])
-    trs_diskset_load(arg);
 }
 
 static void opt_dirname(const char *arg, int intarg, int *stringarg)
@@ -622,27 +588,68 @@ static void opt_stepmap(const char *arg, int intarg, int *stringarg)
 }
 #endif
 
-static void opt_halt(const char *arg, int intarg, int *stringarg)
+static void opt_file(const char *arg, int intarg, int *stringarg)
 {
-  if (arg[0])
-    Z80_HALT = TOLOWER(*arg);
-  else
-    Z80_HALT = 0;
+  switch ((char)*stringarg) {
+    case 'c':
+      if (arg[0])
+        trs_cassette_insert(arg);
+      else
+        trs_cassette_remove();
+      break;
+    case 'd':
+      if (arg[0])
+        trs_disk_insert(intarg, arg);
+      else
+        trs_disk_remove(intarg);
+      break;
+    case 'h':
+      if (arg[0])
+        trs_hard_attach(intarg, arg);
+      else
+        trs_hard_remove(intarg);
+      break;
+    case 'w':
+      if (arg[0])
+        stringy_insert(intarg, arg);
+      else
+        stringy_remove(intarg);
+      break;
+    case 's':
+      if (arg[0])
+        trs_diskset_load(arg);
+      break;
+    case 'r':
+      switch (trs_model) {
+        case 1:
+          snprintf(romfile1, FILENAME_MAX, "%s", arg);
+          break;
+        case 3:
+        case 4:
+          snprintf(romfile3, FILENAME_MAX, "%s", arg);
+          break;
+        default:
+          snprintf(romfile4p, FILENAME_MAX, "%s", arg);
+      }
+      break;
+    default:
+      snprintf((char *)stringarg, FILENAME_MAX, "%s", arg);
+  }
 }
 
-static void opt_hard(const char *arg, int intarg, int *stringarg)
+static void opt_hexval(const char *arg, int intarg, int *variable)
 {
-  if (arg[0])
-    trs_hard_attach(intarg, arg);
-  else
-    trs_hard_remove(intarg);
+  *variable = strtol(arg, NULL, 16);
 }
 
-static void opt_intval(const char *arg, int intarg, int *stringarg)
+static void opt_intval(const char *arg, int intarg, int *variable)
 {
   int const value = atoi(arg);
 
   switch (intarg) {
+    case 0:
+      *variable = value & 0xFF;
+      break;
     case 1: /* borderwidth */
       if (value >= 0 && value <= 50)
         border_width = value;
@@ -659,8 +666,11 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       if (value >= 1 && value <= MAX_SCALE)
         scale = value;
       break;
-    case 5: /* scanshade */
-      scanshade = value & 255;
+    case 5: /* joystick */
+      if (TOLOWER(*arg) == 'n') /* none */
+        trs_joystick = -1;
+      else
+        trs_joystick = value;
       break;
     case 6: /* turborate */
       if (value <= 0) {
@@ -684,8 +694,6 @@ static void opt_intval(const char *arg, int intarg, int *stringarg)
       if (value >= 4 && value <= 48)
         trs_mem_size = (value << 10) + RAM_START;
       break;
-    default:
-      break;
   }
 }
 
@@ -702,14 +710,6 @@ static void opt_joybuttonmap(const char *arg, int intarg, int *stringarg)
     if (ptr != NULL)
       arg = ptr + 1;
   }
-}
-
-static void opt_joystick(const char *arg, int intarg, int *stringarg)
-{
-  if (strcasecmp(arg, "none") == 0)
-    trs_joystick = -1;
-  else
-    trs_joystick = atoi(arg);
 }
 
 static void opt_memory(const char *arg, int intarg, int *variable)
@@ -761,22 +761,6 @@ static void opt_model(const char *arg, int intarg, int *stringarg)
     error("TRS-80 Model '%s' not supported", arg);
 }
 
-static void opt_rom(const char *arg, int intarg, int *stringarg)
-{
-  switch (intarg ? intarg : trs_model) {
-    case 1:
-      snprintf(romfile1, FILENAME_MAX, "%s", arg);
-      break;
-    case 3:
-    case 4:
-      snprintf(romfile3, FILENAME_MAX, "%s", arg);
-      break;
-    case 5:
-      snprintf(romfile4p, FILENAME_MAX, "%s", arg);
-      break;
-   }
-}
-
 static void opt_printer(const char *arg, int intarg, int *stringarg)
 {
   switch (TOLOWER(*arg)) {
@@ -808,11 +792,6 @@ static void opt_scalequality(const char *arg, int intarg, int *stringarg)
     default:
       error("unknown render scale quality: %s", arg);
   }
-}
-
-static void opt_serial(const char *arg, int intarg, int *stringarg)
-{
-  snprintf(trs_uart_name, FILENAME_MAX, "%s", arg);
 }
 
 static void opt_sizemap(const char *arg, int intarg, int *stringarg)
@@ -854,27 +833,12 @@ static void opt_speedup(const char *arg, int intarg, int *stringarg)
   }
 }
 
-static void opt_switches(const char *arg, int intarg, int *variable)
-{
-  int base = 10;
-
-  if (!strncasecmp(arg, "0x", 2))
-    base = 16;
-
-  *variable = strtol(arg, NULL, base) & 0xFF;
-}
-
 static void opt_value(const char *arg, int intarg, int *variable)
 {
-  *variable = intarg;
-}
-
-static void opt_wafer(const char *arg, int intarg, int *stringarg)
-{
-  if (arg[0])
-    stringy_insert(intarg, arg);
+  if (arg == NULL)
+    *variable = intarg;
   else
-    stringy_remove(intarg);
+    *variable = TOLOWER(*arg);
 }
 
 static void opt_window(const char *arg, int intarg, int *stringag)
