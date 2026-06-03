@@ -661,8 +661,6 @@ static int hard_data_in(void)
 
 static void hard_data_out(int value)
 {
-  state.status &= ~TRS_HARD_DRQ;
-
   if (state.bytesdone < state.secsize) {
     state.secbuf[state.bytesdone] = value;
     state.bytesdone++;
@@ -671,6 +669,8 @@ static void hard_data_out(int value)
         (state.status & TRS_HARD_ERR) == 0) {
       FILE *f = state.d[state.drive].file;
 
+      /* Drop DRQ */
+      state.status &= ~TRS_HARD_DRQ;
       if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
         file_error("writing hard%d", state.drive);
         hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
