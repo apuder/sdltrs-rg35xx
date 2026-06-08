@@ -137,7 +137,6 @@ static void sector_buf(const char *cmd)
   int byte[16];
   int i;
 
-
   for (i = 0; i < state.secsize; i += 16) {
     int j;
 
@@ -435,8 +434,10 @@ static void hard_read(int cmd)
     FILE *f = state.d[state.drive].file;
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
-      file_error("reading hard%d", state.drive);
-      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      if (errno) {
+        file_error("reading hard%d", state.drive);
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      }
     }
 #if ZBX
     if (trs_io_debug_flags & HARDDEBUG2)
@@ -483,8 +484,11 @@ static void hard_format(void)
     memset(state.secbuf, 0, SECTORSIZE);
     while (cnt--) {
       if (fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-        file_error("formatting hard%d", state.drive);
-        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+        if (errno) {
+          file_error("formatting hard%d", state.drive);
+          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+          return;
+        }
       }
     }
   }
@@ -672,8 +676,10 @@ static void hard_data_out(int value)
       /* Drop DRQ */
       state.status &= ~TRS_HARD_DRQ;
       if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-        file_error("writing hard%d", state.drive);
-        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+        if (errno) {
+          file_error("writing hard%d", state.drive);
+          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+        }
       }
 #if ZBX
       if (trs_io_debug_flags & HARDDEBUG2)
