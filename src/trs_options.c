@@ -400,13 +400,13 @@ static void strip(char *inputStr)
 {
   char *pos = inputStr;
 
-  while (*pos && isspace((unsigned char)*pos))
+  while (*pos && *pos <= ' ')
     pos++;
 
   memmove(inputStr, pos, strlen(pos) + 1);
   pos = inputStr + strlen(inputStr) - 1;
 
-  while (*pos && isspace((unsigned char)*pos))
+  while (*pos && *pos <= ' ')
     pos--;
 
   *(pos + 1) = '\0';
