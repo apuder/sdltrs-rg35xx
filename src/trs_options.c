@@ -540,15 +540,15 @@ static void opt_dirname(const char *arg, int intarg, int *stringarg)
 {
   struct stat st = { 0 };
 
-  if (stat(arg, &st) < 0) {
-    snprintf((char *)stringarg, FILENAME_MAX, ".%c", DIR_SLASH);
-    return;
-  }
-
   if (arg[strlen(arg) - 1] == DIR_SLASH)
     snprintf((char *)stringarg, FILENAME_MAX, "%s", arg);
   else
     snprintf((char *)stringarg, FILENAME_MAX, "%s%c", arg, DIR_SLASH);
+
+  if (stat((char *)stringarg, &st) < 0) {
+    snprintf((char *)stringarg, FILENAME_MAX, ".%c", DIR_SLASH);
+    file_error("configuration: '%s'", arg);
+  }
 }
 
 static void opt_doubler(const char *arg, int intarg, int *stringarg)
