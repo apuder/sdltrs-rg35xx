@@ -40,6 +40,7 @@
 #ifndef _Z80_H
 #define _Z80_H
 
+#include <stdio.h>
 #include <SDL_types.h>
 
 typedef Uint64 tstate_t;
