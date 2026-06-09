@@ -681,7 +681,7 @@ static void opt_intval(const char *arg, int intarg, int *variable)
       }
       break;
     case 7: /* year */
-      if (value >= 0)
+      if (value >= 0 && value <= 9999)
         trs_year = value;
       break;
     case 8: /* supermem */
