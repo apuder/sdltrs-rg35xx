@@ -1089,24 +1089,24 @@ int trs_write_config_file(const char *filename)
   }
 
   fprintf(config_file, "%saspectratio\n", option(aspect_ratio));
-  fprintf(config_file, "background=0x%x\n", background);
-  fprintf(config_file, "borderwidth=%d\n", border_width);
-  fprintf(config_file, "cassdir=%s\n", trs_cass_dir);
-  fprintf(config_file, "cassette=%s\n", trs_cassette_getfilename());
-  fprintf(config_file, "charset1=%s\n", charset_name(trs_charset1));
-  fprintf(config_file, "charset3=%s\n", charset_name(trs_charset3));
-  fprintf(config_file, "charset4=%s\n", charset_name(trs_charset4));
-  fprintf(config_file, "clock1=%.2f\n", clock_mhz_1);
-  fprintf(config_file, "clock3=%.2f\n", clock_mhz_3);
-  fprintf(config_file, "clock4=%.2f\n", clock_mhz_4);
+  fprintf(config_file, "background\t= 0x%06X\n", background);
+  fprintf(config_file, "borderwidth\t= %d\n", border_width);
+  fprintf(config_file, "cassdir\t\t= %s\n", trs_cass_dir);
+  fprintf(config_file, "cassette\t= %s\n", trs_cassette_getfilename());
+  fprintf(config_file, "charset1\t= %s\n", charset_name(trs_charset1));
+  fprintf(config_file, "charset3\t= %s\n", charset_name(trs_charset3));
+  fprintf(config_file, "charset4\t= %s\n", charset_name(trs_charset4));
+  fprintf(config_file, "clock1\t\t= %.2f\n", clock_mhz_1);
+  fprintf(config_file, "clock3\t\t= %.2f\n", clock_mhz_3);
+  fprintf(config_file, "clock4\t\t= %.2f\n", clock_mhz_4);
 
   for (i = 0; i < 8; i++)
-    fprintf(config_file, "disk%d=%s\n", i, trs_disk_getfilename(i));
+    fprintf(config_file, "disk%d\t\t= %s\n", i, trs_disk_getfilename(i));
 
-  fprintf(config_file, "diskdir=%s\n", trs_disk_dir);
-  fprintf(config_file, "disksetdir=%s\n", trs_disk_set_dir);
+  fprintf(config_file, "diskdir\t\t= %s\n", trs_disk_dir);
+  fprintf(config_file, "disksetdir\t= %s\n", trs_disk_set_dir);
 
-  fprintf(config_file, "doubler=%s\n",
+  fprintf(config_file, "doubler\t\t= %s\n",
       trs_disk_doubler == TRSDISK_PERCOM ? "percom" :
       trs_disk_doubler == TRSDISK_TANDY  ? "tandy"  :
       trs_disk_doubler == TRSDISK_BOTH   ? "both"   : "none");
@@ -1114,75 +1114,75 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%semtsafe\n", option(trs_emtsafe));
   fprintf(config_file, "%sfdc\n", option(trs_disk_controller));
   fprintf(config_file, "%sfullscreen\n", option(fullscreen));
-  fprintf(config_file, "foreground=0x%x\n", foreground);
-  fprintf(config_file, "guibackground=0x%x\n", gui_background);
-  fprintf(config_file, "guiforeground=0x%x\n", gui_foreground);
+  fprintf(config_file, "foreground\t= 0x%06X\n", foreground);
+  fprintf(config_file, "guibackground\t= 0x%06X\n", gui_background);
+  fprintf(config_file, "guiforeground\t= 0x%06X\n", gui_foreground);
 
-  fprintf(config_file, "halt=%s\n",
+  fprintf(config_file, "halt\t\t= %s\n",
       Z80_HALT == 'd' ? "debug" :
       Z80_HALT == 'h' ? "halt"  :
       Z80_HALT == 'r' ? "reset" : "");
 
   for (i = 0; i < 4; i++)
-    fprintf(config_file, "hard%d=%s\n", i, trs_hard_getfilename(i));
+    fprintf(config_file, "hard%d\t\t= %s\n", i, trs_hard_getfilename(i));
 
-  fprintf(config_file, "harddir=%s\n", trs_hard_dir);
+  fprintf(config_file, "harddir\t\t= %s\n", trs_hard_dir);
   fprintf(config_file, "%shdboot\n", option(trs_hd_boot));
   fprintf(config_file, "%shuffman\n", option(huffman));
   fprintf(config_file, "%shypermem\n", option(hypermem));
   fprintf(config_file, "%sjoyaxismapped\n", option(jaxis_mapped));
 
-  fprintf(config_file, "joybuttonmap=");
+  fprintf(config_file, "joybuttonmap\t= ");
   for (i = 0; i < JOY_BUTTONS; i++)
     fprintf(config_file, i < JOY_BUTTONS - 1 ? "%d," : "%d\n", jbutton_map[i]);
 
-  fprintf(config_file, "joystick=");
+  fprintf(config_file, "joystick\t= ");
   if (trs_joystick == -1)
     fprintf(config_file, "none\n");
   else
     fprintf(config_file, "%d\n", trs_joystick);
 
   fprintf(config_file, "%skeypadjoy\n", option(trs_keypad_joystick));
-  fprintf(config_file, "keystretch=%d\n", stretch_amount);
+  fprintf(config_file, "keystretch\t= %d\n", stretch_amount);
   fprintf(config_file, "%sle18\n", option(lowe_le18));
   fprintf(config_file, "%sled\n", option(trs_show_led));
   fprintf(config_file, "%slowercase\n", option(lowercase));
   fprintf(config_file, "%slubomir\n", option(lubomir));
   fprintf(config_file, "%smegamem\n", option(megamem));
-  fprintf(config_file, "memsize=%d\n", (trs_mem_size - RAM_START) >> 10);
+  fprintf(config_file, "memsize\t\t= %d\n", (trs_mem_size - RAM_START) >> 10);
   fprintf(config_file, "%smicrolabs\n", option(grafyx_microlabs));
 
-  fprintf(config_file, "model=%d%s\n",
+  fprintf(config_file, "model\t\t= %d%s\n",
       trs_model == 5 ? 4 : trs_model, trs_model == 5 ? "P" : "");
 
   fprintf(config_file, "%smousepointer\n", option(mousepointer));
 
-  fprintf(config_file, "printer=%s\n",
+  fprintf(config_file, "printer\t\t= %s\n",
       trs_printer == 1 ? "file" :
       trs_printer == 2 ? "text" : "none");
 
-  fprintf(config_file, "printerdir=%s\n", trs_printer_dir);
+  fprintf(config_file, "printerdir\t= %s\n", trs_printer_dir);
   fprintf(config_file, "%sresize3\n", option(resize3));
   fprintf(config_file, "%sresize4\n", option(resize4));
-  fprintf(config_file, "romfile1=%s\n", romfile1);
-  fprintf(config_file, "romfile3=%s\n", romfile3);
-  fprintf(config_file, "romfile4p=%s\n", romfile4p);
-  fprintf(config_file, "samplerate=%d\n", cassette_default_sample_rate);
-  fprintf(config_file, "scale=%d\n", scale);
-  fprintf(config_file, "scalequality=%c\n", scale_quality);
+  fprintf(config_file, "romfile1\t= %s\n", romfile1);
+  fprintf(config_file, "romfile3\t= %s\n", romfile3);
+  fprintf(config_file, "romfile4p\t= %s\n", romfile4p);
+  fprintf(config_file, "samplerate\t= %d\n", cassette_default_sample_rate);
+  fprintf(config_file, "scale\t\t= %d\n", scale);
+  fprintf(config_file, "scalequality\t= %c\n", scale_quality);
   fprintf(config_file, "%sscanlines\n", option(scanlines));
-  fprintf(config_file, "scanshade=%d\n", scanshade);
+  fprintf(config_file, "scanshade\t= %d\n", scanshade);
   fprintf(config_file, "%sselector\n", option(selector));
-  fprintf(config_file, "serial=%s\n", trs_uart_name);
+  fprintf(config_file, "serial\t\t= %s\n", trs_uart_name);
   fprintf(config_file, "%sshiftbracket\n", option(trs_kb_bracket_state));
 
-  fprintf(config_file, "sizemap=%d,%d,%d,%d,%d,%d,%d,%d\n",
+  fprintf(config_file, "sizemap\t\t= %d,%d,%d,%d,%d,%d,%d,%d\n",
       trs_disk_getsize(0), trs_disk_getsize(1), trs_disk_getsize(2), trs_disk_getsize(3),
       trs_disk_getsize(4), trs_disk_getsize(5), trs_disk_getsize(6), trs_disk_getsize(7));
 
   fprintf(config_file, "%ssound\n", option(trs_sound));
 
-  fprintf(config_file, "speedup=%s\n",
+  fprintf(config_file, "speedup\t\t= %s\n",
       speedup == 1 ? "archbold"   :
       speedup == 2 ? "holmes"     :
       speedup == 3 ? "seatronics" :
@@ -1191,29 +1191,29 @@ int trs_write_config_file(const char *filename)
       speedup == 6 ? "lnw80"      :
       speedup == 7 ? "tcs-models" : "none");
 
-  fprintf(config_file, "statedir=%s\n", trs_state_dir);
+  fprintf(config_file, "statedir\t= %s\n", trs_state_dir);
 #ifdef __linux__
   /* Corrected to trs_disk_getstep vs getsize by Larry Kraemer 08-01-2011 */
-  fprintf(config_file, "stepmap=%d,%d,%d,%d,%d,%d,%d,%d\n",
+  fprintf(config_file, "stepmap\t\t= %d,%d,%d,%d,%d,%d,%d,%d\n",
       trs_disk_getstep(0), trs_disk_getstep(1), trs_disk_getstep(2), trs_disk_getstep(3),
       trs_disk_getstep(4), trs_disk_getstep(5), trs_disk_getstep(6), trs_disk_getstep(7));
 #endif
   fprintf(config_file, "%sstringy\n", option(stringy));
-  fprintf(config_file, "supermem=%d\n", supermem << 5);
-  fprintf(config_file, "switches=0x%x\n", trs_uart_switches);
+  fprintf(config_file, "supermem\t= %d\n", supermem << 5);
+  fprintf(config_file, "switches\t= 0x%02X\n", trs_uart_switches);
   fprintf(config_file, "%struedam\n", option(trs_disk_truedam));
   fprintf(config_file, "%sturbo\n", option(turbo_mode));
   fprintf(config_file, "%sturbopaste\n", option(turbo_paste));
-  fprintf(config_file, "turborate=%d\n", turbo_rate);
+  fprintf(config_file, "turborate\t= %d\n", turbo_rate);
 
   for (i = 0; i < 8; i++)
-    fprintf(config_file, "wafer%d=%s\n", i, stringy_get_name(i));
+    fprintf(config_file, "wafer%d\t\t= %s\n", i, stringy_get_name(i));
 
   trs_get_window(&x, &y, &w, &h);
-  fprintf(config_file, "window=%d,%d,%d,%d\n", x, y, w, h);
+  fprintf(config_file, "window\t\t= %d,%d,%d,%d\n", x, y, w, h);
 
   fprintf(config_file, "%sxmem80\n", option(xmem80));
-  fprintf(config_file, "year=%d\n", trs_year);
+  fprintf(config_file, "year\t\t= %d\n", trs_year);
 
   fclose(config_file);
   return 0;
