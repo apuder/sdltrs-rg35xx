@@ -47,7 +47,7 @@
 
 /*#define MEMDEBUG 1*/
 
-#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "error.h"
 #include "trs.h"

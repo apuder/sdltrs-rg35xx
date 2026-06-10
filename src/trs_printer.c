@@ -37,6 +37,7 @@
  * SOFTWARE.
  */
 
+#include <stdio.h>
 #include <sys/stat.h>
 #include "error.h"
 #include "trs.h"

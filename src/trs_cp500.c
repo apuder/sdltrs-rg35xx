@@ -23,6 +23,7 @@
 
 /*#define DEBUG_CP500 1*/
 
+#include <stdio.h>
 #include "error.h"
 #include "trs.h"
 #include "trs_clones.h"

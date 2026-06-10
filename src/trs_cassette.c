@@ -50,9 +50,10 @@
 #define CASSDEBUG4 0
 
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <stdlib.h>
 #include <sys/stat.h>
 
 #include <SDL.h>

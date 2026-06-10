@@ -58,6 +58,7 @@
  * have not implemented.
  */
 
+#include <stdio.h>
 #include "error.h"
 #include "trs.h"
 #include "trs_imp_exp.h"

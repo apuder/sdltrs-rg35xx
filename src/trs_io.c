@@ -43,6 +43,7 @@
 #define IODEBUG_IN  (1 << 0)  /* IN instructions */
 #define IODEBUG_OUT (2 << 0)  /* OUT instructions */
 
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include "error.h"

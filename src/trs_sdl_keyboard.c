@@ -41,6 +41,7 @@
 /*#define JOYDEBUG 1*/
 /*#define QDEBUG 1*/
 
+#include <stdio.h>
 #include <SDL_joystick.h>
 #include "error.h"
 #include "trs.h"
