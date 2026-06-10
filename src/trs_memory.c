@@ -56,6 +56,7 @@
 #include "trs_disk.h"
 #include "trs_memory.h"
 #include "trs_imp_exp.h"
+#include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 #include "trs_uart.h"
 
@@ -644,6 +645,8 @@ void trs_reset(int poweron)
     if (poweron) {
       mem_init();
       trs_rom_init();
+      trs_open_joystick();
+      trs_set_keypad_joystick();
     }
     /* Blank Video */
     memset(&video, ' ', MAX_VIDEO_SIZE);

@@ -42,7 +42,6 @@
 #include <string.h>
 
 #include "trs.h"
-#include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
 const char *program_name;
@@ -62,8 +61,6 @@ int main(int argc, char *argv[])
   zbx = trs_parse_command_line(argc, argv);
 
   trs_sdl_init();
-  trs_set_keypad_joystick();
-  trs_open_joystick();
   trs_reset(1);
 
   if (trs_state_file[0]) {
