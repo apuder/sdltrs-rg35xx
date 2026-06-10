@@ -2844,7 +2844,7 @@ void trs_set_mouse_max(int x, int y, unsigned int sens)
   mouse_sens = sens;
 }
 
-void trs_main_save(FILE *file)
+void trs_screen_save(FILE *file)
 {
   trs_save_uint8(file, trs_screen, SCREEN_SIZE);
   trs_save_uint16(file, &screen_chars);
@@ -2870,7 +2870,7 @@ void trs_main_save(FILE *file)
   trs_save_int(file, &lowe_le18, 1);
 }
 
-void trs_main_load(FILE *file)
+void trs_screen_load(FILE *file)
 {
   trs_load_uint8(file, trs_screen, SCREEN_SIZE);
   trs_load_uint16(file, &screen_chars);

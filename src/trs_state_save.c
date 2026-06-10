@@ -42,7 +42,7 @@ int trs_state_save(const char *filename)
   if (file) {
     trs_save_uint8(file, (Uint8 *)stateFileBanner, stateFileBannerLen);
     trs_save_uint32(file, &stateVersionNumber);
-    trs_main_save(file);
+    trs_screen_save(file);
     trs_cassette_save(file);
     trs_clone_save(file);
     trs_cp500_save(file);
@@ -89,7 +89,7 @@ int trs_state_load(const char *filename)
       return -1;
     }
 
-    trs_main_load(file);
+    trs_screen_load(file);
     trs_cassette_load(file);
     trs_clone_load(file);
     trs_cp500_load(file);
