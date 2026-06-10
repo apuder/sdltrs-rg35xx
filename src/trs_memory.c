@@ -638,6 +638,7 @@ void trs_reset(int poweron)
   trs_uart_init();
 
   trs_kb_reset(); /* Part of keyboard stretch kludge */
+  trs_kb_bracket(trs_kb_bracket_state);
   trs_cancel_event();
   trs_timer_interrupt(0);
 

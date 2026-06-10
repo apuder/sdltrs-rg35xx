@@ -1014,7 +1014,6 @@ int trs_load_config_file(void)
   fclose(config_file);
 
   trs_disk_setparam();
-  trs_kb_bracket(trs_kb_bracket_state);
   return 0;
 }
 
@@ -1073,7 +1072,6 @@ int trs_parse_command_line(int argc, char **argv)
   }
 
   trs_disk_setparam();
-  trs_kb_bracket(trs_kb_bracket_state);
   return debugger;
 }
 
