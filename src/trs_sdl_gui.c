@@ -1692,7 +1692,7 @@ void gui_emulator_menu(void)
                          "       Archbold",
                          "  Holmes II/III",
                          "     Seatronics",
-                         "Banking Model I",
+                         "  Banking I/III",
                          "    CT-80 Aster",
                          "       LNW80/II",
                          "TCS SpeedMaster"};

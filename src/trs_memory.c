@@ -1072,6 +1072,11 @@ int mem_read(int address)
       }
       return memory[address];
 
+    case 0x35: /* Model III CP/M mod by Bill Brewer */
+      if (address >= 0xFC00) return video[address - 0xFC00];
+      if (address >= 0xF800) return trs_kb_mem_read(address);
+      return memory[address];
+
     case 0x40: /* Model 4 map 0 */
       if (address >= RAM_START) {
         return memory[address + bank_offset[address >> 15]];
@@ -1523,6 +1528,13 @@ void mem_write(int address, int value)
       memory[address] = value;
       break;
 
+    case 0x35: /* Model III CP/M mod by Bill Brewer */
+      if (address >= 0xFC00)
+        trs80_screen_write_char(address - 0xFC00, value);
+      else
+        memory[address] = value;
+      break;
+
     case 0x40: /* Model 4  map 0 */
     case 0x50: /* Model 4P map 0 */
       if (address >= RAM_START) {
@@ -1841,6 +1853,10 @@ Uint8 *mem_pointer(int address, int writing)
         if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
           return writing ? NULL : &rom[address];
       }
+      return &memory[address];
+
+    case 0x35: /* Model III CP/M mod by Bill Brewer */
+      if (address >= 0xFC00) return &video[address - 0xFC00];
       return &memory[address];
 
     case 0x40: /* Model 4 map 0 */

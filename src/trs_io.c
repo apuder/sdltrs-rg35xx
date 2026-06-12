@@ -677,10 +677,13 @@ void z80_out(int port, int value)
         trs_screen_mode(EXPANDED, (value & 0x04) >> 2);
         /* alternate char set is on D3 */
         trs_screen_mode(ALTERNATE, !((value & 0x08) >> 3));
-        /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
         if (trs_model == 3) {
+          /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
           if (speedup == 2 || trs_clones.model == CP500_M80)
             return;
+          /* CP/M banking (Bill Brewer) on D0 */
+          if (speedup == 4)
+            mem_map((value & 1) ? 5 : 0);
         }
         /* clock speed is on D6; it affects timer HZ too */
         trs_timer_speed(value & 0xC0); /* D6/D7 for Seatronic */
@@ -1007,6 +1010,8 @@ int z80_in(int port)
         goto done;
       case TRSDISK3_INTERRUPT: /* 0xE4 */
         value = trs_nmi_latch_read();
+        /* Clear NMI bit 0 for CP/M banking on Model III */
+        if (trs_model == 3 && speedup == 4) value &= 0xFE;
         goto done;
       case TRSDISK3_STATUS:    /* 0xF0 */
         value = trs_disk_status_read();
