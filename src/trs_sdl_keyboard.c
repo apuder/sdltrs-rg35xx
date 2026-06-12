@@ -712,12 +712,11 @@ void trs_xlate_keysym(int keysym)
     return;
   }
 
-  key_down = (keysym & 0x10000) == 0;
   kt = &ascii_key_table[keysym & 0xFFFF];
-
   if (kt->bit_action == TK_NULL)
     return;
 
+  key_down = (keysym & 0x10000) == 0;
   if (trs_emulate_joystick(key_down, kt->bit_action))
     return;
 

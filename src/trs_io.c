@@ -668,8 +668,8 @@ void z80_out(int port, int value)
       case 0xED:
       case 0xEE:
       case 0xEF:
-        if (value == modeimage)
-          return;
+        if (value == modeimage) return;
+
         modeimage = value;
         /* cassette motor is on D1 */
         trs_cassette_motor((value & 0x02) >> 1);

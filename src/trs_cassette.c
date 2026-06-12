@@ -104,6 +104,7 @@ static Uint32 cassette_silence;
 static const char *format_name[] = {
   NULL, "cas", "cpt", "wav", "direct", "debug" };
 static int soundDeviceOpen = 0;
+static int cassette_afmt = AUDIO_U8;
 
 /* Windows won't work with a sound fragment size smaller than 2048,
    or you get gaps in sound */
@@ -112,8 +113,8 @@ static int soundDeviceOpen = 0;
 #else
 #define FRAGSIZE 9
 #endif
+
 #define SOUND_RING_SIZE (1 << (FRAGSIZE + 8))
-static int cassette_afmt = AUDIO_U8;
 static Uint8 sound_ring[SOUND_RING_SIZE];
 static Uint8 *sound_ring_read_ptr = sound_ring;
 static Uint8 *sound_ring_write_ptr = sound_ring;

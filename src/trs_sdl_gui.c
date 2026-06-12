@@ -41,6 +41,7 @@
 #include <windows.h>
 #endif
 #include <SDL.h>
+
 #include "error.h"
 #include "trs.h"
 #include "trs_cassette.h"

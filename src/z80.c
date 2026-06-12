@@ -4240,13 +4240,13 @@ int z80_run(int continuous)
 	    /* Handle NMI first */
 	    if (z80_state.nmi && !z80_state.nmi_seen)
 	    {
-	        if (instruction == 0x76) {
+		if (instruction == 0x76) {
 		    /* Taking a NMI gets us out of a halt */
 		    Z80_PC++;
 		}
-	        do_nmi();
-	        z80_state.nmi_seen = 1;
-                if (trs_model == 1) {
+		do_nmi();
+		z80_state.nmi_seen = 1;
+		if (trs_model == 1) {
 		  /* Simulate releasing the pushbutton here; ugh. */
 		  trs_reset_button_interrupt(0);
 		}
@@ -4255,11 +4255,11 @@ int z80_run(int continuous)
 	    else if (z80_state.irq && z80_state.iff1 == 1
 		     && instruction != 0xFB)
             {
-	        if (instruction == 0x76) {
+		if (instruction == 0x76) {
 		    /* Taking an interrupt gets us out of a halt */
 		    Z80_PC++;
 		}
-	        do_int();
+		do_int();
 	    }
 	}
     } while (trs_continuous > 0);

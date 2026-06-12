@@ -2117,7 +2117,7 @@ int disassemble(int pc)
 	{
 	    /* dd cb or fd cb; offset comes *before* instruction */
 	    j = minor[j][i].args;
-            pc++; /* skip over offset */
+	    pc++; /* skip over offset */
 	    i = mem_read(pc++);
 	}
 	code = &minor[j][i];
@@ -2129,10 +2129,10 @@ int disassemble(int pc)
     printf ("%04x: ", addr);
 
     for (i = 0; i < ((pc + arglen(code->args) - addr) & 0xFFFF); i++)
-	printf("%02x ", mem_read(addr + i));
+	printf ("%02x ", mem_read(addr + i));
 
     for (; i < 4; i++)
-	printf("   ");
+	printf ("   ");
 
     putchar (' ');
 

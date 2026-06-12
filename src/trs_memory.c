@@ -292,8 +292,7 @@ void eg64_mba_out(int value)
 
 void genie3s_bank_out(int value)
 {
-  if (value == sys_byte_2)
-    return;
+  if (value == sys_byte_2) return;
 
   /* Select HRG page 0/1 */
   if ((value & (1 << 5)) != (sys_byte_2 & (1 << 5)))
@@ -328,8 +327,7 @@ void genie3s_init_out(int value)
 
 void genie3s_mem_out(int bits)
 {
-  if (bits == mem_command)
-    return;
+  if (bits == mem_command) return;
 
   mem_command = bits;
   /* D0/D1: 256K block */
@@ -340,8 +338,7 @@ void genie3s_mem_out(int bits)
 
 void genie3s_sys_out(int value)
 {
-  if (value == sys_byte)
-    return;
+  if (value == sys_byte) return;
 
   /* HRG page on or off */
   if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
@@ -401,8 +398,7 @@ void hypermem_out(int bits)
 
 void lnw80_bank_out(int value)
 {
-  if (value == sys_byte_2)
-    return;
+  if (value == sys_byte_2) return;
 
   /* LNW80 II additional 32K RAM: banking overrides D5 */
   bank_offset[1] = (value & (1 << 6)) << 9;
@@ -508,8 +504,7 @@ int supermem_in(void)
 
 void sys_byte_out(int value)
 {
-  if (value == sys_byte)
-    return;
+  if (value == sys_byte) return;
 
   switch (memory_map) {
     case 0x17:
@@ -576,6 +571,7 @@ void tcs_ram192b_out(int bits)
 void vid80_vx3_out(int bits)
 {
   if (bits == sys_byte) return;
+
   if ((bits & (1 << 7)) != (sys_byte & (1 << 7)))
     trs_screen_mode(INVERSE, bits & (1 << 7));
 
