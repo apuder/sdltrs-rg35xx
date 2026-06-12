@@ -2571,7 +2571,6 @@ static void do_indexed_instruction(Uint16 *ixp)
  */
 static int do_ED_instruction(void)
 {
-    int debug = 0;
     Uint8 const instruction = mem_read(Z80_PC++);
 
     switch(instruction)
@@ -2858,8 +2857,7 @@ static int do_ED_instruction(void)
 	break;
       case 0x2f:	/* emt_debug */
 	if (trs_continuous > 0) trs_continuous = 0;
-	debug = 1;
-	break;
+	return 1;
       case 0x30:	/* emt_open */
 	do_emt_open();
 	break;
@@ -2921,7 +2919,7 @@ static int do_ED_instruction(void)
 	error("unsupported ED instruction: 0x%X", instruction);
     }
 
-    return debug;
+    return 0;
 }
 
 int trs_continuous;
