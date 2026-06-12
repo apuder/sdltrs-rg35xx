@@ -385,7 +385,7 @@ int huffman_in(void)
  * are on port 0x90 (sound) bits 4-1, which is a much poorer
  * design IMHO as sound using apps can randomly change the
  * upper bank. Fine for a ramdisc but means other software
- * must take great care.
+ * must take great care. Port 0x90 appears to be write-only.
  */
 void hypermem_out(int bits)
 {
