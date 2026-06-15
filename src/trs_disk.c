@@ -1228,7 +1228,8 @@ type1_status(void)
     || (d->emutype == REAL && d->u.real.empty)
 #endif
   ) {
-    state.status |= TRSDISK_INDEX;
+    /* No Track Index Pulse */
+    state.status &= ~TRSDISK_INDEX;
   } else {
     if (angle() < trs_disk_holewidth) {
       state.status |= TRSDISK_INDEX;
