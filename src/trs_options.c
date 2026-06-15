@@ -158,13 +158,10 @@ static const struct {
   { "cs4",             opt_charset,       1, 4, NULL                  },
 #ifdef ZBX
   { "debug",           opt_value,         0, 1, &debugger             },
-  { "nodebug",         opt_value,         0, 0, &debugger             },
   { "di",              opt_hexval,        1, 0, &trs_disk_debug_flags },
   { "diskdebug",       opt_hexval,        1, 0, &trs_disk_debug_flags },
   { "io",              opt_hexval,        1, 0, &trs_io_debug_flags   },
   { "iodebug",         opt_hexval,        1, 0, &trs_io_debug_flags   },
-  { "noz",             opt_value,         0, 0, &debugger             },
-  { "nozbx",           opt_value,         0, 0, &debugger             },
   { "z",               opt_value,         0, 1, &debugger             },
   { "zbx",             opt_value,         0, 1, &debugger             },
 #endif
