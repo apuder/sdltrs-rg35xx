@@ -136,6 +136,7 @@ static const struct {
   { "borderwidth",     opt_intval,        1, 1, NULL                  },
   { "bw",              opt_intval,        1, 1, NULL                  },
   { "c",               opt_file,          1, 0, "c"                   },
+  { "cas",             opt_file,          1, 0, "c"                   },
   { "cass",            opt_file,          1, 0, "c"                   },
   { "cassdir",         opt_dirname,       1, 0, trs_cass_dir          },
   { "cassette",        opt_file,          1, 0, "c"                   },
