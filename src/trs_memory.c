@@ -944,14 +944,14 @@ int mem_read(int address)
         /* "Constant bit" points to Bank 0 */
         if ((sys_byte_2 & (1 << 0)) == 0)
           return memory[address + bank_offset[1]];
+      } else {
+        if ((sys_byte & (1 << 3)) && address >= 0x8000)
+          return genie3s_hrg_read(address - 0x8000);
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
+          return memory[address + bank_offset[1]];
       }
-      if ((sys_byte & (1 << 3)) && address >= 0x8000)
-        return genie3s_hrg_read(address - 0x8000);
-      /* "Constant bit" points to Bank 0 */
-      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
-        return memory[address + bank_offset[1]];
-      else
-        return memory[address + bank_offset[0] + bank_base];
+      return memory[address + bank_offset[0] + bank_base];
 
     case 0x1C: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
@@ -1378,22 +1378,24 @@ void mem_write(int address, int value)
           memory[address + bank_offset[1]] = value;
           return;
         }
+      } else {
+        if ((sys_byte & (1 << 3)) && address >= 0x8000) {
+          genie3s_hrg_write(address - 0x8000, value);
+          return;
+        }
+        /* Write to Font-SRAM */
+        if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
+          genie3s_char(video[(VIDEO_START + video_addr)],
+              (address - 0x8000) >> 11, value);
+          return;
+        }
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) && address >= 0xE000) {
+          memory[address + bank_offset[1]] = value;
+          return;
+        }
       }
-      if ((sys_byte & (1 << 3)) && address >= 0x8000) {
-        genie3s_hrg_write(address - 0x8000, value);
-        return;
-      }
-      /* Write to Font-SRAM */
-      if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
-        genie3s_char(video[(VIDEO_START + video_addr)],
-            (address - 0x8000) >> 11, value);
-        return;
-      }
-      /* "Constant bit" points to Bank 0 */
-      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
-        memory[address + bank_offset[1]] = value;
-      else
-        memory[address + bank_offset[0] + bank_base] = value;
+      memory[address + bank_offset[0] + bank_base] = value;
       break;
 
     case 0x1C: /* Aster CT-80 */
@@ -1746,12 +1748,12 @@ Uint8 *mem_pointer(int address, int writing)
         /* "Constant bit" points to Bank 0 */
         if ((sys_byte_2 & (1 << 0)) == 0)
           return &memory[address + bank_offset[1]];
+      } else {
+        /* "Constant bit" points to Bank 0 */
+        if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
+          return &memory[address + bank_offset[1]];
       }
-      /* "Constant bit" points to Bank 0 */
-      if ((sys_byte_2 & (1 << 0)) && address >= 0xE000)
-        return &memory[address + bank_offset[1]];
-      else
-        return &memory[address + bank_offset[0] + bank_base];
+      return &memory[address + bank_offset[0] + bank_base];
 
     case 0x1C: /* Aster CT-80 */
       if ((sys_byte & (1 << 5)) == 0) { /* device bank */
