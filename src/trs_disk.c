@@ -1453,8 +1453,6 @@ trs_disk_sector_write(Uint8 data)
       case TRSDISK_PRECMP:
         /* Nothing for the emulator to do */
         break;
-      default:
-        break;
       }
     } else {
       /* Switch 5" / 8" disk size */
@@ -1650,8 +1648,6 @@ trs_disk_data_read(void)
     }
     break;
 
-  default:
-    break;
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
@@ -2272,8 +2268,6 @@ trs_disk_data_write(Uint8 data)
       error("error in format state machine");
       break;
     }
-  default:
-    break;
   }
   state.data = data;
   return;

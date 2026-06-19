@@ -154,8 +154,6 @@ int trs_write_protect(int type, int drive)
       writeprot = !trs_cass_getwriteprotect();
       trs_cassette_remove();
       break;
-    default:
-      break;
   }
 #ifdef _WIN32
   win_set_readonly(prot_filename, writeprot);
@@ -186,8 +184,6 @@ int trs_write_protect(int type, int drive)
       break;
     case CASSETTE:
       trs_cassette_insert(prot_filename);
-      break;
-    default:
       break;
   }
   return 0;

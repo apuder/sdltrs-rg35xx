@@ -468,8 +468,6 @@ static void Blit(const SDL_Surface *src, const SDL_Rect *srcrect,
         CopyBlit4(rect_w, rect_h, srcpix, srcskip,
             (Uint32 *)dstpix, dstskip / 4, (Uint32 *)blitMap);
       break;
-    default:
-      break;
   }
 
   if (SDL_MUSTLOCK(dst))
@@ -2000,8 +1998,6 @@ void trs_screen_refresh(void)
         z80_out(0x3C, 0x09);
         z80_out(0x3D, 0xFF);
       }
-      break;
-    default:
       break;
   }
 

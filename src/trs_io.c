@@ -239,8 +239,6 @@ void z80_out(int port, int value)
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
             return;
-          default:
-            break;
         }
         break;
 
@@ -288,8 +286,6 @@ void z80_out(int port, int value)
             break;
           case 0xFD:
             trs_printer_write(value);
-            break;
-          default:
             break;
         }
         return;
@@ -361,8 +357,6 @@ void z80_out(int port, int value)
             trs_screen_mode(EXPANDED, modesel);
             trs_cassette_out(value & 0x3);
             break;
-          default:
-            break;
         }
         return;
 
@@ -380,8 +374,6 @@ void z80_out(int port, int value)
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
             return;
-          default:
-            break;
         }
         break;
 
@@ -400,8 +392,6 @@ void z80_out(int port, int value)
             modesel = (value >> 3) & 1;
             trs_screen_mode(EXPANDED, modesel);
             trs_cassette_out(value & 0x3);
-            break;
-          default:
             break;
         }
         return;
@@ -517,8 +507,6 @@ void z80_out(int port, int value)
             trs_cassette_motor((value >> 2) & 1);
             trs_cassette_out(value & 0x3);
             return;
-          default:
-            break;
       }
     }
   } else {
@@ -556,8 +544,6 @@ void z80_out(int port, int value)
           else
             trs_cassette_out(value & 3);
           return;
-        default:
-          break;
       }
     } else {
       switch (port) {
@@ -620,8 +606,6 @@ void z80_out(int port, int value)
         if (trs_model == 5) /* Switch 4P boot ROM in/out */
           sys_byte_write(value & 1);
         return;
-      default:
-        break;
       }
     }
     switch (port) {
@@ -719,8 +703,6 @@ void z80_out(int port, int value)
       case 0xFF:
         trs_cassette_out(value & 3);
         return;
-      default:
-        break;
     }
   }
 
@@ -778,8 +760,6 @@ int z80_in(int port)
           case 0xFF:
             value = (modesel ? 0x3F : 0x7F) | trs_cassette_in();
             goto done;
-          default:
-            break;
         }
         break;
 
@@ -809,8 +789,6 @@ int z80_in(int port)
             break;
           case 0xFD:
             value = trs_printer_read();
-            break;
-          default:
             break;
         }
         goto done;
@@ -877,8 +855,6 @@ int z80_in(int port)
           case 0xFF:
             value = modesel ? 0xBF : 0xFF;
             break;
-          default:
-            break;
         }
         goto done;
 
@@ -890,8 +866,6 @@ int z80_in(int port)
           case 0xFF:
             value = (modesel ? 0x3F : 0x7F) | trs_cassette_in();
             goto done;
-          default:
-            break;
         }
         break;
 
@@ -908,8 +882,6 @@ int z80_in(int port)
             break;
           case 0xFF:
             value = (modesel ? 0x3F : 0x7F) | trs_cassette_in();
-            break;
-          default:
             break;
         }
         goto done;

@@ -303,8 +303,6 @@ int trs_hard_in(int port)
     case TRS_HARD_STATUS:
       v = state.status;
       break;
-    default:
-      break;
     }
   }
 #if ZBX
@@ -397,8 +395,6 @@ void trs_hard_out(int port, int value)
     }
     break;
 
-  default:
-    break;
   }
 }
 

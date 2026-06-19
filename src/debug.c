@@ -713,11 +713,7 @@ void debug_shell(void)
 		      case 0xBB: /* otdr */
 		        is_rep = 1;
 		        break;
-		      default:
-		        break;
 		    }
-		  default:
-		    break;
 		}
 		if (is_call) {
 		    set_trap(Z80_PC + 3, BREAK_ONCE_FLAG);
