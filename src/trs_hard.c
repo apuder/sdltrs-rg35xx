@@ -434,7 +434,7 @@ static void hard_read(int cmd)
     FILE *f = state.d[state.drive].file;
 
     if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
-      if (errno) {
+      if (ferror(f)) {
         file_error("reading hard%d", state.drive);
         hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
       }
