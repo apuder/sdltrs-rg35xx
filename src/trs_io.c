@@ -489,7 +489,7 @@ void z80_out(int port, int value)
             if (speedup < 4 && trs_rom_size <= 0x2000)
               eg3200_init_out(value);
             return;
-          case 0xFC:
+          case 0xFD:
             /* Printer port of EACA Genie/System 80 */
             trs_printer_write(value);
             return;
