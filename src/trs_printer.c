@@ -59,14 +59,14 @@ int trs_printer_reset(void)
 
 static void trs_printer_open(void)
 {
-  struct stat st = { 0 };
   char printer_filename[FILENAME_MAX];
-  int file_num;
+  static int file_num = 0;
 
-  for (file_num = 0; file_num < 10000; file_num++) {
-
+  for (; file_num < 10000; file_num++) {
     if (snprintf(printer_filename, FILENAME_MAX, "%s%ctrsprn%04d.txt",
         trs_printer_dir, DIR_SLASH, file_num) < FILENAME_MAX) {
+      struct stat st = { 0 };
+
       if (stat(printer_filename, &st) < 0) {
         printer_open = 1;
         printer = fopen(printer_filename, "w");
