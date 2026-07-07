@@ -75,7 +75,8 @@ All contributions are welcome.
 
 ## SDL2
 
-This branch contains the SDL2 version with hardware rendering support.
+This branch contains the SDL2 version with hardware rendering support and
+resizable emulator window. Options for aspect ratio and scale qualitiy.
 
 This version is available in [RetroPie] since version 4.6.6 and Valerio
 Lupi's fork of [RetroPie-Setup] ...
