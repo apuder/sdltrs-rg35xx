@@ -50,6 +50,7 @@
 
 #include "error.h"
 #include "trs.h"
+#include "trs_disk.h"
 #include "trs_memory.h"
 #include "trs_state_save.h"
 
@@ -137,6 +138,7 @@ static void help(void)
   io[debug] <hexval> .... Set I/O port debug flags:\n\
                             1 = port input             4 = Hard Disk I/O\n\
                             2 = port output            8 = Hard Disk Command\n\
+  m(ou)nt <drive> <file>  Mount specified disk image file to drive\n\
   z(bx)i(nfo) ........... Display information about this debugger\n\
   h(elp) | ? ............ Print this help message\n\
   exit | quit ........... Exit from SDLTRS");
@@ -1081,6 +1083,20 @@ void debug_shell(void)
 		{
 		    puts("Filename must be specified.");
 		}
+	    }
+	    else if(!strcmp(command, "mount") || !strcmp(command, "mnt"))
+	    {
+		int drive;
+		char *file = input;
+
+		if(sscanf(input, "%*s %d %s",&drive, file) == 2)
+		{
+		    if(drive >= 0 && drive <= 7)
+		    {
+			trs_disk_insert(drive, file);
+		    }
+		}
+		trs_disk_debug();
 	    }
 	    else
 	    {
