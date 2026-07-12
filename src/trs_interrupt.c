@@ -330,19 +330,20 @@ trs_interrupt_latch_read(void)
 {
   Uint8 const tmp = interrupt_latch;
 
-  if (trs_model == 1) {
-    interrupt_latch = z80_state.irq = 0;
-    return tmp;
+  switch (trs_model) {
+    case 1:
+      interrupt_latch = z80_state.irq = 0;
+      return tmp;
+    case 3:
+      /* In some clones (like CP-500/M80) reading from the
+         interrupt latch clears pending timer interrupts */
+      if (trs_clones.model & CP500_M80) {
+        interrupt_latch &= ~M3_TIMER_BIT;
+        z80_state.irq = (interrupt_latch & interrupt_mask) != 0;
+      }
+      break;
   }
 
-  if (trs_model == 3) {
-    /* In some clones (like CP-500/M80) reading from the
-       interrupt latch clears pending timer interrupts */
-    if (trs_clones.model & CP500_M80) {
-      interrupt_latch &= ~M3_TIMER_BIT;
-      z80_state.irq = (interrupt_latch & interrupt_mask) != 0;
-    }
-  }
   return ~tmp;
 }
 
