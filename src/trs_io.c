@@ -554,25 +554,24 @@ void z80_out(int port, int value)
         {
           int const changes = value ^ modesel;
 
-          /* Skip unchanged OPREG */
-          if (changes == 0) return;
+          if (changes) {
+            if (changes & 0x80)
+              mem_video_page((value & 0x80) << 3);
 
-          if (changes & 0x80)
-            mem_video_page((value & 0x80) << 3);
+            if (changes & 0x70)
+              mem_bank((value & 0x70) >> 4);
 
-          if (changes & 0x70)
-            mem_bank((value & 0x70) >> 4);
+            if (changes & 0x08)
+              trs_screen_mode(INVERSE, (value & 0x08) >> 3);
 
-          if (changes & 0x08)
-            trs_screen_mode(INVERSE, (value & 0x08) >> 3);
+            if (changes & 0x04)
+              trs_screen_80x24((value & 0x04) >> 2);
 
-          if (changes & 0x04)
-            trs_screen_80x24((value & 0x04) >> 2);
+            if (changes & 0x03)
+              mem_map(value & 0x03);
 
-          if (changes & 0x03)
-            mem_map(value & 0x03);
-
-          modesel = value;
+            modesel = value;
+          }
         }
         return;
       case 0x8C:
@@ -652,22 +651,22 @@ void z80_out(int port, int value)
       case 0xED:
       case 0xEE:
       case 0xEF:
-        if (value == modeimage) return;
-
-        modeimage = value;
-        /* cassette motor is on D1 */
-        trs_cassette_motor((value & 0x02) >> 1);
-        /* screen mode select is on D2 */
-        trs_screen_mode(EXPANDED, (value & 0x04) >> 2);
-        /* alternate char set is on D3 */
-        trs_screen_mode(ALTERNATE, !((value & 0x08) >> 3));
-        if (trs_model == 3) {
-          /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
-          if (speedup == 2 || trs_clones.model == CP500_M80)
-            return;
-          /* CP/M banking (Bill Brewer) on D0 */
-          if (speedup == 4)
-            mem_map((value & 1) ? 5 : 0);
+        if (value != modeimage) {
+          /* cassette motor is on D1 */
+          trs_cassette_motor((value & 0x02) >> 1);
+          /* screen mode select is on D2 */
+          trs_screen_mode(EXPANDED, (value & 0x04) >> 2);
+          /* alternate char set is on D3 */
+          trs_screen_mode(ALTERNATE, !((value & 0x08) >> 3));
+          if (trs_model == 3) {
+            /* Skip clock speed for Holmes Sprinter III & SO-08 (CP-500/M80) */
+            if (speedup == 2 || trs_clones.model == CP500_M80)
+              return;
+            /* CP/M banking (Bill Brewer) on D0 */
+            if (speedup == 4)
+              mem_map((value & 1) ? 5 : 0);
+          }
+          modeimage = value;
         }
         /* clock speed is on D6; it affects timer HZ too */
         trs_timer_speed(value & 0xC0); /* D6/D7 for Seatronic */

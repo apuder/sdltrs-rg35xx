@@ -292,29 +292,31 @@ void eg64_mba_out(int value)
 
 void genie3s_bank_out(int value)
 {
-  if (value == sys_byte_2) return;
+  int const changes = value ^ sys_byte_2;
 
-  /* Select HRG page 0/1 */
-  if ((value & (1 << 5)) != (sys_byte_2 & (1 << 5)))
-    grafyx_write_y((value & (1 << 5)) << 4);
+  if (changes) {
+    /* Select HRG page 0/1 */
+    if (changes & (1 << 5))
+      grafyx_write_y((value & (1 << 5)) << 4);
 
-  /* Show HRG page 0/1 */
-  if ((value & (1 << 4)) != (sys_byte_2 & (1 << 4)))
-    grafyx_write_yoffset((value & (1 << 4)) << 5);
+    /* Show HRG page 0/1 */
+    if (changes & (1 << 4))
+      grafyx_write_yoffset((value & (1 << 4)) << 5);
 
-  /* Redraw if Font-SRAM is disabled */
-  if ((value & (1 << 1)) == 0 && (sys_byte_2 & (1 << 1)))
-    trs_screen_refresh();
+    /* Redraw if Font-SRAM is disabled */
+    if (changes & (1 << 1) && (value & (1 << 1)) == 0)
+      trs_screen_refresh();
 
-  sys_byte_2 = value;
+    /* Bit 7 : Bit 6 : Bank# : Memory
+     *   0   :   0   :   0   :    64K
+     *   0   :   1   :   1   :   128K
+     *   1   :   0   :   2   :   192K
+     *   1   :   1   :   3   :   256K
+     */
+    bank_base = (value & 0xC0) << 10;
 
-  /* Bit 7 : Bit 6 : Bank# : Memory
-   *   0   :   0   :   0   :    64K
-   *   0   :   1   :   1   :   128K
-   *   1   :   0   :   2   :   192K
-   *   1   :   1   :   3   :   256K
-   */
-  bank_base = (value & 0xC0) << 10;
+    sys_byte_2 = value;
+  }
 }
 
 void genie3s_init_out(int value)
@@ -338,21 +340,23 @@ void genie3s_mem_out(int bits)
 
 void genie3s_sys_out(int value)
 {
-  if (value == sys_byte) return;
+  int const changes = value ^ sys_byte;
 
-  /* HRG page on or off */
-  if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-    genie3s_hrg(value & (1 << 1));
+  if (changes) {
+    /* HRG page on or off */
+    if (changes & (1 << 1))
+      genie3s_hrg(value & (1 << 1));
 
-  /* Slow-Down on ROM access */
-  if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
-    trs_timer_speed(value & (1 << 2));
+    /* Slow-Down on ROM access */
+    if (changes & (1 << 2))
+      trs_timer_speed(value & (1 << 2));
 
-  /* Text screen on or off */
-  if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
-    m6845_text(value & (1 << 7));
+    /* Text screen on or off */
+    if (changes & (1 << 7))
+      m6845_text(value & (1 << 7));
 
-  sys_byte = value;
+    sys_byte = value;
+  }
 }
 
 /*
@@ -504,43 +508,45 @@ int supermem_in(void)
 
 void sys_byte_out(int value)
 {
-  if (value == sys_byte) return;
+  int const changes = value ^ sys_byte;
 
-  switch (memory_map) {
-    case 0x17:
-      /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
-      sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
-      return;
-    case 0x10:
-    case 0x14:
-      /* Banking-Modification from Martin Doppelbauer */
-      memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
-      /* Fall through - Accept speed up kit on bit 0 */
-    case 0x1C: /* Aster CT-80 */
-      if ((value & (1 << 0)) != (sys_byte & (1 << 0)))
-        trs_timer_speed(value & 1);
+  if (changes) {
+    switch (memory_map) {
+      case 0x17:
+        /* Hack for Schmidtke-CP/M with Homebrew 80*22 SYS80.SYS */
+        sys_byte = ((value & (1 << 4)) >> 1) | (sys_byte & 0x07);
+        return;
+      case 0x10:
+      case 0x14:
+        /* Banking-Modification from Martin Doppelbauer */
+        memory_map = (value & (1 << 4)) ? 0x14 : 0x10;
+        /* Fall through - Accept speed up kit on bit 0 */
+      case 0x1C: /* Aster CT-80 */
+        if (changes & (1 << 0))
+          trs_timer_speed(value & 1);
       break;
-    case 0x1D: /* LNW80/II */
-      if ((value & (1 << 7)) != (sys_byte & (1 << 7)))
-        trs_screen_mode(INVERSE, value & (1 << 7));
-      if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-        hrg_onoff(value & (1 << 1));
-      if ((value & (1 << 0)) != (sys_byte & (1 << 0))) {
-        if ((value & 1) == 0)
-          trs_screen_80x24(0);
-        if (text80x24 == 0)
-          trs_screen_mode(REVERSE, value & 1);
-      }
-      break;
-    case 0x1E: /* TCS Genie IIs/SpeedMaster */
-      if ((value & (1 << 1)) != (sys_byte & (1 << 1)))
-        hrg_onoff(value & (1 << 1));
-      if ((value & (1 << 2)) != (sys_byte & (1 << 2)))
-        trs_timer_speed(value & (1 << 2));
-      break;
+      case 0x1D: /* LNW80/II */
+        if (changes & (1 << 7))
+          trs_screen_mode(INVERSE, value & (1 << 7));
+        if (changes & (1 << 1))
+          hrg_onoff(value & (1 << 1));
+        if (changes & (1 << 0)) {
+          if ((value & 1) == 0)
+            trs_screen_80x24(0);
+          if (text80x24 == 0)
+            trs_screen_mode(REVERSE, value & 1);
+        }
+        break;
+      case 0x1E: /* TCS Genie IIs/SpeedMaster */
+        if (changes & (1 << 1))
+          hrg_onoff(value & (1 << 1));
+        if (changes & (1 << 2))
+          trs_timer_speed(value & (1 << 2));
+        break;
+    }
+
+    sys_byte = value;
   }
-
-  sys_byte = value;
 }
 
 void sys_byte_write(int value)
