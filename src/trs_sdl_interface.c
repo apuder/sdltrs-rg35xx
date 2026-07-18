@@ -2239,14 +2239,14 @@ void gui_rect(int x, int y, int w, int h, int frame)
 
   if (frame) {
     x += 4;
-    y += TRS_CHAR_HEIGHT4 - 2;
+    y += TRS_CHAR_HEIGHT4 - 1;
     w -= 8;
     h -= TRS_CHAR_HEIGHT4 * 2 - 2;
 
-    trs_screen_rect(x, y, w, 2, gui_foreground);
-    trs_screen_rect(x, y, 2, h, gui_foreground);
-    trs_screen_rect(x + w - 2, y, 2, h, gui_foreground);
-    trs_screen_rect(x, y + h - 2, w, 2, gui_foreground);
+    trs_screen_rect(x, y, w, 1, gui_foreground);
+    trs_screen_rect(x, y, 1, h, gui_foreground);
+    trs_screen_rect(x + w - 1, y, 1, h, gui_foreground);
+    trs_screen_rect(x, y + h - 1, w, 1, gui_foreground);
   }
 }
 
