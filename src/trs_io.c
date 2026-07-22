@@ -652,6 +652,7 @@ void z80_out(int port, int value)
       case 0xEE:
       case 0xEF:
         if (value != modeimage) {
+          modeimage = value;
           /* cassette motor is on D1 */
           trs_cassette_motor((value & 0x02) >> 1);
           /* screen mode select is on D2 */
@@ -666,7 +667,6 @@ void z80_out(int port, int value)
             if (speedup == 4)
               mem_map((value & 1) ? 5 : 0);
           }
-          modeimage = value;
         }
         /* clock speed is on D6; it affects timer HZ too */
         trs_timer_speed(value & 0xC0); /* D6/D7 for Seatronic */
