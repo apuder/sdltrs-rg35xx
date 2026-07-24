@@ -1933,11 +1933,8 @@ void trs_screen_refresh(void)
     /* Draw wrapped portions if any */
     if (dunx < width) {
       srcRect.x = 0;
-      srcRect.y = srcy;
-      srcRect.w = width - dunx;
-      srcRect.h = height;
-      dstRect.x = left_margin + dunx;
-      dstRect.y = top_margin;
+      srcRect.w -= dunx;
+      dstRect.x += dunx;
       SDL_BlitSurface(image, &srcRect, screen, &dstRect);
     }
 
@@ -1952,11 +1949,8 @@ void trs_screen_refresh(void)
 
       if (dunx < width) {
         srcRect.x = 0;
-        srcRect.y = 0;
-        srcRect.w = width - dunx;
-        srcRect.h = height - duny;
-        dstRect.x = left_margin + dunx;
-        dstRect.y = top_margin + duny;
+        srcRect.w -= dunx;
+        dstRect.x += dunx;
         SDL_BlitSurface(image, &srcRect, screen, &dstRect);
       }
     }
