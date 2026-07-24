@@ -75,7 +75,6 @@ extern int turbo_paste;
 extern int  gui_exit(void);
 extern int  gui_file(const char *path, char *filename, const char *mask, int dir, const char *type);
 extern void gui_function(int function);
-extern void gui_pause(void);
 extern void gui_rect(int x, int y, int w, int h, int frame);
 extern void gui_text(const char *text, int col, int row, int len, int font);
 extern int  trs_sdl_savebmp(const char *name);

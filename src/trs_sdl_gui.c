@@ -2633,13 +2633,6 @@ void gui_keys(void)
   gui_key();
 }
 
-void gui_pause(void)
-{
-  gui_rect(29, 6, 8, 3, 1);
-  gui_text("PAUSED", 30, 7, 7, 4);
-  trs_screen_update();
-}
-
 void gui_exec_cmd(void)
 {
   if (gui_file(trs_cmd_file, trs_cmd_file, CMD, 0, "CMD") >= 0) {

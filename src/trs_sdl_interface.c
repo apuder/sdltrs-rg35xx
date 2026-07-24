@@ -1697,8 +1697,11 @@ done:
         break;
     }
 
-    if (trs_paused && fullscreen)
-      gui_pause();
+    if (trs_paused && fullscreen) {
+      gui_rect(29, 6, 8, 3, 1);
+      gui_text("PAUSED", 30, 7, 7, 4);
+      trs_screen_update();
+    }
 
   } while (!wait);
 }
