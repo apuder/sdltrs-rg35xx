@@ -2620,10 +2620,7 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
   int cur_char, expanded;
   SDL_Rect srcRect, dstRect;
 
-  if (grafyx_overlay == 0 && (trs_clones.model & (CT80 | GENIE3S)))
-    return;
-
-  if (position >= screen_chars)
+  if (grafyx_overlay == 0 || position >= screen_chars)
     return;
 
   cur_char = trs_screen[position];
