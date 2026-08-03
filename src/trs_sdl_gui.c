@@ -1756,14 +1756,12 @@ void gui_emulator_menu(void)
             clock_mhz[model_trs] = value;
             switch (model_trs) {
               case 0:
-              default:
                 clock_mhz_1 = value;
                 break;
               case 1:
                 clock_mhz_3 = value;
                 break;
-              case 2:
-              case 3:
+              default:
                 clock_mhz_4 = value;
                 break;
             }
