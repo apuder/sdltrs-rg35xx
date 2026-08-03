@@ -878,10 +878,10 @@ int mem_read(int address)
         if (address >= video_addr && address <= video_addr + 0xFFF)
           return video[((address - video_addr) & 0x7FF)];
       }
-      if ((sys_byte & (1 << 3)) || address >= RAM_START)
-        return memory[address];
-      else
+      if ((sys_byte & (1 << 3)) == 0 && address < RAM_START)
         return trs80_model1_mmio(address);
+      else
+        return memory[address];
 
     case 0x18: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
@@ -1292,10 +1292,10 @@ void mem_write(int address, int value)
           return;
         }
       }
-      if ((sys_byte & (1 << 3)) || address >= RAM_START)
-        memory[address] = value;
-      else
+      if ((sys_byte & (1 << 3)) == 0 && address < RAM_START)
         trs80_model1_write_mmio(address, value);
+      else
+        memory[address] = value;
       break;
 
     case 0x18: /* EG-64 Memory-Banking-Adaptor */
@@ -1696,10 +1696,10 @@ Uint8 *mem_pointer(int address, int writing)
         if (address >= video_addr && address <= video_addr + 0xFFF)
           return &video[((address - video_addr) & 0x7FF)];
       }
-      if ((sys_byte & (1 << 3)) || address >= RAM_START)
-        return &memory[address];
-      else
+      if ((sys_byte & (1 << 3)) == 0 && address < RAM_START)
         return trs80_model1_mmio_addr(address, writing);
+      else
+        return &memory[address];
 
     case 0x18: /* EG-64 Memory-Banking-Adaptor */
       if (address < RAM_START) {
