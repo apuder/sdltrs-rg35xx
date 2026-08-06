@@ -559,14 +559,12 @@ static void opt_doubler(const char *arg, int intarg, int *stringarg)
     case 't':
       trs_disk_doubler = TRSDISK_TANDY;
       break;
-    case 'b':
-    default:
-      trs_disk_doubler = TRSDISK_BOTH;
-      break;
     case 'n':
       trs_disk_doubler = TRSDISK_NODOUBLER;
       break;
-    }
+    default:
+      trs_disk_doubler = TRSDISK_BOTH;
+  }
 }
 
 #ifdef __linux__
@@ -622,12 +620,10 @@ static void opt_file(const char *arg, int intarg, int *stringarg)
         case 1:
           snprintf(romfile1, FILENAME_MAX, "%s", arg);
           break;
-        case 3:
-        case 4:
-          snprintf(romfile3, FILENAME_MAX, "%s", arg);
-          break;
-        default:
+        case 5:
           snprintf(romfile4p, FILENAME_MAX, "%s", arg);
+        default:
+          snprintf(romfile3, FILENAME_MAX, "%s", arg);
       }
       break;
     default:
