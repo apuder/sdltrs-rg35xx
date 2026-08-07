@@ -790,11 +790,9 @@ trs_disk_insert(int drive, const char *diskname)
 {
   DiskState *d = &disk[drive];
   struct stat st = { 0 };
-  int c;
 
   if (d->file != NULL) {
-    c = fclose(d->file);
-    if (c == EOF) state.status |= TRSDISK_WRITEFLT;
+    if (fclose(d->file) == EOF) state.status |= TRSDISK_WRITEFLT;
   }
   if (stat(diskname, &st) == -1) {
     d->file = NULL;
@@ -900,6 +898,8 @@ trs_disk_insert(int drive, const char *diskname)
     }
     jv3_sort_ids(drive);
   } else if (d->emutype == DMK) {
+    int c;
+
     fseek(d->file, DMK_NTRACKS, 0);
     d->u.dmk.ntracks = (Uint8) getc(d->file);
     d->u.dmk.tracklen = (Uint8) getc(d->file);
