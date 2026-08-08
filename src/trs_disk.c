@@ -1145,13 +1145,13 @@ search_adr(void)
   }
   if (d->emutype == JV1) {
     if (d->phytrack < 0 || d->phytrack >= MAXTRACKS ||
-	state.curside > 0 || d->file == NULL || state.density == 1) {
+	state.curside > 0 || state.density == 1) {
       return -1;
     }
     return JV1_SECPERTRK * d->phytrack;
   } else {
     if (d->phytrack < 0 || d->phytrack >= MAXTRACKS ||
-	state.curside >= JV3_SIDES || d->file == NULL) {
+	state.curside >= JV3_SIDES) {
       return -1;
     }
     if (!d->u.jv3.sorted_valid) jv3_sort_ids(state.curdrive);
