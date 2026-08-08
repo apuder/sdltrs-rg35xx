@@ -3341,7 +3341,6 @@ real_check_empty(DiskState *d)
 {
   int reset_now = 0;
   struct floppy_raw_cmd raw_cmd;
-  int i = 0;
 
   if (time(NULL) <= d->u.real.empty_timeout) return;
 
@@ -3357,9 +3356,9 @@ real_check_empty(DiskState *d)
   memset(&raw_cmd, 0, sizeof(raw_cmd));
   raw_cmd.rate = real_rate(d);
   raw_cmd.flags = FD_RAW_INTR;
-  raw_cmd.cmd[i++] = state.density ? 0x4a : 0x0a; /* read ID */
-  raw_cmd.cmd[i++] = state.curside ? 4 : 0;
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = state.density ? 0x4a : 0x0a; /* read ID */
+  raw_cmd.cmd[1] = state.curside ? 4 : 0;
+  raw_cmd.cmd_count = 2;
   raw_cmd.data = NULL;
   raw_cmd.length = 0;
   if (ioctl(fileno(d->file), FDRAWCMD, &raw_cmd) < 0) {
@@ -3374,12 +3373,11 @@ real_restore(int curdrive)
 {
   DiskState *d = &disk[curdrive];
   struct floppy_raw_cmd raw_cmd;
-  int i = 0;
 
   raw_cmd.flags = FD_RAW_INTR;
-  raw_cmd.cmd[i++] = FD_RECALIBRATE;
-  raw_cmd.cmd[i++] = 0;
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = FD_RECALIBRATE;
+  raw_cmd.cmd[1] = 0;
+  raw_cmd.cmd_count = 2;
   if (ioctl(fileno(d->file), FDRAWCMD, &raw_cmd) < 0) {
     real_error(d, raw_cmd.flags, "restore");
     state.status |= TRSDISK_SEEKERR;
@@ -3392,7 +3390,6 @@ real_seek(void)
 {
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
-  int i = 0;
 
   /* Always use a recal if going to track 0.  This should help us
      recover from confusion about what track the disk is really on.
@@ -3408,10 +3405,10 @@ real_seek(void)
   raw_cmd.data = NULL;
   raw_cmd.rate = real_rate(d);
   raw_cmd.flags = FD_RAW_INTR;
-  raw_cmd.cmd[i++] = FD_SEEK;
-  raw_cmd.cmd[i++] = 0;
-  raw_cmd.cmd[i++] = d->phytrack * d->real_step;
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = FD_SEEK;
+  raw_cmd.cmd[1] = 0;
+  raw_cmd.cmd[2] = d->phytrack * d->real_step;
+  raw_cmd.cmd_count = 3;
   if (ioctl(fileno(d->file), FDRAWCMD, &raw_cmd) < 0) {
     real_error(d, raw_cmd.flags, "seek");
     state.status |= TRSDISK_SEEKERR;
@@ -3424,7 +3421,7 @@ real_read(void)
 {
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
-  int i, retry, new_status;
+  int retry, new_status;
 
   /* Try once at each supported sector size */
   retry = 0;
@@ -3434,17 +3431,16 @@ real_read(void)
     memset(&raw_cmd, 0, sizeof(raw_cmd));
     raw_cmd.rate = real_rate(d);
     raw_cmd.flags = FD_RAW_READ | FD_RAW_INTR;
-    i = 0;
-    raw_cmd.cmd[i++] = state.density ? 0x46 : 0x06;
-    raw_cmd.cmd[i++] = state.curside ? 4 : 0;
-    raw_cmd.cmd[i++] = state.track;
-    raw_cmd.cmd[i++] = state.curside;
-    raw_cmd.cmd[i++] = state.sector;
-    raw_cmd.cmd[i++] = d->u.real.size_code;
-    raw_cmd.cmd[i++] = 255;
-    raw_cmd.cmd[i++] = 0x0a;
-    raw_cmd.cmd[i++] = 0xff; /* unused */
-    raw_cmd.cmd_count = i;
+    raw_cmd.cmd[0] = state.density ? 0x46 : 0x06;
+    raw_cmd.cmd[1] = state.curside ? 4 : 0;
+    raw_cmd.cmd[2] = state.track;
+    raw_cmd.cmd[3] = state.curside;
+    raw_cmd.cmd[4] = state.sector;
+    raw_cmd.cmd[5] = d->u.real.size_code;
+    raw_cmd.cmd[6] = 255;
+    raw_cmd.cmd[7] = 0x0a;
+    raw_cmd.cmd[8] = 0xff; /* unused */
+    raw_cmd.cmd_count = 9;
     raw_cmd.data = (void*) d->u.real.buf;
     raw_cmd.length = 128 << d->u.real.size_code;
     if (ioctl(fileno(d->file), FDRAWCMD, &raw_cmd) < 0) {
@@ -3509,7 +3505,6 @@ real_write(void)
 {
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
-  int i = 0;
 
   state.status = 0;
   memset(&raw_cmd, 0, sizeof(raw_cmd));
@@ -3529,18 +3524,18 @@ real_write(void)
     }
   }
   /* Use F8 DAM for F8, F9, or FA */
-  raw_cmd.cmd[i++] = ((state.currcommand &
-		       (state.controller == TRSDISK_P1771 ? 0x03 : 0x01))
-		      ? 0x09 : 0x05) | (state.density ? 0x40 : 0x00);
-  raw_cmd.cmd[i++] = state.curside ? 4 : 0;
-  raw_cmd.cmd[i++] = state.track;
-  raw_cmd.cmd[i++] = state.curside;
-  raw_cmd.cmd[i++] = state.sector;
-  raw_cmd.cmd[i++] = d->u.real.size_code;
-  raw_cmd.cmd[i++] = 255;
-  raw_cmd.cmd[i++] = 0x0a;
-  raw_cmd.cmd[i++] = 0xff; /* 256 */
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = ((state.currcommand &
+		    (state.controller == TRSDISK_P1771 ? 0x03 : 0x01))
+		       ? 0x09 : 0x05) | (state.density ? 0x40 : 0x00);
+  raw_cmd.cmd[1] = state.curside ? 4 : 0;
+  raw_cmd.cmd[2] = state.track;
+  raw_cmd.cmd[3] = state.curside;
+  raw_cmd.cmd[4] = state.sector;
+  raw_cmd.cmd[5] = d->u.real.size_code;
+  raw_cmd.cmd[6] = 255;
+  raw_cmd.cmd[7] = 0x0a;
+  raw_cmd.cmd[8] = 0xff; /* 256 */
+  raw_cmd.cmd_count = 9;
   raw_cmd.data = (void*) d->u.real.buf;
   raw_cmd.length = 128 << d->u.real.size_code;
   if (ioctl(fileno(d->file), FDRAWCMD, &raw_cmd) < 0) {
@@ -3593,17 +3588,16 @@ real_readadr(void)
 {
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
-  int i, new_status;
+  int new_status;
 
   state.status = 0;
   new_status = 0;
   memset(&raw_cmd, 0, sizeof(raw_cmd));
   raw_cmd.rate = real_rate(d);
   raw_cmd.flags = FD_RAW_INTR;
-  i = 0;
-  raw_cmd.cmd[i++] = state.density ? 0x4a : 0x0a;
-  raw_cmd.cmd[i++] = state.curside ? 4 : 0;
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = state.density ? 0x4a : 0x0a;
+  raw_cmd.cmd[1] = state.curside ? 4 : 0;
+  raw_cmd.cmd_count = 2;
   raw_cmd.data = NULL;
   raw_cmd.length = 0;
   state.bytecount = 0;
@@ -3646,7 +3640,6 @@ real_writetrk(void)
   DiskState *d = &disk[state.curdrive];
   struct floppy_raw_cmd raw_cmd;
   int gap3;
-  unsigned i;
   state.status = 0;
 
   /* Compute a usable gap3 */
@@ -3688,19 +3681,20 @@ real_writetrk(void)
   memset(&raw_cmd, 0, sizeof(raw_cmd));
   raw_cmd.rate = real_rate(d);
   raw_cmd.flags = FD_RAW_WRITE | FD_RAW_INTR;
-  i = 0;
-  raw_cmd.cmd[i++] = 0x0d | (state.density ? 0x40 : 0x00);
-  raw_cmd.cmd[i++] = state.curside ? 4 : 0;
-  raw_cmd.cmd[i++] = d->u.real.size_code;
-  raw_cmd.cmd[i++] = d->u.real.fmt_nbytes / 4;
-  raw_cmd.cmd[i++] = gap3;
-  raw_cmd.cmd[i++] = d->u.real.fmt_fill;
-  raw_cmd.cmd_count = i;
+  raw_cmd.cmd[0] = 0x0d | (state.density ? 0x40 : 0x00);
+  raw_cmd.cmd[1] = state.curside ? 4 : 0;
+  raw_cmd.cmd[2] = d->u.real.size_code;
+  raw_cmd.cmd[3] = d->u.real.fmt_nbytes / 4;
+  raw_cmd.cmd[4] = gap3;
+  raw_cmd.cmd[5] = d->u.real.fmt_fill;
+  raw_cmd.cmd_count = 6;
   raw_cmd.data = (void*) d->u.real.buf;
   raw_cmd.length = d->u.real.fmt_nbytes;
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_GAPS) {
+    unsigned i;
+
     debug("real_writetrk: size 0%d, secs %d, gap3 %d, fill 0x%02X, hex data ",
 	  d->u.real.size_code, d->u.real.fmt_nbytes/4, gap3,
 	  d->u.real.fmt_fill);
