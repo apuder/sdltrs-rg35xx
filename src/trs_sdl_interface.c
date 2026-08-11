@@ -1796,7 +1796,7 @@ boxes_init(int fg_color, int bg_color, int width, int height, int expanded)
 }
 
 static SDL_Surface *bitmap_surface(const Uint8 *data,
-    int fg_color, int bg_color, int scale_x)
+    int fg_color, int bg_color, int scale_x, int scale_y)
 {
   /*
    * The memory allocated for "fontdata" will be released in the
@@ -1804,7 +1804,7 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
    */
   int i, j, w;
   int *fontdata = (int*)calloc(1, TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT *
-      scale_x * scale_factor * sizeof(int));
+      scale_x * scale_y * sizeof(int));
   int *currdata = fontdata;
   Uint8 pixels[TRS_CHAR_WIDTH * MAX_CHAR_HEIGHT] = { 0 };
 
@@ -1817,8 +1817,8 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
       pixels[i] = (*(data + (j >> 3)) >> (i - j)) & 1;
 
   /* And prepare our rescaled character. */
-  for (j = 0; j < MAX_CHAR_HEIGHT * scale_factor; j++) {
-    Uint8 const *currpixel = &pixels[((j / scale_factor) * TRS_CHAR_WIDTH)];
+  for (j = 0; j < MAX_CHAR_HEIGHT * scale_y; j++) {
+    Uint8 const *currpixel = &pixels[((j / scale_y) * TRS_CHAR_WIDTH)];
 
     for (w = TRS_CHAR_WIDTH; w--;) {
       if (*currpixel++ == 0) {
@@ -1832,7 +1832,7 @@ static SDL_Surface *bitmap_surface(const Uint8 *data,
   }
 
   return SDL_CreateRGBSurfaceFrom(fontdata, TRS_CHAR_WIDTH * scale_x,
-         MAX_CHAR_HEIGHT * scale_factor, 32, TRS_CHAR_WIDTH * scale_x * 4,
+         MAX_CHAR_HEIGHT * scale_y, 32, TRS_CHAR_WIDTH * scale_x * 4,
 #if defined(big_endian) && !defined(__linux__)
          0x000000ff, 0x0000ff00, 0x00ff0000, 0);
 #else
@@ -1851,16 +1851,16 @@ bitmap_char(int character, int ram)
 
   /* Normal */
   trs_char[0][character] = bitmap_surface(
-      char_data, foreground, background, 1);
+      char_data, foreground, background, 1, scale_factor);
   /* Expanded */
   trs_char[1][character] = bitmap_surface(
-      char_data, foreground, background, 2);
+      char_data, foreground, background, 2, scale_factor);
   /* Inverse */
   trs_char[2][character] = bitmap_surface(
-      char_data, background, foreground, 1);
+      char_data, background, foreground, 1, scale_factor);
   /* Expanded + Inverse */
   trs_char[3][character] = bitmap_surface(
-      char_data, background, foreground, 2);
+      char_data, background, foreground, 2, scale_factor);
 }
 
 static void
@@ -1894,9 +1894,9 @@ bitmap_init(int ram)
     /* GUI Normal + Inverse */
     bitmap_free(i, 4, 5);
     trs_char[4][i] = bitmap_surface(
-        trs_char_data[gui][i], gui_foreground, gui_background, 1);
+        trs_char_data[gui][i], gui_foreground, gui_background, 1, 2);
     trs_char[5][i] = bitmap_surface(
-        trs_char_data[gui][i], gui_background, gui_foreground, 1);
+        trs_char_data[gui][i], gui_background, gui_foreground, 1, 2);
   }
 
   boxes_init(foreground, background, char_width, height, 0);
