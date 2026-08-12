@@ -2596,7 +2596,7 @@ hrg_write_data(int address, int data)
   data = mirror_bits(expand6to8(data));
 
   /* Check for 96*192 extension region */
-  if ((address & 0x3000) == 0x3000) {
+  if (address >= 0x3000) {
     grafyx_write_byte(64 + (address & 0x0F), ((address >> 6) & 0x0F) * 12
         + (4 * ((address >> 4) & 0x03) + ((address >> 10) & 0x03)), data);
   } else { /* 384*192 inner region */
