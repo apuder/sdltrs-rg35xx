@@ -494,6 +494,16 @@ static void trs_screen_print(void)
   }
 }
 
+static void trs_screen_char(Uint8 character)
+{
+  int pos;
+
+  for (pos = 0; pos < screen_chars; pos++) {
+    if (trs_screen[pos] == character)
+      trs_screen_write_char(pos, character);
+  }
+}
+
 void trs_screen_reset(void)
 {
   currentmode = NORMAL;
@@ -2702,7 +2712,7 @@ void eg3210_char(int character, int scanline, int byte)
 
   if (scanline == (m6845_raster - 1)) {
     bitmap_char(character, 1);
-    trs_screen_refresh();
+    trs_screen_char(character);
   }
 }
 
@@ -2710,8 +2720,10 @@ void genie3s_char(int character, int scanline, int byte)
 {
   char_ram[character][scanline] = byte;
 
-  if (scanline == (m6845_raster - 1))
+  if (scanline == (m6845_raster - 1)) {
     bitmap_char(character, 1);
+    trs_screen_char(character);
+  }
 }
 
 void genie3s_hrg(int value)

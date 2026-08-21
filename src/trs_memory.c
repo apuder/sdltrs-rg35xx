@@ -303,10 +303,6 @@ void genie3s_bank_out(int value)
     if (changes & (1 << 4))
       grafyx_write_yoffset((value & (1 << 4)) << 5);
 
-    /* Redraw if Font-SRAM is disabled */
-    if (changes & (1 << 1) && (value & (1 << 1)) == 0)
-      trs_screen_refresh();
-
     /* Bit 7 : Bit 6 : Bank# : Memory
      *   0   :   0   :   0   :    64K
      *   0   :   1   :   1   :   128K
