@@ -622,6 +622,7 @@ static void opt_file(const char *arg, int intarg, int *stringarg)
           break;
         case 5:
           snprintf(romfile4p, FILENAME_MAX, "%s", arg);
+          break;
         default:
           snprintf(romfile3, FILENAME_MAX, "%s", arg);
       }
