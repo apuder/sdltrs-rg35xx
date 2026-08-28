@@ -2654,7 +2654,7 @@ void m6845_cursor(unsigned int position, int start, int end, int visible)
   srcRect.x = 0;
   srcRect.y = start * scale_factor;
   srcRect.w = char_width;
-  srcRect.h = (end - start) * scale_factor + scale_factor;
+  srcRect.h = (end - start + 1) * scale_factor;
   dstRect.x = srcRect.w * col + left_margin;
   dstRect.y = srcRect.y + row * char_height + top_margin;
 
@@ -2710,7 +2710,7 @@ void eg3210_char(int character, int scanline, int byte)
 {
   char_ram[character][scanline] = mirror_bits(byte);
 
-  if (scanline == (m6845_raster - 1)) {
+  if (scanline + 1 == m6845_raster) {
     bitmap_char(character, 1);
     trs_screen_char(character);
   }
@@ -2720,7 +2720,7 @@ void genie3s_char(int character, int scanline, int byte)
 {
   char_ram[character][scanline] = byte;
 
-  if (scanline == (m6845_raster - 1)) {
+  if (scanline + 1 == m6845_raster) {
     bitmap_char(character, 1);
     trs_screen_char(character);
   }
