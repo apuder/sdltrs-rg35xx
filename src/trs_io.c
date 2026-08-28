@@ -292,6 +292,12 @@ void z80_out(int port, int value)
 
       case GENIE3S:
         switch (port) {
+          case 0x40:
+          case 0x41:
+          case 0x42:
+          case 0x43:
+            trs_omti_out(port, value);
+            break;
           case 0x50: /* TRS_HARD_DATA */
           case 0x51: /* TRS_HARD_PRECOMP */
           case 0x52: /* TRS_HARD_SECCNT */
@@ -794,6 +800,12 @@ int z80_in(int port)
 
       case GENIE3S:
         switch (port) {
+          case 0x40:
+          case 0x41:
+          case 0x42:
+          case 0x43:
+            value = trs_omti_in(port);
+            break;
           case 0x50: /* TRS_HARD_DATA */
           case 0x51: /* TRS_HARD_ERROR */
           case 0x52: /* TRS_HARD_SECCNT */

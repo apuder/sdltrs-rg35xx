@@ -36,11 +36,20 @@
 #include "trs.h"
 #include "trs_hard.h"
 #include "trs_imp_exp.h"
+#include "trs_omti.h"
 #include "trs_state_save.h"
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)
+#define CDB_LEN    (6)       /* command descriptor block length */
+
+/* OMTI controller phase */
+#define PHASE_IDLE   (0)
+#define PHASE_CDB    (1)
+#define PHASE_IN     (2)
+#define PHASE_OUT    (3)
+#define PHASE_STATUS (4)
 
 /* Private types and data */
 
@@ -72,6 +81,8 @@ typedef struct {
   Uint8  sdh;
   Uint8  status;
   Uint8  command;
+  Uint8  cdb_idx;
+  Uint8  cdb[CDB_LEN];
   Uint8  secbuf[SECTORSIZE];
 
   /* Number of bytes already done in current read/write */
@@ -96,6 +107,14 @@ static void hard_init(int cmd);
 static void hard_seek(void);
 static int  hard_open(int drive);
 static int  hard_sector(int newstatus);
+
+static void omti_command(void);
+static int  omti_data_in(void);
+static void omti_data_out(Uint8 value);
+static void omti_error(int error);
+static void omti_init(void);
+static int  omti_open(int drive);
+static int  omti_seek(void);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -685,6 +704,287 @@ static void hard_data_out(int value)
   }
 }
 
+int trs_omti_in(int port)
+{
+  int v = 0xff;
+
+  if (state.present) {
+    switch (port & 3) {
+    case 0:
+      v = omti_data_in();
+      break;
+    case 1:
+      v = state.status;
+      break;
+    case 2:
+      v = 0xfa; /* Expected byte for g3s_hd-omti_bootrom_2764.bin */
+      break;
+    case 3:
+      v = state.sdh;
+      break;
+    }
+  }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("[PC=%04X] trs_omti_in(%02X) => %02X\n", Z80_PC, port, v);
+#endif
+  return v;
+}
+
+void trs_omti_out(int port, int value)
+{
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("[PC=%04X] trs_omti_out(%02X), %02X\n", Z80_PC, port, value);
+#endif
+
+  switch (port & 3) {
+  case 0:
+    omti_data_out(value);
+    break;
+  case 1:
+    /* Any write is a software reset */
+    omti_init();
+    break;
+  case 2:
+    if (state.control == PHASE_IDLE) {
+      state.cdb_idx = 0;
+      state.control = PHASE_CDB;
+      state.status  = OMTI_DATA_OUT;
+    }
+    break;
+  case 3:
+    state.sdh = value; /* DMA/interrupt mask; not emulated */
+    break;
+  }
+}
+
+static void omti_command(void)
+{
+  state.command =   state.cdb[0];
+  state.drive   =  (state.cdb[1] & 0x20) >> 5;
+  state.head    =   state.cdb[1] & 0x1F;
+  state.secnum  =   state.cdb[2] & 0x3F;
+  state.cyl     = ((state.cdb[1] & 0x80) ? 0x400 : 0)
+                | ((state.cdb[2] & 0xC0) << 2)
+                |   state.cdb[3];
+
+  state.bytesdone = 0;
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("OMTI: command 0x%02X drive:%d cyl:%d head:%d sec:%d\n",
+        state.command, state.drive, state.cyl, state.head, state.secnum);
+#endif
+
+  switch (state.command) {
+  case OMTI_READ:
+    if (omti_seek() == 0) {
+      FILE *f = state.d[state.drive].file;
+
+      if (f && fread(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
+        if (ferror(f)) {
+          file_error("OMTI: reading hard%d", state.drive);
+          omti_error(OMTI_ERROR);
+          break;
+        }
+      }
+      state.control = PHASE_IN;
+      state.secsize = OMTI_SECSIZE;
+      state.status  = OMTI_DATA_IN;
+#if ZBX
+      if (trs_io_debug_flags & HARDDEBUG2)
+        sector_buf("read");
+#endif
+    } else {
+      omti_error(OMTI_ERROR);
+    }
+    break;
+
+  case OMTI_WRITE:
+    if (omti_seek() == 0) {
+      state.control = PHASE_OUT;
+      state.secsize = OMTI_SECSIZE;
+      state.status  = OMTI_DATA_OUT;
+    } else {
+      omti_error(OMTI_ERROR);
+    }
+    break;
+
+  case OMTI_FORMAT:
+    if (omti_seek() == 0) {
+      FILE *f = state.d[state.drive].file;
+
+      if (f && fwrite(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
+        if (errno) {
+          file_error("OMTI: formatting hard%d", state.drive);
+          omti_error(OMTI_ERROR);
+          break;
+        }
+      }
+#if ZBX
+      if (trs_io_debug_flags & HARDDEBUG2)
+        sector_buf("format");
+#endif
+      omti_error(0);
+    } else {
+      omti_error(OMTI_ERROR);
+    }
+    break;
+
+  case OMTI_SET_DRIVE_CHAR:
+    state.control = PHASE_OUT;
+    state.secsize = OMTI_CHAR_LEN;
+    state.status  = OMTI_DATA_OUT;
+    break;
+
+  case OMTI_WRITE_SEC_BUF:
+    state.control = PHASE_OUT;
+    state.secsize = OMTI_SECSIZE;
+    state.status  = OMTI_DATA_OUT;
+    break;
+
+  case OMTI_SEEK:
+    omti_error(omti_seek());
+    break;
+
+  case OMTI_REZERO:
+    state.cyl = state.head = state.secnum = 0;
+    omti_error(omti_seek());
+    break;
+
+  case OMTI_TEST_UNIT_READY:
+    omti_error(omti_open(state.drive));
+    break;
+
+  case OMTI_REQUEST_SENSE:
+    omti_error(0);
+    break;
+
+  default:
+    error("OMTI: unknown command 0x%02X", state.command);
+    omti_error(OMTI_ERROR);
+    break;
+  }
+}
+
+static void omti_data_out(Uint8 value)
+{
+  switch (state.control) {
+  case PHASE_CDB:
+    state.cdb[state.cdb_idx++] = value;
+    if (state.cdb_idx == CDB_LEN)
+      omti_command();
+    break;
+
+  case PHASE_OUT:
+    if (state.bytesdone < state.secsize) {
+      state.secbuf[state.bytesdone++] = value;
+      if (state.bytesdone == state.secsize) {
+        if (state.command == OMTI_WRITE) {
+          FILE *f = state.d[state.drive].file;
+
+          if (f && fwrite(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
+            if (errno) {
+              file_error("OMTI: writing hard%d", state.drive);
+              omti_error(OMTI_ERROR);
+              break;
+            }
+          }
+#if ZBX
+          if (trs_io_debug_flags & HARDDEBUG2)
+            sector_buf("write");
+#endif
+        } else if (state.command == OMTI_WRITE_SEC_BUF) {
+          memset(state.secbuf, 0xE5, state.secsize);
+        }
+        /* Set drive characteristics */
+        omti_error(0);
+      }
+    }
+    break;
+  }
+}
+
+static int omti_data_in(void)
+{
+  switch (state.control) {
+  case PHASE_IN:
+    if (state.bytesdone < state.secsize) {
+      const int v = state.secbuf[state.bytesdone++];
+
+      if (state.bytesdone == state.secsize)
+        omti_error(0);
+      return v;
+    }
+    break;
+
+  case PHASE_STATUS: {
+    const int v = state.error;
+
+    /* Reading error returns the bus to idle. */
+    omti_init();
+    return v; }
+  }
+
+  return 0xff;
+}
+
+static void omti_error(int error)
+{
+  state.error   = error;
+  state.control = PHASE_STATUS;
+  state.status  = OMTI_READY;
+}
+
+static void omti_init(void)
+{
+  state.control = PHASE_IDLE;
+  state.status = OMTI_IDLE;
+  state.cdb_idx = 0;
+  state.command = 0;
+  state.drive = 0;
+  state.bytesdone = 0;
+  state.secsize = 0;
+  state.error = 0;
+}
+
+static int omti_open(int drive)
+{
+  if (hard_open(drive) != 0) return OMTI_ERROR;
+
+  state.secsize = OMTI_SECSIZE;
+  state.status  = OMTI_IDLE;
+  return 0;
+}
+
+static int omti_seek(void)
+{
+  const Drive *d = &state.d[state.drive];
+
+  if (omti_open(state.drive) != 0) return OMTI_ERROR;
+
+  if (state.head >= d->heads) {
+    error("OMTI: hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
+        state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
+    return OMTI_ERROR;
+  }
+
+  if (d->file && fseek(d->file,
+    sizeof(ReedHardHeader) +
+    state.secsize * (state.cyl * d->heads * d->secs
+                  +  state.head * d->secs
+                  + (state.secnum % d->secs)), 0) != 0) {
+    file_error("OMTI: hard%d: fseek '%s'", state.drive, d->filename);
+    return OMTI_ERROR;
+  }
+
+  if (trs_show_led)
+    trs_hard_led(state.drive, 1);
+
+  return 0;
+}
+
 static void trs_save_harddrive(FILE *file, Drive *d)
 {
   int file_not_null = (d->file != NULL);
@@ -731,6 +1031,8 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.status, 1);
   trs_save_uint8(file, &state.command, 1);
+  trs_save_uint8(file, &state.cdb_idx, 1);
+  trs_save_uint8(file, state.cdb, CDB_LEN);
   trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_int(file, &state.bytesdone, 1);
 
@@ -759,6 +1061,8 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.status, 1);
   trs_load_uint8(file, &state.command, 1);
+  trs_load_uint8(file, &state.cdb_idx, 1);
+  trs_load_uint8(file, state.cdb, CDB_LEN);
   trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_int(file, &state.bytesdone, 1);
 
