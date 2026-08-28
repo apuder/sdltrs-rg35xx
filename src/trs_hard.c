@@ -962,8 +962,6 @@ static int omti_seek(void)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (omti_open(state.drive) != 0) return OMTI_ERROR;
-
   if (state.head >= d->heads) {
     error("OMTI: hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
@@ -972,9 +970,9 @@ static int omti_seek(void)
 
   if (d->file && fseek(d->file,
     sizeof(ReedHardHeader) +
-    state.secsize * (state.cyl * d->heads * d->secs
-                  +  state.head * d->secs
-                  + (state.secnum % d->secs)), 0) != 0) {
+    OMTI_SECSIZE * (state.cyl * d->heads * d->secs
+                 +  state.head * d->secs
+                 + (state.secnum % d->secs)), 0) != 0) {
     file_error("OMTI: hard%d: fseek '%s'", state.drive, d->filename);
     return OMTI_ERROR;
   }
