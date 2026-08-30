@@ -151,7 +151,7 @@ static void hard_debug(const char *cmd)
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
-static void sector_buf(const char *cmd)
+static void sector_dump(const char *cmd)
 {
   int byte[16];
   int i;
@@ -456,7 +456,7 @@ static void hard_read(int cmd)
     }
 #if ZBX
     if (trs_io_debug_flags & HARDDEBUG2)
-      sector_buf("read");
+      sector_dump("read");
 #endif
   }
 }
@@ -698,7 +698,7 @@ static void hard_data_out(int value)
       }
 #if ZBX
       if (trs_io_debug_flags & HARDDEBUG2)
-        sector_buf("write");
+        sector_dump("write");
 #endif
     }
   }
@@ -794,7 +794,7 @@ static void omti_command(void)
       state.status  = OMTI_DATA_IN;
 #if ZBX
       if (trs_io_debug_flags & HARDDEBUG2)
-        sector_buf("read");
+        sector_dump("read");
 #endif
     } else {
       omti_error(OMTI_ERROR);
@@ -824,7 +824,7 @@ static void omti_command(void)
       }
 #if ZBX
       if (trs_io_debug_flags & HARDDEBUG2)
-        sector_buf("format");
+        sector_dump("format");
 #endif
       omti_error(0);
     } else {
@@ -893,7 +893,7 @@ static void omti_data_out(Uint8 value)
           }
 #if ZBX
           if (trs_io_debug_flags & HARDDEBUG2)
-            sector_buf("write");
+            sector_dump("write");
 #endif
         } else if (state.command == OMTI_WRITE_SEC_BUF) {
           memset(state.secbuf, 0xE5, state.secsize);
