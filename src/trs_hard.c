@@ -962,7 +962,7 @@ static int omti_seek(void)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (state.head >= d->heads) {
+  if (state.head >= d->heads || state.secnum > d->secs) {
     error("OMTI: hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     return OMTI_ERROR;
