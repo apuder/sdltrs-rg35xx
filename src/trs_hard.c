@@ -151,6 +151,30 @@ static void hard_debug(const char *cmd)
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
+void trs_hard_debug(void)
+{
+  int i;
+
+  printf("Hard disk controller state:");
+  if (state.present == 0) {
+    puts(" DISABLED");
+    return;
+  }
+
+  printf("\n  hard drive:%d, head:%d, cyl:%d, secnum:%d, seccnt:%d, secsize:%d\n",
+      state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
+  printf("  status:0x%02X, command:0x%02X, control:0x%02X, error:0x%02X\n",
+      state.status, state.command, state.control, state.error);
+
+  for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
+    if (state.d[i].file) {
+      printf("\nhard%d: '%s'\n", i, state.d[i].filename);
+      printf("\theads %d, cyls %4d, secs %4d, writeprot %d\n",
+          state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
+    }
+  }
+}
+
 static void sector_dump(const char *cmd, size_t secsize)
 {
   int byte[16];
@@ -170,6 +194,7 @@ static void sector_dump(const char *cmd, size_t secsize)
     putc('\n', stderr);
   }
 }
+#endif
 
 static int sector_read(size_t sector_size)
 {
@@ -206,31 +231,6 @@ static int sector_write(size_t sector_size)
 
   return 0;
 }
-
-void trs_hard_debug(void)
-{
-  int i;
-
-  printf("Hard disk controller state:");
-  if (state.present == 0) {
-    puts(" DISABLED");
-    return;
-  }
-
-  printf("\n  hard drive:%d, head:%d, cyl:%d, secnum:%d, seccnt:%d, secsize:%d\n",
-      state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
-  printf("  status:0x%02X, command:0x%02X, control:0x%02X, error:0x%02X\n",
-      state.status, state.command, state.control, state.error);
-
-  for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
-    if (state.d[i].file) {
-      printf("\nhard%d: '%s'\n", i, state.d[i].filename);
-      printf("\theads %d, cyls %4d, secs %4d, writeprot %d\n",
-          state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
-    }
-  }
-}
-#endif
 
 /* Powerup or reset button */
 void trs_hard_init(int poweron)
