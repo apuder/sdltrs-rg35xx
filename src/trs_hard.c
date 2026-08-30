@@ -649,13 +649,13 @@ static int hard_sector(int newstatus)
   }
 
   if (d->file && fseek(d->file,
-    sizeof(ReedHardHeader) +
-    state.secsize * (state.cyl * d->heads * d->secs
-                  +  state.head * d->secs
-                  + (state.secnum % d->secs)), 0) != 0) {
-      file_error("hard%d: fseek '%s'", state.drive, d->filename);
-      hard_error(TRS_HARD_NFERR);
-      return -1;
+      sizeof(ReedHardHeader) +
+      state.secsize * (state.cyl * d->heads * d->secs
+                    +  state.head * d->secs
+                    + (state.secnum % d->secs)), 0) != 0) {
+    file_error("hard%d: fseek '%s'", state.drive, d->filename);
+    hard_error(TRS_HARD_NFERR);
+    return -1;
   }
 
   state.status = newstatus;
@@ -969,10 +969,10 @@ static int omti_seek(void)
   }
 
   if (d->file && fseek(d->file,
-    sizeof(ReedHardHeader) +
-    OMTI_SECSIZE * (state.cyl * d->heads * d->secs
-                 +  state.head * d->secs
-                 + (state.secnum % d->secs)), 0) != 0) {
+      sizeof(ReedHardHeader) +
+      OMTI_SECSIZE * (state.cyl * d->heads * d->secs
+                   +  state.head * d->secs
+                   + (state.secnum % d->secs)), 0) != 0) {
     file_error("OMTI: hard%d: fseek '%s'", state.drive, d->filename);
     return OMTI_ERROR;
   }
