@@ -171,6 +171,42 @@ static void sector_dump(const char *cmd)
   }
 }
 
+static int sector_read(size_t sector_size)
+{
+  FILE *f = state.d[state.drive].file;
+
+  if (f && fread(state.secbuf, 1, sector_size, f) != sector_size) {
+    if (ferror(f)) {
+      file_error("reading hard%d", state.drive);
+      return -1;
+    }
+  }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    sector_dump("read");
+#endif
+
+  return 0;
+}
+
+static int sector_write(size_t sector_size)
+{
+  FILE *f = state.d[state.drive].file;
+
+  if (f && fwrite(state.secbuf, 1, sector_size, f) != sector_size) {
+    if (errno) {
+      file_error("writing hard%d", state.drive);
+      return -1;
+    }
+  }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    sector_dump("write");
+#endif
+
+  return 0;
+}
+
 void trs_hard_debug(void)
 {
   int i;
@@ -446,18 +482,9 @@ static void hard_read(int cmd)
     return;
   }
   if (hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
-    FILE *f = state.d[state.drive].file;
-
-    if (f && fread(state.secbuf, 1, state.secsize, f) != state.secsize) {
-      if (ferror(f)) {
-        file_error("reading hard%d", state.drive);
-        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-      }
+    if (sector_read(state.secsize) != 0) {
+      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
     }
-#if ZBX
-    if (trs_io_debug_flags & HARDDEBUG2)
-      sector_dump("read");
-#endif
   }
 }
 
@@ -486,25 +513,19 @@ static void hard_verify(void)
 
 static void hard_format(void)
 {
-  FILE *f = state.d[state.drive].file;
+  int cnt = state.seccnt;
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     hard_debug("format");
 #endif
 
-  if (f) {
-    int cnt = state.seccnt;
+  memset(state.secbuf, 0, SECTORSIZE);
 
-    memset(state.secbuf, 0, SECTORSIZE);
-    while (cnt--) {
-      if (fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-        if (errno) {
-          file_error("formatting hard%d", state.drive);
-          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-          return;
-        }
-      }
+  while (cnt--) {
+    if (sector_write(state.secsize) != 0) {
+      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      return;
     }
   }
   /* !!should probably set up to read skew table here */
@@ -686,20 +707,11 @@ static void hard_data_out(int value)
     if ((state.bytesdone == state.secsize) &&
         (state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
         (state.status & TRS_HARD_ERR) == 0) {
-      FILE *f = state.d[state.drive].file;
-
       /* Drop DRQ */
       state.status &= ~TRS_HARD_DRQ;
-      if (f && fwrite(state.secbuf, 1, state.secsize, f) != state.secsize) {
-        if (errno) {
-          file_error("writing hard%d", state.drive);
-          hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-        }
+      if (sector_write(state.secsize) != 0) {
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
       }
-#if ZBX
-      if (trs_io_debug_flags & HARDDEBUG2)
-        sector_dump("write");
-#endif
     }
   }
 }
@@ -780,22 +792,13 @@ static void omti_command(void)
   switch (state.command) {
   case OMTI_READ:
     if (omti_seek() == 0) {
-      FILE *f = state.d[state.drive].file;
-
-      if (f && fread(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
-        if (ferror(f)) {
-          file_error("OMTI: reading hard%d", state.drive);
-          omti_error(OMTI_ERROR);
-          break;
-        }
+      if (sector_read(OMTI_SECSIZE) != 0) {
+        omti_error(OMTI_ERROR);
+        break;
       }
       state.control = PHASE_IN;
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
-#if ZBX
-      if (trs_io_debug_flags & HARDDEBUG2)
-        sector_dump("read");
-#endif
     } else {
       omti_error(OMTI_ERROR);
     }
@@ -813,19 +816,10 @@ static void omti_command(void)
 
   case OMTI_FORMAT:
     if (omti_seek() == 0) {
-      FILE *f = state.d[state.drive].file;
-
-      if (f && fwrite(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
-        if (errno) {
-          file_error("OMTI: formatting hard%d", state.drive);
-          omti_error(OMTI_ERROR);
-          break;
-        }
+      if (sector_write(OMTI_SECSIZE) != 0) {
+        omti_error(OMTI_ERROR);
+        break;
       }
-#if ZBX
-      if (trs_io_debug_flags & HARDDEBUG2)
-        sector_dump("format");
-#endif
       omti_error(0);
     } else {
       omti_error(OMTI_ERROR);
@@ -882,19 +876,10 @@ static void omti_data_out(Uint8 value)
       state.secbuf[state.bytesdone++] = value;
       if (state.bytesdone == state.secsize) {
         if (state.command == OMTI_WRITE) {
-          FILE *f = state.d[state.drive].file;
-
-          if (f && fwrite(state.secbuf, 1, OMTI_SECSIZE, f) != OMTI_SECSIZE) {
-            if (errno) {
-              file_error("OMTI: writing hard%d", state.drive);
-              omti_error(OMTI_ERROR);
-              break;
-            }
+          if (sector_write(OMTI_SECSIZE) != 0) {
+            omti_error(OMTI_ERROR);
+            break;
           }
-#if ZBX
-          if (trs_io_debug_flags & HARDDEBUG2)
-            sector_dump("write");
-#endif
         } else if (state.command == OMTI_WRITE_SEC_BUF) {
           memset(state.secbuf, 0xE5, state.secsize);
         }
