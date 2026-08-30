@@ -151,12 +151,12 @@ static void hard_debug(const char *cmd)
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
-static void sector_dump(const char *cmd)
+static void sector_dump(const char *cmd, size_t secsize)
 {
   int byte[16];
   int i;
 
-  for (i = 0; i < state.secsize; i += 16) {
+  for (i = 0; i < secsize; i += 16) {
     int j;
 
     debug("hard_%s: %04x: ", cmd, i);
@@ -183,7 +183,7 @@ static int sector_read(size_t sector_size)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    sector_dump("read");
+    sector_dump("read", sector_size);
 #endif
 
   return 0;
@@ -201,7 +201,7 @@ static int sector_write(size_t sector_size)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    sector_dump("write");
+    sector_dump("write", sector_size);
 #endif
 
   return 0;
