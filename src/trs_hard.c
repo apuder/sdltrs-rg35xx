@@ -175,12 +175,12 @@ void trs_hard_debug(void)
   }
 }
 
-static void sector_dump(const char *cmd, size_t secsize)
+static void sector_dump(const char *cmd, int sector_size)
 {
   int byte[16];
   int i;
 
-  for (i = 0; i < secsize; i += 16) {
+  for (i = 0; i < sector_size; i += 16) {
     int j;
 
     debug("hard_%s: %04x: ", cmd, i);
