@@ -232,6 +232,33 @@ static int sector_write(size_t sector_size)
   return 0;
 }
 
+static int sector_seek(size_t sector_size)
+{
+  const Drive *d = &state.d[state.drive];
+
+  if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
+      state.head >= d->heads ||
+      state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
+    error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
+        state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
+    return -1;
+  }
+
+  if (d->file && fseek(d->file,
+      sizeof(ReedHardHeader) +
+      sector_size * (state.cyl * d->heads * d->secs
+                  +  state.head * d->secs
+                  + (state.secnum % d->secs)), 0) != 0) {
+    file_error("hard%d: fseek '%s'", state.drive, d->filename);
+    return -1;
+  }
+
+  if (trs_show_led)
+    trs_hard_led(state.drive, 1);
+
+  return 0;
+}
+
 /* Powerup or reset button */
 void trs_hard_init(int poweron)
 {
@@ -656,35 +683,16 @@ fail:
  */
 static int hard_sector(int newstatus)
 {
-  const Drive *d = &state.d[state.drive];
+  if (state.d[state.drive].file == NULL && hard_open(state.drive) != 0)
+    return -1;
 
-  if (d->file == NULL && hard_open(state.drive) != 0) return -1;
-
-  if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
-      state.head >= d->heads ||
-      state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
-    error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
-        state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
+  if (sector_seek(state.secsize) != 0) {
     hard_error(TRS_HARD_NFERR);
     return -1;
+  } else {
+    state.status = newstatus;
+    return 0;
   }
-
-  if (d->file && fseek(d->file,
-      sizeof(ReedHardHeader) +
-      state.secsize * (state.cyl * d->heads * d->secs
-                    +  state.head * d->secs
-                    + (state.secnum % d->secs)), 0) != 0) {
-    file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    hard_error(TRS_HARD_NFERR);
-    return -1;
-  }
-
-  state.status = newstatus;
-
-  if (trs_show_led)
-    trs_hard_led(state.drive, 1);
-
-  return 0;
 }
 
 static int hard_data_in(void)
@@ -945,27 +953,7 @@ static int omti_open(int drive)
 
 static int omti_seek(void)
 {
-  const Drive *d = &state.d[state.drive];
-
-  if (state.head >= d->heads || state.secnum > d->secs) {
-    error("OMTI: hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
-        state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
-    return OMTI_ERROR;
-  }
-
-  if (d->file && fseek(d->file,
-      sizeof(ReedHardHeader) +
-      OMTI_SECSIZE * (state.cyl * d->heads * d->secs
-                   +  state.head * d->secs
-                   + (state.secnum % d->secs)), 0) != 0) {
-    file_error("OMTI: hard%d: fseek '%s'", state.drive, d->filename);
-    return OMTI_ERROR;
-  }
-
-  if (trs_show_led)
-    trs_hard_led(state.drive, 1);
-
-  return 0;
+  return (sector_seek(OMTI_SECSIZE) != 0) ? OMTI_ERROR : 0;
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
