@@ -799,11 +799,7 @@ static void omti_command(void)
 
   switch (state.command) {
   case OMTI_READ:
-    if (omti_seek() == 0) {
-      if (sector_read(OMTI_SECSIZE) != 0) {
-        omti_error(OMTI_ERROR);
-        break;
-      }
+    if (omti_seek() == 0 && sector_read(OMTI_SECSIZE) == 0) {
       state.control = PHASE_IN;
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
@@ -823,15 +819,10 @@ static void omti_command(void)
     break;
 
   case OMTI_FORMAT:
-    if (omti_seek() == 0) {
-      if (sector_write(OMTI_SECSIZE) != 0) {
-        omti_error(OMTI_ERROR);
-        break;
-      }
+    if (omti_seek() == 0 && sector_write(OMTI_SECSIZE) == 0)
       omti_error(0);
-    } else {
+    else
       omti_error(OMTI_ERROR);
-    }
     break;
 
   case OMTI_SET_DRIVE_CHAR:
