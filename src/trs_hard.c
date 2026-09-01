@@ -740,7 +740,6 @@ int trs_omti_in(int port)
       v = 0xfa; /* Expected byte for g3s_hd-omti_bootrom_2764.bin */
       break;
     case 3:
-      v = state.sdh;
       break;
     }
   }
@@ -774,7 +773,7 @@ void trs_omti_out(int port, int value)
     }
     break;
   case 3:
-    state.sdh = value; /* DMA/interrupt mask; not emulated */
+    /* DMA/interrupt mask; not emulated */
     break;
   }
 }
