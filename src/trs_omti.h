@@ -8,6 +8,7 @@
 #define OMTI_IDLE       0xc0 /* idle, ready to accept SELECT */
 #define OMTI_DATA_OUT   0xc9 /* data phase: byte wanted at OMTI port */
 #define OMTI_DATA_IN    0xcb /* data phase: byte available at OMTI port */
+#define OMTI_CMD_OUT    0xcd /* command output phase */
 #define OMTI_READY      0xcf /* command complete, status ready */
 #define OMTI_ERROR      0x02 /* error value */
 

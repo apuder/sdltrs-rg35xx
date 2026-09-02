@@ -44,13 +44,6 @@
 #define SECTORSIZE (1024)
 #define CDB_LEN    (6)       /* command descriptor block length */
 
-/* OMTI controller phase */
-#define PHASE_IDLE   (0)
-#define PHASE_CDB    (1)
-#define PHASE_IN     (2)
-#define PHASE_OUT    (3)
-#define PHASE_STATUS (4)
-
 /* Private types and data */
 
 /* Structure describing one drive */
@@ -766,10 +759,9 @@ void trs_omti_out(int port, int value)
     omti_init();
     break;
   case 2:
-    if (state.control == PHASE_IDLE) {
+    if (state.status == OMTI_IDLE) {
       state.cdb_idx = 0;
-      state.control = PHASE_CDB;
-      state.status  = OMTI_DATA_OUT;
+      state.status  = OMTI_CMD_OUT;
     }
     break;
   case 3:
@@ -799,7 +791,6 @@ static void omti_command(void)
   switch (state.command) {
   case OMTI_READ:
     if (omti_seek() == 0 && sector_read(OMTI_SECSIZE) == 0) {
-      state.control = PHASE_IN;
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
     } else {
@@ -809,7 +800,6 @@ static void omti_command(void)
 
   case OMTI_WRITE:
     if (omti_seek() == 0) {
-      state.control = PHASE_OUT;
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_OUT;
     } else {
@@ -825,13 +815,11 @@ static void omti_command(void)
     break;
 
   case OMTI_SET_DRIVE_CHAR:
-    state.control = PHASE_OUT;
     state.secsize = OMTI_CHAR_LEN;
     state.status  = OMTI_DATA_OUT;
     break;
 
   case OMTI_WRITE_SEC_BUF:
-    state.control = PHASE_OUT;
     state.secsize = OMTI_SECSIZE;
     state.status  = OMTI_DATA_OUT;
     break;
@@ -862,14 +850,14 @@ static void omti_command(void)
 
 static void omti_data_out(Uint8 value)
 {
-  switch (state.control) {
-  case PHASE_CDB:
+  switch (state.status) {
+  case OMTI_CMD_OUT:
     state.cdb[state.cdb_idx++] = value;
     if (state.cdb_idx == CDB_LEN)
       omti_command();
     break;
 
-  case PHASE_OUT:
+  case OMTI_DATA_OUT:
     if (state.bytesdone < state.secsize) {
       state.secbuf[state.bytesdone++] = value;
       if (state.bytesdone == state.secsize) {
@@ -891,8 +879,8 @@ static void omti_data_out(Uint8 value)
 
 static int omti_data_in(void)
 {
-  switch (state.control) {
-  case PHASE_IN:
+  switch (state.status) {
+  case OMTI_DATA_IN:
     if (state.bytesdone < state.secsize) {
       const int v = state.secbuf[state.bytesdone++];
 
@@ -902,7 +890,7 @@ static int omti_data_in(void)
     }
     break;
 
-  case PHASE_STATUS: {
+  case OMTI_READY: {
     const int v = state.error;
 
     /* Reading error returns the bus to idle. */
@@ -916,13 +904,11 @@ static int omti_data_in(void)
 static void omti_error(int error)
 {
   state.error   = error;
-  state.control = PHASE_STATUS;
   state.status  = OMTI_READY;
 }
 
 static void omti_init(void)
 {
-  state.control = PHASE_IDLE;
   state.status = OMTI_IDLE;
   state.cdb_idx = 0;
   state.command = 0;
