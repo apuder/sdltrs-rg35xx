@@ -214,6 +214,12 @@ void z80_out(int port, int value)
     switch (trs_clones.model) {
       case CT80:
         switch (port) {
+          case 0x20:
+          case 0x21:
+          case 0x22:
+          case 0x23:
+            trs_omti_out(port, value);
+            return;
           case 0xD0:
           case 0xD1:
           case 0xD2:
@@ -752,6 +758,12 @@ int z80_in(int port)
     switch (trs_clones.model) {
       case CT80:
         switch (port) {
+          case 0x20:
+          case 0x21:
+          case 0x22:
+          case 0x23:
+            value = trs_omti_in(port);
+            goto done;
           case 0xD0:
           case 0xD1:
           case 0xD2:

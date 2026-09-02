@@ -19,11 +19,14 @@
 #define OMTI_REZERO          0x01
 #define OMTI_REQUEST_SENSE   0x03
 #define OMTI_FORMAT          0x04
+#define OMTI_READ_VERIFY     0x05
 #define OMTI_READ            0x08
 #define OMTI_WRITE           0x0a
 #define OMTI_SEEK            0x0b
 #define OMTI_SET_DRIVE_CHAR  0x0c
 #define OMTI_WRITE_SEC_BUF   0x0f
+#define OMTI_RAM_DIAGNOSTIC  0xe0
+#define OMTI_CTRL_DIAGNOSTIC 0xe4
 
 /* SET DRIVE CHARACTERISTICS parameter block */
 #define OMTI_CHAR_LEN   8

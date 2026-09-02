@@ -837,6 +837,9 @@ static void omti_command(void)
     omti_error(omti_open(state.drive));
     break;
 
+  case OMTI_READ_VERIFY:
+  case OMTI_RAM_DIAGNOSTIC:
+  case OMTI_CTRL_DIAGNOSTIC:
   case OMTI_REQUEST_SENSE:
     omti_error(0);
     break;
