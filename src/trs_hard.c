@@ -271,7 +271,6 @@ void trs_hard_init(int poweron)
   state.head = 0;
   state.sdh = 0;
   state.command = 0;
-  memset(state.secbuf, 0, SECTORSIZE);
 
   if (poweron) {
     int i;
@@ -279,6 +278,7 @@ void trs_hard_init(int poweron)
     state.present = 0;
     state.seccnt = 0;
     state.status = 0;
+    memset(state.secbuf, 0, SECTORSIZE);
 
     for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
       state.d[i].writeprot = 0;
