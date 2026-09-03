@@ -74,7 +74,6 @@ typedef struct {
   Uint8  sdh;
   Uint8  status;
   Uint8  command;
-  Uint8  cdb_idx;
   Uint8  cdb[CDB_LEN];
   Uint8  secbuf[SECTORSIZE];
 
@@ -760,7 +759,7 @@ void trs_omti_out(int port, int value)
     break;
   case 2:
     if (state.status == OMTI_IDLE) {
-      state.cdb_idx = 0;
+      state.control = 0;
       state.status  = OMTI_CMD_OUT;
     }
     break;
@@ -855,8 +854,8 @@ static void omti_data_out(Uint8 value)
 {
   switch (state.status) {
   case OMTI_CMD_OUT:
-    state.cdb[state.cdb_idx++] = value;
-    if (state.cdb_idx == CDB_LEN)
+    state.cdb[state.control++] = value;
+    if (state.control == CDB_LEN)
       omti_command();
     break;
 
@@ -913,7 +912,7 @@ static void omti_error(int error)
 static void omti_init(void)
 {
   state.status = OMTI_IDLE;
-  state.cdb_idx = 0;
+  state.control = 0;
   state.command = 0;
   state.drive = 0;
   state.bytesdone = 0;
@@ -981,7 +980,6 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.status, 1);
   trs_save_uint8(file, &state.command, 1);
-  trs_save_uint8(file, &state.cdb_idx, 1);
   trs_save_uint8(file, state.cdb, CDB_LEN);
   trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_int(file, &state.bytesdone, 1);
@@ -1011,7 +1009,6 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.status, 1);
   trs_load_uint8(file, &state.command, 1);
-  trs_load_uint8(file, &state.cdb_idx, 1);
   trs_load_uint8(file, state.cdb, CDB_LEN);
   trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_int(file, &state.bytesdone, 1);
