@@ -884,11 +884,11 @@ static int omti_data_in(void)
   switch (state.status) {
   case OMTI_DATA_IN:
     if (state.bytesdone < state.secsize) {
-      const int v = state.secbuf[state.bytesdone++];
-
+      state.bytesdone++;
       if (state.bytesdone == state.secsize)
         omti_error(0);
-      return v;
+
+      return state.secbuf[state.bytesdone - 1];
     }
     break;
 
