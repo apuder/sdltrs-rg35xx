@@ -813,7 +813,7 @@ static void omti_command(void)
       omti_error(OMTI_ERROR);
     break;
 
-  case OMTI_SET_DRIVE_CHAR:
+  case OMTI_INIT_DRIVE:
     state.secsize = OMTI_CHAR_LEN;
     state.status  = OMTI_DATA_OUT;
     break;
@@ -827,12 +827,12 @@ static void omti_command(void)
     omti_error(omti_seek());
     break;
 
-  case OMTI_REZERO:
+  case OMTI_RECALIBRATE:
     state.cyl = state.head = state.secnum = 0;
     omti_error(omti_seek());
     break;
 
-  case OMTI_TEST_UNIT_READY:
+  case OMTI_TEST_DRIVE:
     omti_error(omti_open(state.drive));
     break;
 
