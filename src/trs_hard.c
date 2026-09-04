@@ -792,8 +792,7 @@ static void omti_command(void)
     if (omti_seek() == 0 && sector_read(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
-    } else {
-      omti_error(OMTI_ERROR);
+      return;
     }
     break;
 
@@ -801,53 +800,51 @@ static void omti_command(void)
     if (omti_seek() == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_OUT;
-    } else {
-      omti_error(OMTI_ERROR);
+      return;
     }
     break;
 
   case OMTI_FORMAT:
-    if (omti_seek() == 0 && sector_write(OMTI_SECSIZE) == 0)
+    if (omti_seek() == 0 && sector_write(OMTI_SECSIZE) == 0) {
       omti_error(0);
-    else
-      omti_error(OMTI_ERROR);
+      return;
+    }
     break;
 
   case OMTI_INIT_DRIVE:
     state.secsize = OMTI_CHAR_LEN;
     state.status  = OMTI_DATA_OUT;
-    break;
+    return;
 
   case OMTI_WRITE_SEC_BUF:
     state.secsize = OMTI_SECSIZE;
     state.status  = OMTI_DATA_OUT;
-    break;
+    return;
 
   case OMTI_SEEK:
     omti_error(omti_seek());
-    break;
+    return;
 
   case OMTI_RECALIBRATE:
     state.cyl = state.head = state.secnum = 0;
     omti_error(omti_seek());
-    break;
+    return;
 
   case OMTI_TEST_DRIVE:
     omti_error(omti_open(state.drive));
-    break;
+    return;
 
   case OMTI_READ_VERIFY:
   case OMTI_RAM_DIAGNOSTIC:
   case OMTI_CTRL_DIAGNOSTIC:
   case OMTI_REQUEST_SENSE:
     omti_error(0);
-    break;
+    return;
 
   default:
     error("OMTI: unknown command 0x%02X", state.command);
-    omti_error(OMTI_ERROR);
-    break;
   }
+  omti_error(OMTI_ERROR);
 }
 
 static void omti_data_out(Uint8 value)
