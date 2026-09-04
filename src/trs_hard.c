@@ -104,7 +104,7 @@ static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static void omti_error(int error);
-static void omti_init(void);
+static void omti_init(int error);
 static int  omti_open(int drive);
 static int  omti_seek(void);
 
@@ -755,7 +755,7 @@ void trs_omti_out(int port, int value)
     break;
   case 1:
     /* Any write is a software reset */
-    omti_init();
+    omti_init(0);
     break;
   case 2:
     if (state.status == OMTI_IDLE) {
@@ -894,12 +894,10 @@ static int omti_data_in(void)
     }
     break;
 
-  case OMTI_READY: {
-    const int v = state.error;
-
+  case OMTI_READY:
     /* Reading error returns the bus to idle. */
-    omti_init();
-    return v; }
+    omti_init(state.error);
+    return state.error;
   }
 
   return 0xff;
@@ -911,7 +909,7 @@ static void omti_error(int error)
   state.status  = OMTI_READY;
 }
 
-static void omti_init(void)
+static void omti_init(int error)
 {
   state.status = OMTI_IDLE;
   state.control = 0;
@@ -919,7 +917,7 @@ static void omti_init(void)
   state.drive = 0;
   state.bytesdone = 0;
   state.secsize = 0;
-  state.error = 0;
+  state.error = error;
 }
 
 static int omti_open(int drive)
