@@ -43,6 +43,7 @@
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)
 #define CDB_LEN    (6)       /* command descriptor block length */
+#define ERROR      (2)       /* error value of OMTI */
 
 /* Private types and data */
 
@@ -106,7 +107,6 @@ static void omti_data_out(Uint8 value);
 static void omti_error(int error);
 static void omti_init(int error);
 static int  omti_open(int drive);
-static int  omti_seek(void);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -195,7 +195,7 @@ static int sector_read(size_t sector_size)
   if (f && fread(state.secbuf, 1, sector_size, f) != sector_size) {
     if (ferror(f)) {
       file_error("reading hard%d", state.drive);
-      return -1;
+      return ERROR;
     }
   }
 #if ZBX
@@ -213,7 +213,7 @@ static int sector_write(size_t sector_size)
   if (f && fwrite(state.secbuf, 1, sector_size, f) != sector_size) {
     if (errno) {
       file_error("writing hard%d", state.drive);
-      return -1;
+      return ERROR;
     }
   }
 #if ZBX
@@ -233,7 +233,7 @@ static int sector_seek(size_t sector_size)
       state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
     error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
-    return -1;
+    return ERROR;
   }
 
   if (d->file && fseek(d->file,
@@ -242,7 +242,7 @@ static int sector_seek(size_t sector_size)
                   +  state.head * d->secs
                   + (state.secnum % d->secs)), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    return -1;
+    return ERROR;
   }
 
   if (trs_show_led)
@@ -789,7 +789,7 @@ static void omti_command(void)
 
   switch (state.command) {
   case OMTI_READ:
-    if (omti_seek() == 0 && sector_read(OMTI_SECSIZE) == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0 && sector_read(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
       return;
@@ -797,7 +797,7 @@ static void omti_command(void)
     break;
 
   case OMTI_WRITE:
-    if (omti_seek() == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_OUT;
       return;
@@ -805,7 +805,7 @@ static void omti_command(void)
     break;
 
   case OMTI_FORMAT:
-    if (omti_seek() == 0 && sector_write(OMTI_SECSIZE) == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0 && sector_write(OMTI_SECSIZE) == 0) {
       omti_error(0);
       return;
     }
@@ -822,12 +822,12 @@ static void omti_command(void)
     return;
 
   case OMTI_SEEK:
-    omti_error(omti_seek());
+    omti_error(sector_seek(OMTI_SECSIZE));
     return;
 
   case OMTI_RECALIBRATE:
     state.cyl = state.head = state.secnum = 0;
-    omti_error(omti_seek());
+    omti_error(sector_seek(OMTI_SECSIZE));
     return;
 
   case OMTI_TEST_DRIVE:
@@ -924,11 +924,6 @@ static int omti_open(int drive)
   state.secsize = OMTI_SECSIZE;
   state.status  = OMTI_IDLE;
   return 0;
-}
-
-static int omti_seek(void)
-{
-  return (sector_seek(OMTI_SECSIZE) != 0) ? OMTI_ERROR : 0;
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
