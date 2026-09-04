@@ -885,8 +885,10 @@ static int omti_data_in(void)
   case OMTI_DATA_IN:
     if (state.bytesdone < state.secsize) {
       state.bytesdone++;
-      if (state.bytesdone == state.secsize)
-        omti_error(0);
+      if (state.bytesdone == state.secsize) {
+        state.error  = 0;
+        state.status = OMTI_READY;
+      }
 
       return state.secbuf[state.bytesdone - 1];
     }
