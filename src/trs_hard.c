@@ -41,7 +41,7 @@
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
-#define SECTORSIZE (1024)
+#define SECTORSIZE (1024)    /* maximum sector size */
 #define CDB_LEN    (6)       /* command descriptor block length */
 #define ERROR      (2)       /* error value of OMTI */
 
@@ -675,7 +675,8 @@ fail:
  */
 static int hard_sector(int newstatus)
 {
-  if (state.d[state.drive].file == NULL && hard_open(state.drive) != 0)
+  if (state.d[state.drive].file == NULL &&
+      hard_open(state.drive) != 0)
     return -1;
 
   if (sector_seek(state.secsize) != 0) {
@@ -692,7 +693,7 @@ static int hard_data_in(void)
   if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
       (state.status & TRS_HARD_ERR) == 0) {
     if (state.bytesdone < state.secsize) {
-      state.status &= ~TRS_HARD_DRQ;
+      state.status &= ~TRS_HARD_DRQ; /* Drop DRQ */
       return state.secbuf[state.bytesdone++];
     }
   }
@@ -707,8 +708,7 @@ static void hard_data_out(int value)
     if ((state.bytesdone == state.secsize) &&
         (state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
         (state.status & TRS_HARD_ERR) == 0) {
-      /* Drop DRQ */
-      state.status &= ~TRS_HARD_DRQ;
+      state.status &= ~TRS_HARD_DRQ;  /* Drop DRQ */
       if (sector_write(state.secsize) != 0) {
         hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
       }
@@ -764,20 +764,20 @@ void trs_omti_out(int port, int value)
     }
     break;
   case 3:
-    /* DMA/interrupt mask; not emulated */
+    /* DMA/interrupt mask not emulated */
     break;
   }
 }
 
 static void omti_command(void)
 {
-  state.command =   state.cdb[0];
-  state.cyl     = ((state.cdb[1] & 0x80) ? 0x400 : 0)
-                | ((state.cdb[2] & 0xC0) << 2)
-                |   state.cdb[3];
-  state.drive   =  (state.cdb[1] & 0x20) >> 5;
-  state.head    =   state.cdb[1] & 0x1F;
-  state.secnum  =   state.cdb[2] & 0x3F;
+  state.command   =   state.cdb[0];
+  state.cyl       = ((state.cdb[1] & 0x80) ? 0x400 : 0)
+                  | ((state.cdb[2] & 0xC0) << 2)
+                  |   state.cdb[3];
+  state.drive     =  (state.cdb[1] & 0x20) >> 5;
+  state.head      =   state.cdb[1] & 0x1F;
+  state.secnum    =   state.cdb[2] & 0x3F;
 
   state.bytesdone = 0;
 
@@ -789,7 +789,8 @@ static void omti_command(void)
 
   switch (state.command) {
   case OMTI_READ:
-    if (sector_seek(OMTI_SECSIZE) == 0 && sector_read(OMTI_SECSIZE) == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0 &&
+        sector_read(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
       return;
@@ -805,7 +806,8 @@ static void omti_command(void)
     break;
 
   case OMTI_FORMAT:
-    if (sector_seek(OMTI_SECSIZE) == 0 && sector_write(OMTI_SECSIZE) == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0 &&
+        sector_write(OMTI_SECSIZE) == 0) {
       omti_error(0);
       return;
     }
@@ -844,6 +846,7 @@ static void omti_command(void)
   default:
     error("OMTI: unknown command 0x%02X", state.command);
   }
+
   omti_error(OMTI_ERROR);
 }
 
@@ -886,7 +889,6 @@ static int omti_data_in(void)
         state.error  = 0;
         state.status = OMTI_READY;
       }
-
       return state.secbuf[state.bytesdone - 1];
     }
     break;
@@ -902,8 +904,8 @@ static int omti_data_in(void)
 
 static void omti_error(int error)
 {
-  state.error   = error;
-  state.status  = OMTI_READY;
+  state.error  = error;
+  state.status = OMTI_READY;
 }
 
 static void omti_init(int error)
