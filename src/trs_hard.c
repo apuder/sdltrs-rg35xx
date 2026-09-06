@@ -228,9 +228,13 @@ static int sector_seek(size_t sector_size)
 {
   const Drive *d = &state.d[state.drive];
 
+  if (state.secnum > d->secs) {
+    state.head += state.secnum / d->secs;
+    state.secnum %= d->secs;
+  }
+
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
-      state.head >= d->heads ||
-      state.secnum > d->secs /* allow 0-origin or 1-origin */ ) {
+      state.head >= d->heads) {
     error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     return ERROR;
@@ -239,8 +243,7 @@ static int sector_seek(size_t sector_size)
   if (d->file && fseek(d->file,
       sizeof(ReedHardHeader) +
       sector_size * (state.cyl * d->heads * d->secs
-                  +  state.head * d->secs
-                  + (state.secnum % d->secs)), 0) != 0) {
+                  +  state.head * d->secs + state.secnum), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
     return ERROR;
   }
