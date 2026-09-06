@@ -781,7 +781,7 @@ static void omti_command(void)
   state.drive     =  (state.cdb[1] & 0x20) >> 5;
   state.head      =   state.cdb[1] & 0x1F;
   state.secnum    =   state.cdb[2] & 0x3F;
-
+  state.seccnt    =   state.cdb[4] ? state.cdb[4] : 256;
   state.bytesdone = 0;
 
 #if ZBX
@@ -871,8 +871,10 @@ static void omti_data_out(Uint8 value)
             omti_error(OMTI_ERROR);
             break;
           }
-        } else if (state.command == OMTI_WRITE_SEC_BUF) {
-          memset(state.secbuf, 0xE5, state.secsize);
+          if (--state.seccnt) {
+            state.bytesdone = 0;
+            break;
+          }
         }
         /* Set drive characteristics */
         omti_error(0);
@@ -887,12 +889,20 @@ static int omti_data_in(void)
   switch (state.status) {
   case OMTI_DATA_IN:
     if (state.bytesdone < state.secsize) {
-      state.bytesdone++;
+      int const v = state.secbuf[state.bytesdone++];
+
       if (state.bytesdone == state.secsize) {
-        state.error  = 0;
-        state.status = OMTI_READY;
+        if (state.command == OMTI_READ && --state.seccnt > 0) {
+          if (sector_read(OMTI_SECSIZE) != 0) {
+            omti_error(OMTI_ERROR);
+            return v;
+          }
+          state.bytesdone = 0;
+        } else {
+          omti_error(0);
+        }
       }
-      return state.secbuf[state.bytesdone - 1];
+      return v;
     }
     break;
 
@@ -919,6 +929,7 @@ static void omti_init(int error)
   state.drive = 0;
   state.bytesdone = 0;
   state.secsize = 0;
+  state.seccnt = 0;
   state.error = error;
 }
 
