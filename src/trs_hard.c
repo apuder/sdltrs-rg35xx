@@ -105,6 +105,7 @@ static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static void omti_error(int error);
+static void omti_format(void);
 static void omti_init(int error);
 static int  omti_open(int drive);
 
@@ -809,9 +810,8 @@ static void omti_command(void)
     break;
 
   case OMTI_FORMAT:
-    if (sector_seek(OMTI_SECSIZE) == 0 &&
-        sector_write(OMTI_SECSIZE) == 0) {
-      omti_error(0);
+    if (sector_seek(OMTI_SECSIZE) == 0) {
+      omti_format();
       return;
     }
     break;
@@ -919,6 +919,25 @@ static void omti_error(int error)
 {
   state.error  = error;
   state.status = OMTI_READY;
+}
+
+static void omti_format(void)
+{
+  const Drive *d = &state.d[state.drive];
+  int cnt = (d->cyls - state.cyl) * (d->heads - state.head) * d->secs;
+
+  if (state.cdb[5] & 0x20)
+    /* Fill sector buffer with default byte */
+    memset(state.secbuf, 0x6C, OMTI_SECSIZE);
+
+  while (cnt--) {
+    if (sector_write(OMTI_SECSIZE) != 0) {
+      omti_error(OMTI_ERROR);
+      return;
+    }
+  }
+
+  omti_error(0);
 }
 
 static void omti_init(int error)
