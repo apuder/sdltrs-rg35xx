@@ -781,7 +781,7 @@ static void omti_command(void)
   state.drive     =  (state.cdb[1] & 0x20) >> 5;
   state.head      =   state.cdb[1] & 0x1F;
   state.secnum    =   state.cdb[2] & 0x3F;
-  state.seccnt    =   state.cdb[4] ? state.cdb[4] : 256;
+  state.seccnt    =   state.cdb[4];
   state.bytesdone = 0;
 
 #if ZBX
@@ -892,7 +892,7 @@ static int omti_data_in(void)
       int const v = state.secbuf[state.bytesdone++];
 
       if (state.bytesdone == state.secsize) {
-        if (state.command == OMTI_READ && --state.seccnt > 0) {
+        if (state.command == OMTI_READ && --state.seccnt) {
           if (sector_read(OMTI_SECSIZE) != 0) {
             omti_error(OMTI_ERROR);
             return v;
