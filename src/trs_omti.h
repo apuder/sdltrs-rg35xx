@@ -29,10 +29,7 @@
 #define OMTI_RAM_DIAGNOSTIC  0xe0
 #define OMTI_CTRL_DIAGNOSTIC 0xe4
 
-/* Drive characteristics parameter block */
+/* Drive characteristics parameter block length */
 #define OMTI_CHAR_LEN   8
-#define OMTI_CHAR_CYLHI 0
-#define OMTI_CHAR_CYLLO 1
-#define OMTI_CHAR_HEADS 2
 
 #endif /* _TRS_OMTI_H */
