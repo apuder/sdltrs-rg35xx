@@ -3,8 +3,8 @@
 
 #define OMTI_SECSIZE   (512) /* Default sector size for OMTI controller */
 /*
- * OMTI status
- *                              |   |   |IRQ|DRQ|BSY|C/D|I/O|REQ| */
+ * OMTI status                  |   |   |IRQ|DRQ|BSY|C/D|I/O|REQ|
+ *                              +---+---+---+---+---+---+---+---+ */
 #define OMTI_IDLE       0xC0 /* | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | */
 #define OMTI_DATA_OUT   0xC9 /* | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | */
 #define OMTI_DATA_IN    0xCB /* | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | */
@@ -29,7 +29,7 @@
 #define OMTI_RAM_DIAGNOSTIC  0xe0
 #define OMTI_CTRL_DIAGNOSTIC 0xe4
 
-/* SET DRIVE CHARACTERISTICS parameter block */
+/* Drive characteristics parameter block */
 #define OMTI_CHAR_LEN   8
 #define OMTI_CHAR_CYLHI 0
 #define OMTI_CHAR_CYLLO 1

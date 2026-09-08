@@ -229,6 +229,7 @@ static int sector_seek(size_t sector_size)
 {
   const Drive *d = &state.d[state.drive];
 
+  /* Check sector number overflow and adjust head */
   if (state.secnum > d->secs) {
     state.head += state.secnum / d->secs;
     state.secnum %= d->secs;
@@ -758,7 +759,6 @@ void trs_omti_out(int port, int value)
     omti_data_out(value);
     break;
   case 1:
-    /* Any write is a software reset */
     omti_init(0);
     break;
   case 2:
@@ -876,7 +876,6 @@ static void omti_data_out(Uint8 value)
             break;
           }
         }
-        /* Set drive characteristics */
         omti_error(0);
       }
     }
@@ -907,7 +906,6 @@ static int omti_data_in(void)
     break;
 
   case OMTI_READY:
-    /* Reading error returns the bus to idle. */
     omti_init(state.error);
     return state.error;
   }
