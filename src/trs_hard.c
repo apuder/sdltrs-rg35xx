@@ -944,8 +944,10 @@ static void omti_init(int error)
   state.control = 0;
   state.command = 0;
   state.drive = 0;
+  state.head = 0;
   state.bytesdone = 0;
   state.secsize = 0;
+  state.secnum = 0;
   state.seccnt = 0;
   state.error = error;
 }
