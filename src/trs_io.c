@@ -217,7 +217,6 @@ void z80_out(int port, int value)
           case 0x20:
           case 0x21:
           case 0x22:
-          case 0x23:
             trs_omti_out(port, value);
             return;
           case 0xD0:
@@ -301,7 +300,6 @@ void z80_out(int port, int value)
           case 0x40:
           case 0x41:
           case 0x42:
-          case 0x43:
             trs_omti_out(port, value);
             break;
           case 0x50: /* TRS_HARD_DATA */
@@ -761,7 +759,6 @@ int z80_in(int port)
           case 0x20:
           case 0x21:
           case 0x22:
-          case 0x23:
             value = trs_omti_in(port);
             goto done;
           case 0xD0:
@@ -815,7 +812,6 @@ int z80_in(int port)
           case 0x40:
           case 0x41:
           case 0x42:
-          case 0x43:
             value = trs_omti_in(port);
             break;
           case 0x50: /* TRS_HARD_DATA */

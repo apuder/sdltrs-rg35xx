@@ -736,8 +736,6 @@ int trs_omti_in(int port)
     case 2:
       v = 0xfa; /* Expected byte for g3s_hd-omti_bootrom_2764.bin */
       break;
-    case 3:
-      break;
     }
   }
 #if ZBX
@@ -766,9 +764,6 @@ void trs_omti_out(int port, int value)
       state.control = 0;
       state.status  = OMTI_CMD_OUT;
     }
-    break;
-  case 3:
-    /* DMA/interrupt mask not emulated */
     break;
   }
 }
