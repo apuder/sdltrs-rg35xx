@@ -105,7 +105,7 @@ static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static void omti_error(int error);
-static void omti_format(void);
+static int  omti_format(void);
 static void omti_init(int error);
 static int  omti_open(int drive);
 
@@ -806,7 +806,7 @@ static void omti_command(void)
 
   case CMD_FORMAT:
     if (sector_seek(OMTI_SECSIZE) == 0) {
-      omti_format();
+      omti_error(omti_format());
       return;
     }
     break;
@@ -914,7 +914,7 @@ static void omti_error(int error)
   state.status = OMTI_READY;
 }
 
-static void omti_format(void)
+static int omti_format(void)
 {
   const Drive *d = &state.d[state.drive];
   int cnt = (d->cyls - state.cyl) * (d->heads - state.head) * d->secs;
@@ -925,12 +925,11 @@ static void omti_format(void)
 
   while (cnt--) {
     if (sector_write(OMTI_SECSIZE) != 0) {
-      omti_error(ERROR_CODE);
-      return;
+      return ERROR_CODE;
     }
   }
 
-  omti_error(0);
+  return 0;
 }
 
 static void omti_init(int error)
