@@ -11,25 +11,23 @@
 #define OMTI_CMD_OUT    0xCD /* | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 1 | */
 #define OMTI_READY      0xCF /* | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 1 | */
 
-#define OMTI_ERROR      0x02 /* error value */
-
 /*
  * OMTI commands
  */
-#define OMTI_TEST_DRIVE      0x00
-#define OMTI_RECALIBRATE     0x01
-#define OMTI_REQUEST_SENSE   0x03
-#define OMTI_FORMAT          0x04
-#define OMTI_READ_VERIFY     0x05
-#define OMTI_READ            0x08
-#define OMTI_WRITE           0x0a
-#define OMTI_SEEK            0x0b
-#define OMTI_INIT_DRIVE      0x0c
-#define OMTI_WRITE_SEC_BUF   0x0f
-#define OMTI_RAM_DIAGNOSTIC  0xe0
-#define OMTI_CTRL_DIAGNOSTIC 0xe4
+#define CMD_TEST_DRIVE      0x00
+#define CMD_RECALIBRATE     0x01
+#define CMD_REQUEST_SENSE   0x03
+#define CMD_FORMAT          0x04
+#define CMD_READ_VERIFY     0x05
+#define CMD_READ            0x08
+#define CMD_WRITE           0x0A
+#define CMD_SEEK            0x0B
+#define CMD_INIT_DRIVE      0x0C
+#define CMD_WRITE_SEC_BUF   0x0F
+#define CMD_RAM_DIAGNOSTIC  0xE0
+#define CMD_CTRL_DIAGNOSTIC 0xE4
 
 /* Drive characteristics parameter block length */
-#define OMTI_CHAR_LEN   8
+#define DRIVE_CHAR_LEN  8
 
 #endif /* _TRS_OMTI_H */
