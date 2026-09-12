@@ -1152,15 +1152,14 @@ static int sasi_data_in(void)
     }
     break;
 
-  case SASI_READY: {
-    int const v = state.sdh ? 0 : state.error;
-
-    if (state.sdh == 0)
+  case SASI_READY:
+    if (state.sdh == 0) {
       state.sdh = 1;
-    else
+      return state.error;
+    } else {
       sasi_init(0);
-
-    return v; }
+      return 0;
+    }
   }
 
   return 0xff;
