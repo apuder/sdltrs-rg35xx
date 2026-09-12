@@ -1178,8 +1178,6 @@ static int sasi_format(void)
   const Drive *d = &state.d[state.drive];
   int cnt = (d->cyls * d->heads * d->secs) - (state.lba / SASI_SECSIZE);
 
-  state.seccnt = 1;
-
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, SASI_SECSIZE);
