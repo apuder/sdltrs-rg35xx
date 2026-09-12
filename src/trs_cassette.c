@@ -227,10 +227,8 @@ static Uint8 const value_to_sample[] = { 127, /* 0.46 V */
 #define WAVE_FORMAT_8BIT 8
 #define WAVE_RIFFSIZE_OFFSET 0x04
 #define WAVE_RIFF_OFFSET 0x08
-#define WAVE_DATAID_OFFSET 0x24
 #define WAVE_DATASIZE_OFFSET 0x28
 #define WAVE_DATA_OFFSET 0x2c
-static long wave_dataid_offset = WAVE_DATAID_OFFSET;
 static long wave_datasize_offset = WAVE_DATASIZE_OFFSET;
 static long wave_data_offset = WAVE_DATA_OFFSET;
 
@@ -368,7 +366,6 @@ create_wav_header(FILE *f)
      The data chunk is the actual sample data, so its size is the size
      of the file minus wave_data_offset. */
 
-  wave_dataid_offset = WAVE_DATAID_OFFSET;
   wave_datasize_offset = WAVE_DATASIZE_OFFSET;
   wave_data_offset = WAVE_DATA_OFFSET;
   if (cassette_position < wave_data_offset) {
@@ -450,7 +447,6 @@ parse_wav_header(FILE *f)
   }
   fmt_size -= 16;  /* size read so far */
   while (fmt_size-- > 0) getc(f); /* ignore additional */
-  wave_dataid_offset = ftell(f);
   if (check_chunk_id("data", f) < 0) return -1;
   wave_datasize_offset = ftell(f);
   if (get_fourbyte(&n4, f) < 0) return -1; /* ignore this field */
