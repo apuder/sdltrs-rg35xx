@@ -36,14 +36,14 @@
 #include "trs.h"
 #include "trs_hard.h"
 #include "trs_imp_exp.h"
-#include "trs_omti.h"
+#include "trs_omti_sasi.h"
 #include "trs_state_save.h"
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)    /* maximum sector size */
 #define CDB_LEN    (6)       /* command descriptor block length */
-#define ERROR_CODE (2)       /* error value of OMTI */
+#define ERROR_CODE (2)       /* error value of OMTI/SASI */
 
 /* Private types and data */
 
@@ -66,10 +66,12 @@ typedef struct {
   /* Controller register images */
   Uint8  control;
   Uint8  error;
+  Uint8  data;
   Uint8  seccnt;
   Uint8  secnum;
   Uint16 secsize;
   Uint16 cyl;
+  Uint32 lba;
   Uint8  drive;
   Uint8  head;
   Uint8  sdh;
@@ -108,6 +110,15 @@ static void omti_error(int error);
 static int  omti_format(void);
 static void omti_init(int error);
 static int  omti_open(int drive);
+
+static void sasi_command(void);
+static int  sasi_data_in(void);
+static void sasi_data_out(Uint8 value);
+static void sasi_error(int error);
+static int  sasi_format(void);
+static void sasi_init(int error);
+static int  sasi_open(int drive);
+static int  sasi_seek(void);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -955,6 +966,275 @@ static int omti_open(int drive)
   return 0;
 }
 
+int trs_sasi_in(int port)
+{
+  int v = 0xff;
+
+  if (state.present) {
+    switch (port) {
+    case 0:
+      v = state.status == SASI_IDLE ? state.data : sasi_data_in();
+      break;
+    case 1:
+      v = state.status;
+      if (v == 0x51) /* Kludge needed for GENIE-DOS 2.4 */
+        state.status = SASI_IDLE;
+      break;
+    }
+  }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("[PC=%04X] trs_sasi_in(%02X) => %02X\n", Z80_PC, port, v);
+#endif
+  return v;
+}
+
+void trs_sasi_out(int port, int value)
+{
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG1)
+    debug("[PC=%04X] trs_sasi_out(%02X), %02X\n", Z80_PC, port, value);
+#endif
+
+  switch (port) {
+  case 0:
+    if (state.status == SASI_IDLE)
+      state.data = value;
+    else
+      sasi_data_out(value);
+    break;
+  case 1:
+    sasi_init(0);
+    break;
+  case 2:
+    if (state.status == SASI_IDLE && (state.data & 1)) {
+      state.control = 0;
+      state.status  = SASI_CMD_OUT;
+    }
+    break;
+  }
+}
+
+static void sasi_command(void)
+{
+  state.bytesdone = 0;
+  state.command   = state.cdb[0];
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("SASI: command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
+        state.command, state.error, state.drive, state.lba, state.seccnt);
+#endif
+
+  if (state.command == CMD_REQUEST_SENSE) {
+    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[1] = ((state.lba >> 16) & 0x1F) | (state.drive << 5);
+    state.secbuf[2] = state.lba >> 8;
+    state.secbuf[3] = state.lba;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = SASI_DATA_IN;
+    return;
+  }
+
+  state.lba    = ((state.cdb[1] & 0x1F) << 16)
+               |  (state.cdb[2] << 8)
+               |   state.cdb[3];
+  state.drive  =  (state.cdb[1] & 0x20) >> 5;
+  state.seccnt =   state.cdb[4];
+
+  switch (state.command) {
+  case CMD_READ:
+    if (sasi_seek() == 0 && sector_read(SASI_SECSIZE) == 0) {
+      state.secsize = SASI_SECSIZE;
+      state.status  = SASI_DATA_IN;
+      return;
+    }
+    break;
+
+  case CMD_WRITE:
+    if (sasi_seek() == 0) {
+      state.secsize = SASI_SECSIZE;
+      state.status  = SASI_DATA_OUT;
+      return;
+    }
+    break;
+
+  case CMD_FORMAT:
+    if (sasi_seek() == 0) {
+      sasi_error(sasi_format());
+      return;
+    }
+    break;
+
+  case CMD_INIT_DRIVE:
+    state.secsize = DRIVE_CHAR_LEN;
+    state.status  = SASI_DATA_OUT;
+    return;
+
+  case CMD_WRITE_SEC_BUF:
+    state.secsize = SASI_SECSIZE;
+    state.status  = SASI_DATA_OUT;
+    return;
+
+  case CMD_SEEK:
+    sasi_error(sasi_seek());
+    return;
+
+  case CMD_RECALIBRATE:
+    state.lba = 0;
+    sasi_error(sasi_seek());
+    return;
+
+  case CMD_TEST_DRIVE:
+    sasi_error(sasi_open(state.drive));
+    return;
+
+  case CMD_READ_VERIFY:
+    sasi_error(0);
+    return;
+
+  default:
+    error("SASI: unknown command 0x%02X", state.command);
+  }
+
+  sasi_error(ERROR_CODE);
+}
+
+static void sasi_data_out(Uint8 value)
+{
+  switch (state.status) {
+  case SASI_CMD_OUT:
+    state.cdb[state.control++] = value;
+    if (state.control == CDB_LEN)
+      sasi_command();
+    break;
+
+  case SASI_DATA_OUT:
+    if (state.bytesdone < state.secsize) {
+      state.secbuf[state.bytesdone++] = value;
+      if (state.bytesdone == state.secsize) {
+        if (state.command == CMD_WRITE) {
+          if (sector_write(SASI_SECSIZE) != 0) {
+            sasi_error(ERROR_CODE);
+            break;
+          }
+          if (--state.seccnt) {
+            state.bytesdone = 0;
+            break;
+          }
+        }
+        sasi_error(0);
+      }
+    }
+    break;
+  }
+}
+
+static int sasi_data_in(void)
+{
+  switch (state.status) {
+  case SASI_DATA_IN:
+    if (state.bytesdone < state.secsize) {
+      int const v = state.secbuf[state.bytesdone++];
+
+      if (state.bytesdone == state.secsize) {
+        if (state.command == CMD_READ && --state.seccnt) {
+          if (sector_read(SASI_SECSIZE) != 0) {
+            sasi_error(ERROR_CODE);
+            return v;
+          }
+          state.bytesdone = 0;
+        } else {
+          sasi_error(0);
+        }
+      }
+      return v;
+    }
+    break;
+
+  case SASI_READY: {
+    int const v = state.sdh ? 0 : state.error;
+
+    if (state.sdh == 0)
+      state.sdh = 1;
+    else
+      sasi_init(0);
+
+    return v; }
+  }
+
+  return 0xff;
+}
+
+static void sasi_error(int error)
+{
+  state.error  = error;
+  state.sdh    = 0;
+  state.status = SASI_READY;
+}
+
+static int sasi_format(void)
+{
+  const Drive *d = &state.d[state.drive];
+  int cnt = (d->cyls * d->heads * d->secs) - (state.lba / SASI_SECSIZE);
+
+  state.seccnt = 1;
+
+  if ((state.cdb[5] & 0x20) == 0)
+    /* Fill sector buffer with default byte */
+    memset(state.secbuf, 0x6C, SASI_SECSIZE);
+
+  while (cnt--) {
+    if (sector_write(SASI_SECSIZE) != 0) {
+      state.lba = (cnt * SASI_SECSIZE) - state.lba;
+      return ERROR_CODE;
+    }
+  }
+
+  fflush(d->file);
+  return 0;
+}
+
+static void sasi_init(int error)
+{
+  state.status = SASI_IDLE;
+  state.control = 0;
+  state.data = 0;
+  state.command = 0;
+  state.drive = 0;
+  state.bytesdone = 0;
+  state.sdh = 0;
+  state.secsize = 0;
+  state.seccnt = 0;
+  state.error = error;
+}
+
+static int sasi_open(int drive)
+{
+  if (hard_open(drive) != 0) return ERROR_CODE;
+
+  state.secsize = SASI_SECSIZE;
+  state.status  = SASI_IDLE;
+  return 0;
+}
+
+static int sasi_seek(void)
+{
+  const Drive *d = &state.d[state.drive];
+
+  if (d->file && fseek(d->file,
+      sizeof(ReedHardHeader) +
+      (state.lba * SASI_SECSIZE), 0) != 0) {
+    file_error("hard%d: fseek '%s'", state.drive, d->filename);
+    return ERROR_CODE;
+  }
+
+  if (trs_show_led)
+    trs_hard_led(state.drive, 1);
+
+  return 0;
+}
+
 static void trs_save_harddrive(FILE *file, Drive *d)
 {
   int file_not_null = (d->file != NULL);
@@ -991,11 +1271,13 @@ void trs_hard_save(FILE *file)
 
   trs_save_int(file, &state.present, 1);
   trs_save_uint8(file, &state.control, 1);
+  trs_save_uint8(file, &state.data, 1);
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
   trs_save_uint16(file, &state.secsize);
   trs_save_uint16(file, &state.cyl);
+  trs_save_uint32(file, &state.lba);
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.head, 1);
   trs_save_uint8(file, &state.sdh, 1);
@@ -1020,11 +1302,13 @@ void trs_hard_load(FILE *file)
 
   trs_load_int(file, &state.present, 1);
   trs_load_uint8(file, &state.control, 1);
+  trs_load_uint8(file, &state.data, 1);
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
   trs_load_uint16(file, &state.secsize);
   trs_load_uint16(file, &state.cyl);
+  trs_load_uint32(file, &state.lba);
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.head, 1);
   trs_load_uint8(file, &state.sdh, 1);

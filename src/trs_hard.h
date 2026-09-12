@@ -45,6 +45,8 @@ extern void  trs_hard_getgeometry(int unit, int *cyls, int *head, int *secs);
 
 extern int   trs_omti_in(int port);
 extern void  trs_omti_out(int port, int value);
+extern int   trs_sasi_in(int port);
+extern void  trs_sasi_out(int port, int value);
 
 /* RSHARD assumes 32 sectors/track */
 #define TRS_HARD_SEC_PER_TRK 32

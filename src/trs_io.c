@@ -297,6 +297,11 @@ void z80_out(int port, int value)
 
       case GENIE3S:
         switch (port) {
+          case 0x00:
+          case 0x01:
+          case 0x02:
+            trs_sasi_out(port, value);
+            break;
           case 0x40:
           case 0x41:
           case 0x42:
@@ -809,6 +814,10 @@ int z80_in(int port)
 
       case GENIE3S:
         switch (port) {
+          case 0x00:
+          case 0x01:
+            value = trs_sasi_in(port);
+            break;
           case 0x40:
           case 0x41:
           case 0x42:
