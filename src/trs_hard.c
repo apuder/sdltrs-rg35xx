@@ -793,8 +793,10 @@ static void omti_command(void)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("OMTI: command 0x%02X drive:%d cyl:%d head:%d sec:%d\n",
-        state.command, state.drive, state.cyl, state.head, state.secnum);
+    debug("OMTI command 0x%02X error 0x%02X drive:%d"
+          " cyl:%d head:%d secnum:%d seccnt:%d\n",
+        state.command, state.error, state.drive,
+        state.cyl, state.head, state.secnum, state.seccnt);
 #endif
 
   switch (state.command) {
@@ -853,7 +855,7 @@ static void omti_command(void)
     return;
 
   default:
-    error("OMTI: unknown command 0x%02X", state.command);
+    error("OMTI unknown command 0x%02X", state.command);
   }
 
   omti_error(ERROR_CODE);
@@ -1022,7 +1024,7 @@ static void sasi_command(void)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI: command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
+    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
         state.command, state.error, state.drive, state.lba, state.seccnt);
 #endif
 
@@ -1094,7 +1096,7 @@ static void sasi_command(void)
     return;
 
   default:
-    error("SASI: unknown command 0x%02X", state.command);
+    error("SASI unknown command 0x%02X", state.command);
   }
 
   sasi_error(ERROR_CODE);
