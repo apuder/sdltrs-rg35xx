@@ -807,9 +807,7 @@ static void omti_command(void)
     return;
   }
 
-  state.cyl    = ((state.cdb[1] & 0x80) ? 0x400 : 0)
-               | ((state.cdb[2] & 0xC0) << 2)
-               |   state.cdb[3];
+  state.cyl    = ((state.cdb[2] & 0xC0) << 2) | state.cdb[3];
   state.drive  =  (state.cdb[1] & 0x20) >> 5;
   state.head   =   state.cdb[1] & 0x1F;
   state.secnum =   state.cdb[2] & 0x3F;
