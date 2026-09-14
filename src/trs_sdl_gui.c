@@ -1474,14 +1474,14 @@ void gui_hard_menu(void)
         }
         break;
       case 9:
-        snprintf(input, 2, "%d", heads);
-        if (gui_input(" Enter Head Count ", input, input, 1, 0) > 0) {
+        snprintf(input, 3, "%d", heads);
+        if (gui_input(" Enter Head Count ", input, input, 2, 0) > 0) {
           value = atoi(input);
           if (value != heads) {
-            if (value >= 0 && value <= 8)
+            if (value >= 0 && value <= 16)
               heads = value;
             else
-              gui_message("ERROR", "Head Count must be between 0 and 8");
+              gui_message("ERROR", "Head Count must be between 0 and 16");
           }
         }
         break;
