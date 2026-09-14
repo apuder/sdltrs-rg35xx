@@ -240,6 +240,9 @@ static int sector_seek(size_t sector_size)
 {
   const Drive *d = &state.d[state.drive];
 
+  if (d->file == NULL)
+    return ERROR_CODE;
+
   /* Check sector number overflow and adjust head */
   if (state.secnum > d->secs) {
     state.head += state.secnum / d->secs;
@@ -253,7 +256,7 @@ static int sector_seek(size_t sector_size)
     return ERROR_CODE;
   }
 
-  if (d->file && fseek(d->file,
+  if (fseek(d->file,
       sizeof(ReedHardHeader) +
       sector_size * (state.cyl * d->heads * d->secs
                   +  state.head * d->secs + state.secnum), 0) != 0) {
@@ -1221,7 +1224,10 @@ static int sasi_seek(void)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file && fseek(d->file,
+  if (d->file == NULL)
+    return ERROR_CODE;
+
+  if (fseek(d->file,
       sizeof(ReedHardHeader) +
       (state.lba * SASI_SECSIZE), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
