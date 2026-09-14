@@ -1190,7 +1190,7 @@ static int sasi_format(void)
 
   while (cnt--) {
     if (sector_write(SASI_SECSIZE) != 0) {
-      state.lba = (cnt * SASI_SECSIZE) - state.lba;
+      state.lba += (cnt * SASI_SECSIZE);
       return ERROR_CODE;
     }
   }
