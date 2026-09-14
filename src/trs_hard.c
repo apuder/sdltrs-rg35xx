@@ -278,6 +278,7 @@ void trs_hard_init(int poweron)
   state.secnum = 0;
   state.secsize = 0;
   state.cyl = 0;
+  state.lba = 0;
   state.drive = 0;
   state.head = 0;
   state.sdh = 0;
@@ -289,6 +290,7 @@ void trs_hard_init(int poweron)
     state.present = 0;
     state.seccnt = 0;
     state.status = 0;
+    memset(state.cdb, 0, CDB_LEN);
     memset(state.secbuf, 0, SECTORSIZE);
 
     for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
@@ -1206,6 +1208,7 @@ static void sasi_init(int error)
   state.drive = 0;
   state.bytesdone = 0;
   state.sdh = 0;
+  state.lba = 0;
   state.secsize = 0;
   state.seccnt = 0;
   state.error = error;
