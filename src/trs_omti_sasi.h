@@ -14,7 +14,7 @@
 #define OMTI_DATA_OUT  0xC9 /* | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | */
 #define OMTI_DATA_IN   0xCB /* | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 1 | */
 #define OMTI_CMD_OUT   0xCD /* | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 1 | */
-#define OMTI_READY     0xCF /* | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 1 | */
+#define OMTI_STATUS    0xCF /* | 1 | 1 | 0 | 0 | 1 | 1 | 1 | 1 | */
 
 /*
  * SASI status                 |   |   |   |I/O|C/D|   |BSY|REQ|
@@ -23,7 +23,7 @@
 #define SASI_DATA_OUT  0x03 /* | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | */
 #define SASI_DATA_IN   0x13 /* | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | */
 #define SASI_CMD_OUT   0x0B /* | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 1 | */
-#define SASI_READY     0x1B /* | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | */
+#define SASI_STATUS    0x1B /* | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | */
 
 /*
  * OMTI/SASI commands

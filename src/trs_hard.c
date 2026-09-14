@@ -926,7 +926,7 @@ static int omti_data_in(void)
     }
     break;
 
-  case OMTI_READY:
+  case OMTI_STATUS:
     omti_init(state.error);
     return state.error;
   }
@@ -937,7 +937,7 @@ static int omti_data_in(void)
 static void omti_error(int error)
 {
   state.error  = error;
-  state.status = OMTI_READY;
+  state.status = OMTI_STATUS;
 }
 
 static int omti_format(void)
@@ -1167,7 +1167,7 @@ static int sasi_data_in(void)
     }
     break;
 
-  case SASI_READY:
+  case SASI_STATUS:
     if (state.sdh == 0) {
       state.sdh = 1;
       return state.error;
@@ -1184,7 +1184,7 @@ static void sasi_error(int error)
 {
   state.error  = error;
   state.sdh    = 0;
-  state.status = SASI_READY;
+  state.status = SASI_STATUS;
 }
 
 static int sasi_format(void)
