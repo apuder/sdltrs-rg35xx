@@ -1051,10 +1051,10 @@ static void sasi_command(void)
     return;
   }
 
+  state.drive  =  (state.cdb[1] & 0x20) >> 5;
   state.lba    = ((state.cdb[1] & 0x1F) << 16)
                |  (state.cdb[2] << 8)
                |   state.cdb[3];
-  state.drive  =  (state.cdb[1] & 0x20) >> 5;
   state.seccnt =   state.cdb[4];
 
   switch (state.command) {
