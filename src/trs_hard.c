@@ -961,7 +961,6 @@ static void omti_init(int error)
   state.bytesdone = 0;
   state.command = 0;
   state.control = 0;
-  state.drive = 0;
   state.error = error;
   state.head = 0;
   state.secnum = 0;
@@ -974,6 +973,7 @@ static int omti_open(int drive)
 {
   if (hard_open(drive) != 0) return ERROR_CODE;
 
+  state.drive   = drive;
   state.secsize = OMTI_SECSIZE;
   state.status  = OMTI_IDLE;
   return 0;
@@ -1211,7 +1211,6 @@ static void sasi_init(int error)
   state.command = 0;
   state.control = 0;
   state.data = 0;
-  state.drive = 0;
   state.error = error;
   state.cyl = 0;
   state.sdh = 0;
@@ -1224,6 +1223,7 @@ static int sasi_open(int drive)
 {
   if (hard_open(drive) != 0) return ERROR_CODE;
 
+  state.drive   = drive;
   state.secsize = SASI_SECSIZE;
   state.status  = SASI_IDLE;
   return 0;
