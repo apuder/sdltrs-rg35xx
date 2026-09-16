@@ -934,7 +934,7 @@ static int omti_data_in(void)
 
 static void omti_error(int error)
 {
-  state.error  = error;
+  state.error  = error | (state.drive << 5);
   state.status = OMTI_STATUS;
 }
 
@@ -1180,7 +1180,7 @@ static int sasi_data_in(void)
 
 static void sasi_error(int error)
 {
-  state.error  = error;
+  state.error  = error | (state.drive << 5);
   state.sdh    = 0;
   state.status = SASI_STATUS;
 }
