@@ -787,14 +787,6 @@ static void omti_command(void)
   state.bytesdone = 0;
   state.command   = state.cdb[0];
 
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    debug("OMTI command 0x%02X error 0x%02X drive:%d"
-          " cyl:%d head:%d secnum:%d seccnt:%d\n",
-        state.command, state.error, state.drive,
-        state.cyl, state.head, state.secnum, state.seccnt);
-#endif
-
   if (state.command == CMD_REQUEST_SENSE) {
     state.secbuf[0] = state.error;
     state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
@@ -810,6 +802,14 @@ static void omti_command(void)
   state.head   =   state.cdb[1] & 0x1F;
   state.secnum =   state.cdb[2] & 0x3F;
   state.seccnt =   state.cdb[4];
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("OMTI command 0x%02X error 0x%02X drive:%d"
+          " cyl:%d head:%d secnum:%d seccnt:%d\n",
+        state.command, state.error, state.drive,
+        state.cyl, state.head, state.secnum, state.seccnt);
+#endif
 
   switch (state.command) {
   case CMD_READ:
@@ -1033,12 +1033,6 @@ static void sasi_command(void)
   state.bytesdone = 0;
   state.command   = state.cdb[0];
 
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
-        state.command, state.error, state.drive, state.cyl, state.seccnt);
-#endif
-
   if (state.command == CMD_REQUEST_SENSE) {
     state.secbuf[0] = state.error | 0x80;
     state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
@@ -1054,6 +1048,12 @@ static void sasi_command(void)
                |   state.cdb[3];
   state.drive  =  (state.cdb[1] & 0x20) >> 5;
   state.seccnt =   state.cdb[4];
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
+        state.command, state.error, state.drive, state.cyl, state.seccnt);
+#endif
 
   switch (state.command) {
   case CMD_READ:
