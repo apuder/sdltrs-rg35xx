@@ -958,15 +958,9 @@ static int omti_format(void)
 
 static void omti_init(int error)
 {
-  state.bytesdone = 0;
-  state.command = 0;
   state.control = 0;
-  state.error = error;
-  state.head = 0;
-  state.secnum = 0;
-  state.seccnt = 0;
-  state.secsize = 0;
-  state.status = OMTI_IDLE;
+  state.error   = error;
+  state.status  = OMTI_IDLE;
 }
 
 static int omti_open(int drive)
@@ -1207,16 +1201,11 @@ static int sasi_format(void)
 
 static void sasi_init(int error)
 {
-  state.bytesdone = 0;
-  state.command = 0;
   state.control = 0;
-  state.data = 0;
-  state.error = error;
-  state.cyl = 0;
-  state.sdh = 0;
-  state.seccnt = 0;
-  state.secsize = 0;
-  state.status = SASI_IDLE;
+  state.data    = 0;
+  state.error   = error;
+  state.sdh     = 0;
+  state.status  = SASI_IDLE;
 }
 
 static int sasi_open(int drive)
