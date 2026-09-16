@@ -73,12 +73,11 @@ typedef struct {
   Uint8  cdb[CDB_LEN];
   Uint8  command;
   Uint8  control;
-  Uint16 cyl;
+  Uint32 cyl; /* LBA for SASI */
   Uint8  data;
   Uint8  drive;
   Uint8  error;
   Uint8  head;
-  Uint32 lba;
   Uint8  sdh;
   Uint8  secbuf[SECTORSIZE];
   Uint8  seccnt;
@@ -165,7 +164,7 @@ void trs_hard_debug(void)
     return;
   }
 
-  printf("\n  hard drive:%d, head:%d, cyl:%d, secnum:%d, seccnt:%d, secsize:%d\n",
+  printf("\n  hard drive:%d, head:%d, cyl/lba:%d, secnum:%d, seccnt:%d, secsize:%d\n",
       state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
   printf("  status:0x%02X, command:0x%02X, control:0x%02X, error:0x%02X\n",
       state.status, state.command, state.control, state.error);
@@ -279,7 +278,6 @@ void trs_hard_init(int poweron)
   state.error = 0;
   state.drive = 0;
   state.head = 0;
-  state.lba = 0;
   state.sdh = 0;
   state.secnum = 0;
   state.secsize = 0;
@@ -1038,23 +1036,23 @@ static void sasi_command(void)
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     debug("SASI command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
-        state.command, state.error, state.drive, state.lba, state.seccnt);
+        state.command, state.error, state.drive, state.cyl, state.seccnt);
 #endif
 
   if (state.command == CMD_REQUEST_SENSE) {
     state.secbuf[0] = state.error | 0x80;
-    state.secbuf[1] = ((state.lba >> 16) & 0x1F) | (state.drive << 5);
-    state.secbuf[2] = state.lba >> 8;
-    state.secbuf[3] = state.lba;
+    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
+    state.secbuf[2] = state.cyl >> 8;
+    state.secbuf[3] = state.cyl;
     state.secsize   = SENSE_BUF_LEN;
     state.status    = SASI_DATA_IN;
     return;
   }
 
-  state.drive  =  (state.cdb[1] & 0x20) >> 5;
-  state.lba    = ((state.cdb[1] & 0x1F) << 16)
+  state.cyl    = ((state.cdb[1] & 0x1F) << 16)
                |  (state.cdb[2] << 8)
                |   state.cdb[3];
+  state.drive  =  (state.cdb[1] & 0x20) >> 5;
   state.seccnt =   state.cdb[4];
 
   switch (state.command) {
@@ -1096,7 +1094,7 @@ static void sasi_command(void)
     return;
 
   case CMD_RECALIBRATE:
-    state.lba = 0;
+    state.cyl = 0;
     sasi_error(sasi_seek());
     return;
 
@@ -1190,7 +1188,7 @@ static void sasi_error(int error)
 static int sasi_format(void)
 {
   const Drive *d = &state.d[state.drive];
-  int cnt = (d->cyls * d->heads * d->secs) - (state.lba / SASI_SECSIZE);
+  int cnt = (d->cyls * d->heads * d->secs) - (state.cyl / SASI_SECSIZE);
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
@@ -1198,7 +1196,7 @@ static int sasi_format(void)
 
   while (cnt--) {
     if (sector_write(SASI_SECSIZE) != 0) {
-      state.lba += (cnt * SASI_SECSIZE);
+      state.cyl += (cnt * SASI_SECSIZE);
       return ERROR_CODE;
     }
   }
@@ -1215,7 +1213,7 @@ static void sasi_init(int error)
   state.data = 0;
   state.drive = 0;
   state.error = error;
-  state.lba = 0;
+  state.cyl = 0;
   state.sdh = 0;
   state.seccnt = 0;
   state.secsize = 0;
@@ -1240,7 +1238,7 @@ static int sasi_seek(void)
 
   if (fseek(d->file,
       sizeof(ReedHardHeader) +
-      (state.lba * SASI_SECSIZE), 0) != 0) {
+      (state.cyl * SASI_SECSIZE), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
     return ERROR_CODE;
   }
@@ -1290,12 +1288,11 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, state.cdb, CDB_LEN);
   trs_save_uint8(file, &state.command, 1);
   trs_save_uint8(file, &state.control, 1);
-  trs_save_uint16(file, &state.cyl);
+  trs_save_uint32(file, &state.cyl);
   trs_save_uint8(file, &state.data, 1);
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.head, 1);
-  trs_save_uint32(file, &state.lba);
   trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.seccnt, 1);
@@ -1321,12 +1318,11 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, state.cdb, CDB_LEN);
   trs_load_uint8(file, &state.command, 1);
   trs_load_uint8(file, &state.control, 1);
-  trs_load_uint16(file, &state.cyl);
+  trs_load_uint32(file, &state.cyl);
   trs_load_uint8(file, &state.data, 1);
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.head, 1);
-  trs_load_uint32(file, &state.lba);
   trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.seccnt, 1);
