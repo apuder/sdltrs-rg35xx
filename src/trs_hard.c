@@ -60,31 +60,31 @@ typedef struct {
 
 /* Structure describing controller state */
 typedef struct {
+  /* Drive geometries and files */
+  Drive d[TRS_HARD_MAXDRIVES];
+
   /* Controller present?  Yes if we have any drives, no if none */
   int present;
-
-  /* Controller register images */
-  Uint8  control;
-  Uint8  error;
-  Uint8  data;
-  Uint8  seccnt;
-  Uint8  secnum;
-  Uint16 secsize;
-  Uint16 cyl;
-  Uint32 lba;
-  Uint8  drive;
-  Uint8  head;
-  Uint8  sdh;
-  Uint8  status;
-  Uint8  command;
-  Uint8  cdb[CDB_LEN];
-  Uint8  secbuf[SECTORSIZE];
 
   /* Number of bytes already done in current read/write */
   int bytesdone;
 
-  /* Drive geometries and files */
-  Drive d[TRS_HARD_MAXDRIVES];
+  /* Controller register images */
+  Uint8  cdb[CDB_LEN];
+  Uint8  command;
+  Uint8  control;
+  Uint16 cyl;
+  Uint8  data;
+  Uint8  drive;
+  Uint8  error;
+  Uint8  head;
+  Uint32 lba;
+  Uint8  sdh;
+  Uint8  secbuf[SECTORSIZE];
+  Uint8  seccnt;
+  Uint8  secnum;
+  Uint16 secsize;
+  Uint8  status;
 } State;
 
 static State state;
@@ -273,16 +273,16 @@ static int sector_seek(size_t sector_size)
 /* Powerup or reset button */
 void trs_hard_init(int poweron)
 {
+  state.command = 0;
   state.control = 0;
-  state.error = 0;
-  state.secnum = 0;
-  state.secsize = 0;
   state.cyl = 0;
-  state.lba = 0;
+  state.error = 0;
   state.drive = 0;
   state.head = 0;
+  state.lba = 0;
   state.sdh = 0;
-  state.command = 0;
+  state.secnum = 0;
+  state.secsize = 0;
 
   if (poweron) {
     int i;
@@ -960,16 +960,16 @@ static int omti_format(void)
 
 static void omti_init(int error)
 {
-  state.status = OMTI_IDLE;
-  state.control = 0;
-  state.command = 0;
-  state.drive = 0;
-  state.head = 0;
   state.bytesdone = 0;
-  state.secsize = 0;
+  state.command = 0;
+  state.control = 0;
+  state.drive = 0;
+  state.error = error;
+  state.head = 0;
   state.secnum = 0;
   state.seccnt = 0;
-  state.error = error;
+  state.secsize = 0;
+  state.status = OMTI_IDLE;
 }
 
 static int omti_open(int drive)
@@ -1209,17 +1209,17 @@ static int sasi_format(void)
 
 static void sasi_init(int error)
 {
-  state.status = SASI_IDLE;
+  state.bytesdone = 0;
+  state.command = 0;
   state.control = 0;
   state.data = 0;
-  state.command = 0;
   state.drive = 0;
-  state.bytesdone = 0;
-  state.sdh = 0;
-  state.lba = 0;
-  state.secsize = 0;
-  state.seccnt = 0;
   state.error = error;
+  state.lba = 0;
+  state.sdh = 0;
+  state.seccnt = 0;
+  state.secsize = 0;
+  state.status = SASI_IDLE;
 }
 
 static int sasi_open(int drive)
@@ -1286,22 +1286,22 @@ void trs_hard_save(FILE *file)
   int i;
 
   trs_save_int(file, &state.present, 1);
+  trs_save_int(file, &state.bytesdone, 1);
+  trs_save_uint8(file, state.cdb, CDB_LEN);
+  trs_save_uint8(file, &state.command, 1);
   trs_save_uint8(file, &state.control, 1);
+  trs_save_uint16(file, &state.cyl);
   trs_save_uint8(file, &state.data, 1);
+  trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.error, 1);
+  trs_save_uint8(file, &state.head, 1);
+  trs_save_uint32(file, &state.lba);
+  trs_save_uint8(file, state.secbuf, SECTORSIZE);
+  trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
   trs_save_uint16(file, &state.secsize);
-  trs_save_uint16(file, &state.cyl);
-  trs_save_uint32(file, &state.lba);
-  trs_save_uint8(file, &state.drive, 1);
-  trs_save_uint8(file, &state.head, 1);
-  trs_save_uint8(file, &state.sdh, 1);
   trs_save_uint8(file, &state.status, 1);
-  trs_save_uint8(file, &state.command, 1);
-  trs_save_uint8(file, state.cdb, CDB_LEN);
-  trs_save_uint8(file, state.secbuf, SECTORSIZE);
-  trs_save_int(file, &state.bytesdone, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
     trs_save_harddrive(file, &state.d[i]);
@@ -1317,22 +1317,22 @@ void trs_hard_load(FILE *file)
   }
 
   trs_load_int(file, &state.present, 1);
+  trs_load_int(file, &state.bytesdone, 1);
+  trs_load_uint8(file, state.cdb, CDB_LEN);
+  trs_load_uint8(file, &state.command, 1);
   trs_load_uint8(file, &state.control, 1);
+  trs_load_uint16(file, &state.cyl);
   trs_load_uint8(file, &state.data, 1);
+  trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.error, 1);
+  trs_load_uint8(file, &state.head, 1);
+  trs_load_uint32(file, &state.lba);
+  trs_load_uint8(file, state.secbuf, SECTORSIZE);
+  trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
   trs_load_uint16(file, &state.secsize);
-  trs_load_uint16(file, &state.cyl);
-  trs_load_uint32(file, &state.lba);
-  trs_load_uint8(file, &state.drive, 1);
-  trs_load_uint8(file, &state.head, 1);
-  trs_load_uint8(file, &state.sdh, 1);
   trs_load_uint8(file, &state.status, 1);
-  trs_load_uint8(file, &state.command, 1);
-  trs_load_uint8(file, state.cdb, CDB_LEN);
-  trs_load_uint8(file, state.secbuf, SECTORSIZE);
-  trs_load_int(file, &state.bytesdone, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     trs_load_harddrive(file, &state.d[i]);
