@@ -105,19 +105,19 @@ static int  hard_sector(int newstatus);
 static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
-static void omti_error(int error);
 static int  omti_format(void);
-static void omti_init(int error);
 static int  omti_open(int drive);
+static void omti_select(int error);
+static void omti_status(int error);
 
 static void sasi_command(void);
 static int  sasi_data_in(void);
 static void sasi_data_out(Uint8 value);
-static void sasi_error(int error);
 static int  sasi_format(void);
-static void sasi_init(int error);
 static int  sasi_open(int drive);
 static int  sasi_seek(void);
+static void sasi_select(int error);
+static void sasi_status(int error);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -771,7 +771,7 @@ void trs_omti_out(int port, int value)
     omti_data_out(value);
     break;
   case 1:
-    omti_init(0);
+    omti_select(0);
     break;
   case 2:
     if (state.status == OMTI_IDLE) {
@@ -831,7 +831,7 @@ static void omti_command(void)
 
   case CMD_FORMAT:
     if (sector_seek(OMTI_SECSIZE) == 0) {
-      omti_error(omti_format());
+      omti_status(omti_format());
       return;
     }
     break;
@@ -847,29 +847,29 @@ static void omti_command(void)
     return;
 
   case CMD_SEEK:
-    omti_error(sector_seek(OMTI_SECSIZE));
+    omti_status(sector_seek(OMTI_SECSIZE));
     return;
 
   case CMD_RECALIBRATE:
     state.cyl = state.head = state.secnum = 0;
-    omti_error(sector_seek(OMTI_SECSIZE));
+    omti_status(sector_seek(OMTI_SECSIZE));
     return;
 
   case CMD_TEST_DRIVE:
-    omti_error(omti_open(state.drive));
+    omti_status(omti_open(state.drive));
     return;
 
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
-    omti_error(0);
+    omti_status(0);
     return;
 
   default:
     error("OMTI unknown command 0x%02X", state.command);
   }
 
-  omti_error(ERROR_CODE);
+  omti_status(ERROR_CODE);
 }
 
 static void omti_data_out(Uint8 value)
@@ -887,7 +887,7 @@ static void omti_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(OMTI_SECSIZE) != 0) {
-            omti_error(ERROR_CODE);
+            omti_status(ERROR_CODE);
             break;
           }
           if (--state.seccnt) {
@@ -895,7 +895,7 @@ static void omti_data_out(Uint8 value)
             break;
           }
         }
-        omti_error(0);
+        omti_status(0);
       }
     }
     break;
@@ -912,12 +912,12 @@ static int omti_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(OMTI_SECSIZE) != 0) {
-            omti_error(ERROR_CODE);
+            omti_status(ERROR_CODE);
             return v;
           }
           state.bytesdone = 0;
         } else {
-          omti_error(0);
+          omti_status(0);
         }
       }
       return v;
@@ -925,17 +925,11 @@ static int omti_data_in(void)
     break;
 
   case OMTI_STATUS:
-    omti_init(state.error);
+    omti_select(state.error);
     return state.error;
   }
 
   return 0xff;
-}
-
-static void omti_error(int error)
-{
-  state.error  = error | (state.drive << 5);
-  state.status = OMTI_STATUS;
 }
 
 static int omti_format(void)
@@ -956,13 +950,6 @@ static int omti_format(void)
   return 0;
 }
 
-static void omti_init(int error)
-{
-  state.control = 0;
-  state.error   = error;
-  state.status  = OMTI_IDLE;
-}
-
 static int omti_open(int drive)
 {
   if (hard_open(drive) != 0) return ERROR_CODE;
@@ -971,6 +958,19 @@ static int omti_open(int drive)
   state.secsize = OMTI_SECSIZE;
   state.status  = OMTI_IDLE;
   return 0;
+}
+
+static void omti_select(int error)
+{
+  state.control = 0;
+  state.error   = error;
+  state.status  = OMTI_IDLE;
+}
+
+static void omti_status(int error)
+{
+  state.error  = error | (state.drive << 5);
+  state.status = OMTI_STATUS;
 }
 
 int trs_sasi_in(int port)
@@ -1011,7 +1011,7 @@ void trs_sasi_out(int port, int value)
       sasi_data_out(value);
     break;
   case 1:
-    sasi_init(0);
+    sasi_select(0);
     break;
   case 2:
     if (state.status == SASI_IDLE && (state.data & 1)) {
@@ -1068,7 +1068,7 @@ static void sasi_command(void)
 
   case CMD_FORMAT:
     if (sasi_seek() == 0) {
-      sasi_error(sasi_format());
+      sasi_status(sasi_format());
       return;
     }
     break;
@@ -1084,27 +1084,27 @@ static void sasi_command(void)
     return;
 
   case CMD_SEEK:
-    sasi_error(sasi_seek());
+    sasi_status(sasi_seek());
     return;
 
   case CMD_RECALIBRATE:
     state.cyl = 0;
-    sasi_error(sasi_seek());
+    sasi_status(sasi_seek());
     return;
 
   case CMD_TEST_DRIVE:
-    sasi_error(sasi_open(state.drive));
+    sasi_status(sasi_open(state.drive));
     return;
 
   case CMD_READ_VERIFY:
-    sasi_error(0);
+    sasi_status(0);
     return;
 
   default:
     error("SASI unknown command 0x%02X", state.command);
   }
 
-  sasi_error(ERROR_CODE);
+  sasi_status(ERROR_CODE);
 }
 
 static void sasi_data_out(Uint8 value)
@@ -1122,7 +1122,7 @@ static void sasi_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(SASI_SECSIZE) != 0) {
-            sasi_error(ERROR_CODE);
+            sasi_status(ERROR_CODE);
             break;
           }
           if (--state.seccnt) {
@@ -1130,7 +1130,7 @@ static void sasi_data_out(Uint8 value)
             break;
           }
         }
-        sasi_error(0);
+        sasi_status(0);
       }
     }
     break;
@@ -1147,12 +1147,12 @@ static int sasi_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(SASI_SECSIZE) != 0) {
-            sasi_error(ERROR_CODE);
+            sasi_status(ERROR_CODE);
             return v;
           }
           state.bytesdone = 0;
         } else {
-          sasi_error(0);
+          sasi_status(0);
         }
       }
       return v;
@@ -1164,19 +1164,12 @@ static int sasi_data_in(void)
       state.sdh = 1;
       return state.error;
     } else {
-      sasi_init(0);
+      sasi_select(0);
       return 0;
     }
   }
 
   return 0xff;
-}
-
-static void sasi_error(int error)
-{
-  state.error  = error | (state.drive << 5);
-  state.sdh    = 0;
-  state.status = SASI_STATUS;
 }
 
 static int sasi_format(void)
@@ -1197,15 +1190,6 @@ static int sasi_format(void)
 
   fflush(d->file);
   return 0;
-}
-
-static void sasi_init(int error)
-{
-  state.control = 0;
-  state.data    = 0;
-  state.error   = error;
-  state.sdh     = 0;
-  state.status  = SASI_IDLE;
 }
 
 static int sasi_open(int drive)
@@ -1236,6 +1220,22 @@ static int sasi_seek(void)
     trs_hard_led(state.drive, 1);
 
   return 0;
+}
+
+static void sasi_select(int error)
+{
+  state.control = 0;
+  state.data    = 0;
+  state.error   = error;
+  state.sdh     = 0;
+  state.status  = SASI_IDLE;
+}
+
+static void sasi_status(int error)
+{
+  state.error  = error | (state.drive << 5);
+  state.sdh    = 0;
+  state.status = SASI_STATUS;
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
