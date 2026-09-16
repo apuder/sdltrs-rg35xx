@@ -155,7 +155,7 @@ extern void  trs_sasi_out(int port, int value);
 #define TRS_HARD_MAXDRIVES  4
 #define TRS_HARD_HEADMASK   0x07
 #define TRS_HARD_HEADSHIFT  0
-#define TRS_HARD_MAXHEADS   8
+#define TRS_HARD_MAXHEADS   16
 
 /* Status register (read only):
  *  brwsdcie
