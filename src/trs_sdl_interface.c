@@ -1641,7 +1641,8 @@ done:
                 copyStatus = COPY_CLEAR;
                 trs_screen_flush();
               }
-              gui_function(GUI);
+              gui_function((SDL_GetModState() & KMOD_SHIFT)
+                  ? EMULATOR : GUI);
             }
             break;
           }
