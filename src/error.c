@@ -44,7 +44,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern const char *program_name;
+const char *program_name = "SDL2TRS";
 
 void debug(const char *fmt, ...)
 {

@@ -39,26 +39,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
 #include "trs.h"
 #include "trs_state_save.h"
 
-const char *program_name;
-
 int main(int argc, char *argv[])
 {
-  int zbx = 0;
-
-  /* program_name must be set first because the error
-   * printing routines use it. */
-  program_name = strrchr(argv[0], DIR_SLASH);
-  if (program_name == NULL)
-    program_name = argv[0];
-  else
-    program_name++;
-
-  zbx = trs_parse_command_line(argc, argv);
+  int const zbx = trs_parse_command_line(argc, argv);
 
   trs_sdl_init();
   trs_reset(1);
