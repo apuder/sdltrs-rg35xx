@@ -107,7 +107,7 @@ static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static int  omti_format(void);
 static int  omti_open(int drive);
-static void omti_select(int error);
+static void omti_select(void);
 static void omti_status(int error);
 
 static void sasi_command(void);
@@ -116,7 +116,7 @@ static void sasi_data_out(Uint8 value);
 static int  sasi_format(void);
 static int  sasi_open(int drive);
 static int  sasi_seek(void);
-static void sasi_select(int error);
+static void sasi_select(void);
 static void sasi_status(int error);
 
 #ifdef ZBX
@@ -771,7 +771,7 @@ void trs_omti_out(int port, int value)
     omti_data_out(value);
     break;
   case 1:
-    omti_select(0);
+    omti_select();
     break;
   case 2:
     if (state.status == OMTI_IDLE) {
@@ -925,7 +925,7 @@ static int omti_data_in(void)
     break;
 
   case OMTI_STATUS:
-    omti_select(state.error);
+    omti_select();
     return state.error;
   }
 
@@ -960,10 +960,9 @@ static int omti_open(int drive)
   return 0;
 }
 
-static void omti_select(int error)
+static void omti_select(void)
 {
   state.control = 0;
-  state.error   = error;
   state.status  = OMTI_IDLE;
 }
 
@@ -1011,7 +1010,7 @@ void trs_sasi_out(int port, int value)
       sasi_data_out(value);
     break;
   case 1:
-    sasi_select(0);
+    sasi_select();
     break;
   case 2:
     if (state.status == SASI_IDLE && (state.data & 1)) {
@@ -1164,7 +1163,7 @@ static int sasi_data_in(void)
       state.sdh = 1;
       return state.error;
     } else {
-      sasi_select(0);
+      sasi_select();
       return 0;
     }
   }
@@ -1222,11 +1221,10 @@ static int sasi_seek(void)
   return 0;
 }
 
-static void sasi_select(int error)
+static void sasi_select(void)
 {
   state.control = 0;
   state.data    = 0;
-  state.error   = error;
   state.sdh     = 0;
   state.status  = SASI_IDLE;
 }
