@@ -65,7 +65,7 @@ has very low system requirements: it works on all platforms supported by the
 
 ## License
 
-  [BSD 2-Clause](LICENSE)
+  [BSD 2-Clause](LICENSE) and [license of XTRS](xtrs.LICENSE)
 
 ## Building
 To build from the source code see [BUILDING.md].
