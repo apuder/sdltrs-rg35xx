@@ -105,7 +105,7 @@ static int  hard_sector(int newstatus);
 static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
-static int  omti_format(void);
+static int  omti_format(int cmd);
 static int  omti_open(int drive);
 static void omti_select(void);
 static void omti_status(int error);
@@ -113,7 +113,7 @@ static void omti_status(int error);
 static void sasi_command(void);
 static int  sasi_data_in(void);
 static void sasi_data_out(Uint8 value);
-static int  sasi_format(void);
+static int  sasi_format(int cmd);
 static int  sasi_open(int drive);
 static int  sasi_seek(void);
 static void sasi_select(void);
@@ -830,8 +830,10 @@ static void omti_command(void)
     break;
 
   case CMD_FORMAT:
+  case CMD_FORMAT_TRACK:
+  case CMD_FORMAT_BADTRACK:
     if (sector_seek(OMTI_SECSIZE) == 0) {
-      omti_status(omti_format());
+      omti_status(omti_format(state.command));
       return;
     }
     break;
@@ -932,16 +934,19 @@ static int omti_data_in(void)
   return 0xff;
 }
 
-static int omti_format(void)
+static int omti_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  int cnt = (d->cyls - state.cyl) * (d->heads - state.head) * d->secs;
+  int const size = d->cyls * d->heads * d->secs;
+  int const sect = state.cyl * state.head * state.secnum;
+  int const last = cmd == CMD_FORMAT ? size : sect + d->secs;
+  int sec;
 
   if (state.cdb[5] & 0x20)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, OMTI_SECSIZE);
 
-  while (cnt--) {
+  for (sec = sect; sec < last; sec++) {
     if (sector_write(OMTI_SECSIZE) != 0) {
       return ERROR_CODE;
     }
@@ -1066,8 +1071,10 @@ static void sasi_command(void)
     break;
 
   case CMD_FORMAT:
+  case CMD_FORMAT_TRACK:
+  case CMD_FORMAT_BADTRACK:
     if (sasi_seek() == 0) {
-      sasi_status(sasi_format());
+      sasi_status(sasi_format(state.command));
       return;
     }
     break;
@@ -1171,17 +1178,18 @@ static int sasi_data_in(void)
   return 0xff;
 }
 
-static int sasi_format(void)
+static int sasi_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
   int const size = d->cyls * d->heads * d->secs;
+  int const last = cmd == CMD_FORMAT ? size : state.cyl + d->secs;
   int lba;
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, SASI_SECSIZE);
 
-  for (lba = state.cyl; lba < size; lba++) {
+  for (lba = state.cyl; lba < last; lba++) {
     if (sector_write(SASI_SECSIZE) != 0) {
       state.cyl = lba;
       return ERROR_CODE;
