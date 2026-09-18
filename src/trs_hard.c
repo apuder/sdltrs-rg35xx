@@ -108,6 +108,7 @@ static void omti_data_out(Uint8 value);
 static int  omti_format(int cmd);
 static int  omti_open(int drive);
 static void omti_select(void);
+static void omti_sense(int error);
 static void omti_status(int error);
 
 static void sasi_command(void);
@@ -117,6 +118,7 @@ static int  sasi_format(int cmd);
 static int  sasi_open(int drive);
 static int  sasi_seek(void);
 static void sasi_select(void);
+static void sasi_sense(int error);
 static void sasi_status(int error);
 
 #ifdef ZBX
@@ -788,12 +790,7 @@ static void omti_command(void)
   state.command   = state.cdb[0];
 
   if (state.command == CMD_REQUEST_SENSE) {
-    state.secbuf[0] = state.error;
-    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
-    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
-    state.secbuf[3] = state.cyl & 0xFF;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = OMTI_DATA_IN;
+    omti_sense(state.error);
     return;
   }
 
@@ -817,26 +814,28 @@ static void omti_command(void)
         sector_read(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
-      return;
+    } else {
+      omti_sense(ERROR_CODE);
     }
-    break;
+    return;
 
   case CMD_WRITE:
     if (sector_seek(OMTI_SECSIZE) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_OUT;
-      return;
+    } else {
+      omti_sense(ERROR_CODE);
     }
-    break;
+    return;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
   case CMD_FORMAT_BADTRACK:
-    if (sector_seek(OMTI_SECSIZE) == 0) {
+    if (sector_seek(OMTI_SECSIZE) == 0)
       omti_status(omti_format(state.command));
-      return;
-    }
-    break;
+    else
+      omti_sense(ERROR_CODE);
+    return;
 
   case CMD_INIT_DRIVE:
     state.secsize = DRIVE_CHAR_LEN;
@@ -971,6 +970,16 @@ static void omti_select(void)
   state.status  = OMTI_IDLE;
 }
 
+static void omti_sense(int error)
+{
+  state.secbuf[0] = error;
+  state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
+  state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
+  state.secbuf[3] = state.cyl & 0xFF;
+  state.secsize   = SENSE_BUF_LEN;
+  state.status    = OMTI_DATA_IN;
+}
+
 static void omti_status(int error)
 {
   state.error  = error | (state.drive << 5);
@@ -1032,12 +1041,7 @@ static void sasi_command(void)
   state.command   = state.cdb[0];
 
   if (state.command == CMD_REQUEST_SENSE) {
-    state.secbuf[0] = state.error | 0x80;
-    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
-    state.secbuf[2] = state.cyl >> 8;
-    state.secbuf[3] = state.cyl;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = SASI_DATA_IN;
+    sasi_sense(state.error);
     return;
   }
 
@@ -1058,26 +1062,28 @@ static void sasi_command(void)
     if (sasi_seek() == 0 && sector_read(SASI_SECSIZE) == 0) {
       state.secsize = SASI_SECSIZE;
       state.status  = SASI_DATA_IN;
-      return;
+    } else {
+      sasi_sense(ERROR_CODE);
     }
-    break;
+    return;
 
   case CMD_WRITE:
     if (sasi_seek() == 0) {
       state.secsize = SASI_SECSIZE;
       state.status  = SASI_DATA_OUT;
-      return;
+    } else {
+      sasi_sense(ERROR_CODE);
     }
-    break;
+    return;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
   case CMD_FORMAT_BADTRACK:
-    if (sasi_seek() == 0) {
+    if (sasi_seek() == 0)
       sasi_status(sasi_format(state.command));
-      return;
-    }
-    break;
+    else
+      sasi_sense(ERROR_CODE);
+    return;
 
   case CMD_INIT_DRIVE:
     state.secsize = DRIVE_CHAR_LEN;
@@ -1236,6 +1242,16 @@ static void sasi_select(void)
   state.data    = 0;
   state.sdh     = 0;
   state.status  = SASI_IDLE;
+}
+
+static void sasi_sense(int error)
+{
+  state.secbuf[0] = error | 0x80;
+  state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
+  state.secbuf[2] = state.cyl >> 8;
+  state.secbuf[3] = state.cyl;
+  state.secsize   = SENSE_BUF_LEN;
+  state.status    = SASI_DATA_IN;
 }
 
 static void sasi_status(int error)
