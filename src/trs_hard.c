@@ -941,6 +941,9 @@ static int omti_format(int cmd)
   int const last = cmd == CMD_FORMAT ? size : sect + d->secs;
   int sec;
 
+  if (last > size)
+    return ERROR_CODE;
+
   if (state.cdb[5] & 0x20)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, OMTI_SECSIZE);
@@ -1190,6 +1193,9 @@ static int sasi_format(int cmd)
   int const size = d->cyls * d->heads * d->secs;
   int const last = cmd == CMD_FORMAT ? size : state.cyl + d->secs;
   int lba;
+
+  if (last > size)
+    return ERROR_CODE;
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
