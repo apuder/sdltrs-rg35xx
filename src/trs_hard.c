@@ -1174,15 +1174,16 @@ static int sasi_data_in(void)
 static int sasi_format(void)
 {
   const Drive *d = &state.d[state.drive];
-  int cnt = (d->cyls * d->heads * d->secs) - (state.cyl / SASI_SECSIZE);
+  int const size = d->cyls * d->heads * d->secs;
+  int lba;
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, SASI_SECSIZE);
 
-  while (cnt--) {
+  for (lba = state.cyl; lba < size; lba++) {
     if (sector_write(SASI_SECSIZE) != 0) {
-      state.cyl += (cnt * SASI_SECSIZE);
+      state.cyl = lba;
       return ERROR_CODE;
     }
   }
