@@ -83,6 +83,7 @@ typedef struct {
   Uint8  seccnt;
   Uint8  secnum;
   Uint16 secsize;
+  Uint32 size;
   Uint8  status;
 } State;
 
@@ -285,6 +286,7 @@ void trs_hard_init(int poweron)
   state.sdh = 0;
   state.secnum = 0;
   state.secsize = 0;
+  state.size = 0;
 
   if (poweron) {
     int i;
@@ -679,6 +681,7 @@ static int hard_open(int drive)
     goto fail;
   }
 
+  state.size   = d->cyls * d->heads * d->secs;
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
   return 0;
 
@@ -938,12 +941,11 @@ static int omti_data_in(void)
 static int omti_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  int const size = d->cyls * d->heads * d->secs;
   int const sect = state.cyl * state.head * state.secnum;
-  int const last = cmd == CMD_FORMAT ? size : sect + d->secs;
+  int const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
   int sec;
 
-  if (last > size)
+  if (last > state.size)
     return ERROR_CODE;
 
   if (state.cdb[5] & 0x20)
@@ -1192,11 +1194,10 @@ static int sasi_data_in(void)
 static int sasi_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  int const size = d->cyls * d->heads * d->secs;
-  int const last = cmd == CMD_FORMAT ? size : state.cyl + d->secs;
+  int const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
   int lba;
 
-  if (last > size)
+  if (last > state.size)
     return ERROR_CODE;
 
   if ((state.cdb[5] & 0x20) == 0)
@@ -1318,6 +1319,7 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
   trs_save_uint16(file, &state.secsize);
+  trs_save_uint32(file, &state.size);
   trs_save_uint8(file, &state.status, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
@@ -1348,6 +1350,7 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
   trs_load_uint16(file, &state.secsize);
+  trs_load_uint32(file, &state.size);
   trs_load_uint8(file, &state.status, 1);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
