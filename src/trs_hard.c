@@ -1232,6 +1232,12 @@ static int sasi_seek(void)
   if (d->file == NULL)
     return ERROR_CODE;
 
+  if (state.cyl > state.size) {
+    error("SASI hard%d command 0x%02X: requested LBA %d of %d\n",
+        state.drive, state.command, state.cyl, state.size);
+    return ERROR_CODE;
+  }
+
   if (fseek(d->file,
       sizeof(ReedHardHeader) +
       (state.cyl * SASI_SECSIZE), 0) != 0) {
