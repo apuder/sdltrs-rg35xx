@@ -90,18 +90,18 @@ typedef struct {
 static State state;
 
 /* Forward */
-static void hard_error(int error);
 static int  hard_data_in(void);
 static void hard_data_out(int value);
-static void hard_restore(void);
-static void hard_read(int cmd);
-static void hard_write(int cmd);
-static void hard_verify(void);
+static void hard_error(int error);
 static void hard_format(void);
 static void hard_init(int cmd);
-static void hard_seek(void);
 static int  hard_open(int drive);
+static void hard_read(int cmd);
+static void hard_restore(void);
 static int  hard_sector(int newstatus);
+static void hard_seek(void);
+static void hard_verify(void);
+static void hard_write(int cmd);
 
 static void omti_command(void);
 static int  omti_data_in(void);
@@ -497,62 +497,38 @@ void trs_hard_out(int port, int value)
   }
 }
 
-static void hard_error(int error)
+static int hard_data_in(void)
 {
-  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
-  state.error  = error;
-}
-
-static void hard_restore(void)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_restore drive:%d\n", state.drive);
-#endif
-  state.cyl = 0;
-  /*!! should anything else be zeroed? */
-  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
-}
-
-static void hard_read(int cmd)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("read");
-#endif
-  if (cmd & TRS_HARD_MULTI) {
-    error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
-    hard_error(TRS_HARD_ABRTERR);
-    return;
+  if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
+      (state.status & TRS_HARD_ERR) == 0) {
+    if (state.bytesdone < state.secsize) {
+      state.status &= ~TRS_HARD_DRQ; /* Drop DRQ */
+      return state.secbuf[state.bytesdone++];
+    }
   }
-  if (hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
-    if (sector_read(state.secsize) != 0) {
-      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+  return 0;
+}
+
+static void hard_data_out(int value)
+{
+  if (state.bytesdone < state.secsize) {
+    state.secbuf[state.bytesdone] = value;
+    state.bytesdone++;
+    if ((state.bytesdone == state.secsize) &&
+        (state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
+        (state.status & TRS_HARD_ERR) == 0) {
+      state.status &= ~TRS_HARD_DRQ;  /* Drop DRQ */
+      if (sector_write(state.secsize) != 0) {
+        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+      }
     }
   }
 }
 
-static void hard_write(int cmd)
+static void hard_error(int error)
 {
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("write");
-#endif
-  if (cmd & TRS_HARD_MULTI) {
-    error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
-    hard_error(TRS_HARD_ABRTERR);
-    return;
-  }
-  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
-}
-
-static void hard_verify(void)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("verify");
-#endif
-  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
+  state.error  = error;
+  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_ERR;
 }
 
 static void hard_format(void)
@@ -586,15 +562,6 @@ static void hard_init(int cmd)
   /* I don't know what this command does */
   error("trs_hard: init command (0x%02X) not implemented", cmd);
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
-}
-
-static void hard_seek(void)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("seek");
-#endif
-  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
 
 /*
@@ -693,6 +660,35 @@ fail:
   return err;
 }
 
+static void hard_read(int cmd)
+{
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    hard_debug("read");
+#endif
+  if (cmd & TRS_HARD_MULTI) {
+    error("trs_hard: multi-sector read not supported (0x%02X)", cmd);
+    hard_error(TRS_HARD_ABRTERR);
+    return;
+  }
+  if (hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ) == 0) {
+    if (sector_read(state.secsize) != 0) {
+      hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
+    }
+  }
+}
+
+static void hard_restore(void)
+{
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("hard_restore drive:%d\n", state.drive);
+#endif
+  state.cyl = 0;
+  /*!! should anything else be zeroed? */
+  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
+}
+
 /*
  * Check whether the current position is in bounds for the geometry.
  * If not, set the controller error status and return -1.  If so, fseek
@@ -714,32 +710,36 @@ static int hard_sector(int newstatus)
   }
 }
 
-static int hard_data_in(void)
+static void hard_seek(void)
 {
-  if ((state.command & TRS_HARD_CMDMASK) == TRS_HARD_READ &&
-      (state.status & TRS_HARD_ERR) == 0) {
-    if (state.bytesdone < state.secsize) {
-      state.status &= ~TRS_HARD_DRQ; /* Drop DRQ */
-      return state.secbuf[state.bytesdone++];
-    }
-  }
-  return 0;
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    hard_debug("seek");
+#endif
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
 
-static void hard_data_out(int value)
+static void hard_verify(void)
 {
-  if (state.bytesdone < state.secsize) {
-    state.secbuf[state.bytesdone] = value;
-    state.bytesdone++;
-    if ((state.bytesdone == state.secsize) &&
-        (state.command & TRS_HARD_CMDMASK) == TRS_HARD_WRITE &&
-        (state.status & TRS_HARD_ERR) == 0) {
-      state.status &= ~TRS_HARD_DRQ;  /* Drop DRQ */
-      if (sector_write(state.secsize) != 0) {
-        hard_error(TRS_HARD_DATAERR); /* arbitrary choice */
-      }
-    }
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    hard_debug("verify");
+#endif
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
+}
+
+static void hard_write(int cmd)
+{
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    hard_debug("write");
+#endif
+  if (cmd & TRS_HARD_MULTI) {
+    error("trs_hard: multi-sector write not supported (0x%02X)", cmd);
+    hard_error(TRS_HARD_ABRTERR);
+    return;
   }
+  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE | TRS_HARD_DRQ);
 }
 
 int trs_omti_in(int port)
@@ -878,36 +878,6 @@ static void omti_command(void)
   omti_status(ERROR_CODE);
 }
 
-static void omti_data_out(Uint8 value)
-{
-  switch (state.status) {
-  case OMTI_CMD_OUT:
-    state.cdb[state.control++] = value;
-    if (state.control == CDB_LEN)
-      omti_command();
-    break;
-
-  case OMTI_DATA_OUT:
-    if (state.bytesdone < state.secsize) {
-      state.secbuf[state.bytesdone++] = value;
-      if (state.bytesdone == state.secsize) {
-        if (state.command == CMD_WRITE) {
-          if (sector_write(OMTI_SECSIZE) != 0) {
-            omti_status(ERROR_CODE);
-            break;
-          }
-          if (--state.seccnt) {
-            state.bytesdone = 0;
-            break;
-          }
-        }
-        omti_status(0);
-      }
-    }
-    break;
-  }
-}
-
 static int omti_data_in(void)
 {
   switch (state.status) {
@@ -936,6 +906,36 @@ static int omti_data_in(void)
   }
 
   return 0xff;
+}
+
+static void omti_data_out(Uint8 value)
+{
+  switch (state.status) {
+  case OMTI_CMD_OUT:
+    state.cdb[state.control++] = value;
+    if (state.control == CDB_LEN)
+      omti_command();
+    break;
+
+  case OMTI_DATA_OUT:
+    if (state.bytesdone < state.secsize) {
+      state.secbuf[state.bytesdone++] = value;
+      if (state.bytesdone == state.secsize) {
+        if (state.command == CMD_WRITE) {
+          if (sector_write(OMTI_SECSIZE) != 0) {
+            omti_status(ERROR_CODE);
+            break;
+          }
+          if (--state.seccnt) {
+            state.bytesdone = 0;
+            break;
+          }
+        }
+        omti_status(0);
+      }
+    }
+    break;
+  }
 }
 
 static int omti_format(int cmd)
@@ -1126,36 +1126,6 @@ static void sasi_command(void)
   sasi_status(ERROR_CODE);
 }
 
-static void sasi_data_out(Uint8 value)
-{
-  switch (state.status) {
-  case SASI_CMD_OUT:
-    state.cdb[state.control++] = value;
-    if (state.control == CDB_LEN)
-      sasi_command();
-    break;
-
-  case SASI_DATA_OUT:
-    if (state.bytesdone < state.secsize) {
-      state.secbuf[state.bytesdone++] = value;
-      if (state.bytesdone == state.secsize) {
-        if (state.command == CMD_WRITE) {
-          if (sector_write(SASI_SECSIZE) != 0) {
-            sasi_status(ERROR_CODE);
-            break;
-          }
-          if (--state.seccnt) {
-            state.bytesdone = 0;
-            break;
-          }
-        }
-        sasi_status(0);
-      }
-    }
-    break;
-  }
-}
-
 static int sasi_data_in(void)
 {
   switch (state.status) {
@@ -1189,6 +1159,36 @@ static int sasi_data_in(void)
   }
 
   return 0xff;
+}
+
+static void sasi_data_out(Uint8 value)
+{
+  switch (state.status) {
+  case SASI_CMD_OUT:
+    state.cdb[state.control++] = value;
+    if (state.control == CDB_LEN)
+      sasi_command();
+    break;
+
+  case SASI_DATA_OUT:
+    if (state.bytesdone < state.secsize) {
+      state.secbuf[state.bytesdone++] = value;
+      if (state.bytesdone == state.secsize) {
+        if (state.command == CMD_WRITE) {
+          if (sector_write(SASI_SECSIZE) != 0) {
+            sasi_status(ERROR_CODE);
+            break;
+          }
+          if (--state.seccnt) {
+            state.bytesdone = 0;
+            break;
+          }
+        }
+        sasi_status(0);
+      }
+    }
+    break;
+  }
 }
 
 static int sasi_format(int cmd)
