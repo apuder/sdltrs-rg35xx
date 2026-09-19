@@ -941,9 +941,9 @@ static void omti_data_out(Uint8 value)
 static int omti_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  int const sect = state.cyl * state.head * state.secnum;
-  int const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
-  int sec;
+  Uint32 const sect = state.cyl * state.head * state.secnum;
+  Uint32 const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
+  Uint32 sec;
 
   if (last > state.size)
     return ERROR_CODE;
@@ -1194,8 +1194,8 @@ static void sasi_data_out(Uint8 value)
 static int sasi_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  int const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
-  int lba;
+  Uint32 const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
+  Uint32 lba;
 
   if (last > state.size)
     return ERROR_CODE;
