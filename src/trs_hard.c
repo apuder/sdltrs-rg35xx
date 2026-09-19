@@ -246,7 +246,7 @@ static int sector_seek(size_t sector_size)
     return ERROR_CODE;
 
   /* Check sector number overflow and adjust head */
-  if (state.secnum >= d->secs) {
+  if (state.secnum >= d->secs && d->secs) {
     if (state.secnum > d->secs)
       state.head += state.secnum / d->secs;
 
