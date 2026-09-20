@@ -256,7 +256,6 @@ void eg3200_init_out(int value)
 {
   sys_byte = value;
   trs_clones_model(EG3200);
-  trs_timer_init();
   trs_screen_init(0);
 }
 
@@ -320,7 +319,6 @@ void genie3s_init_out(int value)
   genie3s_bank_out(value);
   mem_video_page(0);
   trs_clones_model(GENIE3S);
-  trs_timer_init();
 }
 
 void genie3s_mem_out(int bits)
