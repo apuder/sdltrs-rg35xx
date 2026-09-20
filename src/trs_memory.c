@@ -1339,7 +1339,7 @@ void mem_write(int address, int value)
           }
           if (address >= 0x4400) {
             address -= 0x4400;
-            eg3210_char((address / 16) + 192, address & 0x0F, value);
+            font_char((address / 16) + 192, address & 0x0F, value, 1);
             return;
           }
         }
@@ -1387,8 +1387,8 @@ void mem_write(int address, int value)
         }
         /* Write to Font-SRAM */
         if (sys_byte_2 & (1 << 1) && address >= 0x8000) {
-          genie3s_char(video[(VIDEO_START + video_addr)],
-              (address - 0x8000) >> 11, value);
+          font_char(video[(VIDEO_START + video_addr)],
+              (address - 0x8000) >> 11, value, 0);
           return;
         }
         /* "Constant bit" points to Bank 0 */

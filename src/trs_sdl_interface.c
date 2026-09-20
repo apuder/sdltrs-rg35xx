@@ -1900,7 +1900,7 @@ bitmap_init(int ram)
   int i;
 
   for (i = 0; i < MAX_CHARS; i++) {
-    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA */
+    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA Card */
     bitmap_char(i, (i > 191 && eg3210) ? 1 : ram);
 
     /* GUI Normal + Inverse */
@@ -2708,19 +2708,10 @@ void m6845_text(int onoff)
   }
 }
 
-void eg3210_char(int character, int scanline, int byte)
+void font_char(int character, int scanline, int byte, int mirror)
 {
-  char_ram[character][scanline] = mirror_bits(byte);
-
-  if (scanline + 1 == m6845_raster) {
-    bitmap_char(character, 1);
-    trs_screen_char(character);
-  }
-}
-
-void genie3s_char(int character, int scanline, int byte)
-{
-  char_ram[character][scanline] = byte;
+  char_ram[character][scanline] =
+      mirror ? mirror_bits(byte) : byte;
 
   if (scanline + 1 == m6845_raster) {
     bitmap_char(character, 1);

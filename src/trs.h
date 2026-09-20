@@ -214,12 +214,11 @@ extern void trs_hard_debug(void);
 extern int  trs_disk_motoroff(void);
 
 extern void  eg3200_init_out(int value);
-extern void  eg3210_char(int character, int scanline, int byte);
+extern void  font_char(int character, int scanline, int byte, int mirror);
 
 extern void  genie3s_bank_out(int value);
 extern void  genie3s_init_out(int value);
 extern void  genie3s_sys_out(int value);
-extern void  genie3s_char(int character, int scanline, int byte);
 extern void  genie3s_hrg(int value);
 extern void  genie3s_hrg_write(unsigned int position, int byte);
 extern Uint8 genie3s_hrg_read(unsigned int position);
