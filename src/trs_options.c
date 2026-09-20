@@ -1096,6 +1096,9 @@ int trs_write_config_file(const char *filename)
   for (i = 0; i < 8; i++)
     fprintf(config_file, "disk%d\t\t= %s\n", i, trs_disk_getfilename(i));
 
+#if ZBX
+  fprintf(config_file, "diskdebug\t= 0x%02X\n", trs_disk_debug_flags);
+#endif
   fprintf(config_file, "diskdir\t\t= %s\n", trs_disk_dir);
   fprintf(config_file, "disksetdir\t= %s\n", trs_disk_set_dir);
 
@@ -1123,6 +1126,9 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%shdboot\n", option(trs_hd_boot));
   fprintf(config_file, "%shuffman\n", option(huffman));
   fprintf(config_file, "%shypermem\n", option(hypermem));
+#if ZBX
+  fprintf(config_file, "iodebug\t\t= 0x%02X\n", trs_io_debug_flags);
+#endif
   fprintf(config_file, "%sjoyaxismapped\n", option(jaxis_mapped));
 
   fprintf(config_file, "joybuttonmap\t= ");
