@@ -280,8 +280,9 @@ void trs_hard_init(int poweron)
   state.command = 0;
   state.control = 0;
   state.cyl = 0;
-  state.error = 0;
+  state.data = 0;
   state.drive = 0;
+  state.error = 0;
   state.head = 0;
   state.sdh = 0;
   state.secnum = 0;
