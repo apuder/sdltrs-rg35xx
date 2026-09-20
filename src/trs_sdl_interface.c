@@ -1892,6 +1892,7 @@ static void
 bitmap_init(int ram)
 {
   int const gui = trs_charset <= 2 ? 2 : 7;
+  int const eg3210 = (trs_clones.model == EG3200);
   int const height = (trs_clones.model == CP500_M80)
       /* Adjust block graphics in CP-500/M80 80x24 video mode */
       ? MAX_CHAR_HEIGHT * 2
@@ -1899,8 +1900,8 @@ bitmap_init(int ram)
   int i;
 
   for (i = 0; i < MAX_CHARS; i++) {
-    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA Card */
-    bitmap_char(i, (i > 191 && trs_clones.model == EG3200) ? 1 : ram);
+    /* Create also bitmap chars 192-255 for Genie III EG 3210 PGA */
+    bitmap_char(i, (i > 191 && eg3210) ? 1 : ram);
 
     /* GUI Normal + Inverse */
     bitmap_free(i, 4, 5);
