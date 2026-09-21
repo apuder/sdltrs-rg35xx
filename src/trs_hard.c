@@ -853,6 +853,11 @@ static void omti_command(void)
     state.status  = OMTI_DATA_OUT;
     return;
 
+  case CMD_READ_SEC_BUF:
+    state.secsize = OMTI_SECSIZE;
+    state.status  = OMTI_DATA_IN;
+    return;
+
   case CMD_SEEK:
     omti_status(sector_seek(OMTI_SECSIZE));
     return;
@@ -1102,6 +1107,11 @@ static void sasi_command(void)
   case CMD_WRITE_SEC_BUF:
     state.secsize = SASI_SECSIZE;
     state.status  = SASI_DATA_OUT;
+    return;
+
+  case CMD_READ_SEC_BUF:
+    state.secsize = SASI_SECSIZE;
+    state.status  = SASI_DATA_IN;
     return;
 
   case CMD_SEEK:

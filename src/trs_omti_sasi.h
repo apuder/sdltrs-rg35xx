@@ -40,6 +40,7 @@
 #define CMD_SEEK             0x0B
 #define CMD_INIT_DRIVE       0x0C
 #define CMD_WRITE_SEC_BUF    0x0F
+#define CMD_READ_SEC_BUF     0x10
 #define CMD_RAM_DIAGNOSTIC   0xE0
 #define CMD_DRIVE_DIAGNOSTIC 0xE3
 #define CMD_CTRL_DIAGNOSTIC  0xE4
