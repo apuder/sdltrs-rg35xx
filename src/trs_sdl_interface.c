@@ -676,7 +676,6 @@ void trs_screen_init(int resize)
   SDL_ShowWindow(window);
 
   BlitMap(image->format->palette, screen->format);
-  trs_kb_reset();
   trs_screen_refresh();
 
   paste_state = 0;

@@ -504,7 +504,6 @@ static KeyTable ascii_key_table[] = {
 };
 
 static int keystate[9];
-static int fkeys;
 static int force_shift = TK_Neutral;
 static int joystate;
 static int keys_down;
@@ -514,7 +513,6 @@ static tstate_t key_stretch_timeout;
 
 void trs_kb_reset(void)
 {
-  fkeys = trs_clones.model & (EG3200 | GENIE3S);
   key_stretch_timeout = z80_state.t_count;
 }
 
@@ -816,7 +814,7 @@ int trs_kb_mem_read(int address)
 
   key_heartbeat = 0;
 
-  if ((address & 0x00e0) >= 0x00a0 && fkeys) {
+  if ((address & 0x00e0) >= 0x00a0 && (trs_clones.model & (EG3200 | GENIE3S))) {
     if ((address & 0x00e0) == 0x00a0) {
       /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
       return keystate[8];
