@@ -690,7 +690,6 @@ void trs_reset(int poweron)
 
   if (trs_model == 3) {
     grafyx_m3_reset();
-    trs_clones_model(0);
   }
 
   if (trs_model == 1) {
