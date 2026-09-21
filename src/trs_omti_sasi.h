@@ -28,19 +28,20 @@
 /*
  * OMTI/SASI commands
  */
-#define CMD_TEST_DRIVE      0x00
-#define CMD_RECALIBRATE     0x01
-#define CMD_REQUEST_SENSE   0x03
-#define CMD_FORMAT          0x04
-#define CMD_READ_VERIFY     0x05
-#define CMD_FORMAT_TRACK    0x06
-#define CMD_FORMAT_BADTRACK 0x07
-#define CMD_READ            0x08
-#define CMD_WRITE           0x0A
-#define CMD_SEEK            0x0B
-#define CMD_INIT_DRIVE      0x0C
-#define CMD_WRITE_SEC_BUF   0x0F
-#define CMD_RAM_DIAGNOSTIC  0xE0
-#define CMD_CTRL_DIAGNOSTIC 0xE4
+#define CMD_TEST_DRIVE       0x00
+#define CMD_RECALIBRATE      0x01
+#define CMD_REQUEST_SENSE    0x03
+#define CMD_FORMAT           0x04
+#define CMD_READ_VERIFY      0x05
+#define CMD_FORMAT_TRACK     0x06
+#define CMD_FORMAT_BADTRACK  0x07
+#define CMD_READ             0x08
+#define CMD_WRITE            0x0A
+#define CMD_SEEK             0x0B
+#define CMD_INIT_DRIVE       0x0C
+#define CMD_WRITE_SEC_BUF    0x0F
+#define CMD_RAM_DIAGNOSTIC   0xE0
+#define CMD_DRIVE_DIAGNOSTIC 0xE3
+#define CMD_CTRL_DIAGNOSTIC  0xE4
 
 #endif /* _TRS_OMTI_SASI_H */

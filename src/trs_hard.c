@@ -868,6 +868,7 @@ static void omti_command(void)
 
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
+  case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     omti_status(0);
     return;
@@ -1118,6 +1119,7 @@ static void sasi_command(void)
 
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
+  case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     sasi_status(0);
     return;
