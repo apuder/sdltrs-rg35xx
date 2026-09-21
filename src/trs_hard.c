@@ -43,7 +43,7 @@
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)    /* maximum sector size */
 #define CDB_LEN    (6)       /* command descriptor block length */
-#define ERROR_CODE (2)       /* error value of OMTI/SASI */
+#define ERROR_CODE (2)       /* seek error value of OMTI/SASI */
 
 /* Private types and data */
 
