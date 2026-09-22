@@ -578,8 +578,6 @@ void
 trs_timer_speed(int fast)
 {
   switch (speedup) {
-    case 0:
-      return;
     case 2: /* Holmes Sprinter */
       if (trs_model == 1)
         z80_state.clockMHz = 10.6445 / (((fast + 4) & 7) + 2);
@@ -617,6 +615,8 @@ trs_timer_speed(int fast)
           z80_state.clockMHz = fast ? TCS_SPM_MHZ : CLOCK_1_MHZ;
           break;
         default:
+          if (speedup == 0)
+            return;
           if (trs_model == 1)
             z80_state.clockMHz = clock_mhz_1 * ((fast & 1) + 1);
           else
