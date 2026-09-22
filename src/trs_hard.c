@@ -616,7 +616,11 @@ static int hard_open(int drive)
     goto fail;
   }
 
-  if (rhh.flag1 & 0x80) d->writeprot = 1;
+  if (rhh.flag1 & 0x80 && d->writeprot == 0) {
+    fclose(d->file);
+    d->file = fopen(d->filename, "rb");
+    d->writeprot = 1;
+  }
 
   /* Use the number of cylinders specified in the header */
   d->cyls = (rhh.cylhi << 8)    /* MSB */
