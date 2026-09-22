@@ -669,29 +669,6 @@ void trs_reset(int poweron)
   /* Set 64*16 video mode */
   trs_screen_80x24(0);
 
-  if (trs_model == 5) {
-    /* Switch in boot ROM */
-    sys_byte = 1;
-  }
-
-  if (trs_model >= 4) {
-    /* Turn off various memory map and video mode bits */
-    z80_out(0x84, 0);
-    if (huffman)
-      bank_base = 0;
-  }
-
-  if (trs_model >= 3) {
-    memory[0x405B] = 0; /* Clear Break Key Indicator */
-    grafyx_write_mode(0);
-    trs_interrupt_mask_write(0);
-    trs_nmi_mask_write(0);
-  }
-
-  if (trs_model == 3) {
-    grafyx_m3_reset();
-  }
-
   if (trs_model == 1) {
     hrg_onoff(0); /* Switch off HRG1B hi-res graphics. */
     trs_interrupt_latch_clear();
@@ -711,6 +688,22 @@ void trs_reset(int poweron)
         trs_screen_init(0);
         break;
     }
+  } else {
+    if (trs_model >= 4) {
+      /* Turn off various memory map and video mode bits */
+      z80_out(0x84, 0);
+      if (huffman)
+        bank_base = 0;
+      /* Switch in 4P boot ROM */
+      sys_byte = 1;
+    } else {
+      grafyx_m3_reset();
+    }
+
+    memory[0x405B] = 0; /* Clear Break Key Indicator */
+    grafyx_write_mode(0);
+    trs_interrupt_mask_write(0);
+    trs_nmi_mask_write(0);
   }
 }
 
