@@ -42,6 +42,7 @@
 /*#define QDEBUG 1*/
 
 #include <stdio.h>
+#include <string.h>
 #include <SDL_joystick.h>
 #include "error.h"
 #include "trs.h"
@@ -744,18 +745,13 @@ static void change_keystate(int action)
 
   switch (action) {
     case TK_AllKeysUp:
-    {
-      int i;
-
       /* force all keys up */
-      for (i = 0; i < 8; i++) {
-        keystate[i] = 0;
-      }
+      memset(keystate, 0, sizeof(keystate));
+
       force_shift = TK_Neutral;
       keys_down = 0;
       z80_state.keypress = 0;
       break;
-    }
 
     case TK_Neutral:
     case TK_ForceShift:

@@ -952,9 +952,8 @@ static void omti_data_out(Uint8 value)
 static int omti_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
-  Uint32 const sect = state.cyl * state.head * state.secnum;
+  Uint32 sect = state.cyl * state.head * state.secnum;
   Uint32 const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
-  Uint32 sec;
 
   if (last > state.size)
     return ERROR_CODE;
@@ -963,10 +962,11 @@ static int omti_format(int cmd)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, OMTI_SECSIZE);
 
-  for (sec = sect; sec < last; sec++) {
+  while (sect < last) {
     if (sector_write(OMTI_SECSIZE) != 0) {
       return ERROR_CODE;
     }
+    sect++;
   }
 
   return 0;
