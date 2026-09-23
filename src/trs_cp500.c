@@ -165,7 +165,7 @@ Uint8 cp500_mem_read(int address, int mem_map, const Uint8 *rom, const Uint8 *ra
     case 0x33: /* 80x24, 3800 = keyboard, 3C00-3FFF = VRAM */
       if (address >= RAM_START) return ram[address];
       if (address >= VIDEO_START) return mem_video_page_read(address);
-      if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
+      if (address >= KEYBOARD_START) return trs_kb_mem_read(address, 0xFF);
   }
 #ifdef DEBUG_CP500
   error("[PC=%04X] Invalid read of address %04X, returning FF, mem_map=%02X",

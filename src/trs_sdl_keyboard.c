@@ -45,7 +45,6 @@
 #include <SDL_joystick.h>
 #include "error.h"
 #include "trs.h"
-#include "trs_clones.h"
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
@@ -784,7 +783,7 @@ static void change_keystate(int action)
   }
 }
 
-int trs_kb_mem_read(int address)
+int trs_kb_mem_read(int address, int fkeys_addr)
 {
   int key = -1;
 
@@ -814,7 +813,7 @@ int trs_kb_mem_read(int address)
 
   key_heartbeat = 0;
 
-  if ((address & 0x00e0) >= 0x00a0 && (trs_clones.model & (EG3200 | GENIE3S))) {
+  if ((address & 0x00e0) >= fkeys_addr) {
     if ((address & 0x00e0) == 0x00a0) {
       /* EACA EG3200 Genie III / TCS Genie IIIs: F1 - F8 keys */
       return keystate[8];
