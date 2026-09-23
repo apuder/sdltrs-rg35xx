@@ -1214,7 +1214,6 @@ static int sasi_format(int cmd)
 {
   const Drive *d = &state.d[state.drive];
   Uint32 const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
-  Uint32 lba;
 
   if (last > state.size)
     return ERROR_CODE;
@@ -1223,11 +1222,11 @@ static int sasi_format(int cmd)
     /* Fill sector buffer with default byte */
     memset(state.secbuf, 0x6C, SASI_SECSIZE);
 
-  for (lba = state.cyl; lba < last; lba++) {
+  while (state.cyl < last) {
     if (sector_write(SASI_SECSIZE) != 0) {
-      state.cyl = lba;
       return ERROR_CODE;
     }
+    state.cyl++;
   }
 
   fflush(d->file);
