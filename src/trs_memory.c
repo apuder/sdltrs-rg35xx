@@ -763,7 +763,7 @@ static int trs80_model1_mmio(int address)
   if (address == TRSDISK_SECTOR) return trs_disk_sector_read();
   /* With a selector 768 bytes poke through the hole */
   if (address >= 0x3900 && selector) return trs80_model1_ram(address);
-  if (address >= KEYBOARD_START) return trs_kb_mem_read(address, 0xFF);
+  if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_1(address)) return trs_printer_read();
 #if MEMDEBUG
   error("[PC=%04X] Invalid read of address %04X, returning FF, mem_map=%02X",
@@ -777,7 +777,7 @@ int trs80_model3_mem_read(int address)
   if (address >= trs_mem_size) return 0xFF; /* nonexistent memory address */
   if (address >= RAM_START) return memory[address];
   if (address >= VIDEO_START) return grafyx_m3_read_byte(address - VIDEO_START);
-  if (address >= KEYBOARD_START) return trs_kb_mem_read(address, 0xFF);
+  if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
   if (PRINTER_3(address)) return trs_printer_read();
   if (address < trs_rom_size) return rom[address];
 #if MEMDEBUG
@@ -910,7 +910,7 @@ int mem_read(int address)
           if (address >= 0x37E0 && address <= 0x37EF)
             return trs80_model1_mmio(address);
           if (address >= KEYBOARD_START)
-            return trs_kb_mem_read(address, 0xA0);
+            return trs_kb_mem_read(address);
         }
       }
       return memory[address + bank_offset[address >> 15]];
@@ -924,7 +924,7 @@ int mem_read(int address)
           if (address >= VIDEO_START)
             return video[address + video_addr];
           if (address >= KEYBOARD_START && address <= 0x38FF)
-            return trs_kb_mem_read(address, 0xA0);
+            return trs_kb_mem_read(address);
           /* Disk and Printer MMIO */
           if (TRS_INTLATCH(address))
             return genie3s_latch_read(trs_interrupt_latch_read());
@@ -966,7 +966,7 @@ int mem_read(int address)
               return video[(address - video_addr) & 0x7FF];
             /* Keyboard */
             if (address >= 0xF400)
-              return trs_kb_mem_read(address, 0xFF);
+              return trs_kb_mem_read(address);
             /* Disk and Printer MMIO */
             if (address >= 0xEFE0 && address <= 0xEFEF)
               return trs80_model1_mmio(address - 0xB800);
@@ -1001,7 +1001,7 @@ int mem_read(int address)
           if (address >= 0xF900)
             return memory[address + 0x8000];
           if (address >= 0xF800)
-            return trs_kb_mem_read(address, 0xFF);
+            return trs_kb_mem_read(address);
           if (address >= 0xF700)
             return trs80_model1_mmio(address & 0x3FFF);
         }
@@ -1057,7 +1057,7 @@ int mem_read(int address)
           return video[address - VIDEO_START];
         if ((sys_byte & (1 << 1)) == 0) {
           if (address >= KEYBOARD_START && address < 0x3900)
-            return trs_kb_mem_read(address, 0xFF);
+            return trs_kb_mem_read(address);
         }
         if ((sys_byte & (1 << 0)) == 0 && address <= 0x0FFF)
           return rom[address];
@@ -1066,7 +1066,7 @@ int mem_read(int address)
 
     case 0x35: /* Model III CP/M mod by Bill Brewer */
       if (address >= 0xFC00) return video[address - 0xFC00];
-      if (address >= 0xF800) return trs_kb_mem_read(address, 0xFF);
+      if (address >= 0xF800) return trs_kb_mem_read(address);
       return memory[address];
 
     case 0x40: /* Model 4 map 0 */
@@ -1074,7 +1074,7 @@ int mem_read(int address)
         return memory[address + bank_offset[address >> 15]];
       }
       if (address >= VIDEO_START) return mem_video_page_read(address);
-      if (address >= KEYBOARD_START) return trs_kb_mem_read(address, 0xFF);
+      if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
       if (PRINTER_3(address)) return trs_printer_read();
       if (address < trs_rom_size) return rom[address];
       break;
@@ -1088,7 +1088,7 @@ int mem_read(int address)
         return memory[address + bank_offset[address >> 15]];
       }
       if (address >= VIDEO_START) return mem_video_page_read(address);
-      if (address >= KEYBOARD_START) return trs_kb_mem_read(address, 0xFF);
+      if (address >= KEYBOARD_START) return trs_kb_mem_read(address);
       break;
 
     case 0x42: /* Model 4  map 2 */
@@ -1097,7 +1097,7 @@ int mem_read(int address)
         return memory[address + bank_offset[address >> 15]];
       }
       if (address >= 0xF800) return video[address - 0xF800];
-      return trs_kb_mem_read(address, 0xFF);
+      return trs_kb_mem_read(address);
 
     case 0x43: /* Model 4  map 3 */
     case 0x53: /* Model 4P map 3 */

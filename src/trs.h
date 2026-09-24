@@ -124,7 +124,7 @@ extern void trs_exit(int confirm);
 
 extern void trs_kb_reset(void);
 extern void trs_kb_bracket(int shifted);
-extern int  trs_kb_mem_read(int address, int fkeys_addr);
+extern int  trs_kb_mem_read(int address);
 extern void trs_kb_heartbeat(void);
 extern void trs_xlate_keysym(int keysym);
 extern void clear_key_queue(void);

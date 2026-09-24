@@ -46,6 +46,7 @@
 #include <SDL_joystick.h>
 #include "error.h"
 #include "trs.h"
+#include "trs_clones.h"
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
@@ -504,6 +505,7 @@ static KeyTable ascii_key_table[] = {
 };
 
 static int keystate[9];
+static int fkeys_addr;
 static int force_shift = TK_Neutral;
 static int joystate;
 static int keys_down;
@@ -514,6 +516,8 @@ static tstate_t key_stretch_timeout;
 void trs_kb_reset(void)
 {
   key_stretch_timeout = z80_state.t_count;
+  /* Set address of function keys */
+  fkeys_addr = (trs_clones.model & (EG3200 | GENIE3S)) ? 0xA0 : 0xFF;
 }
 
 void trs_kb_heartbeat(void)
@@ -779,7 +783,7 @@ static void change_keystate(int action)
   }
 }
 
-int trs_kb_mem_read(int address, int fkeys_addr)
+int trs_kb_mem_read(int address)
 {
   int key = -1;
 

@@ -34,6 +34,7 @@ void trs_clones_model(int clone)
     }
 
     trs_clones = clones[bit];
+    trs_kb_reset();
     trs_timer_init();
 
     mem_map(trs_clones.map);
