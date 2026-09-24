@@ -1338,8 +1338,8 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.head, 1);
-  trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_uint8(file, &state.sdh, 1);
+  trs_save_uint8(file, state.secbuf, SECTORSIZE);
   trs_save_uint8(file, &state.seccnt, 1);
   trs_save_uint8(file, &state.secnum, 1);
   trs_save_uint16(file, &state.secsize);
@@ -1369,8 +1369,8 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.head, 1);
-  trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_uint8(file, &state.sdh, 1);
+  trs_load_uint8(file, state.secbuf, SECTORSIZE);
   trs_load_uint8(file, &state.seccnt, 1);
   trs_load_uint8(file, &state.secnum, 1);
   trs_load_uint16(file, &state.secsize);
