@@ -2017,6 +2017,7 @@ void trs_screen_refresh(void)
   }
 
   drawnRectCount = MAX_RECTS; /* Will force redraw of whole screen */
+  trs_screen_caption();
   trs_screen_flush();
 }
 
