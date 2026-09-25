@@ -42,20 +42,20 @@ int trs_state_save(const char *filename)
   if (file) {
     trs_save_uint8(file, (Uint8 *)stateFileBanner, stateFileBannerLen);
     trs_save_uint32(file, &stateVersionNumber);
-    trs_screen_save(file);
     trs_cassette_save(file);
     trs_clone_save(file);
     trs_cp500_save(file);
     trs_disk_save(file);
     trs_hard_save(file);
-    trs_stringy_save(file);
+    trs_imp_exp_save(file);
     trs_interrupt_save(file);
     trs_io_save(file);
-    trs_mem_save(file);
     trs_keyboard_save(file);
+    trs_mem_save(file);
+    trs_screen_save(file);
+    trs_stringy_save(file);
     trs_uart_save(file);
     trs_z80_save(file);
-    trs_imp_exp_save(file);
 
     fclose(file);
     return 0;
@@ -89,20 +89,20 @@ int trs_state_load(const char *filename)
       return -1;
     }
 
-    trs_screen_load(file);
     trs_cassette_load(file);
     trs_clone_load(file);
     trs_cp500_load(file);
     trs_disk_load(file);
     trs_hard_load(file);
-    trs_stringy_load(file);
+    trs_imp_exp_load(file);
     trs_interrupt_load(file);
     trs_io_load(file);
-    trs_mem_load(file);
     trs_keyboard_load(file);
+    trs_mem_load(file);
+    trs_screen_load(file);
+    trs_stringy_load(file);
     trs_uart_load(file);
     trs_z80_load(file);
-    trs_imp_exp_load(file);
 
     fclose(file);
     return 0;
