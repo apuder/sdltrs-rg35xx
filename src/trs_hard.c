@@ -996,6 +996,14 @@ static void omti_sense(int error)
   state.secbuf[3] = state.cyl & 0xFF;
   state.secsize   = SENSE_BUF_LEN;
   state.status    = OMTI_DATA_IN;
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("OMTI sense: command 0x%02X error 0x%02X drive:%d"
+          " cyl:%d head:%d secnum:%d\n",
+        state.command, error, state.drive,
+        state.cyl, state.head, state.secnum);
+#endif
 }
 
 static void omti_status(int error)
@@ -1285,6 +1293,12 @@ static void sasi_sense(int error)
   state.secbuf[3] = state.cyl;
   state.secsize   = SENSE_BUF_LEN;
   state.status    = SASI_DATA_IN;
+
+#if ZBX
+  if (trs_io_debug_flags & HARDDEBUG2)
+    debug("SASI sense: command 0x%02X error 0x%02X drive:%d LBA:%d/%d\n",
+        state.command, error, state.drive, state.cyl, state.size);
+#endif
 }
 
 static void sasi_status(int error)
