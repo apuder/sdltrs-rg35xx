@@ -343,7 +343,7 @@ void do_emt_lseek(void)
 void do_emt_strerror(void)
 {
   const char *msg;
-  int size;
+  Uint8 size;
 
   if (Z80_HL + Z80_BC > 0x10000) {
     Z80_A = EFAULT;
