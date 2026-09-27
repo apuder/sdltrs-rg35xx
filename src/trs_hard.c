@@ -990,6 +990,7 @@ static void omti_select(void)
 
 static void omti_sense(int error)
 {
+  state.error     = error;
   state.secbuf[0] = error;
   state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
   state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
@@ -1001,7 +1002,7 @@ static void omti_sense(int error)
   if (trs_io_debug_flags & HARDDEBUG2)
     debug("OMTI sense: command 0x%02X error 0x%02X drive:%d"
           " cyl:%d head:%d secnum:%d\n",
-        state.command, error, state.drive,
+        state.command, state.error, state.drive,
         state.cyl, state.head, state.secnum);
 #endif
 }
@@ -1287,6 +1288,7 @@ static void sasi_select(void)
 
 static void sasi_sense(int error)
 {
+  state.error     = error;
   state.secbuf[0] = error | 0x80;
   state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
   state.secbuf[2] = state.cyl >> 8;
@@ -1297,7 +1299,7 @@ static void sasi_sense(int error)
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
     debug("SASI sense: command 0x%02X error 0x%02X drive:%d LBA:%d/%d\n",
-        state.command, error, state.drive, state.cyl, state.size);
+        state.command, state.error, state.drive, state.cyl, state.size);
 #endif
 }
 
