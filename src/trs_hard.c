@@ -108,7 +108,7 @@ static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static int  omti_format(int cmd);
 static int  omti_open(int drive);
-static void omti_select(void);
+static void omti_reset(void);
 static void omti_sense(int error);
 static void omti_status(int error);
 
@@ -117,8 +117,8 @@ static int  sasi_data_in(void);
 static void sasi_data_out(Uint8 value);
 static int  sasi_format(int cmd);
 static int  sasi_open(int drive);
+static void sasi_reset(void);
 static int  sasi_seek(void);
-static void sasi_select(void);
 static void sasi_sense(int error);
 static void sasi_status(int error);
 
@@ -783,7 +783,7 @@ void trs_omti_out(int port, int value)
     omti_data_out(value);
     break;
   case 1:
-    omti_select();
+    omti_reset();
     break;
   case 2:
     if (state.status == OMTI_IDLE) {
@@ -912,7 +912,7 @@ static int omti_data_in(void)
     break;
 
   case OMTI_STATUS:
-    omti_select();
+    omti_reset();
     return state.error;
   }
 
@@ -982,7 +982,7 @@ static int omti_open(int drive)
   return 0;
 }
 
-static void omti_select(void)
+static void omti_reset(void)
 {
   state.control = 0;
   state.status  = OMTI_IDLE;
@@ -1051,7 +1051,7 @@ void trs_sasi_out(int port, int value)
       sasi_data_out(value);
     break;
   case 1:
-    sasi_select();
+    sasi_reset();
     break;
   case 2:
     if (state.status == SASI_IDLE && (state.data & 1)) {
@@ -1181,7 +1181,7 @@ static int sasi_data_in(void)
       state.sdh = 1;
       return state.error;
     } else {
-      sasi_select();
+      sasi_reset();
       return 0;
     }
   }
@@ -1252,6 +1252,14 @@ static int sasi_open(int drive)
   return 0;
 }
 
+static void sasi_reset(void)
+{
+  state.control = 0;
+  state.data    = 0;
+  state.sdh     = 0;
+  state.status  = SASI_IDLE;
+}
+
 static int sasi_seek(void)
 {
   const Drive *d = &state.d[state.drive];
@@ -1276,14 +1284,6 @@ static int sasi_seek(void)
     trs_hard_led(state.drive, 1);
 
   return 0;
-}
-
-static void sasi_select(void)
-{
-  state.control = 0;
-  state.data    = 0;
-  state.sdh     = 0;
-  state.status  = SASI_IDLE;
 }
 
 static void sasi_sense(int error)
