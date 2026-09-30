@@ -942,6 +942,13 @@ static void omti_data_out(Uint8 value)
             break;
           }
         }
+#if ZBX
+        else if (state.command == CMD_INIT_DRIVE &&
+            trs_io_debug_flags & HARDDEBUG2) {
+          debug("OMTI init drive:%d cylinders:%d heads:%d\n", state.drive,
+             (state.secbuf[0] << 8) | state.secbuf[1], state.secbuf[2]);
+        }
+#endif
         omti_status(0);
       }
     }
@@ -1212,6 +1219,13 @@ static void sasi_data_out(Uint8 value)
             break;
           }
         }
+#if ZBX
+        else if (state.command == CMD_INIT_DRIVE &&
+            trs_io_debug_flags & HARDDEBUG2) {
+          debug("SASI init drive:%d cylinders:%d heads:%d\n", state.drive,
+             (state.secbuf[0] << 8) | state.secbuf[1], state.secbuf[2]);
+        }
+#endif
         sasi_status(0);
       }
     }
