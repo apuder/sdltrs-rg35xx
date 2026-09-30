@@ -827,7 +827,7 @@ static void omti_command(void)
     } else {
       omti_sense(ERROR_CODE);
     }
-    return;
+    break;
 
   case CMD_WRITE:
     if (sector_seek(OMTI_SECSIZE) == 0) {
@@ -836,7 +836,7 @@ static void omti_command(void)
     } else {
       omti_sense(ERROR_CODE);
     }
-    return;
+    break;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
@@ -845,48 +845,47 @@ static void omti_command(void)
       omti_status(omti_format(state.command));
     else
       omti_sense(ERROR_CODE);
-    return;
+    break;
 
   case CMD_INIT_DRIVE:
     state.secsize = DRIVE_CHAR_LEN;
     state.status  = OMTI_DATA_OUT;
-    return;
+    break;
 
   case CMD_WRITE_SEC_BUF:
     state.secsize = OMTI_SECSIZE;
     state.status  = OMTI_DATA_OUT;
-    return;
+    break;
 
   case CMD_READ_SEC_BUF:
     state.secsize = OMTI_SECSIZE;
     state.status  = OMTI_DATA_IN;
-    return;
+    break;
 
   case CMD_SEEK:
     omti_status(sector_seek(OMTI_SECSIZE));
-    return;
+    break;
 
   case CMD_RECALIBRATE:
     state.cyl = state.head = state.secnum = 0;
     omti_status(sector_seek(OMTI_SECSIZE));
-    return;
+    break;
 
   case CMD_TEST_DRIVE:
     omti_status(omti_open(state.drive));
-    return;
+    break;
 
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     omti_status(0);
-    return;
+    break;
 
   default:
     error("OMTI unknown command 0x%02X", state.command);
+    omti_status(ERROR_CODE);
   }
-
-  omti_status(ERROR_CODE);
 }
 
 static int omti_data_in(void)
@@ -1099,7 +1098,7 @@ static void sasi_command(void)
     } else {
       sasi_sense(ERROR_CODE);
     }
-    return;
+    break;
 
   case CMD_WRITE:
     if (sasi_seek() == 0) {
@@ -1108,7 +1107,7 @@ static void sasi_command(void)
     } else {
       sasi_sense(ERROR_CODE);
     }
-    return;
+    break;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
@@ -1117,48 +1116,47 @@ static void sasi_command(void)
       sasi_status(sasi_format(state.command));
     else
       sasi_sense(ERROR_CODE);
-    return;
+    break;
 
   case CMD_INIT_DRIVE:
     state.secsize = DRIVE_CHAR_LEN;
     state.status  = SASI_DATA_OUT;
-    return;
+    break;
 
   case CMD_WRITE_SEC_BUF:
     state.secsize = SASI_SECSIZE;
     state.status  = SASI_DATA_OUT;
-    return;
+    break;
 
   case CMD_READ_SEC_BUF:
     state.secsize = SASI_SECSIZE;
     state.status  = SASI_DATA_IN;
-    return;
+    break;
 
   case CMD_SEEK:
     sasi_status(sasi_seek());
-    return;
+    break;
 
   case CMD_RECALIBRATE:
     state.cyl = 0;
     sasi_status(sasi_seek());
-    return;
+    break;
 
   case CMD_TEST_DRIVE:
     sasi_status(sasi_open(state.drive));
-    return;
+    break;
 
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     sasi_status(0);
-    return;
+    break;
 
   default:
     error("SASI unknown command 0x%02X", state.command);
+    sasi_status(ERROR_CODE);
   }
-
-  sasi_status(ERROR_CODE);
 }
 
 static int sasi_data_in(void)
