@@ -43,7 +43,7 @@
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)    /* maximum sector size */
 #define CDB_LEN    (6)       /* command descriptor block length */
-#define ERROR_CODE (2)       /* seek error value of OMTI/SASI */
+#define ERROR_CODE (1 << 1)  /* command error value for OMTI/SASI */
 
 /* Private types and data */
 
@@ -109,8 +109,7 @@ static void omti_data_out(Uint8 value);
 static int  omti_format(int cmd);
 static int  omti_open(int drive);
 static void omti_reset(void);
-static void omti_sense(int error);
-static void omti_status(int error);
+static int  omti_status(int error);
 
 static void sasi_command(void);
 static int  sasi_data_in(void);
@@ -119,8 +118,7 @@ static int  sasi_format(int cmd);
 static int  sasi_open(int drive);
 static void sasi_reset(void);
 static int  sasi_seek(void);
-static void sasi_sense(int error);
-static void sasi_status(int error);
+static int  sasi_status(int error);
 
 #ifdef ZBX
 static const char *hard_cmd(int port)
@@ -243,7 +241,7 @@ static int sector_seek(size_t sector_size)
   const Drive *d = &state.d[state.drive];
 
   if (d->file == NULL)
-    return ERROR_CODE;
+    return ERR_DRIVE_NOT_READY;
 
   /* Check sector number overflow and adjust head */
   if (state.secnum >= d->secs && d->secs) {
@@ -257,7 +255,7 @@ static int sector_seek(size_t sector_size)
       state.head >= d->heads) {
     error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
-    return ERROR_CODE;
+    return ERR_ILLEGAL_ADDRESS;
   }
 
   if (fseek(d->file,
@@ -265,7 +263,7 @@ static int sector_seek(size_t sector_size)
       sector_size * (state.cyl * d->heads * d->secs
                   +  state.head * d->secs + state.secnum), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    return ERROR_CODE;
+    return ERR_SECTOR_NOT_FOUND;
   }
 
   if (trs_show_led)
@@ -800,7 +798,20 @@ static void omti_command(void)
   state.command   = state.cdb[0];
 
   if (state.command == CMD_REQUEST_SENSE) {
-    omti_sense(state.error);
+    state.secbuf[0] = state.error;
+    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
+    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
+    state.secbuf[3] = state.cyl & 0xFF;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = OMTI_DATA_IN;
+
+#if ZBX
+    if (trs_io_debug_flags & HARDDEBUG2)
+      debug("OMTI sense: command 0x%02X error 0x%02X drive:%d"
+            " cyl:%d head:%d secnum:%d\n",
+          state.command, state.error, state.drive,
+          state.cyl, state.head, state.secnum);
+#endif
     return;
   }
 
@@ -818,33 +829,29 @@ static void omti_command(void)
         state.cyl, state.head, state.secnum, state.seccnt);
 #endif
 
+  state.error = 0;
+
   switch (state.command) {
   case CMD_READ:
-    if (sector_seek(OMTI_SECSIZE) == 0 &&
-        sector_read(OMTI_SECSIZE) == 0) {
+    if (omti_status(sector_seek(OMTI_SECSIZE)) == 0 &&
+        omti_status(sector_read(OMTI_SECSIZE)) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_IN;
-    } else {
-      omti_sense(ERROR_CODE);
     }
     break;
 
   case CMD_WRITE:
-    if (sector_seek(OMTI_SECSIZE) == 0) {
+    if (omti_status(sector_seek(OMTI_SECSIZE)) == 0) {
       state.secsize = OMTI_SECSIZE;
       state.status  = OMTI_DATA_OUT;
-    } else {
-      omti_sense(ERROR_CODE);
     }
     break;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
   case CMD_FORMAT_BADTRACK:
-    if (sector_seek(OMTI_SECSIZE) == 0)
+    if (omti_status(sector_seek(OMTI_SECSIZE)) == 0)
       omti_status(omti_format(state.command));
-    else
-      omti_sense(ERROR_CODE);
     break;
 
   case CMD_INIT_DRIVE:
@@ -884,7 +891,7 @@ static void omti_command(void)
 
   default:
     error("OMTI unknown command 0x%02X", state.command);
-    omti_status(ERROR_CODE);
+    omti_status(ERR_INVALID_COMMAND);
   }
 }
 
@@ -898,7 +905,7 @@ static int omti_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(OMTI_SECSIZE) != 0) {
-            omti_status(ERROR_CODE);
+            omti_status(ERR_SECTOR_NOT_FOUND);
             return v;
           }
           state.bytesdone = 0;
@@ -912,7 +919,7 @@ static int omti_data_in(void)
 
   case OMTI_STATUS:
     omti_reset();
-    return state.error;
+    return state.error ? ERROR_CODE | (state.drive << 5) : 0;
   }
 
   return 0xff;
@@ -933,7 +940,7 @@ static void omti_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(OMTI_SECSIZE) != 0) {
-            omti_status(ERROR_CODE);
+            omti_status(ERR_WRITE_FAULT);
             break;
           }
           if (--state.seccnt) {
@@ -962,7 +969,7 @@ static int omti_format(int cmd)
   Uint32 const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
 
   if (last > state.size)
-    return ERROR_CODE;
+    return ERR_ILLEGAL_ADDRESS;
 
   if (state.cdb[5] & 0x20)
     /* Fill sector buffer with default byte */
@@ -970,7 +977,7 @@ static int omti_format(int cmd)
 
   while (sect < last) {
     if (sector_write(OMTI_SECSIZE) != 0) {
-      return ERROR_CODE;
+      return ERR_WRITE_FAULT;
     }
     sect++;
   }
@@ -980,7 +987,8 @@ static int omti_format(int cmd)
 
 static int omti_open(int drive)
 {
-  if (hard_open(drive) != 0) return ERROR_CODE;
+  if (hard_open(drive) != 0)
+    return ERR_DRIVE_NOT_READY;
 
   state.drive   = drive;
   state.secsize = OMTI_SECSIZE;
@@ -994,29 +1002,11 @@ static void omti_reset(void)
   state.status  = OMTI_IDLE;
 }
 
-static void omti_sense(int error)
+static int omti_status(int error)
 {
-  state.error     = error;
-  state.secbuf[0] = error;
-  state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
-  state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
-  state.secbuf[3] = state.cyl & 0xFF;
-  state.secsize   = SENSE_BUF_LEN;
-  state.status    = OMTI_DATA_IN;
-
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    debug("OMTI sense: command 0x%02X error 0x%02X drive:%d"
-          " cyl:%d head:%d secnum:%d\n",
-        state.command, state.error, state.drive,
-        state.cyl, state.head, state.secnum);
-#endif
-}
-
-static void omti_status(int error)
-{
-  state.error  = error | (state.drive << 5);
+  state.error  = error;
   state.status = OMTI_STATUS;
+  return error;
 }
 
 int trs_sasi_in(int port)
@@ -1074,7 +1064,18 @@ static void sasi_command(void)
   state.command   = state.cdb[0];
 
   if (state.command == CMD_REQUEST_SENSE) {
-    sasi_sense(state.error);
+    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
+    state.secbuf[2] = state.cyl >> 8;
+    state.secbuf[3] = state.cyl;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = SASI_DATA_IN;
+
+#if ZBX
+    if (trs_io_debug_flags & HARDDEBUG2)
+      debug("SASI sense: command 0x%02X error 0x%02X drive:%d LBA:%d/%d\n",
+          state.command, state.error, state.drive, state.cyl, state.size);
+#endif
     return;
   }
 
@@ -1090,32 +1091,29 @@ static void sasi_command(void)
         state.command, state.error, state.drive, state.cyl, state.seccnt);
 #endif
 
+  state.error = 0;
+
   switch (state.command) {
   case CMD_READ:
-    if (sasi_seek() == 0 && sector_read(SASI_SECSIZE) == 0) {
+    if (sasi_status(sasi_seek()) == 0 &&
+        sasi_status(sector_read(SASI_SECSIZE)) == 0) {
       state.secsize = SASI_SECSIZE;
       state.status  = SASI_DATA_IN;
-    } else {
-      sasi_sense(ERROR_CODE);
     }
     break;
 
   case CMD_WRITE:
-    if (sasi_seek() == 0) {
+    if (sasi_status(sasi_seek()) == 0) {
       state.secsize = SASI_SECSIZE;
       state.status  = SASI_DATA_OUT;
-    } else {
-      sasi_sense(ERROR_CODE);
     }
     break;
 
   case CMD_FORMAT:
   case CMD_FORMAT_TRACK:
   case CMD_FORMAT_BADTRACK:
-    if (sasi_seek() == 0)
+    if (sasi_status(sasi_seek()) == 0)
       sasi_status(sasi_format(state.command));
-    else
-      sasi_sense(ERROR_CODE);
     break;
 
   case CMD_INIT_DRIVE:
@@ -1155,7 +1153,7 @@ static void sasi_command(void)
 
   default:
     error("SASI unknown command 0x%02X", state.command);
-    sasi_status(ERROR_CODE);
+    sasi_status(ERR_INVALID_COMMAND);
   }
 }
 
@@ -1169,7 +1167,7 @@ static int sasi_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(SASI_SECSIZE) != 0) {
-            sasi_status(ERROR_CODE);
+            sasi_status(ERR_SECTOR_NOT_FOUND);
             return v;
           }
           state.bytesdone = 0;
@@ -1184,7 +1182,7 @@ static int sasi_data_in(void)
   case SASI_STATUS:
     if (state.sdh == 0) {
       state.sdh = 1;
-      return state.error;
+      return state.error ? ERROR_CODE | (state.drive << 5) : 0;
     } else {
       sasi_reset();
       return 0;
@@ -1209,7 +1207,7 @@ static void sasi_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(SASI_SECSIZE) != 0) {
-            sasi_status(ERROR_CODE);
+            sasi_status(ERR_WRITE_FAULT);
             break;
           }
           if (--state.seccnt) {
@@ -1237,7 +1235,7 @@ static int sasi_format(int cmd)
   Uint32 const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
 
   if (last > state.size)
-    return ERROR_CODE;
+    return ERR_ILLEGAL_ADDRESS;
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
@@ -1245,7 +1243,7 @@ static int sasi_format(int cmd)
 
   while (state.cyl < last) {
     if (sector_write(SASI_SECSIZE) != 0) {
-      return ERROR_CODE;
+      return ERR_WRITE_FAULT;
     }
     state.cyl++;
   }
@@ -1256,7 +1254,8 @@ static int sasi_format(int cmd)
 
 static int sasi_open(int drive)
 {
-  if (hard_open(drive) != 0) return ERROR_CODE;
+  if (hard_open(drive) != 0)
+    return ERR_DRIVE_NOT_READY;
 
   state.drive   = drive;
   state.secsize = SASI_SECSIZE;
@@ -1277,19 +1276,19 @@ static int sasi_seek(void)
   const Drive *d = &state.d[state.drive];
 
   if (d->file == NULL)
-    return ERROR_CODE;
+    return ERR_DRIVE_NOT_READY;
 
   if (state.cyl > state.size) {
     error("SASI hard%d command 0x%02X: requested LBA %d of %d\n",
         state.drive, state.command, state.cyl, state.size);
-    return ERROR_CODE;
+    return ERR_ILLEGAL_ADDRESS;
   }
 
   if (fseek(d->file,
       sizeof(ReedHardHeader) +
       (state.cyl * SASI_SECSIZE), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    return ERROR_CODE;
+    return ERR_SECTOR_NOT_FOUND;
   }
 
   if (trs_show_led)
@@ -1298,28 +1297,12 @@ static int sasi_seek(void)
   return 0;
 }
 
-static void sasi_sense(int error)
+static int sasi_status(int error)
 {
-  state.error     = error;
-  state.secbuf[0] = error | 0x80;
-  state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
-  state.secbuf[2] = state.cyl >> 8;
-  state.secbuf[3] = state.cyl;
-  state.secsize   = SENSE_BUF_LEN;
-  state.status    = SASI_DATA_IN;
-
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI sense: command 0x%02X error 0x%02X drive:%d LBA:%d/%d\n",
-        state.command, state.error, state.drive, state.cyl, state.size);
-#endif
-}
-
-static void sasi_status(int error)
-{
-  state.error  = error | (state.drive << 5);
+  state.error  = error;
   state.sdh    = 0;
   state.status = SASI_STATUS;
+  return error;
 }
 
 static void trs_save_harddrive(FILE *file, Drive *d)
