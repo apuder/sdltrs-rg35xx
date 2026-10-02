@@ -815,6 +815,31 @@ static void omti_command(void)
 #endif
 
   switch (state.command) {
+  case CMD_TEST_DRIVE:
+    omti_status(omti_open(state.drive));
+    break;
+
+  case CMD_RECALIBRATE:
+    state.cyl = state.head = state.secnum = 0;
+    omti_status(sector_seek(OMTI_SECSIZE));
+    break;
+
+  case CMD_REQUEST_SENSE:
+    state.secbuf[0] = state.error;
+    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
+    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
+    state.secbuf[3] = state.cyl & 0xFF;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = OMTI_DATA_IN;
+    break;
+
+  case CMD_FORMAT:
+  case CMD_FORMAT_TRACK:
+  case CMD_FORMAT_BADTRACK:
+    if (omti_status(sector_seek(OMTI_SECSIZE)) == 0)
+      omti_status(omti_format(state.command));
+    break;
+
   case CMD_READ:
     if (omti_status(sector_seek(OMTI_SECSIZE)) == 0 &&
         omti_status(sector_read(OMTI_SECSIZE)) == 0) {
@@ -830,11 +855,8 @@ static void omti_command(void)
     }
     break;
 
-  case CMD_FORMAT:
-  case CMD_FORMAT_TRACK:
-  case CMD_FORMAT_BADTRACK:
-    if (omti_status(sector_seek(OMTI_SECSIZE)) == 0)
-      omti_status(omti_format(state.command));
+  case CMD_SEEK:
+    omti_status(sector_seek(OMTI_SECSIZE));
     break;
 
   case CMD_INIT_DRIVE:
@@ -852,33 +874,11 @@ static void omti_command(void)
     state.status  = OMTI_DATA_IN;
     break;
 
-  case CMD_SEEK:
-    omti_status(sector_seek(OMTI_SECSIZE));
-    break;
-
-  case CMD_RECALIBRATE:
-    state.cyl = state.head = state.secnum = 0;
-    omti_status(sector_seek(OMTI_SECSIZE));
-    break;
-
-  case CMD_TEST_DRIVE:
-    omti_status(omti_open(state.drive));
-    break;
-
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     omti_status(0);
-    break;
-
-  case CMD_REQUEST_SENSE:
-    state.secbuf[0] = state.error;
-    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
-    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
-    state.secbuf[3] = state.cyl & 0xFF;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = OMTI_DATA_IN;
     break;
 
   default:
@@ -1072,6 +1072,31 @@ static void sasi_command(void)
 #endif
 
   switch (state.command) {
+  case CMD_TEST_DRIVE:
+    sasi_status(sasi_open(state.drive));
+    break;
+
+  case CMD_RECALIBRATE:
+    state.cyl = 0;
+    sasi_status(sasi_seek());
+    break;
+
+  case CMD_REQUEST_SENSE:
+    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
+    state.secbuf[2] = state.cyl >> 8;
+    state.secbuf[3] = state.cyl;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = SASI_DATA_IN;
+    break;
+
+  case CMD_FORMAT:
+  case CMD_FORMAT_TRACK:
+  case CMD_FORMAT_BADTRACK:
+    if (sasi_status(sasi_seek()) == 0)
+      sasi_status(sasi_format(state.command));
+    break;
+
   case CMD_READ:
     if (sasi_status(sasi_seek()) == 0 &&
         sasi_status(sector_read(SASI_SECSIZE)) == 0) {
@@ -1087,11 +1112,8 @@ static void sasi_command(void)
     }
     break;
 
-  case CMD_FORMAT:
-  case CMD_FORMAT_TRACK:
-  case CMD_FORMAT_BADTRACK:
-    if (sasi_status(sasi_seek()) == 0)
-      sasi_status(sasi_format(state.command));
+  case CMD_SEEK:
+    sasi_status(sasi_seek());
     break;
 
   case CMD_INIT_DRIVE:
@@ -1109,33 +1131,11 @@ static void sasi_command(void)
     state.status  = SASI_DATA_IN;
     break;
 
-  case CMD_SEEK:
-    sasi_status(sasi_seek());
-    break;
-
-  case CMD_RECALIBRATE:
-    state.cyl = 0;
-    sasi_status(sasi_seek());
-    break;
-
-  case CMD_TEST_DRIVE:
-    sasi_status(sasi_open(state.drive));
-    break;
-
   case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     sasi_status(0);
-    break;
-
-  case CMD_REQUEST_SENSE:
-    state.secbuf[0] = state.error | 0x80;
-    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
-    state.secbuf[2] = state.cyl >> 8;
-    state.secbuf[3] = state.cyl;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = SASI_DATA_IN;
     break;
 
   default:
