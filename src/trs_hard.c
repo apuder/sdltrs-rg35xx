@@ -826,7 +826,7 @@ static void omti_command(void)
     break;
 
   case CMD_REQUEST_SENSE:
-    state.secbuf[0] = state.error;
+    state.secbuf[0] = state.error | 0x80;
     state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
     state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
     state.secbuf[3] = state.cyl & 0xFF;
