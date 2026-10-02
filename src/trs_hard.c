@@ -208,7 +208,7 @@ static int sector_read(size_t sector_size)
   if (f && fread(state.secbuf, 1, sector_size, f) != sector_size) {
     if (ferror(f)) {
       file_error("reading hard%d", state.drive);
-      return ERROR_CODE;
+      return ERR_DATA_ERROR;
     }
   }
 #if ZBX
@@ -226,7 +226,7 @@ static int sector_write(size_t sector_size)
   if (f && fwrite(state.secbuf, 1, sector_size, f) != sector_size) {
     if (errno) {
       file_error("writing hard%d", state.drive);
-      return ERROR_CODE;
+      return ERR_WRITE_FAULT;
     }
   }
 #if ZBX
@@ -898,7 +898,7 @@ static int omti_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(OMTI_SECSIZE) != 0) {
-            omti_status(ERR_SECTOR_NOT_FOUND);
+            omti_status(ERR_DATA_ERROR);
             return v;
           }
           state.bytesdone = 0;
@@ -1156,7 +1156,7 @@ static int sasi_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(SASI_SECSIZE) != 0) {
-            sasi_status(ERR_SECTOR_NOT_FOUND);
+            sasi_status(ERR_DATA_ERROR);
             return v;
           }
           state.bytesdone = 0;
