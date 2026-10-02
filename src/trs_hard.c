@@ -151,7 +151,7 @@ static const char *hard_cmd(int port)
 
 static void hard_debug(const char *cmd)
 {
-  debug("hard_%s: drive:%d, head:%d, cyl:%4d, secnum:%3d, seccnt:%3d\n",
+  debug("hard_%s: drive:%d head:%d cyl:%d secnum:%d seccnt:%d\n",
     cmd, state.drive, state.head, state.cyl, state.secnum, state.seccnt);
 }
 
@@ -165,16 +165,17 @@ void trs_hard_debug(void)
     return;
   }
 
-  printf("\n  hard drive:%d, head:%d, cyl/lba:%d, secnum:%d, seccnt:%d, secsize:%d\n",
+  printf("\n  hard drive:%d head:%d cyl/lba:%d secnum:%d seccnt:%d secsize:%d\n",
       state.drive, state.head, state.cyl, state.secnum, state.seccnt, state.secsize);
-  printf("  status:0x%02X, command:0x%02X, control:0x%02X, error:0x%02X\n",
-      state.status, state.command, state.control, state.error);
+  printf("  status:0x%02X command:0x%02X control:0x%02X error:0x%02X data:0x%02X\n",
+      state.status, state.command, state.control, state.error, state.data);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     if (state.d[i].file) {
       printf("\nhard%d: '%s'\n", i, state.d[i].filename);
-      printf("\theads %d, cyls %4d, secs %4d, writeprot %d\n",
-          state.d[i].heads, state.d[i].cyls, state.d[i].secs, state.d[i].writeprot);
+      printf("\theads:%d cyls:%d secs:%d%s\n",
+          state.d[i].heads, state.d[i].cyls, state.d[i].secs,
+          state.d[i].writeprot ? " Write-Protect" : "");
     }
   }
 }
@@ -253,7 +254,7 @@ static int sector_seek(size_t sector_size)
 
   if (/**state.cyl >= d->cyls ||**/ /* ignore this limit */
       state.head >= d->heads) {
-    error("hard%d: requested cyl:%d, head:%d, sec:%d (cyls:%d, heads:%d, secs:%d)",
+    error("hard%d: requested cyl:%d head:%d sec:%d (cyls:%d heads:%d secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
     return ERR_ILLEGAL_ADDRESS;
   }
@@ -640,7 +641,7 @@ static int hard_open(int drive)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("hard_open: drive:%d, cyls:%d, heads:%d, secs:%d\n",
+    debug("hard_open: drive:%d cyls:%d heads:%d secs:%d\n",
           drive, d->cyls, d->heads, d->secs);
 #endif
 
@@ -808,9 +809,9 @@ static void omti_command(void)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("OMTI command 0x%02X error 0x%02X drive:%d"
+    debug("OMTI command 0x%02X drive:%d error:0x%02X"
           " cyl:%d head:%d secnum:%d seccnt:%d\n",
-        state.command, state.error, state.drive,
+        state.command, state.drive, state.error,
         state.cyl, state.head, state.secnum, state.seccnt);
 #endif
 
@@ -943,7 +944,7 @@ static void omti_data_out(Uint8 value)
 #if ZBX
         else if (state.command == CMD_INIT_DRIVE &&
             trs_io_debug_flags & HARDDEBUG2) {
-          debug("OMTI init drive:%d cylinders:%d heads:%d\n", state.drive,
+          debug("OMTI init drive:%d cyls:%d heads:%d\n", state.drive,
              (state.secbuf[0] << 8) | state.secbuf[1], state.secbuf[2]);
         }
 #endif
@@ -1066,9 +1067,10 @@ static void sasi_command(void)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%d/%d seccnt:%d\n",
-        state.command, state.error, state.drive,
-        state.cyl, state.size, state.seccnt);
+    debug("SASI command 0x%02X drive:%d error:0x%02X"
+          " data:0x%02X lba:%d/%d seccnt:%d\n",
+        state.command, state.drive, state.error,
+        state.data, state.cyl, state.size, state.seccnt);
 #endif
 
   switch (state.command) {
@@ -1205,7 +1207,7 @@ static void sasi_data_out(Uint8 value)
 #if ZBX
         else if (state.command == CMD_INIT_DRIVE &&
             trs_io_debug_flags & HARDDEBUG2) {
-          debug("SASI init drive:%d cylinders:%d heads:%d\n", state.drive,
+          debug("SASI init drive:%d cyls:%d heads:%d\n", state.drive,
              (state.secbuf[0] << 8) | state.secbuf[1], state.secbuf[2]);
         }
 #endif
@@ -1266,7 +1268,7 @@ static int sasi_seek(void)
     return ERR_DRIVE_NOT_READY;
 
   if (state.cyl > state.size) {
-    error("SASI hard%d command 0x%02X: requested LBA %d of %d\n",
+    error("SASI hard%d command 0x%02X: requested lba %d/%d\n",
         state.drive, state.command, state.cyl, state.size);
     return ERR_ILLEGAL_ADDRESS;
   }
