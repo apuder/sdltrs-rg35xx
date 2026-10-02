@@ -797,29 +797,14 @@ static void omti_command(void)
   state.bytesdone = 0;
   state.command   = state.cdb[0];
 
-  if (state.command == CMD_REQUEST_SENSE) {
-    state.secbuf[0] = state.error;
-    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
-    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
-    state.secbuf[3] = state.cyl & 0xFF;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = OMTI_DATA_IN;
-
-#if ZBX
-    if (trs_io_debug_flags & HARDDEBUG2)
-      debug("OMTI sense: command 0x%02X error 0x%02X drive:%d"
-            " cyl:%d head:%d secnum:%d\n",
-          state.command, state.error, state.drive,
-          state.cyl, state.head, state.secnum);
-#endif
-    return;
+  if (state.command != CMD_REQUEST_SENSE) {
+    state.cyl    = ((state.cdb[2] & 0xC0) << 2) | state.cdb[3];
+    state.drive  =  (state.cdb[1] & 0x20) >> 5;
+    state.head   =   state.cdb[1] & 0x1F;
+    state.secnum =   state.cdb[2] & 0x3F;
+    state.seccnt =   state.cdb[4];
+    state.error  = 0;
   }
-
-  state.cyl    = ((state.cdb[2] & 0xC0) << 2) | state.cdb[3];
-  state.drive  =  (state.cdb[1] & 0x20) >> 5;
-  state.head   =   state.cdb[1] & 0x1F;
-  state.secnum =   state.cdb[2] & 0x3F;
-  state.seccnt =   state.cdb[4];
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
@@ -828,8 +813,6 @@ static void omti_command(void)
         state.command, state.error, state.drive,
         state.cyl, state.head, state.secnum, state.seccnt);
 #endif
-
-  state.error = 0;
 
   switch (state.command) {
   case CMD_READ:
@@ -887,6 +870,15 @@ static void omti_command(void)
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     omti_status(0);
+    break;
+
+  case CMD_REQUEST_SENSE:
+    state.secbuf[0] = state.error;
+    state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
+    state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
+    state.secbuf[3] = state.cyl & 0xFF;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = OMTI_DATA_IN;
     break;
 
   default:
@@ -1063,35 +1055,21 @@ static void sasi_command(void)
   state.bytesdone = 0;
   state.command   = state.cdb[0];
 
-  if (state.command == CMD_REQUEST_SENSE) {
-    state.secbuf[0] = state.error | 0x80;
-    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
-    state.secbuf[2] = state.cyl >> 8;
-    state.secbuf[3] = state.cyl;
-    state.secsize   = SENSE_BUF_LEN;
-    state.status    = SASI_DATA_IN;
-
-#if ZBX
-    if (trs_io_debug_flags & HARDDEBUG2)
-      debug("SASI sense: command 0x%02X error 0x%02X drive:%d LBA:%d/%d\n",
-          state.command, state.error, state.drive, state.cyl, state.size);
-#endif
-    return;
+  if (state.command != CMD_REQUEST_SENSE) {
+    state.cyl    = ((state.cdb[1] & 0x1F) << 16)
+                 |  (state.cdb[2] << 8)
+                 |   state.cdb[3];
+    state.drive  =  (state.cdb[1] & 0x20) >> 5;
+    state.seccnt =   state.cdb[4];
+    state.error  = 0;
   }
-
-  state.cyl    = ((state.cdb[1] & 0x1F) << 16)
-               |  (state.cdb[2] << 8)
-               |   state.cdb[3];
-  state.drive  =  (state.cdb[1] & 0x20) >> 5;
-  state.seccnt =   state.cdb[4];
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%ld seccnt:%d\n",
-        state.command, state.error, state.drive, state.cyl, state.seccnt);
+    debug("SASI command 0x%02X error 0x%02X drive:%d lba:%d/%d seccnt:%d\n",
+        state.command, state.error, state.drive,
+        state.cyl, state.size, state.seccnt);
 #endif
-
-  state.error = 0;
 
   switch (state.command) {
   case CMD_READ:
@@ -1149,6 +1127,15 @@ static void sasi_command(void)
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
     sasi_status(0);
+    break;
+
+  case CMD_REQUEST_SENSE:
+    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
+    state.secbuf[2] = state.cyl >> 8;
+    state.secbuf[3] = state.cyl;
+    state.secsize   = SENSE_BUF_LEN;
+    state.status    = SASI_DATA_IN;
     break;
 
   default:
