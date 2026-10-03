@@ -137,7 +137,7 @@ void trs_load_uint16(FILE *file, Uint16 *buffer)
   Uint8 byte[2] = { 0 };
 
   fread(&byte, 1, 2, file);
-  *buffer++ = (byte[1] << 8) | byte[0];
+  *buffer = (byte[1] << 8) | byte[0];
 }
 
 void trs_save_uint32(FILE *file, const Uint32 *buffer)
@@ -165,7 +165,7 @@ void trs_load_uint32(FILE *file, Uint32 *buffer)
   Uint8 byte[4] = { 0 };
 
   fread(&byte, 1, 4, file);
-  *buffer++ = (byte[3] << 24) | (byte[2] << 16) | (byte[1] << 8) | byte[0];
+  *buffer = (byte[3] << 24) | (byte[2] << 16) | (byte[1] << 8) | byte[0];
 }
 
 void trs_save_uint64(FILE *file, const Uint64 *buffer)
