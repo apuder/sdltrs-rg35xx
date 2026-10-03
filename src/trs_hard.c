@@ -43,7 +43,7 @@
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)    /* maximum sector size */
 #define CDB_LEN    (6)       /* command descriptor block length */
-#define ERROR_CODE (1 << 1)  /* command error value for OMTI/SASI */
+#define ERROR_CODE (1 << 1)  /* command error bit for OMTI/SASI */
 
 /* Private types and data */
 
@@ -72,13 +72,13 @@ typedef struct {
   /* Controller register images */
   Uint8  cdb[CDB_LEN];
   Uint8  command;
-  Uint8  control;
-  Uint32 cyl; /* LBA for SASI */
-  Uint8  data;
+  Uint8  control; /* OMTI/SASI CDB index */
+  Uint32 cyl;     /* SASI LBA */
+  Uint8  data;    /* SASI bus data */
   Uint8  drive;
   Uint8  error;
   Uint8  head;
-  Uint8  sdh;
+  Uint8  sdh;     /* SASI status switch */
   Uint8  secbuf[SECTORSIZE];
   Uint8  seccnt;
   Uint8  secnum;
@@ -759,7 +759,15 @@ int trs_omti_in(int port)
       v = state.status;
       break;
     case 2:
-      v = 0xfa; /* Expected byte for g3s_hd-omti_bootrom_2764.bin */
+      /*
+       * Read inverted drive configuration
+       * W1 - W4 jumper: IN = 0 / OUT = 1.
+       *
+       * |   |   |   |   |W 4|W 3|W 2|W 1|
+       * +---+---+---+---+---+---+---+---+
+       * | 1 | 1 | 1 | 1 | 1 | 0 | 1 | 0 |
+       */
+      v = 0xfa; /* 612 cylinders, 2 heads, 10.2 MB */
       break;
     }
   }
