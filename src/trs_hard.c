@@ -74,7 +74,6 @@ typedef struct {
   Uint8  command;
   Uint8  control; /* OMTI/SASI CDB index */
   Uint32 cyl;     /* SASI LBA */
-  Uint8  data;    /* SASI bus data */
   Uint8  drive;
   Uint8  error;
   Uint8  head;
@@ -167,8 +166,8 @@ void trs_hard_debug(void)
 
   printf("\n  hard drive:%d cyl/lba:%d head:%d secnum:%d seccnt:%d secsize:%d\n",
       state.drive, state.cyl, state.head, state.secnum, state.seccnt, state.secsize);
-  printf("  command:0x%02X control:0x%02X data:0x%02X error:0x%02X status:0x%02X\n",
-      state.command, state.control, state.data, state.error, state.status);
+  printf("  command:0x%02X control:0x%02X error:0x%02X status:0x%02X\n",
+      state.command, state.control, state.error, state.status);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     if (state.d[i].file) {
@@ -279,7 +278,6 @@ void trs_hard_init(int poweron)
   state.command = 0;
   state.control = 0;
   state.cyl = 0;
-  state.data = 0;
   state.drive = 0;
   state.error = 0;
   state.head = 0;
@@ -1017,7 +1015,7 @@ int trs_sasi_in(int port)
   if (state.present) {
     switch (port) {
     case 0:
-      v = state.status == SASI_IDLE ? state.data : sasi_data_in();
+      v = state.status == SASI_IDLE ? SASI_SELECT : sasi_data_in();
       break;
     case 1:
       v = state.status;
@@ -1042,16 +1040,14 @@ void trs_sasi_out(int port, int value)
 
   switch (port) {
   case 0:
-    if (state.status == SASI_IDLE)
-      state.data = value;
-    else
+    if (state.status != SASI_IDLE)
       sasi_data_out(value);
     break;
   case 1:
     sasi_reset();
     break;
   case 2:
-    if (state.status == SASI_IDLE && (state.data & 1)) {
+    if (state.status == SASI_IDLE) {
       state.control = 0;
       state.status  = SASI_CMD_OUT;
     }
@@ -1075,10 +1071,9 @@ static void sasi_command(void)
 
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    debug("SASI command 0x%02X drive:%d data:0x%02X"
-          " error:0x%02X lba:%d/%d seccnt:%d\n",
-        state.command, state.drive, state.data,
-        state.error, state.cyl, state.size, state.seccnt);
+    debug("SASI command 0x%02X drive:%d error:0x%02X lba:%d/%d seccnt:%d\n",
+        state.command, state.drive, state.error,
+        state.cyl, state.size, state.seccnt);
 #endif
 
   switch (state.command) {
@@ -1263,7 +1258,6 @@ static int sasi_open(int drive)
 static void sasi_reset(void)
 {
   state.control = 0;
-  state.data    = 0;
   state.sdh     = 0;
   state.status  = SASI_IDLE;
 }
@@ -1342,7 +1336,6 @@ void trs_hard_save(FILE *file)
   trs_save_uint8(file, &state.command, 1);
   trs_save_uint8(file, &state.control, 1);
   trs_save_uint32(file, &state.cyl);
-  trs_save_uint8(file, &state.data, 1);
   trs_save_uint8(file, &state.drive, 1);
   trs_save_uint8(file, &state.error, 1);
   trs_save_uint8(file, &state.head, 1);
@@ -1373,7 +1366,6 @@ void trs_hard_load(FILE *file)
   trs_load_uint8(file, &state.command, 1);
   trs_load_uint8(file, &state.control, 1);
   trs_load_uint32(file, &state.cyl);
-  trs_load_uint8(file, &state.data, 1);
   trs_load_uint8(file, &state.drive, 1);
   trs_load_uint8(file, &state.error, 1);
   trs_load_uint8(file, &state.head, 1);
