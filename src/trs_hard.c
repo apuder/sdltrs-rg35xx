@@ -42,8 +42,6 @@
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
 #define SECTORSIZE (1024)    /* maximum sector size */
-#define CDB_LEN    (6)       /* command descriptor block length */
-#define ERROR_CODE (1 << 1)  /* command error bit for OMTI/SASI */
 
 /* Private types and data */
 

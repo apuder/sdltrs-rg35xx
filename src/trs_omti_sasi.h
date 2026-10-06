@@ -4,8 +4,10 @@
 #define OMTI_SECSIZE  (512) /* Default sector size for OMTI */
 #define SASI_SECSIZE  (256) /* Default sector size for SASI */
 
-#define DRIVE_CHAR_LEN (8)  /* Drive characteristics length */
-#define SENSE_BUF_LEN  (4)  /* Sense buffer length */
+#define CDB_LEN         (6) /* command descriptor block length */
+#define DRIVE_CHAR_LEN  (8) /* Drive characteristics length */
+#define ERROR_CODE (1 << 1) /* command error bit for OMTI/SASI */
+#define SENSE_BUF_LEN   (4) /* Sense buffer length */
 
 /*
  * OMTI status                 |   |   |IRQ|DRQ|BSY|C/D|I/O|REQ|
