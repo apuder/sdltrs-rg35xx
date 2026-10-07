@@ -44,6 +44,7 @@
 
 #define HARDDEBUG1 (1 << 2)  /* show detail on all port i/o */
 #define HARDDEBUG2 (1 << 3)  /* show all commands */
+#define HARDDEBUG3 (1 << 4)  /* show sector dump */
 #define SECTORSIZE (1024)    /* maximum sector size */
 
 /* Private types and data */
@@ -212,7 +213,7 @@ static int sector_read(size_t sector_size)
     }
   }
 #if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
+  if (trs_io_debug_flags & HARDDEBUG3)
     sector_dump("read", sector_size);
 #endif
 
@@ -230,7 +231,7 @@ static int sector_write(size_t sector_size)
     }
   }
 #if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
+  if (trs_io_debug_flags & HARDDEBUG3)
     sector_dump("write", sector_size);
 #endif
 
