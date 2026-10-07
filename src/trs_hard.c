@@ -108,7 +108,7 @@ static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static int  omti_format(int cmd);
-static int  omti_open(int drive);
+static int  omti_open(void);
 static void omti_reset(void);
 static int  omti_status(int error);
 
@@ -116,7 +116,7 @@ static void sasi_command(void);
 static int  sasi_data_in(void);
 static void sasi_data_out(Uint8 value);
 static int  sasi_format(int cmd);
-static int  sasi_open(int drive);
+static int  sasi_open(void);
 static void sasi_reset(void);
 static int  sasi_seek(void);
 static int  sasi_status(int error);
@@ -826,7 +826,7 @@ static void omti_command(void)
 
   switch (state.command) {
   case CMD_TEST_DRIVE:
-    omti_status(omti_open(state.drive));
+    omti_status(omti_open());
     break;
 
   case CMD_RECALIBRATE:
@@ -987,14 +987,13 @@ static int omti_format(int cmd)
   return 0;
 }
 
-static int omti_open(int drive)
+static int omti_open(void)
 {
-  if (hard_open(drive) != 0) {
-    error("hard%d access failed", drive);
+  if (hard_open(state.drive) != 0) {
+    error("hard%d access failed", state.drive);
     return ERR_DRIVE_NOT_READY;
   }
 
-  state.drive   = drive;
   state.secsize = OMTI_SECSIZE;
   state.status  = OMTI_IDLE;
   return 0;
@@ -1083,7 +1082,7 @@ static void sasi_command(void)
 
   switch (state.command) {
   case CMD_TEST_DRIVE:
-    sasi_status(sasi_open(state.drive));
+    sasi_status(sasi_open());
     break;
 
   case CMD_RECALIBRATE:
@@ -1249,14 +1248,13 @@ static int sasi_format(int cmd)
   return 0;
 }
 
-static int sasi_open(int drive)
+static int sasi_open(void)
 {
-  if (hard_open(drive) != 0) {
-    error("hard%d access failed", drive);
+  if (hard_open(state.drive) != 0) {
+    error("hard%d access failed", state.drive);
     return ERR_DRIVE_NOT_READY;
   }
 
-  state.drive   = drive;
   state.secsize = SASI_SECSIZE;
   state.status  = SASI_IDLE;
   return 0;
