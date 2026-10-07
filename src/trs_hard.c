@@ -242,8 +242,10 @@ static int sector_seek(size_t sector_size)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL)
+  if (d->file == NULL) {
+    error("hard%d access failed", state.drive);
     return ERR_DRIVE_NOT_READY;
+  }
 
   /* Check sector number overflow and adjust head */
   if (state.secnum >= d->secs && d->secs) {
@@ -701,9 +703,8 @@ static void hard_restore(void)
  */
 static int hard_sector(int newstatus)
 {
-  if (state.d[state.drive].file == NULL &&
-      hard_open(state.drive) != 0)
-    return -1;
+  if (state.d[state.drive].file == NULL)
+    hard_open(state.drive);
 
   if (sector_seek(state.secsize) != 0) {
     hard_error(TRS_HARD_NFERR);
@@ -988,8 +989,10 @@ static int omti_format(int cmd)
 
 static int omti_open(int drive)
 {
-  if (hard_open(drive) != 0)
+  if (hard_open(drive) != 0) {
+    error("hard%d access failed", drive);
     return ERR_DRIVE_NOT_READY;
+  }
 
   state.drive   = drive;
   state.secsize = OMTI_SECSIZE;
@@ -1248,8 +1251,10 @@ static int sasi_format(int cmd)
 
 static int sasi_open(int drive)
 {
-  if (hard_open(drive) != 0)
+  if (hard_open(drive) != 0) {
+    error("hard%d access failed", drive);
     return ERR_DRIVE_NOT_READY;
+  }
 
   state.drive   = drive;
   state.secsize = SASI_SECSIZE;
@@ -1268,8 +1273,10 @@ static int sasi_seek(void)
 {
   const Drive *d = &state.d[state.drive];
 
-  if (d->file == NULL)
+  if (d->file == NULL) {
+    error("hard%d access failed", state.drive);
     return ERR_DRIVE_NOT_READY;
+  }
 
   if (state.cyl > state.size) {
     error("SASI hard%d command 0x%02X: requested lba %d/%d\n",
