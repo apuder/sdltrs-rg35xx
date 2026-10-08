@@ -995,7 +995,6 @@ static int omti_open(void)
   }
 
   state.secsize = OMTI_SECSIZE;
-  state.status  = OMTI_IDLE;
   return 0;
 }
 
@@ -1256,7 +1255,6 @@ static int sasi_open(void)
   }
 
   state.secsize = SASI_SECSIZE;
-  state.status  = SASI_IDLE;
   return 0;
 }
 
