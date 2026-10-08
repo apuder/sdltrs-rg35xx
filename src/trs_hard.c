@@ -226,7 +226,10 @@ static int sector_write(size_t sector_size)
 
   if (f && fwrite(state.secbuf, 1, sector_size, f) != sector_size) {
     if (errno) {
-      file_error("writing hard%d", state.drive);
+      if (state.d[state.drive].writeprot)
+        error("hard%d: write-protected", state.drive);
+      else
+        file_error("writing hard%d", state.drive);
       return ERR_WRITE_FAULT;
     }
   }
