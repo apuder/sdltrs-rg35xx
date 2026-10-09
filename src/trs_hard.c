@@ -161,15 +161,15 @@ void trs_hard_debug(void)
 {
   int i;
 
-  printf("Hard disk controller state:");
   if (state.present == 0) {
-    puts(" DISABLED");
+    puts("DISABLED");
     return;
   }
 
-  printf("\n  hard drive:%d cyl/lba:%d head:%d secnum:%d seccnt:%d secsize:%d\n",
-      state.drive, state.cyl, state.head, state.secnum, state.seccnt, state.secsize);
-  printf("  command:0x%02X control:0x%02X error:0x%02X status:0x%02X\n",
+  printf("drive:%d cyl|lba:%d/%d head:%d secnum:%d seccnt:%d secsize:%d\n",
+      state.drive, state.cyl, state.size, state.head,
+      state.secnum, state.seccnt, state.secsize);
+  printf("command:0x%02X control:0x%02X error:0x%02X status:0x%02X\n",
       state.command, state.control, state.error, state.status);
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
@@ -177,7 +177,7 @@ void trs_hard_debug(void)
       printf("\nhard%d: '%s'\n", i, state.d[i].filename);
       printf("\tcyls:%d heads:%d secs:%d%s\n",
           state.d[i].cyls, state.d[i].heads, state.d[i].secs,
-          state.d[i].writeprot ? " Write-Protect" : "");
+          state.d[i].writeprot ? "\tWrite-Protect" : "");
     }
   }
 }
