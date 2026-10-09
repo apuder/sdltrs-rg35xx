@@ -102,7 +102,6 @@ static void hard_read(int cmd);
 static void hard_restore(void);
 static int  hard_sector(int newstatus);
 static void hard_seek(void);
-static void hard_verify(void);
 static void hard_write(int cmd);
 
 static void omti_command(void);
@@ -478,9 +477,6 @@ void trs_hard_out(int port, int value)
     case TRS_HARD_WRITE:
       hard_write(value);
       break;
-    case TRS_HARD_VERIFY:
-      hard_verify();
-      break;
     case TRS_HARD_FORMAT:
       hard_format();
       break;
@@ -488,6 +484,7 @@ void trs_hard_out(int port, int value)
       hard_init(value);
       break;
     case TRS_HARD_SEEK:
+    case TRS_HARD_VERIFY:
       hard_seek();
       break;
     default:
@@ -725,16 +722,7 @@ static void hard_seek(void)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("seek");
-#endif
-  hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
-}
-
-static void hard_verify(void)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("verify");
+    hard_debug("seek/verify");
 #endif
   hard_sector(TRS_HARD_READY | TRS_HARD_SEEKDONE);
 }
