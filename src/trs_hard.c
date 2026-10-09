@@ -109,7 +109,6 @@ static void omti_command(void);
 static int  omti_data_in(void);
 static void omti_data_out(Uint8 value);
 static int  omti_format(int cmd);
-static int  omti_open(void);
 static void omti_reset(void);
 static int  omti_status(int error);
 
@@ -117,7 +116,6 @@ static void sasi_command(void);
 static int  sasi_data_in(void);
 static void sasi_data_out(Uint8 value);
 static int  sasi_format(int cmd);
-static int  sasi_open(void);
 static void sasi_reset(void);
 static int  sasi_seek(void);
 static int  sasi_status(int error);
@@ -834,7 +832,10 @@ static void omti_command(void)
 
   switch (state.command) {
   case CMD_TEST_DRIVE:
-    omti_status(omti_open());
+    if (omti_status(hard_open(state.drive)) == 0)
+      state.secsize = OMTI_SECSIZE;
+    else
+      omti_status(hard_fail());
     break;
 
   case CMD_RECALIBRATE:
@@ -995,15 +996,6 @@ static int omti_format(int cmd)
   return 0;
 }
 
-static int omti_open(void)
-{
-  if (hard_open(state.drive) != 0)
-    return hard_fail();
-
-  state.secsize = OMTI_SECSIZE;
-  return 0;
-}
-
 static void omti_reset(void)
 {
   state.control = 0;
@@ -1087,7 +1079,10 @@ static void sasi_command(void)
 
   switch (state.command) {
   case CMD_TEST_DRIVE:
-    sasi_status(sasi_open());
+    if (sasi_status(hard_open(state.drive)) == 0)
+      state.secsize = SASI_SECSIZE;
+    else
+      sasi_status(hard_fail());
     break;
 
   case CMD_RECALIBRATE:
@@ -1250,15 +1245,6 @@ static int sasi_format(int cmd)
   }
 
   fflush(d->file);
-  return 0;
-}
-
-static int sasi_open(void)
-{
-  if (hard_open(state.drive) != 0)
-    return hard_fail();
-
-  state.secsize = SASI_SECSIZE;
   return 0;
 }
 
