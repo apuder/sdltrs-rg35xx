@@ -977,7 +977,7 @@ static int omti_format(int cmd)
   while (sect < last) {
     sect++;
     if (sector_write(OMTI_SECSIZE) != 0) {
-      return ERR_WRITE_FAULT;
+      return ERR_FORMAT_ERROR;
     }
   }
 
@@ -1228,7 +1228,7 @@ static int sasi_format(int cmd)
   while (state.cyl < last) {
     state.cyl++;
     if (sector_write(SASI_SECSIZE) != 0) {
-      return ERR_WRITE_FAULT;
+      return ERR_FORMAT_ERROR;
     }
   }
 
