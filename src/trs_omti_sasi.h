@@ -27,8 +27,6 @@
 #define SASI_CMD_OUT   0x0B /* | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 1 | */
 #define SASI_STATUS    0x1B /* | 0 | 0 | 0 | 1 | 1 | 0 | 1 | 1 | */
 
-#define SASI_SELECT    0x01 /* Controller default select code */
-
 /*
  * OMTI/SASI commands
  */

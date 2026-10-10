@@ -1004,7 +1004,7 @@ int trs_sasi_in(int port)
   if (state.present) {
     switch (port) {
     case 0:
-      v = state.status == SASI_IDLE ? SASI_SELECT : sasi_data_in();
+      v = sasi_data_in();
       break;
     case 1:
       v = state.status;
@@ -1029,8 +1029,7 @@ void trs_sasi_out(int port, int value)
 
   switch (port) {
   case 0:
-    if (state.status != SASI_IDLE)
-      sasi_data_out(value);
+    sasi_data_out(value);
     break;
   case 1:
     sasi_reset();
@@ -1163,6 +1162,9 @@ static int sasi_data_in(void)
     }
     break;
 
+  case SASI_IDLE:
+    return state.secbuf[0];
+
   case SASI_STATUS:
     if (state.sdh == 0) {
       state.sdh = 1;
@@ -1210,6 +1212,9 @@ static void sasi_data_out(Uint8 value)
       }
     }
     break;
+
+  case SASI_IDLE:
+    state.secbuf[0] = value;
   }
 }
 
