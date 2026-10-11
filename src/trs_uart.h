@@ -40,6 +40,8 @@ extern void trs_uart_control_out(int value);
 extern int  trs_uart_data_in(void);
 extern void trs_uart_data_out(int value);
 extern char trs_uart_name[FILENAME_MAX];
+extern void trs_uart_set_avail(int dummy);
+extern void trs_uart_set_empty(int dummy);
 extern int  trs_uart_switches;
 
 #define TRS_UART_MODEM    0xE8 /* in */

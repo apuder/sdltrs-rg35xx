@@ -172,10 +172,6 @@ extern int  trs_model; /* 1, 3, 4, 5(=4P) */
 extern int  trs_mem_size;
 extern int  trs_rom_size;
 
-extern void eg3200_init_out(int value);
-extern void genie3s_bank_out(int value);
-extern void genie3s_init_out(int value);
-extern void genie3s_sys_out(int value);
 extern void trs_reset(int poweron);
 
 /* trs_options.c: */
@@ -271,10 +267,6 @@ extern void  trs_set_mouse_max(int x, int y, unsigned int sens);
 extern void  trs_set_mouse_pos(int x, int y);
 extern void  trs_set_window(int x, int y, int w, int h);
 extern void  trs_turbo_led(void);
-
-/* trs_uart.c: */
-extern void trs_uart_set_avail(int dummy);
-extern void trs_uart_set_empty(int dummy);
 
 /* z80.c: */
 extern int trs_continuous; /* 1= run continuously,

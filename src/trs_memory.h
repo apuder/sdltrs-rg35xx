@@ -53,8 +53,12 @@ extern Uint8  ct80_ramdisk_in(int port);
 extern void   ct80_video_addr(int address);
 
 extern void   eg3200_genieplus_out(int bits);
+extern void   eg3200_init_out(int value);
 extern void   eg64_mba_out(int value);
+extern void   genie3s_bank_out(int value);
+extern void   genie3s_init_out(int value);
 extern void   genie3s_mem_out(int bits);
+extern void   genie3s_sys_out(int value);
 extern void   huffman_out(int bits);
 extern int    huffman_in(void);
 extern void   hypermem_out(int bits);
@@ -71,7 +75,6 @@ extern int    sys_byte_in(void);
 extern int    sys_byte_2_in(void);
 extern void   tcs_ram192b_out(int bits);
 extern void   vid80_vx3_out(int bits);
-
 extern void   xmem80_out(int port, int page);
 extern int    xmem80_in(int port);
 
