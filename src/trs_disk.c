@@ -1651,7 +1651,8 @@ trs_disk_data_read(void)
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("[PC=%04X] data_read() => 0x%02X\n", Z80_PC, state.data);
+    debug("[PC=%04X] data_read() => 0x%02X %c\n",
+    Z80_PC, state.data, TOPRINT(state.data));
   }
 #endif
   return state.data;
@@ -1668,7 +1669,8 @@ trs_disk_data_write(Uint8 data)
 
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("[PC=%04X] data_write(0x%02X)\n", Z80_PC, data);
+    debug("[PC=%04X] data_write(0x%02X %c)\n",
+    Z80_PC, data, TOPRINT(data));
   }
 #endif
   switch (state.currcommand & TRSDISK_CMDMASK) {
