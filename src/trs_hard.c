@@ -207,7 +207,7 @@ static int sector_read(size_t sector_size)
   if (f && fread(state.secbuf, 1, sector_size, f) != sector_size) {
     if (ferror(f)) {
       file_error("reading hard%d", state.drive);
-      return ERR_DATA_ERROR;
+      return ERR_DATA_ERROR | 0x80;
     }
   }
 #if ZBX
@@ -228,7 +228,7 @@ static int sector_write(size_t sector_size)
         error("hard%d: write-protected", state.drive);
       else
         file_error("writing hard%d", state.drive);
-      return ERR_WRITE_FAULT;
+      return ERR_WRITE_FAULT | 0x80;
     }
   }
 #if ZBX
@@ -258,7 +258,7 @@ static int sector_seek(size_t sector_size)
       state.head >= d->heads) {
     error("hard%d: requested cyl:%d head:%d sec:%d (cyls:%d heads:%d secs:%d)",
         state.drive, state.cyl, state.head, state.secnum, d->cyls, d->heads, d->secs);
-    return ERR_ILLEGAL_ADDRESS;
+    return ERR_ILLEGAL_ADDRESS | 0x80;
   }
 
   if (fseek(d->file,
@@ -266,7 +266,7 @@ static int sector_seek(size_t sector_size)
       sector_size * (state.cyl * d->heads * d->secs
                   +  state.head * d->secs + state.secnum), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    return ERR_SECTOR_NOT_FOUND;
+    return ERR_SECTOR_NOT_FOUND | 0x80;
   }
 
   if (trs_show_led)
@@ -832,7 +832,7 @@ static void omti_command(void)
     break;
 
   case CMD_REQUEST_SENSE:
-    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[0] = state.error;
     state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
     state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
     state.secbuf[3] = state.cyl & 0xFF;
@@ -904,7 +904,7 @@ static int omti_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(OMTI_SECSIZE) != 0) {
-            omti_status(ERR_DATA_ERROR);
+            omti_status(ERR_DATA_ERROR | 0x80);
             return v;
           }
           state.bytesdone = 0;
@@ -939,7 +939,7 @@ static void omti_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(OMTI_SECSIZE) != 0) {
-            omti_status(ERR_WRITE_FAULT);
+            omti_status(ERR_WRITE_FAULT | 0x80);
             break;
           }
           if (--state.seccnt) {
@@ -968,7 +968,7 @@ static int omti_format(int cmd)
   Uint32 const last = cmd == CMD_FORMAT ? state.size : sect + d->secs;
 
   if (last > state.size)
-    return ERR_ILLEGAL_ADDRESS;
+    return ERR_ILLEGAL_ADDRESS | 0x80;
 
   if (state.cdb[5] & 0x20)
     /* Fill sector buffer with default byte */
@@ -977,7 +977,7 @@ static int omti_format(int cmd)
   while (sect < last) {
     sect++;
     if (sector_write(OMTI_SECSIZE) != 0) {
-      return ERR_FORMAT_ERROR;
+      return ERR_FORMAT_ERROR | 0x80;
     }
   }
 
@@ -1078,7 +1078,7 @@ static void sasi_command(void)
     break;
 
   case CMD_REQUEST_SENSE:
-    state.secbuf[0] = state.error | 0x80;
+    state.secbuf[0] = state.error;
     state.secbuf[1] = ((state.cyl >> 16) & 0x1F) | (state.drive << 5);
     state.secbuf[2] = state.cyl >> 8;
     state.secbuf[3] = state.cyl;
@@ -1150,7 +1150,7 @@ static int sasi_data_in(void)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_READ && --state.seccnt) {
           if (sector_read(SASI_SECSIZE) != 0) {
-            sasi_status(ERR_DATA_ERROR);
+            sasi_status(ERR_DATA_ERROR | 0x80);
             return v;
           }
           state.bytesdone = 0;
@@ -1193,7 +1193,7 @@ static void sasi_data_out(Uint8 value)
       if (state.bytesdone == state.secsize) {
         if (state.command == CMD_WRITE) {
           if (sector_write(SASI_SECSIZE) != 0) {
-            sasi_status(ERR_WRITE_FAULT);
+            sasi_status(ERR_WRITE_FAULT | 0x80);
             break;
           }
           if (--state.seccnt) {
@@ -1224,7 +1224,7 @@ static int sasi_format(int cmd)
   Uint32 const last = cmd == CMD_FORMAT ? state.size : state.cyl + d->secs;
 
   if (last > state.size)
-    return ERR_ILLEGAL_ADDRESS;
+    return ERR_ILLEGAL_ADDRESS | 0x80;
 
   if ((state.cdb[5] & 0x20) == 0)
     /* Fill sector buffer with default byte */
@@ -1233,7 +1233,7 @@ static int sasi_format(int cmd)
   while (state.cyl < last) {
     state.cyl++;
     if (sector_write(SASI_SECSIZE) != 0) {
-      return ERR_FORMAT_ERROR;
+      return ERR_FORMAT_ERROR | 0x80;
     }
   }
 
@@ -1258,14 +1258,14 @@ static int sasi_seek(void)
   if (state.cyl > state.size) {
     error("SASI hard%d command 0x%02X: requested lba %d/%d",
         state.drive, state.command, state.cyl, state.size);
-    return ERR_ILLEGAL_ADDRESS;
+    return ERR_ILLEGAL_ADDRESS | 0x80;
   }
 
   if (fseek(d->file,
       sizeof(ReedHardHeader) +
       (state.cyl * SASI_SECSIZE), 0) != 0) {
     file_error("hard%d: fseek '%s'", state.drive, d->filename);
-    return ERR_SECTOR_NOT_FOUND;
+    return ERR_SECTOR_NOT_FOUND | 0x80;
   }
 
   if (trs_show_led)
