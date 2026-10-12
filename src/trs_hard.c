@@ -918,7 +918,7 @@ static int omti_data_in(void)
 
   case OMTI_STATUS:
     omti_reset();
-    return state.error ? ERROR_CODE | (state.drive << 5) : 0;
+    return (state.error ? ERROR_CODE : 0) | (state.drive << 5);
   }
 
   return 0xff;
@@ -1168,7 +1168,7 @@ static int sasi_data_in(void)
   case SASI_STATUS:
     if (state.sdh == 0) {
       state.sdh = 1;
-      return state.error ? ERROR_CODE | (state.drive << 5) : 0;
+      return (state.error ? ERROR_CODE : 0) | (state.drive << 5);
     } else {
       sasi_reset();
       return 0;
