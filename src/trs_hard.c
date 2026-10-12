@@ -1256,7 +1256,7 @@ static int sasi_seek(void)
     return hard_fail();
 
   if (state.cyl > state.size) {
-    error("SASI hard%d command 0x%02X: requested lba %d/%d\n",
+    error("SASI hard%d command 0x%02X: requested lba %d/%d",
         state.drive, state.command, state.cyl, state.size);
     return ERR_ILLEGAL_ADDRESS;
   }
