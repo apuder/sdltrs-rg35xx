@@ -287,13 +287,13 @@ void trs_hard_init(int poweron)
   state.sdh = 0;
   state.secnum = 0;
   state.secsize = 0;
-  state.size = 0;
 
   if (poweron) {
     int i;
 
     state.present = 0;
     state.seccnt = 0;
+    state.size = 0;
     state.status = 0;
     memset(state.cdb, 0, CDB_LEN);
     memset(state.secbuf, 0, SECTORSIZE);
