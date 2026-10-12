@@ -29,6 +29,7 @@
 #include "trs_clones.h"
 #include "trs_cp500.h"
 #include "trs_memory.h"
+#include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
 static int cp500_m80_video_first_row;

@@ -53,6 +53,7 @@
 #include "trs_disk.h"
 #include "trs_hard.h"
 #include "trs_memory.h"
+#include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 #include "trs_stringy.h"
 #include "trs_uart.h"

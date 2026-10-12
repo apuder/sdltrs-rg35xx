@@ -109,20 +109,6 @@ extern void trs_disk_firstdrq(int dummy);
 extern void trs_disk_lostdata(int dummy);
 extern int  trs_disk_motoroff(void);
 
-/* trs_keyboard.c: */
-extern int  stretch_amount;
-extern int  trs_joystick;
-extern int  trs_kb_bracket_state;
-extern int  trs_keypad_joystick;
-
-extern void clear_key_queue(void);
-extern int  trs_joystick_in(void);
-extern void trs_kb_bracket(int shifted);
-extern void trs_kb_heartbeat(void);
-extern int  trs_kb_mem_read(int address);
-extern void trs_kb_reset(void);
-extern void trs_xlate_keysym(int keysym);
-
 /* trs_imp_exp.c: */
 extern int  trs_emtsafe;
 
@@ -168,6 +154,7 @@ extern void  trs_uart_rcv_interrupt(int state);
 extern void  trs_uart_snd_interrupt(int state);
 
 /* trs_memory.c: */
+extern int  lowercase;
 extern int  trs_model; /* 1, 3, 4, 5(=4P) */
 extern int  trs_mem_size;
 extern int  trs_rom_size;
@@ -184,7 +171,6 @@ extern int  grafyx_microlabs;
 extern int  gui_background;
 extern int  gui_foreground;
 extern int  lowe_le18;
-extern int  lowercase;
 extern int  resize3;
 extern int  resize4;
 extern char romfile1[];
@@ -192,7 +178,6 @@ extern char romfile3[];
 extern char romfile4p[];
 extern int  scale;
 extern char scale_quality;
-extern int  text80x24;
 extern char trs_cass_dir[];
 extern int  trs_charset1;
 extern int  trs_charset3;
@@ -221,6 +206,8 @@ extern int  trs_printer_reset(void);
 extern void trs_printer_write(int value);
 
 /* trs_sdl_interface.c: */
+extern int   text80x24;
+
 extern void  font_char(int character, int scanline, int byte, int mirror);
 extern void  genie3s_hrg(int value);
 extern Uint8 genie3s_hrg_read(unsigned int position);

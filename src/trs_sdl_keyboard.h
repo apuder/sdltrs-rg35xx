@@ -35,13 +35,25 @@
 #define KEY_QUEUE_SIZE  (32)
 #define STRETCH_AMOUNT  (4000)
 
+extern int  stretch_amount;
+extern int  trs_joystick;
+extern int  trs_kb_bracket_state;
+extern int  trs_keypad_joystick;
+
+extern void clear_key_queue(void);
+extern void trs_joy_axis(Uint8 axis, short value, int bounce);
 extern void trs_joy_button_down(void);
 extern void trs_joy_button_up(void);
 extern void trs_joy_hat(Uint8 value);
-extern void trs_set_keypad_joystick(void);
-extern void trs_open_joystick(void);
-extern void trs_joy_axis(Uint8 axis, short value, int bounce);
+extern int  trs_joystick_in(void);
+extern void trs_kb_bracket(int shifted);
+extern void trs_kb_heartbeat(void);
+extern int  trs_kb_mem_read(int address);
+extern void trs_kb_reset(void);
 extern void trs_keyboard_save(FILE *file);
 extern void trs_keyboard_load(FILE *file);
+extern void trs_open_joystick(void);
+extern void trs_set_keypad_joystick(void);
+extern void trs_xlate_keysym(int keysym);
 
 #endif /* _TRS_SDL_KEYBOARD_H */

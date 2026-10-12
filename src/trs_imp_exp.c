@@ -43,6 +43,7 @@
 #include "trs_hard.h"
 #include "trs_imp_exp.h"
 #include "trs_memory.h"
+#include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 
 /*
