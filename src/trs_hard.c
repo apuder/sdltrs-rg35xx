@@ -299,6 +299,7 @@ void trs_hard_init(int poweron)
     memset(state.secbuf, 0, SECTORSIZE);
 
     for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
+      state.d[i].file = NULL;
       state.d[i].writeprot = 0;
       state.d[i].cyls = 0;
       state.d[i].heads = 0;
@@ -592,10 +593,9 @@ static int hard_open(int drive)
   if (d->filename[0] == 0)
     goto fail;
 
-  if (d->file != NULL) {
-    fclose(d->file);
-    d->file = NULL;
-  }
+  if (d->file != NULL)
+    return 0;
+
   /* First try opening for reading and writing */
   d->file = fopen(d->filename, "rb+");
   if (d->file == NULL) {
