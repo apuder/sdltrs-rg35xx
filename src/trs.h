@@ -102,13 +102,6 @@ extern int  trs_hd_boot;
 extern int  trs_load_cmd(const char *filename);
 extern void trs_rom_init(void);
 
-/* trs_disk.c: */
-extern Uint8 genie3s_latch_read(Uint8 byte);
-extern void trs_disk_done(int dummy);
-extern void trs_disk_firstdrq(int dummy);
-extern void trs_disk_lostdata(int dummy);
-extern int  trs_disk_motoroff(void);
-
 /* trs_imp_exp.c: */
 extern int  trs_emtsafe;
 
@@ -254,10 +247,5 @@ extern void  trs_set_mouse_max(int x, int y, unsigned int sens);
 extern void  trs_set_mouse_pos(int x, int y);
 extern void  trs_set_window(int x, int y, int w, int h);
 extern void  trs_turbo_led(void);
-
-/* z80.c: */
-extern int trs_continuous; /* 1= run continuously,
-			      0= enter debugger after instruction,
-			     -1= suppress interrupt and enter debugger */
 
 #endif /*_TRS_H*/

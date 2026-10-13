@@ -30,6 +30,10 @@
 #define _TRS_DISK_H
 
 extern void  trs_disk_init(int reset_button);
+extern void  trs_disk_done(int dummy);
+extern void  trs_disk_lostdata(int dummy);
+extern void  trs_disk_firstdrq(int dummy);
+extern int   trs_disk_motoroff(void);
 extern void  trs_disk_select_write(Uint8 data);
 extern Uint8 trs_disk_track_read(void);
 extern void  trs_disk_track_write(Uint8 data);
@@ -39,6 +43,7 @@ extern Uint8 trs_disk_data_read(void);
 extern void  trs_disk_data_write(Uint8 data);
 extern Uint8 trs_disk_status_read(void);
 extern void  trs_disk_command_write(Uint8 cmd);
+extern Uint8 genie3s_latch_read(Uint8 byte);
 extern Uint8 trs_disk_interrupt_read(void); /* M3 only */
 extern void  trs_disk_interrupt_write(Uint8 mask); /* M3 only */
 

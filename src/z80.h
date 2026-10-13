@@ -245,6 +245,10 @@ struct z80_state_struct
 #define CARRY_FLAG		(Z80_F & CARRY_MASK)
 
 extern struct			z80_state_struct z80_state;
+extern int			trs_continuous;
+				/* 1= run continuously,
+				   0= enter debugger after instruction,
+				  -1= suppress interrupt and enter debugger */
 extern unsigned int		cycles_per_timer;
 
 extern void			z80_reset(void);

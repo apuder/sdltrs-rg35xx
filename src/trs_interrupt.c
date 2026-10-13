@@ -31,6 +31,7 @@
 #include <SDL.h>
 #include "trs.h"
 #include "trs_clones.h"
+#include "trs_disk.h"
 #include "trs_memory.h"
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
