@@ -631,6 +631,7 @@ static int hard_open(int drive)
   /* Use the number of cylinders specified in the header */
   d->cyls = (rhh.cylhi << 8)    /* MSB */
           | (rhh.cyllo & 0xFF); /* LSB */
+  if (d->cyls == 0) d->cyls = 256; /* Set default cylinders */
 
   secs = rhh.sec ? rhh.sec : 256;
   if (rhh.heads == 0) {
