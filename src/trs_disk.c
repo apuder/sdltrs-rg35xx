@@ -1367,7 +1367,7 @@ trs_disk_track_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("[PC=%04X] track_read() => 0x%02X\n", Z80_PC, state.track);
+    debug("[PC=%04X] track_read() = 0x%02X\n", Z80_PC, state.track);
   }
 #endif
   return state.track;
@@ -1389,7 +1389,7 @@ trs_disk_sector_read(void)
 {
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("[PC=%04X] sector_read() => 0x%02X\n", Z80_PC, state.sector);
+    debug("[PC=%04X] sector_read() = 0x%02X\n", Z80_PC, state.sector);
   }
 #endif
   return state.sector;
@@ -1651,7 +1651,7 @@ trs_disk_data_read(void)
   }
 #ifdef ZBX
   if (trs_disk_debug_flags & DISKDEBUG_FDCREG) {
-    debug("[PC=%04X] data_read() => 0x%02X %c\n",
+    debug("[PC=%04X] data_read() = 0x%02X %c\n",
     Z80_PC, state.data, TOPRINT(state.data));
   }
 #endif
@@ -2294,7 +2294,7 @@ trs_disk_status_read(void)
 #ifdef ZBX
   if ((trs_disk_debug_flags & DISKDEBUG_FDCREG) &&
       state.status != last_status) {
-    debug("[PC=%04X] status_read() => 0x%02X\n", Z80_PC, state.status);
+    debug("[PC=%04X] status_read() = 0x%02X\n", Z80_PC, state.status);
     last_status = state.status;
   }
 #endif
