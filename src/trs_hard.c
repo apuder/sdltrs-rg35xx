@@ -867,6 +867,7 @@ static void omti_command(void)
     }
     break;
 
+  case CMD_FORMAT_CHECK: /* Read Verify */
   case CMD_SEEK:
     omti_status(sector_seek(OMTI_SECSIZE));
     break;
@@ -886,7 +887,6 @@ static void omti_command(void)
     state.status  = OMTI_DATA_IN;
     break;
 
-  case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
@@ -1115,6 +1115,8 @@ static void sasi_command(void)
     }
     break;
 
+  case CMD_FORMAT_CHECK:
+  case CMD_READ_VERIFY:
   case CMD_SEEK:
     sasi_status(sasi_seek());
     break;
@@ -1134,7 +1136,6 @@ static void sasi_command(void)
     state.status  = SASI_DATA_IN;
     break;
 
-  case CMD_READ_VERIFY:
   case CMD_RAM_DIAGNOSTIC:
   case CMD_DRIVE_DIAGNOSTIC:
   case CMD_CTRL_DIAGNOSTIC:
