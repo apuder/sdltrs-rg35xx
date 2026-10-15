@@ -408,7 +408,8 @@ int trs_hard_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_hard_in(%s) => %02X\n", Z80_PC, hard_cmd(port), v);
+    debug("[PC=%04X] trs_hard_in(%s) = %02X %c\n",
+        Z80_PC, hard_cmd(port), v, TOPRINT(v));
 #endif
   return v;
 }
@@ -418,7 +419,8 @@ void trs_hard_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_hard_out(%s), %02X\n", Z80_PC, hard_cmd(port), value);
+    debug("[PC=%04X] trs_hard_out(%s), %02X %c\n",
+        Z80_PC, hard_cmd(port), value, TOPRINT(value));
 #endif
   switch (port) {
   case TRS_HARD_WP:
@@ -768,7 +770,8 @@ int trs_omti_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_omti_in(%02X) => %02X\n", Z80_PC, port, v);
+    debug("[PC=%04X] trs_omti_in(%02X) = %02X %c\n",
+        Z80_PC, port, v, TOPRINT(v));
 #endif
   return v;
 }
@@ -777,7 +780,8 @@ void trs_omti_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_omti_out(%02X), %02X\n", Z80_PC, port, value);
+    debug("[PC=%04X] trs_omti_out(%02X), %02X %c\n",
+        Z80_PC, port, value, TOPRINT(value));
 #endif
 
   switch (port & 3) {
@@ -1015,7 +1019,8 @@ int trs_sasi_in(int port)
   }
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_sasi_in(%02X) => %02X\n", Z80_PC, port, v);
+    debug("[PC=%04X] trs_sasi_in(%02X) = %02X %c\n",
+        Z80_PC, port, v, TOPRINT(v));
 #endif
   return v;
 }
@@ -1024,7 +1029,8 @@ void trs_sasi_out(int port, int value)
 {
 #if ZBX
   if (trs_io_debug_flags & HARDDEBUG1)
-    debug("[PC=%04X] trs_sasi_out(%02X), %02X\n", Z80_PC, port, value);
+    debug("[PC=%04X] trs_sasi_out(%02X), %02X %c\n",
+        Z80_PC, port, value, TOPRINT(value));
 #endif
 
   switch (port) {
