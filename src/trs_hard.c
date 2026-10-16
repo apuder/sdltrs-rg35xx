@@ -653,7 +653,7 @@ static int hard_open(int drive)
           drive, d->cyls, d->heads, d->secs);
 #endif
 
-  if ((rhh.sec % d->secs) != 0 ||
+  if (d->secs <= 0 || (rhh.sec % d->secs) != 0 ||
       d->heads <= 0 || d->heads > TRS_HARD_MAXHEADS) {
     error("unusable geometry (%d heads/%d secs) in hard%d image: '%s'",
           d->heads, d->secs, drive, d->filename);
