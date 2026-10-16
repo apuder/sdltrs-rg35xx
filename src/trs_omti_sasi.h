@@ -49,14 +49,14 @@
 #define CMD_CTRL_DIAGNOSTIC  0xE4
 
 /*
- * OMTI/SASI errors
+ * OMTI/SASI errors (0x80 = valid LBA bit)
  */
-#define ERR_WRITE_FAULT      0x03
+#define ERR_WRITE_FAULT      0x03 | 0x80
 #define ERR_DRIVE_NOT_READY  0x04
-#define ERR_DATA_ERROR       0x11
-#define ERR_SECTOR_NOT_FOUND 0x14
-#define ERR_FORMAT_ERROR     0x1A
+#define ERR_DATA_ERROR       0x11 | 0x80
+#define ERR_SECTOR_NOT_FOUND 0x14 | 0x80
+#define ERR_FORMAT_ERROR     0x1A | 0x80
 #define ERR_INVALID_COMMAND  0x20
-#define ERR_ILLEGAL_ADDRESS  0x21
+#define ERR_ILLEGAL_ADDRESS  0x21 | 0x80
 
 #endif /* _TRS_OMTI_SASI_H */
