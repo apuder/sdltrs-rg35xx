@@ -629,8 +629,7 @@ static int hard_open(int drive)
   }
 
   /* Use the number of cylinders specified in the header */
-  d->cyls = (rhh.cylhi << 8)    /* MSB */
-          | (rhh.cyllo & 0xFF); /* LSB */
+  d->cyls = (rhh.cylhi << 8) | rhh.cyllo;
   if (d->cyls == 0) d->cyls = 256; /* Set default cylinders */
 
   secs = rhh.sec ? rhh.sec : 256;
@@ -841,7 +840,7 @@ static void omti_command(void)
     if (state.error & 0x80) {
       state.secbuf[1] = (state.drive << 5) | (state.head & 0x1F);
       state.secbuf[2] = ((state.cyl >> 2) & 0xC0) | (state.secnum & 0x3F);
-      state.secbuf[3] = state.cyl & 0xFF;
+      state.secbuf[3] = state.cyl;
     } else {
       state.secbuf[1] = 0;
       state.secbuf[2] = 0;
