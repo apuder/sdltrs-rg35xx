@@ -258,6 +258,8 @@ int gui_key(void)
         trs_exit(0);
         break;
       case SDL_WINDOWEVENT:
+        /* Flush extra key presses */
+        SDL_FlushEvent(SDL_KEYDOWN);
         trs_screen_update();
         break;
       case SDL_MOUSEBUTTONDOWN:
