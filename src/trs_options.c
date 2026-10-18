@@ -798,34 +798,13 @@ static void opt_sizemap(const char *arg, int intarg, int *stringarg)
 
 static void opt_speedup(const char *arg, int intarg, int *stringarg)
 {
-  switch (TOLOWER(*arg)) {
-    case 'n': /* None */
-      speedup = 0;
-      break;
-    case 'a': /* Archbold */
-      speedup = 1;
-      break;
-    case 'h': /* Holmes */
-      speedup = 2;
-      break;
-    case 's': /* Seatronics */
-      speedup = 3;
-      break;
-    case 'b': /* Banking */
-      speedup = 4;
-      break;
-    case 'c': /* Aster CT-80 */
-      speedup = 5;
-      break;
-    case 'l': /* LNW80 */
-      speedup = 6;
-      break;
-    case 't': /* TCS SpeedMaster */
-      speedup = 7;
-      break;
-    default:
-      error("unknown speedup kit: '%s'", arg);
-  }
+  const char *speedups = "nahsbclt";
+  const char *option   = strchr(speedups, TOLOWER(*arg));
+
+  if (option)
+    speedup = (int)(option - speedups);
+  else
+    error("unknown speedup kit: '%s'", arg);
 }
 
 static void opt_value(const char *arg, int intarg, int *variable)
