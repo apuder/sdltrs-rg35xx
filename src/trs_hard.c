@@ -96,7 +96,6 @@ static void hard_data_out(int value);
 static void hard_error(int error);
 static int  hard_fail(void);
 static void hard_format(void);
-static void hard_init(int cmd);
 static int  hard_open(int drive);
 static void hard_read(int cmd);
 static void hard_restore(void);
@@ -483,9 +482,6 @@ void trs_hard_out(int port, int value)
     case TRS_HARD_FORMAT:
       hard_format();
       break;
-    case TRS_HARD_INIT:
-      hard_init(value);
-      break;
     case TRS_HARD_SEEK:
     case TRS_HARD_VERIFY:
       hard_seek();
@@ -558,17 +554,6 @@ static void hard_format(void)
   }
   /* !!should probably set up to read skew table here */
   state.seccnt = 0;
-  state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
-}
-
-static void hard_init(int cmd)
-{
-#if ZBX
-  if (trs_io_debug_flags & HARDDEBUG2)
-    hard_debug("init");
-#endif
-  /* I don't know what this command does */
-  error("trs_hard: init command (0x%02X) not implemented", cmd);
   state.status = TRS_HARD_READY | TRS_HARD_SEEKDONE;
 }
 

@@ -26,9 +26,6 @@
  * Definitions for the Radio Shack TRS-80 Model I/III/4/4P
  * hard disk controller.  This is a Western Digital WD1000/WD1010
  * mapped at ports 0xc8-0xcf, plus control registers at 0xc0-0xc1.
- *
- * Definitions inferred from various drivers and sketchy documents
- * found in odd corners.  Anyone have a real WD10xx data sheet?
  */
 
 #ifndef _TRS_HARD_H
@@ -218,11 +215,6 @@ extern void  trs_sasi_out(int port, int value);
  *  01010000
  */
 #define TRS_HARD_FORMAT 0x50
-
-/* Init (??):
- *  01100000
- */
-#define TRS_HARD_INIT 0x60
 
 /* Seek to specified sector/head/cylinder:
  *  0111rrrr
