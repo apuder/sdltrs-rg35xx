@@ -1377,7 +1377,7 @@ void trs_get_event(int wait)
                 keysym.sym -= SDLK_0;
 
                 if (SDL_GetModState() & KMOD_SHIFT) {
-                  trs_disk_remove(keysym.sym);
+                  trs_disk_insert(keysym.sym, "");
                 } else {
                   char filename[FILENAME_MAX];
 

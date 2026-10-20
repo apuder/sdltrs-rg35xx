@@ -521,39 +521,39 @@ set_audio_format(int state)
 void
 trs_cassette_insert(const char *filename)
 {
-   int const len = strlen(filename);
-   const char *extension;
-   struct stat st = { 0 };
+  int const len = strlen(filename);
 
-   if (stat(filename, &st) == -1) {
-     file_error("open cassette: '%s'", filename);
-     return;
-   }
+  cassette_position = 0;
 
-   snprintf(cassette_filename, FILENAME_MAX, "%s", filename);
-   cassette_position = 0;
+  if (len) {
+    const char *extension;
+    struct stat st = { 0 };
 
-   if (len >= 3)
-     extension = filename + len - 3;
-   else
-     extension = filename;
-   if (strcasecmp(extension, "CPT") == 0)
-     cassette_format = CPT_FORMAT;
-   else if (strcasecmp(extension, "WAV") == 0) {
-     cassette_format = WAV_FORMAT;
-     if (cassette_position < wave_data_offset)
-       cassette_position = wave_data_offset;
-   }
-   else
-     cassette_format = CAS_FORMAT;
-}
+    if (stat(filename, &st) == -1) {
+      file_error("open cassette: '%s'", filename);
+      return;
+    }
 
-void
-trs_cassette_remove(void)
-{
-   cassette_filename[0] = 0;
-   cassette_position = 0;
-   cassette_format = DIRECT_FORMAT;
+    snprintf(cassette_filename, FILENAME_MAX, "%s", filename);
+
+    if (len >= 3)
+      extension = filename + len - 3;
+    else
+      extension = filename;
+
+    if (strcasecmp(extension, "CPT") == 0)
+      cassette_format = CPT_FORMAT;
+    else if (strcasecmp(extension, "WAV") == 0) {
+      cassette_format = WAV_FORMAT;
+      if (cassette_position < wave_data_offset)
+        cassette_position = wave_data_offset;
+    }
+    else
+      cassette_format = CAS_FORMAT;
+  } else {
+    cassette_filename[0] = 0;
+    cassette_format = DIRECT_FORMAT;
+  }
 }
 
 const char*

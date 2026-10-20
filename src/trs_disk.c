@@ -773,19 +773,6 @@ trs_disk_emutype(DiskState *d)
 }
 
 void
-trs_disk_remove(int drive)
-{
-  DiskState *d = &disk[drive];
-
-  if (d->file != NULL) {
-    if (fclose(d->file) == EOF) state.status |= TRSDISK_WRITEFLT;
-    d->file = NULL;
-    d->filename[0] = 0;
-  }
-  d->writeprot = 0;
-}
-
-void
 trs_disk_insert(int drive, const char *diskname)
 {
   DiskState *d = &disk[drive];
@@ -793,6 +780,12 @@ trs_disk_insert(int drive, const char *diskname)
 
   if (d->file != NULL) {
     if (fclose(d->file) == EOF) state.status |= TRSDISK_WRITEFLT;
+  }
+  if (diskname[0] == 0) {
+     d->file = NULL;
+     d->filename[0] = 0;
+     d->writeprot = 0;
+     return;
   }
   if (stat(diskname, &st) == -1) {
     d->file = NULL;
@@ -3772,24 +3765,21 @@ int trs_diskset_load(const char *filename)
   for (i = 0; i < NDRIVES; i++) {
     if (fgets(diskname, FILENAME_MAX, f) != NULL) {
       diskname[strcspn(diskname, "\r\n")] = 0;
-      if (diskname[0])
-        trs_disk_insert(i, diskname);
+      trs_disk_insert(i, diskname);
     }
   }
 
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++) {
     if (fgets(diskname, FILENAME_MAX, f) != NULL) {
       diskname[strcspn(diskname, "\r\n")] = 0;
-      if (diskname[0])
-        trs_hard_attach(i, diskname);
+      trs_hard_attach(i, diskname);
     }
   }
 
   for (i = 0; i < NDRIVES; i++) {
     if (fgets(diskname, FILENAME_MAX, f) != NULL) {
       diskname[strcspn(diskname, "\r\n")] = 0;
-      if (diskname[0])
-        stringy_insert(i, diskname);
+      stringy_insert(i, diskname);
     }
   }
 

@@ -588,28 +588,16 @@ static void opt_file(const char *arg, int intarg, int *stringarg)
 {
   switch ((char)*stringarg) {
     case 'c':
-      if (arg[0])
-        trs_cassette_insert(arg);
-      else
-        trs_cassette_remove();
+      trs_cassette_insert(arg);
       break;
     case 'd':
-      if (arg[0])
-        trs_disk_insert(intarg, arg);
-      else
-        trs_disk_remove(intarg);
+      trs_disk_insert(intarg, arg);
       break;
     case 'h':
-      if (arg[0])
-        trs_hard_attach(intarg, arg);
-      else
-        trs_hard_remove(intarg);
+      trs_hard_attach(intarg, arg);
       break;
     case 'w':
-      if (arg[0])
-        stringy_insert(intarg, arg);
-      else
-        stringy_remove(intarg);
+      stringy_insert(intarg, arg);
       break;
     case 's':
       if (arg[0])
@@ -851,15 +839,15 @@ int trs_load_config_file(void)
   int i;
 
   for (i = 0; i < 8; i++)
-    trs_disk_remove(i);
+    trs_disk_insert(i, "");
 
   for (i = 0; i < 4; i++)
-    trs_hard_remove(i);
+    trs_hard_attach(i, "");
 
   for (i = 0; i < 8; i++)
-    stringy_remove(i);
+    stringy_insert(i, "");
 
-  trs_cassette_remove();
+  trs_cassette_insert("");
 
   aspect_ratio = 1;
   background = BLACK;

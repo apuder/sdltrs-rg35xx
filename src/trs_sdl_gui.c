@@ -935,16 +935,16 @@ int gui_menu(const char *title, const MENU *entry, int selection)
         case SDLK_DELETE:
           switch (entry[selection].type) {
             case DISK_DRIVE:
-              trs_disk_remove(selection);
+              trs_disk_insert(selection, "");
               break;
             case HARD_DRIVE:
-              trs_hard_remove(selection);
+              trs_hard_attach(selection, "");
               break;
             case WAFER:
-              stringy_remove(selection);
+              stringy_insert(selection, "");
               break;
             case CASSETTE:
-              trs_cassette_remove();
+              trs_cassette_insert("");
               break;
             default:
               continue;

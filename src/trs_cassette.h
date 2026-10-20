@@ -44,7 +44,6 @@
 
 extern int   create_wav_header(FILE *f);
 extern void  trs_cassette_insert(const char *filename);
-extern void  trs_cassette_remove(void);
 extern const char *trs_cassette_getfilename(void);
 extern int   trs_cass_getwriteprotect(void);
 extern int   trs_get_cassette_length(void);

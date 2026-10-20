@@ -311,17 +311,14 @@ void trs_hard_init(int poweron)
 
 void trs_hard_attach(int drive, const char *diskname)
 {
-  snprintf(state.d[drive].filename, FILENAME_MAX, "%s", diskname);
+  if (diskname[0]) {
+    snprintf(state.d[drive].filename, FILENAME_MAX, "%s", diskname);
+    if (hard_open(drive) == 0) {
+      trs_impexp_xtrshard_attach(drive);
+      return;
+    }
+  }
 
-  if (hard_open(drive) == 0)
-    trs_impexp_xtrshard_attach(drive);
-  else
-    trs_hard_remove(drive);
-
-}
-
-void trs_hard_remove(int drive)
-{
   if (state.d[drive].file != NULL)
     fclose(state.d[drive].file);
 

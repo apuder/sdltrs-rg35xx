@@ -31,7 +31,6 @@ extern void stringy_init(void);
 extern const char *stringy_get_name(int unit);
 extern int  stringy_get_writeprotect(int unit);
 extern int  stringy_insert(int unit, const char *name);
-extern void stringy_remove(int unit);
 extern int  stringy_create(const char *name);
 extern int  stringy_in(int unit);
 extern void stringy_out(int unit, int value);

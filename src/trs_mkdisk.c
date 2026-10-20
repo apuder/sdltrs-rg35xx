@@ -99,7 +99,7 @@ int trs_write_protect(int type, int drive)
     case DISK_DRIVE:
       emutype = trs_disk_getdisktype(drive);
       writeprot = !trs_disk_getwriteprotect(drive);
-      trs_disk_remove(drive);
+      trs_disk_insert(drive, "");
 
       if (emutype == JV3 || emutype == DMK) {
         f = fopen(prot_filename, "r+");
@@ -117,7 +117,7 @@ int trs_write_protect(int type, int drive)
       break;
     case HARD_DRIVE:
       writeprot = !trs_hard_getwriteprotect(drive);
-      trs_hard_remove(drive);
+      trs_hard_attach(drive, "");
 
       f = fopen(prot_filename, "r+");
       if (f != NULL) {
@@ -133,7 +133,7 @@ int trs_write_protect(int type, int drive)
       break;
     case WAFER:
       writeprot = !stringy_get_writeprotect(drive);
-      stringy_remove(drive);
+      stringy_insert(drive, "");
 
       f = fopen(prot_filename, "r+");
       if (f != NULL) {
@@ -152,7 +152,7 @@ int trs_write_protect(int type, int drive)
       break;
     case CASSETTE:
       writeprot = !trs_cass_getwriteprotect();
-      trs_cassette_remove();
+      trs_cassette_insert("");
       break;
   }
 #ifdef _WIN32

@@ -341,16 +341,14 @@ stringy_get_writeprotect(int drive)
 int
 stringy_insert(int drive, const char *name)
 {
-  snprintf(stringy_info[drive].name, FILENAME_MAX, "%s", name);
-  return stringy_change(drive);
-}
+  if (name[0]) {
+    snprintf(stringy_info[drive].name, FILENAME_MAX, "%s", name);
+  } else {
+    stringy_info[drive].file = NULL;
+    stringy_info[drive].name[0] = 0;
+  }
 
-void
-stringy_remove(int drive)
-{
-  stringy_info[drive].file = NULL;
-  stringy_info[drive].name[0] = 0;
-  stringy_change(drive);
+  return stringy_change(drive);
 }
 
 /* One-time initialization */
