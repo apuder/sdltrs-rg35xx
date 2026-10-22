@@ -1091,7 +1091,7 @@ void debug_shell(void)
 
 		if(sscanf(input, "%*s %d %s",&drive, file) == 2)
 		{
-		    if(drive >= 0 && drive <= 7)
+		    if(drive >= 0 && drive < NDRIVES)
 		    {
 			trs_disk_insert(drive, file);
 		    }

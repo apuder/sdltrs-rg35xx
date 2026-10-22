@@ -25,6 +25,8 @@
 #ifndef _TRS_STRINGY_H
 #define _TRS_STRINGY_H
 
+#define STRINGY_MAX_UNITS 8
+
 extern int  stringy;
 
 extern void stringy_init(void);
@@ -36,3 +38,4 @@ extern int  stringy_in(int unit);
 extern void stringy_out(int unit, int value);
 
 #endif /* _TRS_STRINGY_H */
+

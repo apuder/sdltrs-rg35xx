@@ -66,6 +66,9 @@ extern int trs_disk_controller;
 extern int trs_disk_doubler;
 extern int trs_disk_truedam;
 
+/* Number of floppy disk drives */
+#define NDRIVES 8
+
 /* Values for emulated disk image type (emutype) */
 #define JV1 1 /* compatible with Vavasour Model I emulator */
 #define JV3 3 /* compatible with Vavasour Model III/4 emulator */

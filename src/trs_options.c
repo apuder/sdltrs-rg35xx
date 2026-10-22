@@ -838,13 +838,13 @@ int trs_load_config_file(void)
   FILE *config_file;
   int i;
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < NDRIVES; i++)
     trs_disk_insert(i, "");
 
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
     trs_hard_attach(i, "");
 
-  for (i = 0; i < 8; i++)
+  for (i = 0; i < STRINGY_MAX_UNITS; i++)
     stringy_insert(i, "");
 
   trs_cassette_insert("");

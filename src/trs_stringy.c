@@ -60,8 +60,6 @@
 #define STRINGY_WRITE_GATE  0x04
 /*#define STRINGY_FLUX      0x80*/
 
-#define STRINGY_MAX_UNITS 8
-
 #define STRINGY_CELL_WIDTH 124 /* in t-states */
 #define STRINGY_LEN_DEFAULT (64 * 1024 * 2 * 9 / 8) /* 64K + gaps/leaders XXX? */
 #define STRINGY_EOT_DEFAULT 60 /* a good value per MKR */

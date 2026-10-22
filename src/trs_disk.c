@@ -41,7 +41,6 @@
 #define TSTATEREV 1       /* Index holes timed by T-states, not real time */
 #define SIZERETRY 1       /* Retry in different sizes on real_read */
 #define DMK_MARK_IAM 0    /* Mark IAMs in track header; poor idea */
-#define NDRIVES 8
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -3744,7 +3743,7 @@ int trs_diskset_save(const char *filename)
   for (i = 0; i < TRS_HARD_MAXDRIVES; i++)
     fprintf(f, "%s\n", trs_hard_getfilename(i));
 
-  for (i = 0; i < NDRIVES; i++)
+  for (i = 0; i < STRINGY_MAX_UNITS; i++)
     fprintf(f, "%s\n", stringy_get_name(i));
 
   fclose(f);
@@ -3776,7 +3775,7 @@ int trs_diskset_load(const char *filename)
     }
   }
 
-  for (i = 0; i < NDRIVES; i++) {
+  for (i = 0; i < STRINGY_MAX_UNITS; i++) {
     if (fgets(diskname, FILENAME_MAX, f) != NULL) {
       diskname[strcspn(diskname, "\r\n")] = 0;
       stringy_insert(i, diskname);
