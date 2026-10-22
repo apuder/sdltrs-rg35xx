@@ -294,6 +294,7 @@ stringy_change(int unit)
     }
     if (s->file == NULL) {
       s->in_port = STRINGY_NO_WAFER;
+      file_error("wafer%d: '%s'", unit, s->name);
       return errno;
     }
     s->in_port = STRINGY_WRITE_PROT;
@@ -303,6 +304,8 @@ stringy_change(int unit)
   s->out_port = 0;
 
   ires = stringy_read_header(s);
+  if (ires != 0)
+    error("wafer%d: invalid header in '%s'", unit, s->name);
 
   s->pos = 0;
   s->pos_time = z80_state.t_count;
@@ -335,18 +338,15 @@ stringy_get_writeprotect(int drive)
   return stringy_info[drive].in_port & STRINGY_WRITE_PROT;
 }
 
-/* Returns 0 if OK, -1 if invalid header, errno value otherwise. */
-int
+void
 stringy_insert(int drive, const char *name)
 {
-  if (name[0]) {
-    snprintf(stringy_info[drive].name, FILENAME_MAX, "%s", name);
-  } else {
+  snprintf(stringy_info[drive].name, FILENAME_MAX, "%s", name);
+
+  if (stringy_change(drive) != 0) {
     stringy_info[drive].file = NULL;
     stringy_info[drive].name[0] = 0;
   }
-
-  return stringy_change(drive);
 }
 
 /* One-time initialization */
