@@ -703,6 +703,17 @@ int trs_joystick_in(void)
   return ~joystate;
 }
 
+int trs_key_identity(int keysym)
+{
+  unsigned int const index = (unsigned int)keysym & 0xFFFF;
+
+  if (index >= sizeof(ascii_key_table) / sizeof(ascii_key_table[0]))
+    return -1;
+  if (ascii_key_table[index].bit_action == TK_NULL)
+    return -1;
+  return ascii_key_table[index].bit_action;
+}
+
 void trs_xlate_keysym(int keysym)
 {
   int key_down;

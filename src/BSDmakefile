@@ -20,13 +20,22 @@ SRCS	+= trs_printer.c
 SRCS	+= trs_sdl_gui.c
 SRCS	+= trs_sdl_interface.c
 SRCS	+= trs_sdl_keyboard.c
+SRCS	+= trs_sdl_keymap.c
 SRCS	+= trs_state_save.c
 SRCS	+= trs_stringy.c
 SRCS	+= trs_uart.c
 SRCS	+= z80.c
 SRCS	+= PasteManager.c
 
-OBJS	 = ${SRCS:.c=.o}
+CPPSRCS += rg35xx/RG35XXControls.cpp
+CPPSRCS += rg35xx/KeyboardRG35XXControls.cpp
+CPPSRCS += rg35xx/RG35XXInputRouter.cpp
+CPPSRCS += rg35xx/SoftKeyboard.cpp
+CPPSRCS += rg35xx/SoftKeyboardRenderer.cpp
+CPPSRCS += rg35xx/TrsKeyboardAdapter.cpp
+CPPSRCS += rg35xx/rg35xx_bridge.cpp
+
+OBJS	 = ${SRCS:.c=.o} ${CPPSRCS:.cpp=.o}
 
 ENDIAN	!= echo; echo "ab" | od -x | grep "6261" > /dev/null || echo "-Dbig_endian"
 LIBS	+= -lcurses -lreadline
@@ -35,9 +44,11 @@ SDL_LIB	!= sdl2-config --libs
 MACROS	+= -DREADLINE -DZBX -DROM_PATH='"${ROM_PATH}"'
 CFLAGS	?= -g -Wall
 CFLAGS	+= ${SDL_INC} ${ENDIAN} ${MACROS}
+CXXFLAGS ?= -g -Wall
+CXXFLAGS += -std=c++11 ${SDL_INC}
 
 ${PROG}: ${OBJS}
-	${CC} -o ${PROG} ${OBJS} ${LIBS} ${SDL_LIB} ${LDFLAGS}
+	${CXX} -o ${PROG} ${OBJS} ${LIBS} ${SDL_LIB} ${LDFLAGS}
 
 .PHONY: clean
 clean:

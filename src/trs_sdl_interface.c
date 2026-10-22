@@ -47,6 +47,7 @@
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 #include "trs_uart.h"
+#include "rg35xx/rg35xx_bridge.h"
 
 #define MAX_RECTS   1
 #define MAX_SCALE   4
@@ -965,6 +966,8 @@ static char *GetSelection(void)
  */
 static void trs_screen_flush(void)
 {
+  int const overlay_dirty = rg35xx_bridge_dirty();
+
   if (mousepointer) {
     if (!trs_emu_mouse && paste_state == PASTE_IDLE) {
       MarkSelection();
@@ -972,10 +975,10 @@ static void trs_screen_flush(void)
     }
   }
 
-  if (drawnRectCount == 0)
+  if (drawnRectCount == 0 && !overlay_dirty)
     return;
 
-  if (scanlines) {
+  if (drawnRectCount != 0 && scanlines) {
 #ifdef OLD_SCANLINES
     SDL_Rect rect;
 
@@ -1024,12 +1027,15 @@ void trs_exit(int confirm)
     SDL_Surface *buffer = SDL_ConvertSurface(screen, screen->format, 0);
 
     recursion = 1;
+    rg35xx_bridge_modal_begin(SDL_GetTicks());
+    trs_sdl_release_host_keys();
 
     if (!gui_exit() && buffer) {
       SDL_BlitSurface(buffer, NULL, screen, NULL);
       SDL_FreeSurface(buffer);
       trs_screen_update();
       recursion = 0;
+      rg35xx_bridge_modal_end(SDL_GetTicks());
       return;
     }
     SDL_Delay(7);
@@ -1060,6 +1066,7 @@ void trs_get_event(int wait)
   if (trs_model > 1)
     (void)trs_uart_check_avail();
 
+  rg35xx_bridge_update(SDL_GetTicks());
   trs_screen_flush();
 
   if (cpu_panel)
@@ -1069,7 +1076,23 @@ void trs_get_event(int wait)
     static Uint8 paste_key;
 
     if (SDL_PollEvent(&event)) {
-      if (event.type == SDL_KEYDOWN) {
+      if (event.type == SDL_QUIT) {
+        trs_exit(0);
+      } else if (event.type == SDL_WINDOWEVENT) {
+        drawnRectCount = MAX_RECTS;
+        if (event.window.event == SDL_WINDOWEVENT_MOVED) {
+          window_x = event.window.data1;
+          window_y = event.window.data2;
+        } else if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+                   event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+          window_w = event.window.data1;
+          window_h = event.window.data2;
+          SDL_RenderGetScale(render, &render_scale_x, &render_scale_y);
+        } else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+          rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+          trs_sdl_release_host_keys();
+        }
+      } else if (event.type == SDL_KEYDOWN) {
         if (paste_state == PASTE_KEYUP)
           trs_xlate_keysym(0x10000 | paste_key);
         paste_state = PASTE_KEYUP;
@@ -1097,6 +1120,7 @@ void trs_get_event(int wait)
           if (turbo_paste)
             trs_timer_mode(turbo_saved);
           cycles_per_timer = cycles_saved;
+          rg35xx_bridge_modal_end(SDL_GetTicks());
         }
         else
           paste_state = PASTE_GETNEXT;
@@ -1111,6 +1135,13 @@ void trs_get_event(int wait)
     else
       if (!SDL_PollEvent(&event))
         return;
+
+    if (rg35xx_bridge_handle_event(&event, SDL_GetTicks()))
+      continue;
+
+    if (rg35xx_bridge_enabled() && event.type == SDL_WINDOWEVENT &&
+        event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+      memset(last_key, 0, sizeof(last_key));
 
     switch (event.type) {
       case SDL_QUIT:
@@ -1229,6 +1260,8 @@ void trs_get_event(int wait)
               copyStatus = COPY_IDLE;
               break;
             case SDLK_v:
+              rg35xx_bridge_modal_begin(SDL_GetTicks());
+              trs_sdl_release_host_keys();
               if (turbo_paste) {
                 turbo_saved = turbo_mode;
                 trs_timer_mode(1);
@@ -1381,9 +1414,12 @@ void trs_get_event(int wait)
                 } else {
                   char filename[FILENAME_MAX];
 
+                  rg35xx_bridge_modal_begin(SDL_GetTicks());
+                  trs_sdl_release_host_keys();
                   if (gui_file(trs_disk_dir, filename, DSK, 0,
                         "Floppy Disk Image") >= 0)
                     trs_disk_insert(keysym.sym, filename);
+                  rg35xx_bridge_modal_end(SDL_GetTicks());
                   trs_screen_refresh();
                 }
               }
@@ -1532,7 +1568,9 @@ void trs_get_event(int wait)
 done:
         if (keysym.sym) {
           last_key[keysym.scancode] = keysym.sym;
-          trs_xlate_keysym(keysym.sym);
+          if (!rg35xx_bridge_guest_key_event(
+              rg35xx_bridge_physical_owner(keysym.scancode), keysym.sym, 1))
+            trs_xlate_keysym(keysym.sym);
         }
         break;
 
@@ -1542,7 +1580,10 @@ done:
         debug("KeyUp: mod 0x%X, scancode 0x%X keycode 0x%X\n",
             keysym.mod, keysym.scancode, keysym.sym);
 #endif
-        trs_xlate_keysym(0x10000 | last_key[keysym.scancode]);
+        if (!rg35xx_bridge_guest_key_event(
+            rg35xx_bridge_physical_owner(keysym.scancode),
+            last_key[keysym.scancode], 0))
+          trs_xlate_keysym(0x10000 | last_key[keysym.scancode]);
         last_key[keysym.scancode] = 0;
         break;
 
@@ -2214,7 +2255,13 @@ void trs_screen_update(void)
   SDL_UpdateTexture(texture, NULL, screen->pixels, screen->pitch);
   SDL_RenderClear(render);
   SDL_RenderCopy(render, texture, NULL, NULL);
+  rg35xx_bridge_draw(render);
   SDL_RenderPresent(render);
+}
+
+void trs_sdl_release_host_keys(void)
+{
+  memset(last_key, 0, sizeof(last_key));
 }
 
 static void trs_screen_rect(int x, int y, int w, int h, int color)
@@ -2945,6 +2992,7 @@ void trs_sdl_init(void)
     fatal("SDL_CreateRGBSurface failed: %s", SDL_GetError());
 
   SDL_StartTextInput();
+  rg35xx_bridge_init();
 }
 
 int trs_sdl_savebmp(const char *filename)

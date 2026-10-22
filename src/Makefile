@@ -20,15 +20,26 @@ SRCS	+= trs_printer.c
 SRCS	+= trs_sdl_gui.c
 SRCS	+= trs_sdl_interface.c
 SRCS	+= trs_sdl_keyboard.c
+SRCS	+= trs_sdl_keymap.c
 SRCS	+= trs_state_save.c
 SRCS	+= trs_stringy.c
 SRCS	+= trs_uart.c
 SRCS	+= z80.c
 SRCS	+= PasteManager.c
 
-OBJS	 = ${SRCS:.c=.o}
+CPPSRCS += rg35xx/RG35XXControls.cpp
+CPPSRCS += rg35xx/KeyboardRG35XXControls.cpp
+CPPSRCS += rg35xx/RG35XXInputRouter.cpp
+CPPSRCS += rg35xx/SoftKeyboard.cpp
+CPPSRCS += rg35xx/SoftKeyboardRenderer.cpp
+CPPSRCS += rg35xx/TrsKeyboardAdapter.cpp
+CPPSRCS += rg35xx/rg35xx_bridge.cpp
 
-.PHONY: all bsd clean depend os2 sdl2 win32 win64
+OBJS	 = ${SRCS:.c=.o} ${CPPSRCS:.cpp=.o}
+TEST_OBJS = rg35xx_tests.o trs_sdl_keymap.o ${CPPSRCS:.cpp=.o}
+TEST_PROG = rg35xx_tests
+
+.PHONY: all bsd clean depend os2 sdl2 test-rg35xx win32 win64
 
 all:
 	@echo "make (bsd | clean | depend | os2 | sdl2 | win32 | win64)"
@@ -37,7 +48,7 @@ bsd:
 	make -f BSDmakefile
 
 clean:
-	rm -f ${OBJS} ${PROG}
+	rm -f ${OBJS} ${PROG} ${TEST_OBJS} ${TEST_PROG}
 
 depend:
 	makedepend -Y -- ${CFLAGS} -- ${SRCS} 2>&1 | \
@@ -54,14 +65,22 @@ sdl2:	SDL_LIB	?= $(shell sdl2-config --libs)
 sdl2:	READLINE?= -DREADLINE
 sdl2:	${PROG}
 
+test-rg35xx: SDL_INC ?= $(shell sdl2-config --cflags)
+test-rg35xx: SDL_LIB ?= $(shell sdl2-config --libs)
+test-rg35xx: CXXFLAGS += ${SDL_INC}
+test-rg35xx: ${TEST_PROG}
+	./${TEST_PROG}
+
 win32:	MINGW	?= \MinGW
 win32:	CC	 = ${MINGW}\bin\gcc.exe
+win32:	CXX	 = ${MINGW}\bin\g++.exe
 win32:	SDL_INC	?= -I${MINGW}\include\SDL2
 win32:	SDL_LIB	?= -L${MINGW}\lib -lmingw32 -lSDL2main -lSDL2
 win32:	${PROG}
 
 win64:	MINGW64	?= \MinGW64
 win64:	CC	 = ${MINGW64}\bin\gcc.exe
+win64:	CXX	 = ${MINGW64}\bin\g++.exe
 win64:	SDL_INC	?= -I${MINGW64}\include\SDL2
 win64:	SDL_LIB	?= -L${MINGW64}\lib -lmingw32 -lSDL2main -lSDL2
 win64:	${PROG}
@@ -73,6 +92,14 @@ MACROS		+= -DROM_PATH='"${ROM_PATH}"'
 ZBX		?= -DZBX
 CFLAGS		?= -g -O2 -Wall
 CFLAGS		+= ${SDL_INC} ${ENDIAN} ${MACROS} ${READLINE} ${ZBX}
+CXXFLAGS	?= -g -O2 -Wall
+CXXFLAGS	+= -std=c++11 ${SDL_INC}
 
 ${PROG}: ${OBJS}
-	${CC} -o ${PROG} ${OBJS} ${SDL_LIB} ${LDFLAGS} ${READLINELIBS} ${SSPLIB}
+	${CXX} -o ${PROG} ${OBJS} ${SDL_LIB} ${LDFLAGS} ${READLINELIBS} ${SSPLIB}
+
+${TEST_PROG}: ${TEST_OBJS}
+	${CXX} -o ${TEST_PROG} ${TEST_OBJS} ${SDL_LIB} ${LDFLAGS}
+
+rg35xx_tests.o: ../tests/rg35xx_tests.cpp
+	${CXX} ${CXXFLAGS} -c -o $@ $<

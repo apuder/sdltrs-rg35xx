@@ -29,7 +29,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "error.h"
+#include "trs.h"
 #include "trs_state_save.h"
+#include "rg35xx/rg35xx_bridge.h"
 
 static const char stateFileBanner[] = "SDLTRS State Save File";
 static int const stateFileBannerLen = sizeof(stateFileBanner) - 1;
@@ -67,6 +69,8 @@ int trs_state_save(const char *filename)
 
 int trs_state_load(const char *filename)
 {
+  rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+  trs_sdl_release_host_keys();
   FILE *file = fopen(filename, "rb");
 
   if (file) {

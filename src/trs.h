@@ -243,6 +243,7 @@ extern void  trs_screen_reset(void);
 extern void  trs_screen_update(void);
 extern void  trs_screen_write_char(unsigned int position, Uint8 character);
 extern void  trs_sdl_init(void);
+extern void  trs_sdl_release_host_keys(void);
 extern void  trs_set_mouse_max(int x, int y, unsigned int sens);
 extern void  trs_set_mouse_pos(int x, int y);
 extern void  trs_set_window(int x, int y, int w, int h);

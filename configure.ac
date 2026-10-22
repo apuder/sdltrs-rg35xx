@@ -3,8 +3,17 @@ AC_INIT([sdl2trs], [1.2.35], [dbotw@gmx.net])
 AC_CONFIG_SRCDIR([src/trs.h])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_PROG_CC
+AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_PROG_MAKE_SET
+AC_LANG_PUSH([C++])
+save_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS -std=c++11"
+AC_COMPILE_IFELSE(
+  [AC_LANG_PROGRAM([[#include <cstdint>]], [[std::uint32_t value = 0; return value;]])],
+  [], [AC_MSG_ERROR([a C++11 compiler is required for RG35XX controls])])
+CXXFLAGS="$save_CXXFLAGS"
+AC_LANG_POP([C++])
 AC_C_BIGENDIAN([AC_DEFINE([big_endian])])
 AC_CANONICAL_HOST
 AC_TYPE_OFF_T
@@ -37,7 +46,9 @@ AC_ARG_ENABLE([zbx],
   [AS_HELP_STRING([--enable-zbx], [build with integrated Z80 debugger zbx])],
   [AC_DEFINE([ZBX])])
 
-CFLAGS="$CFLAGS $( sdl2-config --cflags ) -DROM_PATH='\"$ROM_PATH\"'"
+SDL_CFLAGS="$( sdl2-config --cflags )"
+CFLAGS="$CFLAGS $SDL_CFLAGS -DROM_PATH='\"$ROM_PATH\"'"
+CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $( sdl2-config --libs )"
 
 AS_IF([test "x$enable_zbx" = "xyes"],

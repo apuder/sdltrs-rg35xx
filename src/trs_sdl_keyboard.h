@@ -54,6 +54,7 @@ extern void trs_keyboard_save(FILE *file);
 extern void trs_keyboard_load(FILE *file);
 extern void trs_open_joystick(void);
 extern void trs_set_keypad_joystick(void);
+extern int  trs_key_identity(int keysym);
 extern void trs_xlate_keysym(int keysym);
 
 #endif /* _TRS_SDL_KEYBOARD_H */

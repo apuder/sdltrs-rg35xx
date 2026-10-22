@@ -59,6 +59,7 @@
 #include "trs_sdl_keyboard.h"
 #include "trs_state_save.h"
 #include "trs_uart.h"
+#include "rg35xx/rg35xx_bridge.h"
 
 #define MAX_ROM_SIZE       (18432)  /* Holmes VID-80 (VX-3) */
 #define MAX_VIDEO_SIZE     (3072)   /* CP-500 M80 has 3K */
@@ -614,6 +615,8 @@ static void mem_init(void)
    handle hard reset or initial poweron if poweron=1 */
 void trs_reset(int poweron)
 {
+  rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+  trs_sdl_release_host_keys();
   bank_base = 0x10000;
   bank_offset[0] = 0;
   bank_offset[1] = 0;

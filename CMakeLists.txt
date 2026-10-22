@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 2.8.5...3.13)
 
-project(sdl2trs C)
+project(sdl2trs C CXX)
 
 include(GNUInstallDirs)
 include(TestBigEndian)
 
 set(CMAKE_C_FLAGS
 	"-g -Wall -Wextra -Wno-unused-parameter -Wno-unused-result -O2 ${CMAKE_C_FLAGS}"
+)
+set(CMAKE_CXX_FLAGS
+	"-g -Wall -Wextra -Wno-unused-parameter -O2 -std=c++11 ${CMAKE_CXX_FLAGS}"
 )
 
 set(SOURCES
@@ -30,11 +33,19 @@ set(SOURCES
 	src/trs_sdl_gui.c
 	src/trs_sdl_interface.c
 	src/trs_sdl_keyboard.c
+	src/trs_sdl_keymap.c
 	src/trs_state_save.c
 	src/trs_stringy.c
 	src/trs_uart.c
 	src/z80.c
 	src/PasteManager.c
+	src/rg35xx/RG35XXControls.cpp
+	src/rg35xx/KeyboardRG35XXControls.cpp
+	src/rg35xx/RG35XXInputRouter.cpp
+	src/rg35xx/SoftKeyboard.cpp
+	src/rg35xx/SoftKeyboardRenderer.cpp
+	src/rg35xx/TrsKeyboardAdapter.cpp
+	src/rg35xx/rg35xx_bridge.cpp
 )
 
 add_executable(sdl2trs ${SOURCES})
@@ -103,6 +114,7 @@ else ()
 			OUTPUT_VARIABLE SDL_LIBS
 			OUTPUT_STRIP_TRAILING_WHITESPACE)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SDL_CFLAGS}")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SDL_CFLAGS}")
 	if (ZBX)
 		add_definitions(-DZBX)
 		message("-- Build with integrated Z80 debugger")
@@ -113,6 +125,21 @@ else ()
 	message("-- Found SDL: ${SDL_LIBS}")
 	target_link_libraries(sdl2trs ${SDL_LIBS})
 endif ()
+
+enable_testing()
+add_executable(rg35xx_tests
+	tests/rg35xx_tests.cpp
+	src/trs_sdl_keymap.c
+	src/rg35xx/RG35XXControls.cpp
+	src/rg35xx/KeyboardRG35XXControls.cpp
+	src/rg35xx/RG35XXInputRouter.cpp
+	src/rg35xx/SoftKeyboard.cpp
+	src/rg35xx/SoftKeyboardRenderer.cpp
+	src/rg35xx/TrsKeyboardAdapter.cpp
+	src/rg35xx/rg35xx_bridge.cpp
+)
+target_link_libraries(rg35xx_tests ${SDL_LIBS})
+add_test(NAME rg35xx_tests COMMAND rg35xx_tests)
 
 install(TARGETS sdl2trs		DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 install(FILES src/sdl2trs.1	DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/)

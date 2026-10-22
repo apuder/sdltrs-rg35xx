@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS=foreign
 
 AM_CFLAGS=	-Wall
+AM_CXXFLAGS=	-Wall -std=c++11
 
 bin_PROGRAMS=	sdl2trs
 dist_man_MANS=	src/sdl2trs.1
@@ -25,11 +26,32 @@ sdl2trs_SOURCES=src/debug.c \
 		src/trs_sdl_gui.c \
 		src/trs_sdl_interface.c \
 		src/trs_sdl_keyboard.c \
+		src/trs_sdl_keymap.c \
 		src/trs_state_save.c \
 		src/trs_stringy.c \
 		src/trs_uart.c \
 		src/z80.c \
-		src/PasteManager.c
+		src/PasteManager.c \
+		src/rg35xx/RG35XXControls.cpp \
+		src/rg35xx/KeyboardRG35XXControls.cpp \
+		src/rg35xx/RG35XXInputRouter.cpp \
+		src/rg35xx/SoftKeyboard.cpp \
+		src/rg35xx/SoftKeyboardRenderer.cpp \
+		src/rg35xx/TrsKeyboardAdapter.cpp \
+		src/rg35xx/rg35xx_bridge.cpp
+
+check_PROGRAMS=	rg35xx_tests
+TESTS=		$(check_PROGRAMS)
+
+rg35xx_tests_SOURCES=tests/rg35xx_tests.cpp \
+		src/trs_sdl_keymap.c \
+		src/rg35xx/RG35XXControls.cpp \
+		src/rg35xx/KeyboardRG35XXControls.cpp \
+		src/rg35xx/RG35XXInputRouter.cpp \
+		src/rg35xx/SoftKeyboard.cpp \
+		src/rg35xx/SoftKeyboardRenderer.cpp \
+		src/rg35xx/TrsKeyboardAdapter.cpp \
+		src/rg35xx/rg35xx_bridge.cpp
 
 appicondir=	$(datadir)/icons/hicolor/scalable/apps
 appicon_DATA=	icons/sdl2trs.svg
