@@ -30,6 +30,7 @@ SRCS	+= PasteManager.c
 CPPSRCS += rg35xx/RG35XXControls.cpp
 CPPSRCS += rg35xx/KeyboardRG35XXControls.cpp
 CPPSRCS += rg35xx/RG35XXInputRouter.cpp
+CPPSRCS += rg35xx/SDLRG35XXControls.cpp
 CPPSRCS += rg35xx/SoftKeyboard.cpp
 CPPSRCS += rg35xx/SoftKeyboardRenderer.cpp
 CPPSRCS += rg35xx/TrsKeyboardAdapter.cpp

@@ -9,12 +9,14 @@ constexpr float RG35XXInputRouter::kAxisEngageThreshold;
 constexpr float RG35XXInputRouter::kAxisReleaseThreshold;
 
 RG35XXInputRouter::RG35XXInputRouter(RG35XXControls& controls,
-                                     TrsKeyboardAdapter& keyboard)
+                                     TrsKeyboardAdapter& keyboard,
+                                     bool reserve_all_when_hidden)
     : controls_(controls),
       keyboard_(keyboard),
       visible_(false),
       dirty_(false),
       suspended_(false),
+      reserve_all_when_hidden_(reserve_all_when_hidden),
       analog_x_direction_(0),
       analog_y_direction_(0),
       navigation_direction_(NavigationDirection::None),
@@ -25,6 +27,16 @@ RG35XXInputRouter::RG35XXInputRouter(RG35XXControls& controls,
               gated_buttons_ + static_cast<std::size_t>(Button::Count), false);
     std::fill(gated_axes_, gated_axes_ + static_cast<std::size_t>(Axis::Count),
               false);
+    std::fill(captured_buttons_,
+              captured_buttons_ + static_cast<std::size_t>(Button::Count),
+              false);
+    std::fill(captured_axes_,
+              captured_axes_ + static_cast<std::size_t>(Axis::Count), false);
+    std::fill(passthrough_buttons_,
+              passthrough_buttons_ + static_cast<std::size_t>(Button::Count),
+              false);
+    std::fill(passthrough_axes_,
+              passthrough_axes_ + static_cast<std::size_t>(Axis::Count), false);
 }
 
 bool RG35XXInputRouter::handleSDLEvent(const SDL_Event& event,
@@ -39,10 +51,17 @@ bool RG35XXInputRouter::handleSDLEvent(const SDL_Event& event,
     if (suspended_)
         return false;
 
+    const bool force_passthrough =
+        !reserve_all_when_hidden_ && event.type == SDL_JOYHATMOTION &&
+        dpadPassthroughActive();
     const bool recognized = controls_.handleSDLEvent(event);
-    if (recognized)
-        drainControlEvents(now_ms);
-    return recognized;
+    if (!recognized)
+        return false;
+    if (reserve_all_when_hidden_) {
+        drainControlEvents(now_ms, false);
+        return true;
+    }
+    return drainControlEvents(now_ms, true, force_passthrough);
 }
 
 void RG35XXInputRouter::update(std::uint32_t now_ms)
@@ -51,7 +70,7 @@ void RG35XXInputRouter::update(std::uint32_t now_ms)
         return;
 
     controls_.update(now_ms);
-    drainControlEvents(now_ms);
+    drainControlEvents(now_ms, false);
     if (!visible_ || navigation_direction_ == NavigationDirection::None)
         return;
 
@@ -63,11 +82,96 @@ void RG35XXInputRouter::update(std::uint32_t now_ms)
     }
 }
 
-void RG35XXInputRouter::drainControlEvents(std::uint32_t now_ms)
+bool RG35XXInputRouter::drainControlEvents(std::uint32_t now_ms,
+                                           bool route_consumption,
+                                           bool force_passthrough)
 {
+    bool consumed = route_consumption && visible_;
+    bool passthrough = force_passthrough;
     ControlEvent event;
-    while (controls_.popEvent(event))
+    while (controls_.popEvent(event)) {
+        bool transition_consumed = false;
+        if (!reserve_all_when_hidden_ && force_passthrough &&
+            event.type != ControlEventType::AxisChanged &&
+            (event.button == Button::DPadUp ||
+             event.button == Button::DPadDown ||
+             event.button == Button::DPadLeft ||
+             event.button == Button::DPadRight)) {
+            const std::size_t button = static_cast<std::size_t>(event.button);
+            captured_buttons_[button] = false;
+            if (event.type == ControlEventType::ButtonDown) {
+                passthrough_buttons_[button] = true;
+                gated_buttons_[button] = true;
+            } else {
+                passthrough_buttons_[button] = false;
+            }
+        } else if (!reserve_all_when_hidden_) {
+            transition_consumed = transitionConsumed(event, passthrough);
+        }
+        if (route_consumption && transition_consumed)
+            consumed = true;
         processControlEvent(event, now_ms);
+    }
+    return route_consumption && !passthrough && consumed;
+}
+
+bool RG35XXInputRouter::dpadPassthroughActive() const
+{
+    return passthrough_buttons_[static_cast<std::size_t>(Button::DPadUp)] ||
+           passthrough_buttons_[static_cast<std::size_t>(Button::DPadDown)] ||
+           passthrough_buttons_[static_cast<std::size_t>(Button::DPadLeft)] ||
+           passthrough_buttons_[static_cast<std::size_t>(Button::DPadRight)];
+}
+
+bool RG35XXInputRouter::transitionConsumed(const ControlEvent& event,
+                                           bool& passthrough)
+{
+    if (event.type == ControlEventType::AxisChanged) {
+        const std::size_t axis = static_cast<std::size_t>(event.axis);
+        if (passthrough_axes_[axis]) {
+            passthrough = true;
+            if (std::fabs(event.value) <= kAxisReleaseThreshold)
+                passthrough_axes_[axis] = false;
+            return false;
+        }
+        if (captured_axes_[axis]) {
+            if (std::fabs(event.value) <= kAxisReleaseThreshold)
+                captured_axes_[axis] = false;
+            return true;
+        }
+        if (!visible_) {
+            passthrough = true;
+            if (std::fabs(event.value) > kAxisReleaseThreshold)
+                passthrough_axes_[axis] = true;
+            return false;
+        }
+        if (visible_ && std::fabs(event.value) > kAxisReleaseThreshold)
+            captured_axes_[axis] = true;
+        return visible_;
+    }
+
+    const std::size_t button = static_cast<std::size_t>(event.button);
+    const bool toggle = event.button == Button::A;
+    if (passthrough_buttons_[button]) {
+        passthrough = true;
+        if (event.type == ControlEventType::ButtonUp)
+            passthrough_buttons_[button] = false;
+        return false;
+    }
+    if (captured_buttons_[button]) {
+        if (event.type == ControlEventType::ButtonUp)
+            captured_buttons_[button] = false;
+        return true;
+    }
+    if (!visible_ && !toggle) {
+        passthrough = true;
+        if (event.type == ControlEventType::ButtonDown)
+            passthrough_buttons_[button] = true;
+        return false;
+    }
+    if (event.type == ControlEventType::ButtonDown && (visible_ || toggle))
+        captured_buttons_[button] = true;
+    return visible_ || toggle;
 }
 
 void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
@@ -299,6 +403,13 @@ void RG35XXInputRouter::setSuspended(bool suspended, std::uint32_t now_ms)
                   gated_buttons_ + static_cast<std::size_t>(Button::Count), false);
         std::fill(gated_axes_,
                   gated_axes_ + static_cast<std::size_t>(Axis::Count), false);
+        if (reserve_all_when_hidden_) {
+            std::fill(captured_buttons_,
+                      captured_buttons_ +
+                          static_cast<std::size_t>(Button::Count), false);
+            std::fill(captured_axes_, captured_axes_ +
+                      static_cast<std::size_t>(Axis::Count), false);
+        }
     }
     suspended_ = suspended;
 }
@@ -313,6 +424,13 @@ void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
               gated_buttons_ + static_cast<std::size_t>(Button::Count), false);
     std::fill(gated_axes_, gated_axes_ + static_cast<std::size_t>(Axis::Count),
               false);
+    if (reserve_all_when_hidden_) {
+        std::fill(captured_buttons_,
+                  captured_buttons_ + static_cast<std::size_t>(Button::Count),
+                  false);
+        std::fill(captured_axes_,
+                  captured_axes_ + static_cast<std::size_t>(Axis::Count), false);
+    }
 }
 
 bool RG35XXInputRouter::guestKeyEvent(int owner, int symbol, bool down)

@@ -42,6 +42,7 @@ set(SOURCES
 	src/rg35xx/RG35XXControls.cpp
 	src/rg35xx/KeyboardRG35XXControls.cpp
 	src/rg35xx/RG35XXInputRouter.cpp
+	src/rg35xx/SDLRG35XXControls.cpp
 	src/rg35xx/SoftKeyboard.cpp
 	src/rg35xx/SoftKeyboardRenderer.cpp
 	src/rg35xx/TrsKeyboardAdapter.cpp
@@ -133,6 +134,7 @@ add_executable(rg35xx_tests
 	src/rg35xx/RG35XXControls.cpp
 	src/rg35xx/KeyboardRG35XXControls.cpp
 	src/rg35xx/RG35XXInputRouter.cpp
+	src/rg35xx/SDLRG35XXControls.cpp
 	src/rg35xx/SoftKeyboard.cpp
 	src/rg35xx/SoftKeyboardRenderer.cpp
 	src/rg35xx/TrsKeyboardAdapter.cpp

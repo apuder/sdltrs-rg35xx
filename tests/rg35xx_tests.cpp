@@ -1,5 +1,6 @@
 #include "../src/rg35xx/KeyboardRG35XXControls.hpp"
 #include "../src/rg35xx/RG35XXInputRouter.hpp"
+#include "../src/rg35xx/SDLRG35XXControls.hpp"
 #include "../src/rg35xx/rg35xx_bridge.h"
 #ifndef RG35XX_TEST_NO_RENDERER
 #include "../src/rg35xx/SoftKeyboardRenderer.hpp"
@@ -101,6 +102,27 @@ public:
     std::deque<ControlEvent> events;
 };
 
+class JoystickTranslatorControls : public RG35XXControls {
+public:
+    JoystickTranslatorControls(const SDLJoystickMapping& mapping,
+                               SDL_JoystickID instance)
+        : translator(mapping), instance_id(instance) {}
+    bool handleSDLEvent(const SDL_Event& event) override
+    {
+        return translator.handleSDLEvent(event, instance_id);
+    }
+    void update(std::uint32_t) override {}
+    bool popEvent(ControlEvent& event) override
+    {
+        return translator.popEvent(event);
+    }
+    const ControlState& state() const override { return translator.state(); }
+    void releaseAll(std::uint32_t now) override { translator.releaseAll(now); }
+
+    SDLJoystickEventTranslator translator;
+    SDL_JoystickID instance_id;
+};
+
 SDL_Event keyEvent(SDL_Scancode scancode, bool down, std::uint32_t timestamp,
                    bool repeat = false)
 {
@@ -113,6 +135,58 @@ SDL_Event keyEvent(SDL_Scancode scancode, bool down, std::uint32_t timestamp,
     /* The backend deliberately keys on physical scancodes only. */
     event.key.keysym.sym = SDLK_UNKNOWN;
     return event;
+}
+
+SDL_Event joyButtonEvent(SDL_JoystickID instance, Uint8 button, bool down,
+                         std::uint32_t timestamp)
+{
+    SDL_Event event = {};
+    event.type = down ? SDL_JOYBUTTONDOWN : SDL_JOYBUTTONUP;
+    event.jbutton.type = event.type;
+    event.jbutton.timestamp = timestamp;
+    event.jbutton.which = instance;
+    event.jbutton.button = button;
+    event.jbutton.state = down ? SDL_PRESSED : SDL_RELEASED;
+    return event;
+}
+
+SDL_Event joyAxisEvent(SDL_JoystickID instance, Uint8 axis, Sint16 value,
+                       std::uint32_t timestamp)
+{
+    SDL_Event event = {};
+    event.type = SDL_JOYAXISMOTION;
+    event.jaxis.type = event.type;
+    event.jaxis.timestamp = timestamp;
+    event.jaxis.which = instance;
+    event.jaxis.axis = axis;
+    event.jaxis.value = value;
+    return event;
+}
+
+SDL_Event joyHatEvent(SDL_JoystickID instance, Uint8 hat, Uint8 value,
+                      std::uint32_t timestamp)
+{
+    SDL_Event event = {};
+    event.type = SDL_JOYHATMOTION;
+    event.jhat.type = event.type;
+    event.jhat.timestamp = timestamp;
+    event.jhat.which = instance;
+    event.jhat.hat = hat;
+    event.jhat.value = value;
+    return event;
+}
+
+SDLJoystickMapping testJoystickMapping()
+{
+    SDLJoystickMapping mapping;
+    std::string error;
+    EXPECT(SDLJoystickMapping::parse(
+        "a=b0,b=b1,x=b2,y=b3,up=h0u,down=h0d,left=h0l,right=h0r,"
+        "start=b4,select=b5,menu=b6,l1=b7,r1=b8,l2=b9,r2=b10,"
+        "ls=b11,rs=b12,lx=a0,ly=-a1,rx=a2,ry=a3",
+        mapping, error));
+    EXPECT(error.empty());
+    return mapping;
 }
 
 void send(RG35XXInputRouter& router, SDL_Scancode scancode, bool down,
@@ -208,6 +282,150 @@ void testDefaultBindings()
     EXPECT(!controls.state().pressed(Button::A));
     event = keyEvent(SDL_SCANCODE_Z, true, 12);
     EXPECT(!controls.handleSDLEvent(event));
+}
+
+void testSDLJoystickMappingAndTranslation()
+{
+    const SDLJoystickMapping mapping = testJoystickMapping();
+    std::string error;
+    SDLJoystickMapping invalid;
+    EXPECT(!SDLJoystickMapping::parse("b=b1,lx=a0,ly=a1", invalid, error));
+    EXPECT(error.find("A and B") != std::string::npos);
+    EXPECT(!SDLJoystickMapping::parse(
+        "a=b0,b=b0,lx=a0,ly=a1", invalid, error));
+    EXPECT(error.find("mapped twice") != std::string::npos);
+    EXPECT(!SDLJoystickMapping::parse(
+        "a=b0,b=b1,up=h0q,down=h0d,left=h0l,right=h0r",
+        invalid, error));
+    EXPECT(error.find("invalid hat") != std::string::npos);
+
+    SDLJoystickEventTranslator translator(mapping);
+    const SDL_JoystickID instance = 42;
+    SDL_Event event = joyButtonEvent(instance + 1, 0, true, 1);
+    EXPECT(!translator.handleSDLEvent(event, instance));
+
+    event = joyButtonEvent(instance, 0, true, 2);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().pressed(Button::A));
+    event = joyButtonEvent(instance, 0, false, 3);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(!translator.state().pressed(Button::A));
+    ControlEvent logical;
+    EXPECT(translator.popEvent(logical));
+    EXPECT(logical.type == ControlEventType::ButtonDown &&
+           logical.button == Button::A);
+    EXPECT(translator.popEvent(logical));
+    EXPECT(logical.type == ControlEventType::ButtonUp &&
+           logical.button == Button::A);
+
+    event = joyAxisEvent(instance, 0, 16384, 4);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().value(Axis::LeftX) > 0.49f &&
+           translator.state().value(Axis::LeftX) < 0.51f);
+    event = joyAxisEvent(instance, 1, -32768, 5);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().value(Axis::LeftY) == 1.0f);
+
+    event = joyHatEvent(instance, 0, SDL_HAT_RIGHTUP, 6);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().pressed(Button::DPadUp));
+    EXPECT(translator.state().pressed(Button::DPadRight));
+    EXPECT(!translator.state().pressed(Button::DPadDown));
+    event = joyHatEvent(instance, 0, SDL_HAT_CENTERED, 7);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(!translator.state().pressed(Button::DPadUp));
+    EXPECT(!translator.state().pressed(Button::DPadRight));
+
+    while (translator.popEvent(logical)) {}
+    event = joyButtonEvent(instance, 1, true, 8);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().pressed(Button::B));
+    translator.releaseAll(9);
+    EXPECT(!translator.state().pressed(Button::B));
+    event = joyButtonEvent(instance, 1, true, 10);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(!translator.state().pressed(Button::B));
+    event = joyButtonEvent(instance, 1, false, 11);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    event = joyButtonEvent(instance, 1, true, 12);
+    EXPECT(translator.handleSDLEvent(event, instance));
+    EXPECT(translator.state().pressed(Button::B));
+}
+
+void testPhysicalPassthroughPolicy()
+{
+    KeyboardRG35XXControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard, false);
+
+    SDL_Event event = keyEvent(SDL_SCANCODE_SPACE, true, 1);
+    EXPECT(!router.handleSDLEvent(event, 1));
+    event = keyEvent(SDL_SCANCODE_F6, true, 2);
+    EXPECT(router.handleSDLEvent(event, 2));
+    EXPECT(router.visible());
+    event = keyEvent(SDL_SCANCODE_F6, false, 3);
+    EXPECT(router.handleSDLEvent(event, 3));
+    event = keyEvent(SDL_SCANCODE_SPACE, false, 4);
+    EXPECT(!router.handleSDLEvent(event, 4));
+    EXPECT(sink.events.empty());
+
+    event = keyEvent(SDL_SCANCODE_SPACE, true, 5);
+    EXPECT(router.handleSDLEvent(event, 5));
+    event = keyEvent(SDL_SCANCODE_F6, true, 6);
+    EXPECT(router.handleSDLEvent(event, 6));
+    EXPECT(!router.visible());
+    event = keyEvent(SDL_SCANCODE_F6, false, 7);
+    EXPECT(router.handleSDLEvent(event, 7));
+    event = keyEvent(SDL_SCANCODE_SPACE, false, 8);
+    EXPECT(router.handleSDLEvent(event, 8));
+
+    event = keyEvent(SDL_SCANCODE_SPACE, true, 9);
+    EXPECT(!router.handleSDLEvent(event, 9));
+    event = keyEvent(SDL_SCANCODE_SPACE, false, 10);
+    EXPECT(!router.handleSDLEvent(event, 10));
+
+    event = keyEvent(SDL_SCANCODE_A, true, 11);
+    EXPECT(!router.handleSDLEvent(event, 11));
+    event = keyEvent(SDL_SCANCODE_F6, true, 12);
+    EXPECT(router.handleSDLEvent(event, 12));
+    event = keyEvent(SDL_SCANCODE_F6, false, 13);
+    EXPECT(router.handleSDLEvent(event, 13));
+    event = keyEvent(SDL_SCANCODE_A, false, 14);
+    EXPECT(!router.handleSDLEvent(event, 14));
+}
+
+void testPhysicalHatPassthroughReconciliation()
+{
+    JoystickTranslatorControls controls(testJoystickMapping(), 42);
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard, false);
+
+    SDL_Event event = joyHatEvent(42, 0, SDL_HAT_UP, 1);
+    EXPECT(!router.handleSDLEvent(event, 1));
+    event = joyButtonEvent(42, 0, true, 2);
+    EXPECT(router.handleSDLEvent(event, 2));
+    EXPECT(router.visible());
+    event = joyButtonEvent(42, 0, false, 3);
+    EXPECT(router.handleSDLEvent(event, 3));
+    const int initial = router.softKeyboard().selection();
+
+    event = joyHatEvent(42, 0, SDL_HAT_RIGHTUP, 4);
+    EXPECT(!router.handleSDLEvent(event, 4));
+    EXPECT(router.softKeyboard().selection() == initial);
+    event = joyHatEvent(42, 0, SDL_HAT_RIGHT, 5);
+    EXPECT(!router.handleSDLEvent(event, 5));
+    EXPECT(router.softKeyboard().selection() == initial);
+    event = joyHatEvent(42, 0, SDL_HAT_CENTERED, 6);
+    EXPECT(!router.handleSDLEvent(event, 6));
+    EXPECT(router.softKeyboard().selection() == initial);
+
+    event = joyHatEvent(42, 0, SDL_HAT_RIGHT, 7);
+    EXPECT(router.handleSDLEvent(event, 7));
+    EXPECT(router.softKeyboard().selection() == initial + 1);
+    event = joyHatEvent(42, 0, SDL_HAT_CENTERED, 8);
+    EXPECT(router.handleSDLEvent(event, 8));
 }
 
 void testToggleAndEntryGating()
@@ -452,6 +670,22 @@ void testBridgeModesAndConsumption()
     EXPECT(rg35xx_bridge_init() == 0);
     EXPECT(rg35xx_bridge_enabled() == 0);
 
+    SDL_setenv("SDLTRS_RG35XX_INPUT", "sdl", 1);
+    SDL_setenv("SDLTRS_RG35XX_MAP", "", 1);
+    EXPECT(rg35xx_bridge_init() == 0);
+    EXPECT(rg35xx_bridge_enabled() == 0);
+
+    SDL_setenv("SDLTRS_RG35XX_MAP",
+               "a=b0,b=b1,up=h0u,down=h0d,left=h0l,right=h0r", 1);
+    SDL_setenv("SDLTRS_RG35XX_GUID", "not-a-guid", 1);
+    EXPECT(rg35xx_bridge_init() == 0);
+    EXPECT(rg35xx_bridge_enabled() == 0);
+    SDL_setenv("SDLTRS_RG35XX_GUID", "", 1);
+    SDL_setenv("SDLTRS_RG35XX_DEVICE", "-1", 1);
+    EXPECT(rg35xx_bridge_init() == 0);
+    EXPECT(rg35xx_bridge_enabled() == 0);
+    SDL_setenv("SDLTRS_RG35XX_DEVICE", "", 1);
+
     SDL_setenv("SDLTRS_RG35XX_INPUT", "keyboard", 1);
     EXPECT(rg35xx_bridge_init() == 1);
     EXPECT(rg35xx_bridge_enabled() == 1);
@@ -474,7 +708,8 @@ void testBridgeModesAndConsumption()
     EXPECT(bridge_guest_events[0] == SDLK_z);
     EXPECT(bridge_guest_events[1] == (0x10000 | SDLK_z));
 
-    rg35xx_bridge_shutdown();
+    SDL_setenv("SDLTRS_RG35XX_INPUT", "off", 1);
+    EXPECT(rg35xx_bridge_init() == 0);
     EXPECT(rg35xx_bridge_enabled() == 0);
     event = keyEvent(SDL_SCANCODE_F6, true, 5);
     EXPECT(rg35xx_bridge_handle_event(&event, 5) == 0);
@@ -561,6 +796,9 @@ void testSoftwareRenderer()
 int main()
 {
     testDefaultBindings();
+    testSDLJoystickMappingAndTranslation();
+    testPhysicalPassthroughPolicy();
+    testPhysicalHatPassthroughReconciliation();
     testToggleAndEntryGating();
     testNavigationAndRepeat();
     testGuestKeysShiftAndOwnership();

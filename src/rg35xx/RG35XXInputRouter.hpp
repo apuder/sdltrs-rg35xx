@@ -16,7 +16,8 @@ public:
     static constexpr float kAxisEngageThreshold = 0.55f;
     static constexpr float kAxisReleaseThreshold = 0.35f;
 
-    RG35XXInputRouter(RG35XXControls& controls, TrsKeyboardAdapter& keyboard);
+    RG35XXInputRouter(RG35XXControls& controls, TrsKeyboardAdapter& keyboard,
+                      bool reserve_all_when_hidden = true);
 
     bool handleSDLEvent(const SDL_Event& event, std::uint32_t now_ms);
     void update(std::uint32_t now_ms);
@@ -32,7 +33,10 @@ public:
     NavigationDirection navigationDirection() const;
 
 private:
-    void drainControlEvents(std::uint32_t now_ms);
+    bool drainControlEvents(std::uint32_t now_ms, bool route_consumption,
+                            bool force_passthrough = false);
+    bool transitionConsumed(const ControlEvent& event, bool& passthrough);
+    bool dpadPassthroughActive() const;
     void processControlEvent(const ControlEvent& event, std::uint32_t now_ms);
     void openOverlay(std::uint32_t now_ms);
     void closeOverlay(bool release_all, std::uint32_t now_ms);
@@ -49,8 +53,13 @@ private:
     bool visible_;
     bool dirty_;
     bool suspended_;
+    bool reserve_all_when_hidden_;
     bool gated_buttons_[static_cast<std::size_t>(Button::Count)];
     bool gated_axes_[static_cast<std::size_t>(Axis::Count)];
+    bool captured_buttons_[static_cast<std::size_t>(Button::Count)];
+    bool captured_axes_[static_cast<std::size_t>(Axis::Count)];
+    bool passthrough_buttons_[static_cast<std::size_t>(Button::Count)];
+    bool passthrough_axes_[static_cast<std::size_t>(Axis::Count)];
     int analog_x_direction_;
     int analog_y_direction_;
     NavigationDirection navigation_direction_;

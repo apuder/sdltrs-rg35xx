@@ -2,12 +2,16 @@
 
 #include "KeyboardRG35XXControls.hpp"
 #include "RG35XXInputRouter.hpp"
+#include "SDLRG35XXControls.hpp"
 #include "SoftKeyboardRenderer.hpp"
 #include "TrsKeyboardAdapter.hpp"
 
+#include <cctype>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <memory>
 
 extern "C" {
@@ -34,7 +38,7 @@ public:
     }
 };
 
-std::unique_ptr<rg35xx::KeyboardRG35XXControls> controls;
+std::unique_ptr<rg35xx::RG35XXControls> controls;
 std::unique_ptr<EmulatorGuestKeySink> sink;
 std::unique_ptr<rg35xx::TrsKeyboardAdapter> keyboard;
 std::unique_ptr<rg35xx::RG35XXInputRouter> router;
@@ -44,29 +48,114 @@ bool shutdown_registered;
 
 void reportException(const char* operation)
 {
-    std::fprintf(stderr, "SDLTRS RG35XX: %s failed; simulator disabled\n",
+    std::fprintf(stderr, "SDLTRS RG35XX: %s failed; input disabled\n",
                  operation);
+}
+
+bool parseDeviceIndex(const char* text, int& index)
+{
+    if (text == NULL || text[0] == '\0') {
+        index = 0;
+        return true;
+    }
+    errno = 0;
+    char* end = NULL;
+    const long value = std::strtol(text, &end, 10);
+    if (errno != 0 || end == text || *end != '\0' || value < 0 ||
+        value > std::numeric_limits<int>::max())
+        return false;
+    index = static_cast<int>(value);
+    return true;
+}
+
+bool validGUID(const char* text)
+{
+    if (text == NULL || text[0] == '\0')
+        return true;
+    if (std::strlen(text) != 32)
+        return false;
+    for (std::size_t i = 0; text[i] != '\0'; ++i) {
+        if (!std::isxdigit(static_cast<unsigned char>(text[i])))
+            return false;
+    }
+    return true;
 }
 
 } // namespace
 
 extern "C" int rg35xx_bridge_init(void)
 {
+    if (router)
+        rg35xx_bridge_shutdown();
     const char* mode = std::getenv("SDLTRS_RG35XX_INPUT");
     if (mode == NULL || mode[0] == '\0' || std::strcmp(mode, "off") == 0)
         return 0;
-    if (std::strcmp(mode, "keyboard") != 0) {
+    const bool keyboard_mode = std::strcmp(mode, "keyboard") == 0;
+    const bool sdl_mode = std::strcmp(mode, "sdl") == 0;
+    if (!keyboard_mode && !sdl_mode) {
         std::fprintf(stderr,
             "SDLTRS RG35XX: unsupported SDLTRS_RG35XX_INPUT='%s' "
-            "(expected 'off' or 'keyboard'); input disabled\n", mode);
+            "(expected 'off', 'keyboard', or 'sdl'); input disabled\n", mode);
         return 0;
     }
 
     try {
-        controls.reset(new rg35xx::KeyboardRG35XXControls());
+        bool reserve_all_when_hidden = true;
+        if (keyboard_mode) {
+            controls.reset(new rg35xx::KeyboardRG35XXControls());
+        } else {
+            const char* map_text = std::getenv("SDLTRS_RG35XX_MAP");
+            rg35xx::SDLJoystickMapping mapping;
+            std::string mapping_error;
+            if (map_text == NULL ||
+                !rg35xx::SDLJoystickMapping::parse(
+                    map_text != NULL ? map_text : "", mapping,
+                    mapping_error)) {
+                std::fprintf(stderr,
+                    "SDLTRS RG35XX: SDLTRS_RG35XX_INPUT=sdl requires a valid "
+                    "SDLTRS_RG35XX_MAP: %s; input disabled\n",
+                    mapping_error.c_str());
+                return 0;
+            }
+
+            int device_index = 0;
+            const char* device_text = std::getenv("SDLTRS_RG35XX_DEVICE");
+            if (!parseDeviceIndex(device_text, device_index)) {
+                std::fprintf(stderr,
+                    "SDLTRS RG35XX: invalid SDLTRS_RG35XX_DEVICE='%s' "
+                    "(expected a non-negative SDL joystick index); "
+                    "input disabled\n", device_text);
+                return 0;
+            }
+            const char* guid_text = std::getenv("SDLTRS_RG35XX_GUID");
+            if (!validGUID(guid_text)) {
+                std::fprintf(stderr,
+                    "SDLTRS RG35XX: invalid SDLTRS_RG35XX_GUID='%s' "
+                    "(expected 32 hexadecimal digits); input disabled\n",
+                    guid_text);
+                return 0;
+            }
+
+            std::unique_ptr<rg35xx::SDLRG35XXControls> physical(
+                new rg35xx::SDLRG35XXControls(
+                    mapping, device_index,
+                    guid_text != NULL ? guid_text : ""));
+            if (physical->connected()) {
+                std::fprintf(stderr,
+                    "SDLTRS RG35XX: physical SDL backend enabled for %s\n",
+                    physical->deviceName().c_str());
+            } else {
+                std::fprintf(stderr,
+                    "SDLTRS RG35XX: physical SDL backend enabled but waiting: "
+                    "%s\n", physical->lastError().c_str());
+            }
+            controls.reset(physical.release());
+            reserve_all_when_hidden = false;
+        }
         sink.reset(new EmulatorGuestKeySink());
         keyboard.reset(new rg35xx::TrsKeyboardAdapter(*sink));
-        router.reset(new rg35xx::RG35XXInputRouter(*controls, *keyboard));
+        router.reset(new rg35xx::RG35XXInputRouter(
+            *controls, *keyboard, reserve_all_when_hidden));
         modal_depth = 0;
         if (!shutdown_registered) {
             if (std::atexit(rg35xx_bridge_shutdown) != 0) {
@@ -79,8 +168,11 @@ extern "C" int rg35xx_bridge_init(void)
             }
             shutdown_registered = true;
         }
-        std::fprintf(stderr,
-            "SDLTRS RG35XX: host-keyboard simulator enabled (F6 toggles overlay)\n");
+        if (keyboard_mode) {
+            std::fprintf(stderr,
+                "SDLTRS RG35XX: host-keyboard simulator enabled "
+                "(F6 toggles overlay)\n");
+        }
         return 1;
     } catch (...) {
         reportException("initialization");
