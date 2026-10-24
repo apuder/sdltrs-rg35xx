@@ -1136,8 +1136,11 @@ void trs_get_event(int wait)
       if (!SDL_PollEvent(&event))
         return;
 
-    if (rg35xx_bridge_handle_event(&event, SDL_GetTicks()))
+    if (rg35xx_bridge_handle_event(&event, SDL_GetTicks())) {
+      if (rg35xx_bridge_menu_key() == SDLK_F7)
+        gui_function(GUI);
       continue;
+    }
 
     if (rg35xx_bridge_enabled() && event.type == SDL_WINDOWEVENT &&
         event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)

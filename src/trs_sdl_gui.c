@@ -226,7 +226,15 @@ int gui_key(void)
   SDL_Event event;
 
   while (1) {
-    SDL_WaitEvent(&event);
+    int key;
+    rg35xx_bridge_update(SDL_GetTicks());
+    key = rg35xx_bridge_menu_key();
+    if (key)
+      return key;
+    if (!SDL_WaitEventTimeout(&event, 16))
+      continue;
+    if (rg35xx_bridge_handle_event(&event, SDL_GetTicks()))
+      continue;
     switch (event.type) {
       case SDL_QUIT:
         trs_exit(0);

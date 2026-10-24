@@ -48,16 +48,13 @@ bool RG35XXInputRouter::handleSDLEvent(const SDL_Event& event,
         return false;
     }
 
-    if (suspended_)
-        return false;
-
     const bool force_passthrough =
         !reserve_all_when_hidden_ && event.type == SDL_JOYHATMOTION &&
         dpadPassthroughActive();
     const bool recognized = controls_.handleSDLEvent(event);
     if (!recognized)
         return false;
-    if (reserve_all_when_hidden_) {
+    if (reserve_all_when_hidden_ || suspended_) {
         drainControlEvents(now_ms, false);
         return true;
     }
@@ -66,18 +63,14 @@ bool RG35XXInputRouter::handleSDLEvent(const SDL_Event& event,
 
 void RG35XXInputRouter::update(std::uint32_t now_ms)
 {
-    if (suspended_)
-        return;
-
     controls_.update(now_ms);
     drainControlEvents(now_ms, false);
-    if (!visible_ || navigation_direction_ == NavigationDirection::None)
+    if ((!visible_ && !suspended_) || navigation_direction_ == NavigationDirection::None)
         return;
 
     unsigned int repeats = 0;
     while (deadlineReached(now_ms, next_repeat_ms_) && repeats++ < 32) {
-        if (soft_keyboard_.move(navigation_direction_))
-            markDirty();
+        moveNavigation(navigation_direction_);
         next_repeat_ms_ += kRepeatIntervalMs;
     }
 }
@@ -91,7 +84,7 @@ bool RG35XXInputRouter::drainControlEvents(std::uint32_t now_ms,
     ControlEvent event;
     while (controls_.popEvent(event)) {
         bool transition_consumed = false;
-        if (!reserve_all_when_hidden_ && force_passthrough &&
+        if (!suspended_ && !reserve_all_when_hidden_ && force_passthrough &&
             event.type != ControlEventType::AxisChanged &&
             (event.button == Button::DPadUp ||
              event.button == Button::DPadDown ||
@@ -105,7 +98,7 @@ bool RG35XXInputRouter::drainControlEvents(std::uint32_t now_ms,
             } else {
                 passthrough_buttons_[button] = false;
             }
-        } else if (!reserve_all_when_hidden_) {
+        } else if (!suspended_ && !reserve_all_when_hidden_) {
             transition_consumed = transitionConsumed(event, passthrough);
         }
         if (route_consumption && transition_consumed)
@@ -151,7 +144,7 @@ bool RG35XXInputRouter::transitionConsumed(const ControlEvent& event,
     }
 
     const std::size_t button = static_cast<std::size_t>(event.button);
-    const bool toggle = event.button == Button::A;
+    const bool toggle = event.button == Button::A || event.button == Button::Menu;
     if (passthrough_buttons_[button]) {
         passthrough = true;
         if (event.type == ControlEventType::ButtonUp)
@@ -197,6 +190,33 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
                 updateNavigation(now_ms);
             return;
         }
+    }
+
+    if (suspended_) {
+        if (event.type == ControlEventType::ButtonDown) {
+            int key = 0;
+            switch (event.button) {
+                case Button::A:
+                case Button::Start: key = SDLK_RETURN; break;
+                case Button::B:
+                case Button::Select:
+                case Button::Menu: key = SDLK_ESCAPE; break;
+                case Button::X: key = SDLK_TAB; break;
+                case Button::Y: key = SDLK_BACKSPACE; break;
+                case Button::L1: key = SDLK_PAGEUP; break;
+                case Button::R1: key = SDLK_PAGEDOWN; break;
+                default: break;
+            }
+            if (key && menu_keys_.size() < 32)
+                menu_keys_.push_back(key);
+        }
+        updateNavigation(now_ms);
+        return;
+    }
+    if (event.type == ControlEventType::ButtonDown && event.button == Button::Menu) {
+        closeOverlay(false, now_ms);
+        menu_keys_.push_back(SDLK_F7);
+        return;
     }
 
     if (!visible_) {
@@ -371,16 +391,33 @@ NavigationDirection RG35XXInputRouter::desiredDirection()
 
 void RG35XXInputRouter::updateNavigation(std::uint32_t now_ms)
 {
-    if (!visible_)
+    if (!visible_ && !suspended_)
         return;
     const NavigationDirection desired = desiredDirection();
     if (desired == navigation_direction_)
         return;
     navigation_direction_ = desired;
     if (desired != NavigationDirection::None) {
-        if (soft_keyboard_.move(desired))
-            markDirty();
+        moveNavigation(desired);
         next_repeat_ms_ = now_ms + kRepeatDelayMs;
+    }
+}
+
+void RG35XXInputRouter::moveNavigation(NavigationDirection direction)
+{
+    if (suspended_) {
+        int key = 0;
+        switch (direction) {
+            case NavigationDirection::Up: key = SDLK_UP; break;
+            case NavigationDirection::Down: key = SDLK_DOWN; break;
+            case NavigationDirection::Left: key = SDLK_LEFT; break;
+            case NavigationDirection::Right: key = SDLK_RIGHT; break;
+            default: break;
+        }
+        if (key && menu_keys_.size() < 32)
+            menu_keys_.push_back(key);
+    } else if (soft_keyboard_.move(direction)) {
+        markDirty();
     }
 }
 
@@ -411,11 +448,16 @@ void RG35XXInputRouter::setSuspended(bool suspended, std::uint32_t now_ms)
                       static_cast<std::size_t>(Axis::Count), false);
         }
     }
+    menu_keys_.clear();
+    navigation_direction_ = NavigationDirection::None;
+    analog_x_direction_ = analog_y_direction_ = 0;
+    gateHeldControls();
     suspended_ = suspended;
 }
 
 void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
 {
+    menu_keys_.clear();
     closeOverlay(true, now_ms);
     controls_.releaseAll(now_ms);
     ControlEvent discarded;
@@ -436,6 +478,14 @@ void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
 bool RG35XXInputRouter::guestKeyEvent(int owner, int symbol, bool down)
 {
     return down ? keyboard_.press(owner, symbol) : keyboard_.release(owner);
+}
+
+int RG35XXInputRouter::popMenuKey()
+{
+    if (menu_keys_.empty()) return 0;
+    const int key = menu_keys_.front();
+    menu_keys_.pop_front();
+    return key;
 }
 
 bool RG35XXInputRouter::visible() const

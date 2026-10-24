@@ -58,7 +58,8 @@ remembers that GUID for reconnects. Events are filtered using the SDL joystick
 instance ID; removal releases held controls, and reconnect suppresses controls
 already held until they return to neutral.
 
-Only physical A is reserved while the overlay is hidden. Other physical
+Physical A and Menu are reserved while the overlay is hidden. Menu opens
+the same main menu as F7; include `menu=bN` in the device mapping to enable it. Other physical
 events continue into SDLTRS's existing joystick handling. While the overlay is
 visible, mapped controls are consumed by it, including the matching releases
 of controls pressed before it closed. A gameplay control already held when A
@@ -87,7 +88,7 @@ than translated text:
 | Menu | F5 |
 
 Simulator keys are reserved while this mode is enabled. While the overlay is
-hidden, only logical A has an application action; it opens the keyboard.
+hidden, logical A opens the keyboard and Menu (F5) opens the F7 menu.
 
 While the overlay is open:
 
@@ -105,6 +106,27 @@ Navigation moves immediately, repeats after 300 ms, then repeats every 90 ms.
 Shift applies to the next nonmodifier activation and clears when that key is
 released. Selection persists across an ordinary close and reopen. Controls
 already held when the keyboard opens must be released before they act.
+
+## Emulator menu controls
+
+Menu opens the original F7 main menu, including from the soft keyboard.
+Inside menus, file selectors, and dialogs:
+
+| Control | Action |
+| --- | --- |
+| D-pad or left stick | Navigate / change values |
+| A or Start | Select / confirm (Enter) |
+| B, Select, or Menu | Back / cancel (Escape) |
+| X | Tab |
+| Y | Backspace |
+| L1 / R1 | Page up / page down |
+
+Held directions repeat after 300 ms, then every 90 ms. Buttons do not repeat.
+The keyboard simulator uses the same logical controls and reserves their text
+characters in dialogs. Other host keyboard and mouse input remains available.
+The physical backend uses the configured device mapping in menus and filters
+out other joystick instances. Unmapped joystick input retains the original
+menu handling. With RG35XX input disabled, the original F7 controls remain.
 
 ## Architecture and integration
 
@@ -136,7 +158,8 @@ guest frame.
 
 Modal GUI entry, clipboard paste, reset, state load, focus loss, and shutdown
 release owned keys and reset latches/repeat state. Modal code retains its own
-event loop; simulator interception is suspended until it returns.
+event loop and routes mapped controls to menu actions while guest typing is
+suspended.
 
 ## Build and test
 
@@ -260,7 +283,7 @@ For the physical backend, repeat the same typing test with
 `SDLTRS_RG35XX_INPUT=sdl` and the verified `SDLTRS_RG35XX_MAP`. Confirm the
 startup diagnostic names the intended device and GUID. With the overlay
 hidden, verify that B and directional events still reach the legacy joystick
-path while A alone opens the overlay. With it open, verify the printed A/B,
+path while A opens the overlay and Menu opens the main menu. With it open, verify the printed A/B,
 D-pad, and left stick follow the documented overlay actions. Finally,
 disconnect and reconnect the controls and confirm that held buttons neither
 stick nor activate until released.

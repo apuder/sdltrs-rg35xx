@@ -12,6 +12,7 @@ int rg35xx_bridge_init(void);
 int rg35xx_bridge_enabled(void);
 void rg35xx_bridge_shutdown(void);
 int rg35xx_bridge_handle_event(const SDL_Event *event, uint32_t now_ms);
+int rg35xx_bridge_menu_key(void);
 void rg35xx_bridge_update(uint32_t now_ms);
 int rg35xx_bridge_dirty(void);
 void rg35xx_bridge_draw(SDL_Renderer *renderer);

@@ -207,7 +207,7 @@ extern "C" void rg35xx_bridge_shutdown(void)
 extern "C" int rg35xx_bridge_handle_event(const SDL_Event* event,
                                              uint32_t now_ms)
 {
-    if (!router || event == NULL || modal_depth != 0)
+    if (!router || event == NULL)
         return 0;
     try {
         return router->handleSDLEvent(*event, now_ms) ? 1 : 0;
@@ -220,7 +220,7 @@ extern "C" int rg35xx_bridge_handle_event(const SDL_Event* event,
 
 extern "C" void rg35xx_bridge_update(uint32_t now_ms)
 {
-    if (!router || modal_depth != 0)
+    if (!router)
         return;
     try {
         router->update(now_ms);
@@ -228,6 +228,11 @@ extern "C" void rg35xx_bridge_update(uint32_t now_ms)
         reportException("timer update");
         rg35xx_bridge_shutdown();
     }
+}
+
+extern "C" int rg35xx_bridge_menu_key(void)
+{
+    return router ? router->popMenuKey() : 0;
 }
 
 extern "C" int rg35xx_bridge_dirty(void)

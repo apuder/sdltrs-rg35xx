@@ -6,6 +6,7 @@
 #include "TrsKeyboardAdapter.hpp"
 
 #include <cstdint>
+#include <deque>
 
 namespace rg35xx {
 
@@ -24,6 +25,8 @@ public:
     void setSuspended(bool suspended, std::uint32_t now_ms);
     void lifecycleCleanup(std::uint32_t now_ms);
     bool guestKeyEvent(int owner, int symbol, bool down);
+
+    int popMenuKey();
 
     bool visible() const;
     bool dirty() const;
@@ -46,10 +49,12 @@ private:
     static int hysteresisDirection(float value, int previous);
     static bool deadlineReached(std::uint32_t now, std::uint32_t deadline);
     void markDirty();
+    void moveNavigation(NavigationDirection direction);
 
     RG35XXControls& controls_;
     TrsKeyboardAdapter& keyboard_;
     SoftKeyboard soft_keyboard_;
+    std::deque<int> menu_keys_;
     bool visible_;
     bool dirty_;
     bool suspended_;

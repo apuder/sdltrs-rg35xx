@@ -628,6 +628,63 @@ void testGuestKeysShiftAndOwnership()
     EXPECT(canonical_sink.events[1].symbol == 'Q');
 }
 
+void testMenuControls()
+{
+    KeyboardRG35XXControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard);
+    std::uint32_t now = 100;
+    tap(router, SDL_SCANCODE_F5, now);
+    EXPECT(router.popMenuKey() == SDLK_F7);
+    EXPECT(router.popMenuKey() == 0);
+    openOverlay(router, now);
+    tap(router, SDL_SCANCODE_F5, now);
+    EXPECT(!router.visible());
+    EXPECT(router.popMenuKey() == SDLK_F7);
+    router.setSuspended(true, now++);
+    tap(router, SDL_SCANCODE_F5, now);
+    EXPECT(router.popMenuKey() == SDLK_ESCAPE);
+    tap(router, SDL_SCANCODE_F6, now);
+    EXPECT(router.popMenuKey() == SDLK_RETURN);
+    EXPECT(!router.visible());
+    tap(router, SDL_SCANCODE_SPACE, now);
+    EXPECT(router.popMenuKey() == SDLK_ESCAPE);
+    tap(router, SDL_SCANCODE_RETURN, now);
+    EXPECT(router.popMenuKey() == SDLK_RETURN);
+    tap(router, SDL_SCANCODE_ESCAPE, now);
+    EXPECT(router.popMenuKey() == SDLK_ESCAPE);
+    send(router, SDL_SCANCODE_DOWN, true, now);
+    EXPECT(router.popMenuKey() == SDLK_DOWN);
+    router.update(now + 299);
+    EXPECT(router.popMenuKey() == 0);
+    router.update(now + 300);
+    EXPECT(router.popMenuKey() == SDLK_DOWN);
+    send(router, SDL_SCANCODE_DOWN, false, now + 301);
+    now += 400;
+    tap(router, SDL_SCANCODE_D, now);
+    EXPECT(router.popMenuKey() == SDLK_RIGHT);
+    EXPECT(sink.events.empty());
+    router.setSuspended(false, now++);
+    EXPECT(router.popMenuKey() == 0);
+
+    JoystickTranslatorControls physical(testJoystickMapping(), 42);
+    RG35XXInputRouter physical_router(physical, keyboard, false);
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 6, true, now), now));
+    EXPECT(physical_router.popMenuKey() == SDLK_F7);
+    physical_router.setSuspended(true, ++now);
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 6, false, now), now));
+    EXPECT(physical_router.popMenuKey() == 0);
+    EXPECT(physical_router.handleSDLEvent(joyHatEvent(42, 0, SDL_HAT_UP, now), now));
+    EXPECT(physical_router.popMenuKey() == SDLK_UP);
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(99, 0, true, now), now) == false);
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 0, true, now), now));
+    EXPECT(physical_router.popMenuKey() == SDLK_RETURN);
+    physical_router.setSuspended(false, ++now);
+    EXPECT(physical_router.popMenuKey() == 0);
+    EXPECT(!physical_router.visible());
+}
+
 void testLifecycleCleanup()
 {
     KeyboardRG35XXControls controls;
@@ -707,6 +764,21 @@ void testBridgeModesAndConsumption()
     EXPECT(bridge_guest_events.size() == 2);
     EXPECT(bridge_guest_events[0] == SDLK_z);
     EXPECT(bridge_guest_events[1] == (0x10000 | SDLK_z));
+
+    event = keyEvent(SDL_SCANCODE_F5, true, 10);
+    EXPECT(rg35xx_bridge_handle_event(&event, 10) == 1);
+    EXPECT(rg35xx_bridge_menu_key() == SDLK_F7);
+    rg35xx_bridge_modal_begin(11);
+    event = keyEvent(SDL_SCANCODE_F5, false, 12);
+    EXPECT(rg35xx_bridge_handle_event(&event, 12) == 1);
+    EXPECT(rg35xx_bridge_menu_key() == 0);
+    event = keyEvent(SDL_SCANCODE_DOWN, true, 13);
+    EXPECT(rg35xx_bridge_handle_event(&event, 13) == 1);
+    EXPECT(rg35xx_bridge_menu_key() == SDLK_DOWN);
+    rg35xx_bridge_update(313);
+    EXPECT(rg35xx_bridge_menu_key() == SDLK_DOWN);
+    rg35xx_bridge_modal_end(314);
+    EXPECT(rg35xx_bridge_menu_key() == 0);
 
     SDL_setenv("SDLTRS_RG35XX_INPUT", "off", 1);
     EXPECT(rg35xx_bridge_init() == 0);
@@ -803,6 +875,7 @@ int main()
     testNavigationAndRepeat();
     testGuestKeysShiftAndOwnership();
     testLifecycleCleanup();
+    testMenuControls();
 #ifndef RG35XX_TEST_NO_BRIDGE
     testBridgeModesAndConsumption();
 #endif

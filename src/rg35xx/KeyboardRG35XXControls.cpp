@@ -109,6 +109,16 @@ void KeyboardRG35XXControls::refreshAxis(Axis axis, std::uint32_t timestamp)
 
 bool KeyboardRG35XXControls::handleSDLEvent(const SDL_Event& event)
 {
+    // SDL emits text separately from keydown; reserved simulator controls
+    // must not also insert characters into modal text fields.
+    if (event.type == SDL_TEXTINPUT && event.text.text[1] == '\0') {
+        int character = static_cast<unsigned char>(event.text.text[0]);
+        if (character >= 'A' && character <= 'Z') character += 'a' - 'A';
+        for (std::size_t i = 0; i < sizeof(kBindings) / sizeof(kBindings[0]); ++i)
+            if (SDL_GetKeyFromScancode(kBindings[i].scancode) == character)
+                return true;
+        return false;
+    }
     if (event.type != SDL_KEYDOWN && event.type != SDL_KEYUP)
         return false;
 
