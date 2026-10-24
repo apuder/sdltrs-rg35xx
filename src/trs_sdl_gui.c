@@ -228,6 +228,8 @@ int gui_key(void)
   while (1) {
     int key;
     rg35xx_bridge_update(SDL_GetTicks());
+    if (rg35xx_bridge_dirty())
+      trs_screen_update();
     key = rg35xx_bridge_menu_key();
     if (key)
       return key;
@@ -725,8 +727,9 @@ done:
   return selection;
 }
 
-int gui_input(const char *title, const char *input, char *output, int limit, int dir)
+static int gui_input_edit(const char *title, const char *input, char *output, int limit, int dir)
 {
+  int const row = rg35xx_bridge_enabled() ? 1 : 6;
   int ins = 1;
   int pos;
   int len;
@@ -740,22 +743,26 @@ int gui_input(const char *title, const char *input, char *output, int limit, int
 redraw:
   col = pos > 60 ? pos - 59 : 0;
 
-  gui_rect(1, 6, 62, 3, 1);
-  gui_write(title, 0, 6, 4);
+  gui_rect(1, row, 62, 3, 1);
+  gui_write(title, 0, row, 4);
 
-  if (ins)
-    gui_text(" INS ", 56, 8, 6, 5);
-
-  if (dir)
-    gui_write(" TAB:Select Directory ", 0, 8, 5);
+  if (rg35xx_bridge_enabled()) {
+    gui_write(dir ? "A:Keyboard Y:Erase L/R:Cursor L2:Clear R2:Directory" :
+                    "A:Keyboard Y:Erase L/R:Cursor L2:Clear", 0, row + 2, 5);
+  } else {
+    if (ins)
+      gui_text(" INS ", 56, row + 2, 6, 5);
+    if (dir)
+      gui_write(" TAB:Select Directory ", 0, row + 2, 5);
+  }
 
   while (1) {
     int key;
     int i;
 
-    gui_rect(2, 7, 60, 1, 0);
-    gui_text(&output[col], 2, 7, 60, 4);
-    gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), 7, 1, 5);
+    gui_rect(2, row + 1, 60, 1, 0);
+    gui_text(&output[col], 2, row + 1, 60, 4);
+    gui_text(pos >= len ? " " : &output[pos], 2 + (pos - col), row + 1, 1, 5);
     trs_screen_update();
 
     key = gui_key();
@@ -815,9 +822,11 @@ redraw:
         if (dir) {
           char directory[FILENAME_MAX];
 
+          rg35xx_bridge_text_entry(0, SDL_GetTicks());
           if (gui_file(input, directory, NULL, 1, "") >= 0) {
             pos = len = snprintf(output, limit, "%s", directory);
           }
+          rg35xx_bridge_text_entry(1, SDL_GetTicks());
           goto redraw;
         }
         break;
@@ -846,6 +855,15 @@ redraw:
         break;
     }
   }
+}
+
+int gui_input(const char *title, const char *input, char *output, int limit, int dir)
+{
+  int result;
+  rg35xx_bridge_text_entry(1, SDL_GetTicks());
+  result = gui_input_edit(title, input, output, limit, dir);
+  rg35xx_bridge_text_entry(0, SDL_GetTicks());
+  return result;
 }
 
 int gui_menu(const char *title, const MENU *entry, int selection)

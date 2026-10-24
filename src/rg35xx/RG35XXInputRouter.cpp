@@ -13,6 +13,7 @@ RG35XXInputRouter::RG35XXInputRouter(RG35XXControls& controls,
                                      bool reserve_all_when_hidden)
     : controls_(controls),
       keyboard_(keyboard),
+      text_entry_(false),
       visible_(false),
       dirty_(false),
       suspended_(false),
@@ -192,6 +193,43 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
         }
     }
 
+    if (suspended_ && text_entry_) {
+        if (event.type == ControlEventType::ButtonDown) {
+            int key = 0;
+            switch (event.button) {
+                case Button::A:
+                    if (visible_) closeOverlay(false, now_ms);
+                    else openOverlay(now_ms);
+                    return;
+                case Button::B:
+                    if (!visible_) break;
+                    if (soft_keyboard_.selectedIsShift()) {
+                        soft_keyboard_.toggleShift();
+                    } else {
+                        key = soft_keyboard_.textSymbol();
+                        soft_keyboard_.clearShift();
+                    }
+                    markDirty();
+                    break;
+                case Button::X:
+                    soft_keyboard_.toggleShift();
+                    markDirty();
+                    return;
+                case Button::Y: key = SDLK_BACKSPACE; break;
+                case Button::Start: key = SDLK_RETURN; break;
+                case Button::Select:
+                case Button::Menu: key = SDLK_ESCAPE; break;
+                case Button::L1: key = SDLK_LEFT; break;
+                case Button::R1: key = SDLK_RIGHT; break;
+                case Button::L2: key = SDLK_F9; break;
+                case Button::R2: key = SDLK_TAB; break;
+                default: break;
+            }
+            if (key && menu_keys_.size() < 32) menu_keys_.push_back(key);
+        }
+        updateNavigation(now_ms);
+        return;
+    }
     if (suspended_) {
         if (event.type == ControlEventType::ButtonDown) {
             int key = 0;
@@ -405,7 +443,7 @@ void RG35XXInputRouter::updateNavigation(std::uint32_t now_ms)
 
 void RG35XXInputRouter::moveNavigation(NavigationDirection direction)
 {
-    if (suspended_) {
+    if (suspended_ && !(text_entry_ && visible_)) {
         int key = 0;
         switch (direction) {
             case NavigationDirection::Up: key = SDLK_UP; break;
@@ -448,6 +486,8 @@ void RG35XXInputRouter::setSuspended(bool suspended, std::uint32_t now_ms)
                       static_cast<std::size_t>(Axis::Count), false);
         }
     }
+    text_entry_ = false;
+    closeOverlay(false, now_ms);
     menu_keys_.clear();
     navigation_direction_ = NavigationDirection::None;
     analog_x_direction_ = analog_y_direction_ = 0;
@@ -479,6 +519,18 @@ bool RG35XXInputRouter::guestKeyEvent(int owner, int symbol, bool down)
 {
     return down ? keyboard_.press(owner, symbol) : keyboard_.release(owner);
 }
+
+void RG35XXInputRouter::setTextEntry(bool enabled, std::uint32_t now_ms)
+{
+    if (!suspended_) return;
+    menu_keys_.clear();
+    text_entry_ = enabled;
+    if (enabled) openOverlay(now_ms);
+    else closeOverlay(false, now_ms);
+    gateHeldControls();
+}
+
+bool RG35XXInputRouter::textEntry() const { return text_entry_; }
 
 int RG35XXInputRouter::popMenuKey()
 {

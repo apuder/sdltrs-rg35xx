@@ -27,6 +27,7 @@ public:
     bool move(NavigationDirection direction);
     int symbol(bool shifted) const;
     int symbolAt(int index, bool shifted) const;
+    int textSymbol() const;
     const char* labelAt(int index, bool shifted) const;
     bool selectedIsShift() const;
     bool shiftLatched() const;

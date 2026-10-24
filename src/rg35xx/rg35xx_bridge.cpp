@@ -230,6 +230,17 @@ extern "C" void rg35xx_bridge_update(uint32_t now_ms)
     }
 }
 
+extern "C" void rg35xx_bridge_text_entry(int enabled, uint32_t now_ms)
+{
+    if (!router) return;
+    try {
+        router->setTextEntry(enabled != 0, now_ms);
+    } catch (...) {
+        reportException("text entry");
+        rg35xx_bridge_shutdown();
+    }
+}
+
 extern "C" int rg35xx_bridge_menu_key(void)
 {
     return router ? router->popMenuKey() : 0;
@@ -246,7 +257,7 @@ extern "C" void rg35xx_bridge_draw(SDL_Renderer* renderer)
         return;
     try {
         if (router->visible())
-            overlay_renderer.draw(renderer, router->softKeyboard());
+            overlay_renderer.draw(renderer, router->softKeyboard(), router->textEntry());
         router->clearDirty();
     } catch (...) {
         reportException("overlay drawing");

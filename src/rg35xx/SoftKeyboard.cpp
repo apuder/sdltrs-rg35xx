@@ -3,8 +3,29 @@
 #include "../trs_sdl_keymap.h"
 
 #include <cmath>
+#include <SDL.h>
 
 namespace rg35xx {
+
+// Menu fields need host text, rather than the guest keyboard's encoded keys.
+int SoftKeyboard::textSymbol() const
+{
+    const char* label = labelAt(selection_, shift_latched_);
+    while (*label == ' ') ++label;
+    if (*label && (label[1] == ' ' || label[1] == '\0'))
+        return static_cast<unsigned char>(*label);
+    switch (selection_) {
+        case 12: return SDLK_ESCAPE;
+        case 13: return shift_latched_ ? SDLK_TAB : SDLK_UP;
+        case 24: return SDLK_LEFT;
+        case 25: return SDLK_RIGHT;
+        case 26: return SDLK_DOWN;
+        case 37: return SDLK_RETURN;
+        case 38: return SDLK_F9; // CLEAR: empty the field.
+        case 51: return SDLK_SPACE;
+        default: return 0;
+    }
+}
 
 SoftKeyboard::SoftKeyboard() : selection_(14), shift_latched_(false)
 {

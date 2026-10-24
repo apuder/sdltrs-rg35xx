@@ -680,9 +680,94 @@ void testMenuControls()
     EXPECT(physical_router.handleSDLEvent(joyButtonEvent(99, 0, true, now), now) == false);
     EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 0, true, now), now));
     EXPECT(physical_router.popMenuKey() == SDLK_RETURN);
+    physical_router.setTextEntry(true, ++now);
+    EXPECT(physical_router.visible());
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 0, false, now), now));
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 1, true, now), now));
+    EXPECT(physical_router.popMenuKey() == 'q');
+    EXPECT(sink.events.empty());
+    physical_router.setTextEntry(false, ++now);
     physical_router.setSuspended(false, ++now);
     EXPECT(physical_router.popMenuKey() == 0);
     EXPECT(!physical_router.visible());
+}
+
+void testMenuTextEntry()
+{
+    KeyboardRG35XXControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard);
+    std::uint32_t now = 1000;
+    router.setSuspended(true, now++);
+    // A opens this field from its parent menu; holding it must not close it.
+    send(router, SDL_SCANCODE_F6, true, now++);
+    EXPECT(router.popMenuKey() == SDLK_RETURN);
+    router.setTextEntry(true, now++);
+    EXPECT(router.visible());
+    send(router, SDL_SCANCODE_F6, true, now++, true);
+    EXPECT(router.visible());
+    send(router, SDL_SCANCODE_F6, false, now++);
+    EXPECT(router.popMenuKey() == 0);
+
+    // Replace an RGB value with 12ABEF using the same keyboard as guest typing.
+    tap(router, SDL_SCANCODE_1, now);
+    EXPECT(router.popMenuKey() == SDLK_F9);
+    const int selections[] = {0, 1, 27, 44, 16, 30};
+    const char* expected = "12ABEF";
+    for (int i = 0; i < 6; ++i) {
+        router.softKeyboardForTesting().setSelection(selections[i]);
+        if (i >= 2) tap(router, SDL_SCANCODE_TAB, now);
+        tap(router, SDL_SCANCODE_SPACE, now);
+        EXPECT(router.popMenuKey() == expected[i]);
+        EXPECT(!router.softKeyboard().shiftLatched());
+    }
+    // Host text uses the printed punctuation, not guest German key encodings.
+    router.softKeyboardForTesting().setSelection(24);
+    tap(router, SDL_SCANCODE_TAB, now);
+    tap(router, SDL_SCANCODE_SPACE, now);
+    EXPECT(router.popMenuKey() == '[');
+    tap(router, SDL_SCANCODE_BACKSPACE, now);
+    EXPECT(router.popMenuKey() == SDLK_BACKSPACE);
+    tap(router, SDL_SCANCODE_Q, now);
+    EXPECT(router.popMenuKey() == SDLK_LEFT);
+    tap(router, SDL_SCANCODE_E, now);
+    EXPECT(router.popMenuKey() == SDLK_RIGHT);
+    tap(router, SDL_SCANCODE_3, now);
+    EXPECT(router.popMenuKey() == SDLK_TAB);
+
+    const int before = router.softKeyboard().selection();
+    send(router, SDL_SCANCODE_RIGHT, true, now);
+    EXPECT(router.softKeyboard().selection() != before);
+    EXPECT(router.popMenuKey() == 0);
+    send(router, SDL_SCANCODE_RIGHT, false, ++now);
+    tap(router, SDL_SCANCODE_RETURN, now);
+    EXPECT(router.popMenuKey() == SDLK_RETURN);
+    router.setTextEntry(false, now++);
+    EXPECT(!router.visible());
+    EXPECT(!router.textEntry());
+    tap(router, SDL_SCANCODE_DOWN, now);
+    EXPECT(router.popMenuKey() == SDLK_DOWN);
+
+    router.setTextEntry(true, now++);
+    tap(router, SDL_SCANCODE_F6, now);
+    EXPECT(!router.visible());
+    tap(router, SDL_SCANCODE_F6, now);
+    EXPECT(router.visible());
+    tap(router, SDL_SCANCODE_ESCAPE, now);
+    EXPECT(router.popMenuKey() == SDLK_ESCAPE);
+    router.setTextEntry(false, now++);
+    router.setSuspended(false, now++);
+    EXPECT(!router.visible());
+    EXPECT(sink.events.empty());
+
+    SoftKeyboard text_keyboard;
+    text_keyboard.setSelection(51);
+    EXPECT(text_keyboard.textSymbol() == ' ');
+    text_keyboard.setSelection(38);
+    EXPECT(text_keyboard.textSymbol() == SDLK_F9);
+    text_keyboard.setSelection(37);
+    EXPECT(text_keyboard.textSymbol() == SDLK_RETURN);
 }
 
 void testLifecycleCleanup()
@@ -777,7 +862,12 @@ void testBridgeModesAndConsumption()
     EXPECT(rg35xx_bridge_menu_key() == SDLK_DOWN);
     rg35xx_bridge_update(313);
     EXPECT(rg35xx_bridge_menu_key() == SDLK_DOWN);
-    rg35xx_bridge_modal_end(314);
+    rg35xx_bridge_text_entry(1, 314);
+    event = keyEvent(SDL_SCANCODE_SPACE, true, 315);
+    EXPECT(rg35xx_bridge_handle_event(&event, 315) == 1);
+    EXPECT(rg35xx_bridge_menu_key() == 'q');
+    rg35xx_bridge_text_entry(0, 316);
+    rg35xx_bridge_modal_end(317);
     EXPECT(rg35xx_bridge_menu_key() == 0);
 
     SDL_setenv("SDLTRS_RG35XX_INPUT", "off", 1);
@@ -876,6 +966,7 @@ int main()
     testGuestKeysShiftAndOwnership();
     testLifecycleCleanup();
     testMenuControls();
+    testMenuTextEntry();
 #ifndef RG35XX_TEST_NO_BRIDGE
     testBridgeModesAndConsumption();
 #endif

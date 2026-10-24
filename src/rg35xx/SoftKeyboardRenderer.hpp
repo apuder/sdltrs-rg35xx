@@ -9,7 +9,7 @@ namespace rg35xx {
 
 class SoftKeyboardRenderer {
 public:
-    void draw(SDL_Renderer* renderer, const SoftKeyboard& keyboard) const;
+    void draw(SDL_Renderer* renderer, const SoftKeyboard& keyboard, bool text_entry = false) const;
 };
 
 } // namespace rg35xx

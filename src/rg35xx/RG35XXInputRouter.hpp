@@ -27,6 +27,8 @@ public:
     bool guestKeyEvent(int owner, int symbol, bool down);
 
     int popMenuKey();
+    void setTextEntry(bool enabled, std::uint32_t now_ms);
+    bool textEntry() const;
 
     bool visible() const;
     bool dirty() const;
@@ -55,6 +57,7 @@ private:
     TrsKeyboardAdapter& keyboard_;
     SoftKeyboard soft_keyboard_;
     std::deque<int> menu_keys_;
+    bool text_entry_;
     bool visible_;
     bool dirty_;
     bool suspended_;

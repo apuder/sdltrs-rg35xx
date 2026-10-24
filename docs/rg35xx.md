@@ -128,6 +128,41 @@ The physical backend uses the configured device mapping in menus and filters
 out other joystick instances. Unmapped joystick input retains the original
 menu handling. With RG35XX input disabled, the original F7 controls remain.
 
+## Text entry in F7 dialogs
+
+With RG35XX input enabled, every text-entry dialog opens the soft keyboard
+automatically. The field appears above the keyboard. D-pad/left stick moves the
+key selection; B types once per press; X toggles one-shot Shift; Y erases the
+previous character. Start accepts the field; Select or Menu cancels it. A
+hides/reopens the keyboard. L1/R1 moves the text cursor; L2 clears the field.
+R2 opens the directory browser in filename dialogs; the keyboard returns when
+the browser closes. In text fields, the keyboard's CLEAR key also clears the
+field, ENTER accepts, and BREAK cancels. Shifted punctuation follows the
+printed key labels. These inputs edit the dialog and do not type into the
+emulated TRS-80.
+
+All F7 text-entry options are covered through the shared `gui_input` dialog:
+
+| F7 submenu | Options requiring typed input |
+| --- | --- |
+| Floppy Disk Management | Create Blank Floppy Disk > Create Disk Image filename; Save Disk Set filename |
+| Hard Disk Management | Cylinder Count; Head Count; Sector Count; Create Hard Disk Image filename; Save Disk Set filename |
+| Cassette/Tape Management | Position of Tape (bytes); Default Sample Rate; Create Blank Cassette Image filename |
+| Stringy Wafer Management | Create Blank Floppy Wafer filename; Save Disk Set filename |
+| Emulator Settings | Model and Memory Size (Model I/III memory in KB); CPU Clock Speed (MHz) |
+| Display Settings | Emulator Background Color; Emulator Foreground Color; GUI Background Color; GUI Foreground Color (all hexadecimal RGB); Border Width; scanline brightness (when enabled, without `OLD_SCANLINES`) |
+| Miscellaneous/Printer | Fake year; Keystretch Value; Serial Port Name; Serial Switches (hex); Turbo Speed |
+| Configuration/State Files | Save Emulator State filename; Write Configuration filename |
+
+Default Directories and ROM File Selection use file/directory browsers rather
+than typed fields. Load/attach operations also use browsers. Save Screenshot,
+accessed separately from F7, uses the same text dialog and gets the keyboard too.
+
+To check on the handheld, open Display Settings > Emulator Foreground Color,
+press L2 to clear the value, type `12ABEF` using B and X for the letters, then
+press Start. Reopen the field to verify the value. Repeat with a decimal field
+and a filename, including the R2 directory browser and Select cancellation.
+
 ## Architecture and integration
 
 - `src/rg35xx/RG35XXControls.*` defines the physical control/event vocabulary.
