@@ -4,6 +4,7 @@
 #include "RG35XXInputRouter.hpp"
 #include "SDLRG35XXControls.hpp"
 #include "SoftKeyboardRenderer.hpp"
+#include "SystemVolume.hpp"
 #include "TrsKeyboardAdapter.hpp"
 
 #include <cctype>
@@ -43,6 +44,7 @@ std::unique_ptr<EmulatorGuestKeySink> sink;
 std::unique_ptr<rg35xx::TrsKeyboardAdapter> keyboard;
 std::unique_ptr<rg35xx::RG35XXInputRouter> router;
 rg35xx::SoftKeyboardRenderer overlay_renderer;
+std::unique_ptr<rg35xx::SystemVolume> system_volume;
 unsigned int modal_depth;
 bool shutdown_registered;
 
@@ -85,8 +87,13 @@ bool validGUID(const char* text)
 
 extern "C" int rg35xx_bridge_init(void)
 {
-    if (router)
+    if (router || system_volume)
         rg35xx_bridge_shutdown();
+    try {
+        system_volume.reset(new rg35xx::SystemVolume());
+    } catch (...) {
+        std::fprintf(stderr, "SDLTRS RG35XX: system volume initialization failed\n");
+    }
     const char* mode = std::getenv("SDLTRS_RG35XX_INPUT");
     if (mode == NULL || mode[0] == '\0' || std::strcmp(mode, "off") == 0)
         return 0;
@@ -198,6 +205,7 @@ extern "C" void rg35xx_bridge_shutdown(void)
         keyboard.reset();
         sink.reset();
         controls.reset();
+        system_volume.reset();
         modal_depth = 0;
     } catch (...) {
         reportException("shutdown");
@@ -207,8 +215,9 @@ extern "C" void rg35xx_bridge_shutdown(void)
 extern "C" int rg35xx_bridge_handle_event(const SDL_Event* event,
                                              uint32_t now_ms)
 {
-    if (!router || event == NULL)
-        return 0;
+    if (event == NULL) return 0;
+    if (rg35xx_bridge_volume_event(event, now_ms)) return 1;
+    if (!router) return 0;
     try {
         return router->handleSDLEvent(*event, now_ms) ? 1 : 0;
     } catch (...) {
@@ -218,8 +227,19 @@ extern "C" int rg35xx_bridge_handle_event(const SDL_Event* event,
     }
 }
 
+extern "C" int rg35xx_bridge_volume_event(const SDL_Event* event, uint32_t now_ms)
+{
+    return system_volume && event && system_volume->handleSDLEvent(*event, now_ms);
+}
+
+extern "C" void rg35xx_bridge_volume_update(uint32_t now_ms)
+{
+    if (system_volume) system_volume->update(now_ms);
+}
+
 extern "C" void rg35xx_bridge_update(uint32_t now_ms)
 {
+    rg35xx_bridge_volume_update(now_ms);
     if (!router)
         return;
     try {

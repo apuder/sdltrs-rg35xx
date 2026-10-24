@@ -2335,7 +2335,9 @@ int gui_joystick_button(void)
   trs_screen_update();
 
   while (1) {
-    SDL_WaitEvent(&event);
+    rg35xx_bridge_volume_update(SDL_GetTicks());
+    if (!SDL_WaitEventTimeout(&event, 16)) continue;
+    if (rg35xx_bridge_volume_event(&event, SDL_GetTicks())) continue;
     switch (event.type) {
       case SDL_QUIT:
         trs_exit(0);

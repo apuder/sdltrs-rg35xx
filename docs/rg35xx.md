@@ -110,6 +110,63 @@ Shift applies to the next nonmodifier activation and clears when that key is
 released. Selection persists across an ordinary close and reopen. Controls
 already held when the keyboard opens must be released before they act.
 
+## StockOS system volume (RG35XXPRO)
+
+The hardware volume buttons adjust the shared StockOS volume, including while
+SDLTRS menus, text entry, clipboard paste, and joystick-binding dialogs are
+active. This works independently of `SDLTRS_RG35XX_INPUT`.
+
+On the verified RG35XXPRO firmware (version `20260522`), StockOS keeps its
+logical volume (0 through 10) in
+`/sys/class/power_supply/axp2202-battery/openbor_volume`. SDLTRS reads that value
+at launch and applies the same ALSA mapping as the device's native
+`/mnt/mod/ctrl/volumeCtrl.dge` helper:
+
+| StockOS level | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ALSA lineout value | 0 | 5 | 10 | 16 | 19 | 21 | 23 | 25 | 27 | 29 | 31 |
+
+Each press changes the logical volume by one and updates both the shared value
+and card 0's `lineout volume` mixer. Holding a button repeats after 350 ms and
+then every 100 ms. Both values remain in place on exit so other StockOS
+applications can inherit the new volume. Every adjustment rereads the shared
+value to respect changes made outside SDLTRS. If saving the shared value fails,
+the mixer change is rolled back and an error is reported. No emulator-private
+volume setting or guessed binary configuration file is used.
+
+On Linux, detection checks `/mnt/vendor/oem/board.ini` and validates that the
+mixer is a readable/writable integer control. SDLTRS observes standard volume
+keys on an evdev device advertising both buttons, without grabbing it or
+consuming gamepad events from SDL. On the verified device this is
+`/dev/input/event1` (`ANBERNIC-keys`). SDL volume keys are the fallback when no
+readable evdev volume device is found. Duplicate SDL reports are consumed
+without changing the volume twice. No extra mixer library or external command
+is required. StockOS variants without the shared sysfs value use mixer-only
+adjustments within the range reported by their driver.
+
+The process needs read access to the volume input device, read/write access to
+`/dev/snd/controlC0`, and read/write access to the shared sysfs value when
+present. Detection and write failures are reported on stderr.
+`SDLTRS_RG35XX_VOLUME=off` disables this handling if a separate firmware daemon
+already handles the buttons. Other firmware and desktop hosts do not enable
+it automatically. This integration concerns the running system's shared
+volume; persistence across a reboot has not been tested.
+
+On-device validation on 2026-10-23 used a temporary native build and injected
+standard evdev volume-button events. The probe read StockOS level 4 at launch
+and set ALSA to 19, Volume Down changed both values to 3/16, and Volume Up
+changed them to 4/19. Both values remained after the process exited; a second
+process inherited 4/19. Original device settings were restored after testing.
+The complete emulator and regression suite also built and passed natively
+against SDL 2.0.12. A headless Model III emulator run with the existing ROM
+verified volume changes during execution and after injected Menu/keyboard
+button events, and retained the changed volume on process termination.
+Original settings and the test-created default configuration were restored or
+removed afterward. The installed emulator was not replaced; the tested native
+build is staged at `/tmp/sdltrs-volume-build/src/sdl2trs` on the device. Host
+tests also cover repeat timing, duplicate presses, limits, external changes,
+and exit behavior.
+
 ## Default TRS-80 controls
 
 While the soft keyboard is closed and no menu/dialog is active:

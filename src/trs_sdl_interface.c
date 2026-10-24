@@ -1076,7 +1076,9 @@ void trs_get_event(int wait)
     static Uint8 paste_key;
 
     if (SDL_PollEvent(&event)) {
-      if (event.type == SDL_QUIT) {
+      if (rg35xx_bridge_volume_event(&event, SDL_GetTicks())) {
+        /* System volume keys must not interrupt clipboard paste. */
+      } else if (event.type == SDL_QUIT) {
         trs_exit(0);
       } else if (event.type == SDL_WINDOWEVENT) {
         drawnRectCount = MAX_RECTS;
@@ -1130,8 +1132,10 @@ void trs_get_event(int wait)
   }
 
   do {
-    if (wait)
-      SDL_WaitEvent(&event);
+    if (wait) {
+      while (!SDL_WaitEventTimeout(&event, 16))
+        rg35xx_bridge_update(SDL_GetTicks());
+    }
     else
       if (!SDL_PollEvent(&event))
         return;

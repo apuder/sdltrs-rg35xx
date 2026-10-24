@@ -15,6 +15,8 @@ int rg35xx_bridge_handle_event(const SDL_Event *event, uint32_t now_ms);
 int rg35xx_bridge_menu_key(void);
 void rg35xx_bridge_text_entry(int enabled, uint32_t now_ms);
 void rg35xx_bridge_update(uint32_t now_ms);
+int rg35xx_bridge_volume_event(const SDL_Event *event, uint32_t now_ms);
+void rg35xx_bridge_volume_update(uint32_t now_ms);
 int rg35xx_bridge_dirty(void);
 void rg35xx_bridge_draw(SDL_Renderer *renderer);
 void rg35xx_bridge_modal_begin(uint32_t now_ms);

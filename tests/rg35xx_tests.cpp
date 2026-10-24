@@ -2,6 +2,7 @@
 #include "../src/rg35xx/RG35XXInputRouter.hpp"
 #include "../src/rg35xx/SDLRG35XXControls.hpp"
 #include "../src/rg35xx/rg35xx_bridge.h"
+#include "../src/rg35xx/SystemVolume.hpp"
 #ifndef RG35XX_TEST_NO_RENDERER
 #include "../src/rg35xx/SoftKeyboardRenderer.hpp"
 #endif
@@ -216,6 +217,67 @@ void openOverlay(FakeControls& controls, RG35XXInputRouter& router,
     controls.button(Button::A, false, now + 1);
     router.update(now + 1);
     EXPECT(router.visible());
+}
+
+void testSystemVolumeButtons()
+{
+    class Mixer : public VolumeMixer {
+    public:
+        Mixer() : level(10), changes(0) {}
+        bool adjust(int direction) override {
+            level = nextVolumeLevel(level, 0, 31, 1, direction);
+            ++changes;
+            return true;
+        }
+        long level;
+        int changes;
+    } mixer;
+    {
+        VolumeButtons buttons(mixer);
+        EXPECT(mixer.changes == 0); // Starting the emulator preserves system volume.
+        buttons.key(true, true, 100);
+        EXPECT(mixer.level == 11 && mixer.changes == 1);
+        buttons.key(true, true, 101); // Duplicate/kernel repeat is not a second press.
+        buttons.update(449);
+        EXPECT(mixer.changes == 1);
+        buttons.update(450);
+        EXPECT(mixer.level == 12 && mixer.changes == 2);
+        mixer.level = 20; // An external system-volume change must be respected.
+        buttons.update(550);
+        EXPECT(mixer.level == 21);
+        buttons.update(10000);
+        EXPECT(mixer.level == 22); // No burst of delayed repeats.
+        buttons.key(true, false, 10001);
+        buttons.update(11000);
+        EXPECT(mixer.level == 22);
+        buttons.key(false, true, 11001);
+        EXPECT(mixer.level == 21);
+        buttons.key(true, true, 11002);
+        buttons.update(12000); // Opposing buttons cancel.
+        EXPECT(mixer.level == 21);
+        buttons.release(); // Focus loss/disconnect stops repeat.
+        buttons.update(13000);
+        EXPECT(mixer.level == 21);
+        buttons.key(false, true, 0xfffffff0u);
+        EXPECT(mixer.level == 20);
+        buttons.update(333u);
+        EXPECT(mixer.level == 20);
+        buttons.update(334u);
+        EXPECT(mixer.level == 19);
+    }
+    EXPECT(mixer.level == 19); // Exit does not restore the previous volume.
+    const long stock_levels[] = {0, 5, 10, 16, 19, 21, 23, 25, 27, 29, 31};
+    for (int i = 0; i <= 10; ++i) EXPECT(stockVolumeMixerLevel(i) == stock_levels[i]);
+    EXPECT(stockVolumeMixerLevel(-1) == 0);
+    EXPECT(stockVolumeMixerLevel(11) == 31);
+    EXPECT(nextVolumeLevel(10, 0, 10, 1, 1) == 10);
+    EXPECT(nextVolumeLevel(0, 0, 10, 1, -1) == 0);
+    EXPECT(nextVolumeLevel(31, 0, 31, 1, 1) == 31);
+    EXPECT(nextVolumeLevel(0, 0, 31, 1, -1) == 0);
+    EXPECT(nextVolumeLevel(30, 0, 31, 2, 1) == 31);
+    EXPECT(nextVolumeLevel(1, 0, 31, 2, -1) == 0);
+    EXPECT(nextVolumeLevel(10, 0, 31, 0, 1) == 11);
+    EXPECT(nextVolumeLevel(10, 0, 31, 0, -1) == 9);
 }
 
 void testDefaultBindings()
@@ -1056,6 +1118,7 @@ void testSoftwareRenderer()
 int main()
 {
     testDefaultBindings();
+    testSystemVolumeButtons();
     testSDLJoystickMappingAndTranslation();
     testPhysicalPassthroughPolicy();
     testDefaultGuestBindings();
