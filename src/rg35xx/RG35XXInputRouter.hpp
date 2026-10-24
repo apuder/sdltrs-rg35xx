@@ -38,14 +38,14 @@ public:
     NavigationDirection navigationDirection() const;
 
 private:
-    bool drainControlEvents(std::uint32_t now_ms, bool route_consumption,
-                            bool force_passthrough = false);
+    bool drainControlEvents(std::uint32_t now_ms, bool route_consumption);
     bool transitionConsumed(const ControlEvent& event, bool& passthrough);
-    bool dpadPassthroughActive() const;
     void processControlEvent(const ControlEvent& event, std::uint32_t now_ms);
     void openOverlay(std::uint32_t now_ms);
     void closeOverlay(bool release_all, std::uint32_t now_ms);
     void gateHeldControls();
+    void updateDefaultKeys();
+    static int defaultButtonSymbol(Button button);
     void updateNavigation(std::uint32_t now_ms);
     NavigationDirection desiredDirection();
     static int hysteresisDirection(float value, int previous);

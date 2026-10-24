@@ -386,16 +386,16 @@ void testPhysicalPassthroughPolicy()
     EXPECT(!router.handleSDLEvent(event, 10));
 
     event = keyEvent(SDL_SCANCODE_A, true, 11);
-    EXPECT(!router.handleSDLEvent(event, 11));
+    EXPECT(router.handleSDLEvent(event, 11));
     event = keyEvent(SDL_SCANCODE_F6, true, 12);
     EXPECT(router.handleSDLEvent(event, 12));
     event = keyEvent(SDL_SCANCODE_F6, false, 13);
     EXPECT(router.handleSDLEvent(event, 13));
     event = keyEvent(SDL_SCANCODE_A, false, 14);
-    EXPECT(!router.handleSDLEvent(event, 14));
+    EXPECT(router.handleSDLEvent(event, 14));
 }
 
-void testPhysicalHatPassthroughReconciliation()
+void testPhysicalHatCaptureAndGating()
 {
     JoystickTranslatorControls controls(testJoystickMapping(), 42);
     FakeSink sink;
@@ -403,29 +403,127 @@ void testPhysicalHatPassthroughReconciliation()
     RG35XXInputRouter router(controls, keyboard, false);
 
     SDL_Event event = joyHatEvent(42, 0, SDL_HAT_UP, 1);
-    EXPECT(!router.handleSDLEvent(event, 1));
+    EXPECT(router.handleSDLEvent(event, 1));
+    EXPECT(sink.events.size() == 1 && sink.events[0].symbol == 0x111);
     event = joyButtonEvent(42, 0, true, 2);
     EXPECT(router.handleSDLEvent(event, 2));
     EXPECT(router.visible());
+    EXPECT(sink.events.size() == 2 && !sink.events[1].down);
     event = joyButtonEvent(42, 0, false, 3);
     EXPECT(router.handleSDLEvent(event, 3));
     const int initial = router.softKeyboard().selection();
 
     event = joyHatEvent(42, 0, SDL_HAT_RIGHTUP, 4);
-    EXPECT(!router.handleSDLEvent(event, 4));
-    EXPECT(router.softKeyboard().selection() == initial);
+    EXPECT(router.handleSDLEvent(event, 4));
+    EXPECT(router.softKeyboard().selection() == initial + 1);
     event = joyHatEvent(42, 0, SDL_HAT_RIGHT, 5);
-    EXPECT(!router.handleSDLEvent(event, 5));
-    EXPECT(router.softKeyboard().selection() == initial);
+    EXPECT(router.handleSDLEvent(event, 5));
+    EXPECT(router.softKeyboard().selection() == initial + 1);
     event = joyHatEvent(42, 0, SDL_HAT_CENTERED, 6);
-    EXPECT(!router.handleSDLEvent(event, 6));
-    EXPECT(router.softKeyboard().selection() == initial);
+    EXPECT(router.handleSDLEvent(event, 6));
+    EXPECT(router.softKeyboard().selection() == initial + 1);
 
     event = joyHatEvent(42, 0, SDL_HAT_RIGHT, 7);
     EXPECT(router.handleSDLEvent(event, 7));
-    EXPECT(router.softKeyboard().selection() == initial + 1);
+    EXPECT(router.softKeyboard().selection() == initial + 2);
     event = joyHatEvent(42, 0, SDL_HAT_CENTERED, 8);
     EXPECT(router.handleSDLEvent(event, 8));
+}
+
+void testDefaultGuestBindings()
+{
+    FakeControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard);
+    std::uint32_t now = 1;
+    const auto button = [&](Button id, bool down) {
+        controls.button(id, down, now);
+        router.update(now++);
+    };
+    const auto axis = [&](Axis id, float value) {
+        controls.axis(id, value, now);
+        router.update(now++);
+    };
+    const Button buttons[] = {Button::DPadUp, Button::DPadDown,
+        Button::DPadLeft, Button::DPadRight, Button::L1, Button::L2,
+        Button::R1, Button::R2, Button::RightStick, Button::Start, Button::Select};
+    const int symbols[] = {0x111, 0x112, 0x114, 0x113, '1', '2', ' ', ' ', ' ', 13, 0x116};
+    for (std::size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
+        sink.events.clear();
+        button(buttons[i], true);
+        router.update(now + 1000); // Held guest keys do not generate duplicate downs.
+        EXPECT(sink.events.size() == 1);
+        button(buttons[i], false);
+        EXPECT(sink.events.size() == 2);
+        EXPECT(sink.events[0].down && sink.events[0].symbol == symbols[i]);
+        EXPECT(!sink.events[1].down && sink.events[1].symbol == symbols[i]);
+    }
+    sink.events.clear();
+    button(Button::R1, true);
+    button(Button::R2, true);
+    button(Button::RightStick, true);
+    EXPECT(keyboard.press(GuestOwnerPhysicalBase, ' '));
+    EXPECT(sink.events.size() == 1);
+    button(Button::R1, false);
+    button(Button::R2, false);
+    button(Button::RightStick, false);
+    EXPECT(sink.events.size() == 1);
+    keyboard.release(GuestOwnerPhysicalBase);
+    EXPECT(sink.events.size() == 2 && !sink.events.back().down);
+
+    sink.events.clear();
+    axis(Axis::LeftX, -0.54f);
+    EXPECT(sink.events.empty());
+    axis(Axis::LeftX, -0.60f);
+    axis(Axis::LeftY, -0.80f);
+    EXPECT(sink.events.size() == 2);
+    EXPECT(sink.events[0].symbol == 0x114 && sink.events[1].symbol == 0x111);
+    button(Button::DPadLeft, true);
+    axis(Axis::LeftX, -0.40f);
+    EXPECT(sink.events.size() == 2);
+    axis(Axis::LeftX, 0.0f);
+    EXPECT(sink.events.size() == 2); // D-pad still owns LEFT.
+    button(Button::DPadLeft, false);
+    EXPECT(sink.events.size() == 3 && !sink.events.back().down);
+    axis(Axis::LeftY, 0.90f);
+    EXPECT(sink.events.size() == 5);
+    EXPECT(!sink.events[3].down && sink.events[3].symbol == 0x111);
+    EXPECT(sink.events[4].down && sink.events[4].symbol == 0x112);
+    axis(Axis::LeftY, 0.0f);
+    EXPECT(sink.events.size() == 6 && !sink.events.back().down);
+
+    sink.events.clear();
+    button(Button::L1, true);
+    button(Button::A, true);
+    EXPECT(router.visible());
+    EXPECT(sink.events.size() == 2 && !sink.events.back().down);
+    button(Button::A, false);
+    button(Button::A, true);
+    EXPECT(!router.visible());
+    button(Button::A, false);
+    button(Button::L2, true);
+    EXPECT(sink.events.size() == 3 && sink.events.back().symbol == '2');
+    button(Button::L1, false); // Held before keyboard entry remains gated.
+    EXPECT(sink.events.size() == 3);
+    button(Button::L1, true);
+    EXPECT(sink.events.size() == 4 && sink.events.back().symbol == '1');
+    router.lifecycleCleanup(now++);
+    EXPECT(sink.events.size() == 6);
+    button(Button::L1, false);
+    button(Button::L2, false);
+    EXPECT(sink.events.size() == 6);
+
+    JoystickTranslatorControls physical(testJoystickMapping(), 42);
+    RG35XXInputRouter physical_router(physical, keyboard, false);
+    sink.events.clear();
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 7, true, now), now));
+    EXPECT(physical_router.handleSDLEvent(joyAxisEvent(42, 0, 30000, now), now));
+    EXPECT(sink.events.size() == 2);
+    physical.releaseAll(++now); // Device removal must release the default keys.
+    physical_router.update(now);
+    EXPECT(sink.events.size() == 4);
+    EXPECT(!sink.events[2].down && !sink.events[3].down);
 }
 
 void testToggleAndEntryGating()
@@ -960,7 +1058,8 @@ int main()
     testDefaultBindings();
     testSDLJoystickMappingAndTranslation();
     testPhysicalPassthroughPolicy();
-    testPhysicalHatPassthroughReconciliation();
+    testDefaultGuestBindings();
+    testPhysicalHatCaptureAndGating();
     testToggleAndEntryGating();
     testNavigationAndRepeat();
     testGuestKeysShiftAndOwnership();

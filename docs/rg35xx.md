@@ -58,14 +58,16 @@ remembers that GUID for reconnects. Events are filtered using the SDL joystick
 instance ID; removal releases held controls, and reconnect suppresses controls
 already held until they return to neutral.
 
-Physical A and Menu are reserved while the overlay is hidden. Menu opens
-the same main menu as F7; include `menu=bN` in the device mapping to enable it. Other physical
-events continue into SDLTRS's existing joystick handling. While the overlay is
-visible, mapped controls are consumed by it, including the matching releases
-of controls pressed before it closed. A gameplay control already held when A
-opens the overlay remains gated from the overlay and its release is passed back
-to the legacy handler, preventing a stuck legacy input. The backend handles raw
-joystick events only and does not also interpret SDL controller events.
+Physical A, Menu, and controls with default TRS-80 key bindings are reserved
+while the overlay is hidden. Menu opens the same main menu as F7; include
+`menu=bN` in the device mapping to enable it. Other physical events continue
+into SDLTRS's existing joystick handling. While the overlay is visible, mapped
+controls are consumed by it, including matching releases after it closes.
+Opening the keyboard releases default guest keys; controls already held must
+return to neutral before acting in the keyboard or after it closes. Unreserved
+controls already passed to the legacy handler retain their matching releases.
+The backend handles raw joystick events only and does not also interpret SDL
+controller events.
 
 ## Simulator controls
 
@@ -89,6 +91,7 @@ than translated text:
 
 Simulator keys are reserved while this mode is enabled. While the overlay is
 hidden, logical A opens the keyboard and Menu (F5) opens the F7 menu.
+The default guest bindings below apply in both simulator and physical mode.
 
 While the overlay is open:
 
@@ -106,6 +109,27 @@ Navigation moves immediately, repeats after 300 ms, then repeats every 90 ms.
 Shift applies to the next nonmodifier activation and clears when that key is
 released. Selection persists across an ordinary close and reopen. Controls
 already held when the keyboard opens must be released before they act.
+
+## Default TRS-80 controls
+
+While the soft keyboard is closed and no menu/dialog is active:
+
+| RG35XX control | TRS-80 key |
+| --- | --- |
+| D-pad / left joystick | Corresponding arrow keys (including diagonals) |
+| L1 | 1 |
+| L2 | 2 |
+| R1, R2, right joystick click | Space |
+| Start | ENTER |
+| Select | CLEAR |
+
+Keys stay down while their controls are held and release on button-up or stick
+neutral. Shared keys remain down until every contributing control releases,
+including a host keyboard key held at the same time. The left joystick uses
+hysteresis to avoid chatter near center. Opening the keyboard/menu, losing
+focus, disconnecting, or shutting down releases owned guest keys. Menu and
+text-entry controls take precedence over these defaults. The right joystick's
+axes keep their existing behavior; its click is the Space binding.
 
 ## Emulator menu controls
 
@@ -291,7 +315,8 @@ Results:
 
 The test suite also covers physical mapping validation, instance filtering,
 button/hat/axis translation, axis inversion, disconnect-style release/rearm,
-and the hidden-overlay joystick passthrough policy without requiring hardware.
+default guest bindings, shared-key ownership, and passthrough of unreserved
+controls without requiring hardware.
 
 The direct and Autotools builds share object paths. When switching routes with
 different feature flags, use `-B` (as above) or the appropriate clean target so
@@ -317,8 +342,9 @@ Use a user-owned Model I ROM and its normal startup options:
 For the physical backend, repeat the same typing test with
 `SDLTRS_RG35XX_INPUT=sdl` and the verified `SDLTRS_RG35XX_MAP`. Confirm the
 startup diagnostic names the intended device and GUID. With the overlay
-hidden, verify that B and directional events still reach the legacy joystick
-path while A opens the overlay and Menu opens the main menu. With it open, verify the printed A/B,
+hidden, verify the default TRS-80 bindings above and that unreserved controls
+such as B still reach the legacy joystick path. Verify that A opens the overlay
+and Menu opens the main menu. With it open, verify the printed A/B,
 D-pad, and left stick follow the documented overlay actions. Finally,
 disconnect and reconnect the controls and confirm that held buttons neither
 stick nor activate until released.
