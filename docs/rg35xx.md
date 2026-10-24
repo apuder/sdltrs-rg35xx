@@ -110,6 +110,26 @@ Shift applies to the next nonmodifier activation and clears when that key is
 released. Selection persists across an ordinary close and reopen. Controls
 already held when the keyboard opens must be released before they act.
 
+## Centering on the StockOS display
+
+SDLTRS keeps the stock `mali` driver's window at the physical display size.
+With aspect ratio enabled (the default), SDL fits and centers the emulator
+image in that surface, with balanced letterboxing when needed. Menus and the
+soft keyboard share the same centered rendering. Guest video-mode changes and
+window-size shortcuts do not shrink the physical surface's SDL dimensions.
+Other SDL video drivers retain their usual window sizing and positioning.
+
+The RG35XXPRO's SDL 2.0.12 Mali driver was inspected on-device: its native
+window is display-sized, but moving and resizing callbacks are no-ops.
+SDLTRS previously resized SDL's window metadata anyway, reducing the renderer
+viewport while the native surface remained full-sized and anchoring output at
+the bottom left. Avoiding those resize/fullscreen calls keeps SDL's viewport
+aligned with the native surface.
+
+The host build/tests and on-device software-renderer geometry check passed.
+A direct Mali graphics probe could not initialize EGL from the SSH session;
+visual confirmation on the physical display remains pending.
+
 ## StockOS system volume (RG35XXPRO)
 
 The hardware volume buttons adjust the shared StockOS volume, including while

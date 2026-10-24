@@ -102,6 +102,7 @@ static int window_x = SDL_WINDOWPOS_UNDEFINED;
 static int window_y = SDL_WINDOWPOS_UNDEFINED;
 static int window_w;
 static int window_h;
+static int fixed_display_window;
 static Uint32 light_red;
 static Uint32 bright_red;
 static Uint32 light_orange;
@@ -557,6 +558,16 @@ void trs_screen_caption(void)
   SDL_SetWindowTitle(window, title);
 }
 
+/* The stock RG35XX Mali driver creates a display-sized native surface and
+ * implements neither moving nor resizing it. Resizing only SDL's window
+ * metadata makes its viewport smaller than that surface (bottom-left output).
+ */
+static void trs_window_size(int width, int height)
+{
+  if (!fixed_display_window)
+    SDL_SetWindowSize(window, width, height);
+}
+
 void trs_screen_init(int resize)
 {
   int const led_height = trs_show_led ? 8 : 0;
@@ -629,17 +640,20 @@ void trs_screen_init(int resize)
     if (texture == NULL)
       fatal("SDL_CreateTexture failed: %s", SDL_GetError());
 
-    if (fullscreen == 0) {
+    if (fixed_display_window) {
+      SDL_GetWindowSize(window, &window_w, &window_h);
+    } else if (fullscreen == 0) {
       if (window_w > (OrigWidth * scale) && window_h > (OrigHeight * scale))
-        SDL_SetWindowSize(window, window_w, window_h);
+        trs_window_size(window_w, window_h);
       else {
-        SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+        trs_window_size(OrigWidth * scale, OrigHeight * scale);
         window_w = OrigWidth * scale;
         window_h = OrigHeight * scale;
       }
       SDL_SetWindowPosition(window, window_x, window_y);
     }
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    if (!fixed_display_window)
+      SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     if (aspect_ratio)
       SDL_RenderSetLogicalSize(render, OrigWidth, OrigHeight);
@@ -1048,6 +1062,7 @@ static void trs_fullscreen(int on_off)
 {
   if (fullscreen == on_off) return;
   fullscreen = on_off;
+  if (fixed_display_window) return;
   SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
@@ -1297,20 +1312,20 @@ void trs_get_event(int wait)
             case SDLK_HOME:
               trs_fullscreen(0);
               scale = 1;
-              SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+              trs_window_size(OrigWidth * scale, OrigHeight * scale);
               break;
             case SDLK_PAGEDOWN:
               trs_fullscreen(0);
               if (scale < MAX_SCALE) {
                 scale++;
-                SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+                trs_window_size(OrigWidth * scale, OrigHeight * scale);
               }
               break;
             case SDLK_PAGEUP:
               trs_fullscreen(0);
               if (scale > 1) {
                 scale--;
-                SDL_SetWindowSize(window, OrigWidth * scale, OrigHeight * scale);
+                trs_window_size(OrigWidth * scale, OrigHeight * scale);
               }
               break;
             case SDLK_MINUS:
@@ -2955,6 +2970,8 @@ void trs_sdl_init(void)
 
   if (atexit(SDL_Quit))
     fatal("failed to register SDL_Quit.");
+
+  fixed_display_window = strcmp(SDL_GetCurrentVideoDriver(), "mali") == 0;
 
   window = SDL_CreateWindow(NULL,
                             window_x, window_y,
