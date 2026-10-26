@@ -1,4 +1,4 @@
-#include "RG1Mapping.hpp"
+#include "ControlMapping.hpp"
 
 #include <utility>
 
@@ -26,13 +26,13 @@ std::uint32_t controlMask(const std::string& token)
     };
     for (std::size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i)
         if (!token.empty() && token == buttons[i])
-            return RG1Mapping::buttonMask(static_cast<Button>(i));
+            return ControlMapping::buttonMask(static_cast<Button>(i));
     static const char* axes[] = {
         "LS_L", "LS_R", "LS_U", "LS_D", "RS_L", "RS_R", "RS_U", "RS_D"
     };
     for (std::size_t i = 0; i < sizeof(axes) / sizeof(axes[0]); ++i)
         if (token == axes[i])
-            return RG1Mapping::axisMask(static_cast<Axis>(i / 2), i % 2 ? 1 : -1);
+            return ControlMapping::axisMask(static_cast<Axis>(i / 2), i % 2 ? 1 : -1);
     return 0;
 }
 
@@ -67,45 +67,41 @@ int keyBit(const std::string& token)
     return -1;
 }
 
-bool parseAction(const std::string& text, RG1Action& action)
+bool parseKeys(const std::string& text, std::uint64_t& keys)
 {
-    action.keys = 0;
-    if (text == "ANY_KEY") { action.kind = RG1Action::AnyKey; return true; }
-    if (text == "TEXT_INPUT") { action.kind = RG1Action::TextInput; return true; }
-    if (text == "NUMERIC_INPUT") { action.kind = RG1Action::NumericInput; return true; }
-    action.kind = RG1Action::Keys;
+    keys = 0;
     const std::vector<std::string> tokens = split(text, '+');
     for (std::size_t i = 0; i < tokens.size(); ++i) {
         const int bit = keyBit(tokens[i]);
         if (bit < 0) return false;
         const std::uint64_t key = UINT64_C(1) << bit;
-        if (action.keys & key) return false;
-        action.keys |= key;
+        if (keys & key) return false;
+        keys |= key;
     }
     return true;
 }
 
 } // namespace
 
-std::uint32_t RG1Mapping::buttonMask(Button button)
+std::uint32_t ControlMapping::buttonMask(Button button)
 {
-    // Menu and stick clicks are reserved or have no RG1 token.
+    // Menu and stick clicks are reserved or have no mapping token.
     if (button == Button::Menu || button >= Button::LeftStick) return 0;
     return UINT32_C(1) << static_cast<unsigned int>(button);
 }
 
-std::uint32_t RG1Mapping::axisMask(Axis axis, int direction)
+std::uint32_t ControlMapping::axisMask(Axis axis, int direction)
 {
     if (direction == 0) return 0;
     return UINT32_C(1) << (16 + static_cast<unsigned int>(axis) * 2 + (direction > 0 ? 1 : 0));
 }
 
-bool RG1Mapping::parse(const std::string& text, RG1Mapping& result,
+bool ControlMapping::parse(const std::string& text, ControlMapping& result,
                         std::string& error)
 {
     error.clear();
-    if (text.size() > kMaxLength || text.compare(0, 4, "RG1;") != 0) {
-        error = "expected RG1; and at most 4095 bytes";
+    if (text.size() > kMaxLength) {
+        error = "mapping exceeds 4095 bytes";
         return false;
     }
     for (std::size_t i = 0; i < text.size(); ++i) {
@@ -116,41 +112,28 @@ bool RG1Mapping::parse(const std::string& text, RG1Mapping& result,
         }
     }
 
-    RG1Mapping parsed;
-    const std::vector<std::string> records = split(text.substr(4), ';');
+    ControlMapping parsed;
+    const std::vector<std::string> records = split(text, ',');
     for (std::size_t i = 0; i < records.size(); ++i) {
-        const std::vector<std::string> fields = split(records[i], '=');
+        const std::vector<std::string> fields = split(records[i], ':');
         if (fields.size() != 2) {
-            error = "expected trigger=action";
+            error = "expected CONTROL:KEY pairs";
             return false;
         }
-        RG1Binding binding;
-        binding.kind = RG1Binding::Physical;
-        std::string trigger = fields[0];
-        if (trigger.compare(0, 7, "PROMPT(") == 0 && trigger.back() == ')') {
-            binding.kind = RG1Binding::Prompt;
-            trigger = trigger.substr(7, trigger.size() - 8);
-        } else if (trigger.compare(0, 11, "OSK(SELECT,") == 0 && trigger.back() == ')') {
-            RG1Action overlay;
-            if (!parseAction(trigger.substr(11, trigger.size() - 12), overlay)) {
-                error = "invalid overlay action";
-                return false;
-            }
-            binding.kind = RG1Binding::Overlay;
-            trigger = "SELECT";
-        }
-        if (!parseControls(trigger, binding.controls)) {
+        Binding binding;
+        if (!parseControls(fields[0], binding.controls)) {
             error = "unknown, empty, or repeated control";
             return false;
         }
-        const std::vector<std::string> actions = split(fields[1], '|');
-        for (std::size_t j = 0; j < actions.size(); ++j) {
-            RG1Action action;
-            if (!parseAction(actions[j], action)) {
-                error = "unknown, empty, or repeated TRS-80 key";
+        if (!parseKeys(fields[1], binding.keys)) {
+            error = "unknown, empty, or repeated TRS-80 key";
+            return false;
+        }
+        for (std::size_t j = 0; j < parsed.bindings_.size(); ++j) {
+            if (parsed.bindings_[j].controls == binding.controls) {
+                error = "repeated control/chord; combine output keys with +";
                 return false;
             }
-            binding.actions.push_back(action);
         }
         parsed.bindings_.push_back(binding);
     }
@@ -158,30 +141,36 @@ bool RG1Mapping::parse(const std::string& text, RG1Mapping& result,
     return true;
 }
 
-std::uint64_t RG1Mapping::resolve(std::uint32_t controls) const
+std::uint64_t ControlMapping::resolve(std::uint32_t controls) const
 {
     std::uint64_t keys = 0;
     for (std::size_t i = 0; i < bindings_.size(); ++i) {
-        const RG1Binding& binding = bindings_[i];
-        if (binding.kind != RG1Binding::Physical ||
-            binding.actions.front().kind != RG1Action::Keys ||
-            (controls & binding.controls) != binding.controls)
+        const Binding& binding = bindings_[i];
+        if ((controls & binding.controls) != binding.controls)
             continue;
         bool replaced = false;
         for (std::size_t j = 0; j < bindings_.size(); ++j) {
-            const RG1Binding& other = bindings_[j];
-            if (other.kind == RG1Binding::Physical &&
-                other.actions.front().kind == RG1Action::Keys &&
-                other.controls != binding.controls &&
+            const Binding& other = bindings_[j];
+            if (other.controls != binding.controls &&
                 (other.controls & binding.controls) == binding.controls &&
                 (controls & other.controls) == other.controls) {
                 replaced = true;
                 break;
             }
         }
-        if (!replaced) keys |= binding.actions.front().keys;
+        if (!replaced) keys |= binding.keys;
     }
     return keys;
+}
+
+std::uint32_t ControlMapping::overriddenControls(std::uint32_t controls) const
+{
+    std::uint32_t overridden = 0;
+    for (std::size_t i = 0; i < bindings_.size(); ++i) {
+        if ((controls & bindings_[i].controls) == bindings_[i].controls)
+            overridden |= bindings_[i].controls;
+    }
+    return overridden;
 }
 
 } // namespace rg35xx

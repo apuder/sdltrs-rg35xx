@@ -4,7 +4,7 @@
 #include "RG35XXControls.hpp"
 #include "SoftKeyboard.hpp"
 #include "TrsKeyboardAdapter.hpp"
-#include "RG1Mapping.hpp"
+#include "ControlMapping.hpp"
 
 #include <cstdint>
 #include <deque>
@@ -48,8 +48,9 @@ private:
     void openOverlay(std::uint32_t now_ms);
     void closeOverlay(bool release_all, std::uint32_t now_ms);
     void gateHeldControls();
-    void updateDefaultKeys();
+    void updateDefaultKeys(std::uint32_t overridden = 0);
     void updateMappedKeys();
+    std::uint32_t mappedControls();
     static int defaultButtonSymbol(Button button);
     void updateNavigation(std::uint32_t now_ms);
     NavigationDirection desiredDirection();
@@ -78,7 +79,7 @@ private:
     NavigationDirection navigation_direction_;
     std::uint32_t next_repeat_ms_;
     bool b_consumes_shift_;
-    RG1Mapping mapping_;
+    ControlMapping mapping_;
     bool mapping_active_;
     std::string mapping_buffer_;
     bool mapping_overflow_;

@@ -41,7 +41,7 @@ set(SOURCES
 	src/PasteManager.c
 	src/rg35xx/RG35XXControls.cpp
 	src/rg35xx/KeyboardRG35XXControls.cpp
-	src/rg35xx/RG1Mapping.cpp
+	src/rg35xx/ControlMapping.cpp
 	src/rg35xx/RG35XXInputRouter.cpp
 	src/rg35xx/SDLRG35XXControls.cpp
 	src/rg35xx/SystemVolume.cpp
@@ -135,7 +135,7 @@ add_executable(rg35xx_tests
 	src/trs_sdl_keymap.c
 	src/rg35xx/RG35XXControls.cpp
 	src/rg35xx/KeyboardRG35XXControls.cpp
-	src/rg35xx/RG1Mapping.cpp
+	src/rg35xx/ControlMapping.cpp
 	src/rg35xx/RG35XXInputRouter.cpp
 	src/rg35xx/SDLRG35XXControls.cpp
 	src/rg35xx/SystemVolume.cpp
@@ -147,16 +147,16 @@ add_executable(rg35xx_tests
 target_link_libraries(rg35xx_tests ${SDL_LIBS})
 add_test(NAME rg35xx_tests COMMAND rg35xx_tests)
 
-set(RG1_KEYBOARD_SOURCES)
+set(CONTROL_MAPPING_KEYBOARD_SOURCES)
 foreach(source ${SOURCES})
     if(source MATCHES "src/rg35xx/|src/trs_sdl_keymap.c")
-        list(APPEND RG1_KEYBOARD_SOURCES ${source})
+        list(APPEND CONTROL_MAPPING_KEYBOARD_SOURCES ${source})
     endif()
 endforeach()
-add_executable(rg1_keyboard_tests tests/rg1_keyboard_tests.cpp
-	src/trs_sdl_keyboard.c ${RG1_KEYBOARD_SOURCES})
-target_link_libraries(rg1_keyboard_tests ${SDL_LIBS})
-add_test(NAME rg1_keyboard_tests COMMAND rg1_keyboard_tests)
+add_executable(control_mapping_keyboard_tests tests/control_mapping_keyboard_tests.cpp
+	src/trs_sdl_keyboard.c ${CONTROL_MAPPING_KEYBOARD_SOURCES})
+target_link_libraries(control_mapping_keyboard_tests ${SDL_LIBS})
+add_test(NAME control_mapping_keyboard_tests COMMAND control_mapping_keyboard_tests)
 
 install(TARGETS sdl2trs		DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 install(FILES src/sdl2trs.1	DESTINATION ${CMAKE_INSTALL_MANDIR}/man1/)

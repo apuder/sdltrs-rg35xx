@@ -517,9 +517,8 @@ void testDefaultGuestBindings()
         router.update(now++);
     };
     const Button buttons[] = {Button::DPadUp, Button::DPadDown,
-        Button::DPadLeft, Button::DPadRight, Button::L1, Button::L2,
-        Button::R1, Button::R2, Button::RightStick, Button::Start, Button::Select};
-    const int symbols[] = {0x111, 0x112, 0x114, 0x113, '1', '2', ' ', ' ', ' ', 13, 0x116};
+        Button::DPadLeft, Button::DPadRight, Button::RightStick, Button::Start, Button::Select};
+    const int symbols[] = {0x111, 0x112, 0x114, 0x113, ' ', 13, 0x116};
     for (std::size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
         sink.events.clear();
         button(buttons[i], true);
@@ -529,6 +528,13 @@ void testDefaultGuestBindings()
         EXPECT(sink.events.size() == 2);
         EXPECT(sink.events[0].down && sink.events[0].symbol == symbols[i]);
         EXPECT(!sink.events[1].down && sink.events[1].symbol == symbols[i]);
+    }
+    const Button shoulders[] = {Button::L1, Button::L2, Button::R1, Button::R2};
+    sink.events.clear();
+    for (std::size_t i = 0; i < sizeof(shoulders) / sizeof(shoulders[0]); ++i) {
+        button(shoulders[i], true);
+        button(shoulders[i], false);
+        EXPECT(sink.events.empty());
     }
     sink.events.clear();
     button(Button::R1, true);
@@ -565,7 +571,7 @@ void testDefaultGuestBindings()
     EXPECT(sink.events.size() == 6 && !sink.events.back().down);
 
     sink.events.clear();
-    button(Button::L1, true);
+    button(Button::Start, true);
     button(Button::A, true);
     EXPECT(router.visible());
     EXPECT(sink.events.size() == 2 && !sink.events.back().down);
@@ -573,22 +579,22 @@ void testDefaultGuestBindings()
     button(Button::A, true);
     EXPECT(!router.visible());
     button(Button::A, false);
-    button(Button::L2, true);
-    EXPECT(sink.events.size() == 3 && sink.events.back().symbol == '2');
-    button(Button::L1, false); // Held before keyboard entry remains gated.
+    button(Button::Select, true);
+    EXPECT(sink.events.size() == 3 && sink.events.back().symbol == 0x116);
+    button(Button::Start, false); // Held before keyboard entry remains gated.
     EXPECT(sink.events.size() == 3);
-    button(Button::L1, true);
-    EXPECT(sink.events.size() == 4 && sink.events.back().symbol == '1');
+    button(Button::Start, true);
+    EXPECT(sink.events.size() == 4 && sink.events.back().symbol == 0x0d);
     router.lifecycleCleanup(now++);
     EXPECT(sink.events.size() == 6);
-    button(Button::L1, false);
-    button(Button::L2, false);
+    button(Button::Start, false);
+    button(Button::Select, false);
     EXPECT(sink.events.size() == 6);
 
     JoystickTranslatorControls physical(testJoystickMapping(), 42);
     RG35XXInputRouter physical_router(physical, keyboard, false);
     sink.events.clear();
-    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 7, true, now), now));
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 4, true, now), now));
     EXPECT(physical_router.handleSDLEvent(joyAxisEvent(42, 0, 30000, now), now));
     EXPECT(sink.events.size() == 2);
     physical.releaseAll(++now); // Device removal must release the default keys.
@@ -977,48 +983,44 @@ void loadMapping(RG35XXInputRouter& router, const std::string& text,
     EXPECT(router.mappingByte(0, now) == valid);
 }
 
-void testRG1ParserAndResolution()
+void testControlMappingParserAndResolution()
 {
-    RG1Mapping mapping;
+    ControlMapping mapping;
     std::string error;
-    EXPECT(RG1Mapping::parse(
-        "RG1;A=F;B=SPACE|F;SELECT+A=1;D_U=UP;D_L=LEFT|COMMA;"
-        "D_L+B=LEFT+SPACE;R1=LEFT+RIGHT;START=ENTER|SHIFT+S;"
-        "SELECT+START=SHIFT+BREAK;PROMPT(A)=ANY_KEY;"
-        "OSK(SELECT,TEXT_INPUT)=TEXT_INPUT;"
-        "OSK(SELECT,NUMERIC_INPUT)=NUMERIC_INPUT;OSK(SELECT,Q)=Q",
+    EXPECT(ControlMapping::parse(
+        "A:F,B:SPACE,SELECT+A:1,D_U:UP,D_L:LEFT,"
+        "D_L+B:LEFT+SPACE,R1:LEFT+RIGHT,START:ENTER,SELECT+START:SHIFT+BREAK",
         mapping, error));
     EXPECT(error.empty());
-    const std::uint32_t a = RG1Mapping::buttonMask(Button::A);
-    const std::uint32_t b = RG1Mapping::buttonMask(Button::B);
-    const std::uint32_t select = RG1Mapping::buttonMask(Button::Select);
-    const std::uint32_t up = RG1Mapping::buttonMask(Button::DPadUp);
-    const std::uint32_t left = RG1Mapping::buttonMask(Button::DPadLeft);
+    const std::uint32_t a = ControlMapping::buttonMask(Button::A);
+    const std::uint32_t b = ControlMapping::buttonMask(Button::B);
+    const std::uint32_t select = ControlMapping::buttonMask(Button::Select);
+    const std::uint32_t up = ControlMapping::buttonMask(Button::DPadUp);
+    const std::uint32_t left = ControlMapping::buttonMask(Button::DPadLeft);
     const std::uint64_t space_key = UINT64_C(1) << 55;
     EXPECT(mapping.resolve(a) == (UINT64_C(1) << 6)); // F, physical, no SHIFT.
     EXPECT(mapping.resolve(a | select) == (UINT64_C(1) << 33));
-    EXPECT(mapping.resolve(b) == space_key); // Only the first alternative.
+    EXPECT(mapping.resolve(b) == space_key);
     EXPECT(mapping.resolve(b | left | up) ==
            (space_key | (UINT64_C(1) << 53) | (UINT64_C(1) << 51)));
-    EXPECT(mapping.resolve(RG1Mapping::buttonMask(Button::R1)) ==
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::R1)) ==
            ((UINT64_C(1) << 53) | (UINT64_C(1) << 54)));
-    EXPECT(mapping.resolve(select | RG1Mapping::buttonMask(Button::Start)) ==
+    EXPECT(mapping.resolve(select | ControlMapping::buttonMask(Button::Start)) ==
            ((UINT64_C(1) << 56) | (UINT64_C(1) << 50)));
-    EXPECT(mapping.resolve(select) == 0); // OSK is metadata for now.
-    EXPECT(RG1Mapping::parse("RG1;PROMPT(A)=ANY_KEY;OSK(SELECT,Q)=Q", mapping, error));
-    EXPECT(mapping.resolve(a | select) == 0);
+    EXPECT(mapping.resolve(select) == 0);
 
-    const char* invalid[] = {"", "RG1;", "RG2;A=A", "RG1;A=A;", "RG1;;A=A",
-        "RG1;A=", "RG1;=A", "RG1;A==A", "RG1;a=A", "RG1;MENU=A",
-        "RG1;A=FIRE", "RG1;A=SPACE|", "RG1;A=|SPACE", "RG1;A=A++B",
-        "RG1;A+A=B", "RG1;A=A+A", "RG1;A= A", "RG1;A=A\n",
-        "RG1;PROMPT()=ANY_KEY", "RG1;OSK(SELECT,)=Q", "RG1;A=SHIFT+ANY_KEY"};
+    const char* invalid[] = {"", "A", "A:", ":A", "A::A", "A:A,", ",A:A",
+        "A:A,,B:B", "a:A", "MENU:A", "A:FIRE", "A:SPACE|F", "A:A++B",
+        "A+A:B", "A:A+A", "A: A", "A:A\n", "A:ANY_KEY", "A:TEXT_INPUT",
+        "A:NUMERIC_INPUT", "PROMPT(A):ANY_KEY", "OSK(SELECT,Q):Q",
+        "RG1;B=SPACE", "RG1;A=1;B=2", "RG1;PROMPT(A)=ANY_KEY",
+        "RG1;OSK(SELECT,TEXT_INPUT)=TEXT_INPUT"};
     for (std::size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i) {
-        EXPECT(!RG1Mapping::parse(invalid[i], mapping, error));
+        EXPECT(!ControlMapping::parse(invalid[i], mapping, error));
         EXPECT(!error.empty());
     }
-    EXPECT(!RG1Mapping::parse(std::string("RG1;A=A\0;B=B", 12), mapping, error));
-    EXPECT(!RG1Mapping::parse("RG1;A=" + std::string(4090, 'A'), mapping, error));
+    EXPECT(!ControlMapping::parse(std::string("A:A\0,B:B", 8), mapping, error));
+    EXPECT(!ControlMapping::parse("A:" + std::string(4094, 'A'), mapping, error));
 
     // Every documented physical key maps to exactly one unique matrix bit.
     const char* names[] = {"@", "ENTER", "CLEAR", "BREAK", "SPACE", "UP",
@@ -1029,14 +1031,14 @@ void testRG1ParserAndResolution()
         if (i < 26) key += static_cast<char>('A' + i);
         else if (i < 36) key += static_cast<char>('0' + i - 26);
         else key = names[i - 36];
-        EXPECT(RG1Mapping::parse("RG1;B=" + key, mapping, error));
+        EXPECT(ControlMapping::parse("B:" + key, mapping, error));
         const std::uint64_t output = mapping.resolve(b);
         EXPECT(output && !(output & (output - 1)) && !(seen & output));
         seen |= output;
     }
 }
 
-void testRG1RoutingAndReceiver()
+void testControlMappingRoutingAndReceiver()
 {
     FakeControls controls;
     FakeSink sink;
@@ -1045,12 +1047,12 @@ void testRG1RoutingAndReceiver()
     const std::uint64_t space = UINT64_C(1) << 55;
     const std::uint64_t one = UINT64_C(1) << 33;
     const std::uint64_t left = UINT64_C(1) << 53;
-    loadMapping(router, "RG1;A=SPACE;B=SPACE;SELECT+A=1;D_L=LEFT;"
-                "LS_U=A;RS_D=PERIOD;LS_U+RS_D+R1=A+PERIOD+SPACE");
+    loadMapping(router, "A:SPACE,B:SPACE,SELECT+A:1,D_L:LEFT,"
+                "LS_U:A,RS_D:PERIOD,LS_U+RS_D+R1:A+PERIOD+SPACE");
     EXPECT(router.mappingActive());
     controls.button(Button::A, true, 2); router.update(2);
     EXPECT(!router.visible() && sink.mapped_keys == space);
-    EXPECT(sink.events.empty()); // No legacy defaults or ASCII translation.
+    EXPECT(sink.events.empty()); // No default controls or ASCII translation.
     controls.button(Button::B, true, 3); router.update(3);
     controls.button(Button::A, false, 4); router.update(4);
     EXPECT(sink.mapped_keys == space);
@@ -1067,9 +1069,13 @@ void testRG1RoutingAndReceiver()
     router.mappingByte('R', 8);
     EXPECT(sink.mapped_keys == (space | left));
     EXPECT(!router.mappingByte(0, 8));
-    loadMapping(router, "RG1;B=BOGUS", 9, false);
+    loadMapping(router, "B:BOGUS", 9, false);
     EXPECT(sink.mapped_keys == (space | left));
-    loadMapping(router, "RG1;B=" + std::string(5000, 'A'), 10, false);
+    loadMapping(router, "B:" + std::string(5000, 'A'), 10, false);
+    EXPECT(sink.mapped_keys == (space | left));
+
+    // Removed RG1 syntax cannot replace a valid compact mapping or release it.
+    loadMapping(router, "RG1;A=1;B=2", 10, false);
     EXPECT(sink.mapped_keys == (space | left));
 
     router.lifecycleCleanup(11);
@@ -1094,7 +1100,7 @@ void testRG1RoutingAndReceiver()
     controls.button(Button::A, true, 21); router.update(21);
     EXPECT(sink.mapped_keys == space);
 
-    loadMapping(router, "RG1;A=1", 22);
+    loadMapping(router, "A:1", 22);
     EXPECT(sink.mapped_keys == 0); // Replacement gates held controls.
     router.update(23); EXPECT(sink.mapped_keys == 0);
     controls.button(Button::A, false, 24); router.update(24);
@@ -1107,24 +1113,43 @@ void testRG1RoutingAndReceiver()
     EXPECT(router.visible()); // Empty frames restore the original controls.
 
     // Maximum legal frame, then immediate recovery after oversized reception.
-    std::string longest = "RG1;B=A";
-    while (longest.size() < RG1Mapping::kMaxLength) longest += "|A";
-    EXPECT(longest.size() == RG1Mapping::kMaxLength);
+    std::string longest;
+    const char* buttons[] = {"A", "B", "X", "Y", "L1", "L2", "R1", "R2", "START"};
+    for (unsigned int mask = 1; mask < 512; ++mask) {
+        std::string trigger;
+        for (unsigned int bit = 0; bit < 9; ++bit) {
+            if (!(mask & (1u << bit))) continue;
+            if (!trigger.empty()) trigger += "+";
+            trigger += buttons[bit];
+        }
+        const std::string binding = (longest.empty() ? "" : ",") + trigger + ":A";
+        if (longest.size() + binding.size() > ControlMapping::kMaxLength) break;
+        longest += binding;
+    }
+    // Fill the last key chord with unique physical keys to reach exactly 4095.
+    if ((ControlMapping::kMaxLength - longest.size()) % 2)
+        longest.replace(longest.size() - 1, 1, "UP");
+    const char* padding_keys = "0123456789BCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (std::size_t i = 0; longest.size() < ControlMapping::kMaxLength; ++i) {
+        longest += "+";
+        longest += padding_keys[i];
+    }
+    EXPECT(longest.size() == ControlMapping::kMaxLength);
     loadMapping(router, longest, 29);
     EXPECT(router.mappingActive() && !router.visible());
-    loadMapping(router, longest + "|A", 30, false);
-    loadMapping(router, "RG1;B=2", 31);
+    loadMapping(router, longest + "A", 30, false);
+    loadMapping(router, "B:2", 31);
     controls.button(Button::B, true, 32); router.update(32);
     EXPECT(sink.mapped_keys == (UINT64_C(1) << 34));
 }
 
-void testRG1PhysicalConsumption()
+void testControlMappingPhysicalConsumption()
 {
     JoystickTranslatorControls controls(testJoystickMapping(), 42);
     FakeSink sink;
     TrsKeyboardAdapter keyboard(sink);
     RG35XXInputRouter router(controls, keyboard, false);
-    loadMapping(router, "RG1;B=SPACE;RS_D=9;D_U+D_R=SHIFT+BREAK");
+    loadMapping(router, "B:SPACE,RS_D:9,D_U+D_R:SHIFT+BREAK");
     EXPECT(router.handleSDLEvent(joyButtonEvent(42, 1, true, 1), 1));
     EXPECT(sink.mapped_keys == (UINT64_C(1) << 55));
     EXPECT(router.handleSDLEvent(joyAxisEvent(42, 3, 32767, 2), 2));
@@ -1136,6 +1161,143 @@ void testRG1PhysicalConsumption()
     EXPECT(router.handleSDLEvent(joyHatEvent(42, 0, SDL_HAT_CENTERED, 5), 5));
     router.lifecycleCleanup(6);
     EXPECT(sink.mapped_keys == 0);
+}
+
+void testCompactMappings()
+{
+    ControlMapping mapping;
+    std::string error;
+    EXPECT(ControlMapping::parse("L1:1,L2:2,Y:D", mapping, error));
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::L1)) == (UINT64_C(1) << 33));
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::L2)) == (UINT64_C(1) << 34));
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::Y)) == (UINT64_C(1) << 4));
+    EXPECT(ControlMapping::parse("A:SPACE,SELECT+A:1,D_L:LEFT,"
+                             "LS_U+RS_D+R1:A+PERIOD+SPACE", mapping, error));
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::A) |
+                           ControlMapping::buttonMask(Button::Select) |
+                           ControlMapping::buttonMask(Button::DPadLeft)) ==
+           ((UINT64_C(1) << 33) | (UINT64_C(1) << 53)));
+    EXPECT(mapping.resolve(ControlMapping::axisMask(Axis::LeftY, -1) |
+                           ControlMapping::axisMask(Axis::RightY, 1) |
+                           ControlMapping::buttonMask(Button::R1)) ==
+           ((UINT64_C(1) << 1) | (UINT64_C(1) << 46) | (UINT64_C(1) << 55)));
+    const char* invalid[] = {"A", "A:", ":A", "A:A,", ",A:A", "A:A,,B:B",
+        "A::A", "A:A|B", "A:A;B:B", "a:A", "A:a", "MENU:A", "A:ANY_KEY",
+        "A:TEXT_INPUT", "A:NUMERIC_INPUT", "A+B:1,B+A:2", "A:1,A:2", "A:A+B+B"};
+    for (std::size_t i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i)
+        EXPECT(!ControlMapping::parse(invalid[i], mapping, error));
+
+    KeyboardRG35XXControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard);
+    std::uint32_t now = 100;
+    loadMapping(router, "L1:1,L2:2,Y:D", now++);
+    send(router, SDL_SCANCODE_Q, true, now++);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 33));
+    send(router, SDL_SCANCODE_Q, false, now++);
+    send(router, SDL_SCANCODE_1, true, now++);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 34));
+    send(router, SDL_SCANCODE_1, false, now++);
+    send(router, SDL_SCANCODE_BACKSPACE, true, now++);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 4));
+    loadMapping(router, "A:BOGUS", now++, false);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 4));
+    loadMapping(router, "", now++);
+    EXPECT(sink.mapped_keys == 0 && !router.mappingActive());
+}
+
+void testCustomMappingsAugmentDefaults()
+{
+    FakeControls controls;
+    FakeSink sink;
+    TrsKeyboardAdapter keyboard(sink);
+    RG35XXInputRouter router(controls, keyboard);
+    std::uint32_t now = 100;
+    const auto owner = [](Button button) {
+        return GuestOwnerDefaultButtonBase + static_cast<int>(button);
+    };
+    const auto button = [&](Button id, bool down) {
+        controls.button(id, down, now);
+        router.update(now++);
+    };
+    const auto axis = [&](Axis id, float value) {
+        controls.axis(id, value, now);
+        router.update(now++);
+    };
+
+    loadMapping(router, "L1:1,L2:2,Y:D", now++);
+    button(Button::Start, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Start)) == 0x0d);
+    button(Button::Select, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    button(Button::DPadLeft, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::DPadLeft)) == 0x114);
+    button(Button::R1, true);
+    EXPECT(!keyboard.ownerActive(owner(Button::R1)));
+    button(Button::R2, true);
+    button(Button::RightStick, true);
+    EXPECT(!keyboard.ownerActive(owner(Button::R2)));
+    EXPECT(keyboard.ownerSymbol(owner(Button::RightStick)) == ' ');
+    axis(Axis::LeftY, -1.0f);
+    EXPECT(keyboard.ownerSymbol(GuestOwnerDefaultAxisBase + 2) == 0x111);
+    button(Button::Y, true);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 4));
+    button(Button::L1, true);
+    EXPECT(sink.mapped_keys == ((UINT64_C(1) << 4) | (UINT64_C(1) << 33)));
+    EXPECT(!keyboard.ownerActive(owner(Button::L1)));
+    // A retains its keyboard toggle and opening it releases both key sources.
+    button(Button::A, true);
+    EXPECT(router.visible() && sink.mapped_keys == 0);
+    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
+    router.lifecycleCleanup(now++);
+
+    // Overrides replace an individual default, while unrelated controls survive.
+    loadMapping(router, "START:SPACE,L1:A,LS_U:W", now++);
+    button(Button::Start, true);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 55));
+    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
+    button(Button::L1, true);
+    EXPECT(!keyboard.ownerActive(owner(Button::L1)));
+    EXPECT(sink.mapped_keys == ((UINT64_C(1) << 55) | (UINT64_C(1) << 1)));
+    axis(Axis::LeftY, -1.0f);
+    EXPECT(!keyboard.ownerActive(GuestOwnerDefaultAxisBase + 2));
+    EXPECT(sink.mapped_keys & (UINT64_C(1) << 23));
+    axis(Axis::LeftY, 1.0f);
+    EXPECT(keyboard.ownerSymbol(GuestOwnerDefaultAxisBase + 3) == 0x112);
+    button(Button::L2, true);
+    EXPECT(!keyboard.ownerActive(owner(Button::L2)));
+    router.lifecycleCleanup(now++);
+
+    // Modifier chords suppress defaults only while the complete chord matches.
+    loadMapping(router, "SELECT+START:SHIFT+BREAK,SELECT+A:1", now++);
+    button(Button::Select, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    button(Button::Start, true);
+    EXPECT(!keyboard.ownerActive(owner(Button::Select)));
+    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
+    EXPECT(sink.mapped_keys == ((UINT64_C(1) << 56) | (UINT64_C(1) << 50)));
+    button(Button::DPadUp, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::DPadUp)) == 0x111);
+    button(Button::Start, false);
+    EXPECT(sink.mapped_keys == 0);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    button(Button::A, true);
+    EXPECT(!router.visible() && sink.mapped_keys == (UINT64_C(1) << 33));
+    EXPECT(!keyboard.ownerActive(owner(Button::Select)));
+    button(Button::A, false);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    router.lifecycleCleanup(now++);
+
+    loadMapping(router, "A:D", now++);
+    button(Button::A, true);
+    EXPECT(!router.visible() && sink.mapped_keys == (UINT64_C(1) << 4));
+    button(Button::A, false);
+    loadMapping(router, "", now++);
+    button(Button::Start, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::Start)) == 0x0d);
+    button(Button::A, true);
+    EXPECT(router.visible());
 }
 
 #ifndef RG35XX_TEST_NO_BRIDGE
@@ -1170,7 +1332,7 @@ void testBridgeModesAndConsumption()
     SDL_setenv("SDLTRS_RG35XX_INPUT", "keyboard", 1);
     EXPECT(rg35xx_bridge_init() == 1);
     EXPECT(rg35xx_bridge_enabled() == 1);
-    const char* mapping = "RG1;B=SHIFT+BREAK";
+    const char* mapping = "B:SHIFT+BREAK";
     while (*mapping) EXPECT(rg35xx_bridge_mapping_out(*mapping++) == 1);
     EXPECT(rg35xx_bridge_mapping_out(0) == 1);
     SDL_Event mapped_event = keyEvent(SDL_SCANCODE_SPACE, true, 1);
@@ -1316,9 +1478,11 @@ int main()
     testNavigationAndRepeat();
     testGuestKeysShiftAndOwnership();
     testLifecycleCleanup();
-    testRG1ParserAndResolution();
-    testRG1RoutingAndReceiver();
-    testRG1PhysicalConsumption();
+    testControlMappingParserAndResolution();
+    testControlMappingRoutingAndReceiver();
+    testControlMappingPhysicalConsumption();
+    testCompactMappings();
+    testCustomMappingsAugmentDefaults();
     testMenuControls();
     testMenuTextEntry();
 #ifndef RG35XX_TEST_NO_BRIDGE

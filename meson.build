@@ -40,7 +40,7 @@ rg35xx_sources = files([
 	'src/rg35xx/RG35XXControls.cpp',
 	'src/rg35xx/KeyboardRG35XXControls.cpp',
 	'src/rg35xx/RG35XXInputRouter.cpp',
-	'src/rg35xx/RG1Mapping.cpp',
+	'src/rg35xx/ControlMapping.cpp',
 	'src/rg35xx/SDLRG35XXControls.cpp',
 	'src/rg35xx/SystemVolume.cpp',
 	'src/rg35xx/SoftKeyboard.cpp',
@@ -89,7 +89,7 @@ executable('sdl2trs', sources + rg35xx_sources, dependencies : [ readline, sdl ]
 rg35xx_tests = executable('rg35xx_tests',
     files('tests/rg35xx_tests.cpp') + rg35xx_sources, dependencies : sdl)
 test('rg35xx_tests', rg35xx_tests)
-rg1_keyboard_tests = executable('rg1_keyboard_tests',
-    files('tests/rg1_keyboard_tests.cpp', 'src/trs_sdl_keyboard.c') + rg35xx_sources,
+control_mapping_keyboard_tests = executable('control_mapping_keyboard_tests',
+    files('tests/control_mapping_keyboard_tests.cpp', 'src/trs_sdl_keyboard.c') + rg35xx_sources,
     dependencies : sdl)
-test('rg1_keyboard_tests', rg1_keyboard_tests)
+test('control_mapping_keyboard_tests', control_mapping_keyboard_tests)

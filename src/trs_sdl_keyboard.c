@@ -509,7 +509,7 @@ static int fkeys_addr;
 static int force_shift = TK_Neutral;
 static int joystate;
 static int keys_down;
-/* Physical RG1 outputs are independent of ASCII shift synthesis and queues. */
+/* Custom physical-key outputs are independent of ASCII shift synthesis and queues. */
 static uint64_t rg35xx_keys;
 static int key_heartbeat;
 /* Avoid changing state too fast so keystrokes aren't lost. */

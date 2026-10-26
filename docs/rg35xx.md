@@ -194,9 +194,8 @@ While the soft keyboard is closed and no menu/dialog is active:
 | RG35XX control | TRS-80 key |
 | --- | --- |
 | D-pad / left joystick | Corresponding arrow keys (including diagonals) |
-| L1 | 1 |
-| L2 | 2 |
-| R1, R2, right joystick click | Space |
+| Right joystick click | Space |
+| L1, L2, R1, R2 | No default TRS-80 key |
 | Start | ENTER |
 | Select | CLEAR |
 
@@ -208,13 +207,21 @@ focus, disconnecting, or shutting down releases owned guest keys. Menu and
 text-entry controls take precedence over these defaults. The right joystick's
 axes keep their existing behavior; its click is the Space binding.
 
-## Runtime RG1 game mappings (port 41)
+## Runtime custom game mappings (port 41)
 
 With `SDLTRS_RG35XX_INPUT=sdl` (and the physical device map configured as
-above), or with the `keyboard` simulator, a guest program can replace the
-default gameplay bindings. Send the ASCII RG1 mapping one byte per Z80 `OUT`
+above), or with the `keyboard` simulator, a guest program can augment the
+default gameplay bindings. Send the ASCII mapping one byte per Z80 `OUT`
 to decimal port **41** (`29h`), then send zero. For example,
-`RG1;B=SPACE;D_L=LEFT;SELECT+START=SHIFT+BREAK` followed by `00`.
+`L1:1,L2:2,Y:D` followed by `00` maps L1 to physical 1, L2 to physical 2,
+and Y to physical D. START still sends ENTER, SELECT still sends CLEAR, and
+the D-pad/left stick still send arrow keys. A custom assignment overrides the
+same control's default: `START:SPACE` sends SPACE instead of ENTER. Shoulder
+buttons L1, L2, R1, and R2 send TRS-80 keys only when assigned by a custom map.
+Their emulator-menu and dialog actions remain available. Commas separate bindings,
+colons separate controls from
+keys, and `+` joins simultaneous controls or keys, e.g.
+`B:SPACE,D_L:LEFT,SELECT+START:SHIFT+BREAK`. There is no version prefix.
 The port is claimed only while an RG35XX input backend is enabled.
 
 The receiver buffers up to 4095 bytes and commits only on zero. Invalid or
@@ -230,19 +237,29 @@ keys, so `A` does not synthesize SHIFT, `SHIFT+BREAK` holds both keys, and
 `LEFT+RIGHT` holds both arrows. Active outputs are combined with the host
 keyboard matrix; releasing one source cannot release a key held by another.
 Matching larger control chords replace their strict subsets, while independent
-bindings remain active.
+bindings remain active. A matching custom chord also suppresses the defaults
+of its constituent controls. For example, `SELECT+START:SHIFT+BREAK` sends
+SHIFT+BREAK while both controls are held, suppressing CLEAR and ENTER. When
+the chord stops matching, any still-held constituent resumes its default.
 
-This implementation is limited to physical key bindings. `|` alternatives are
-validated and retained, and only the first listed action is used. Games whose
-alternatives depend on the current phase must provide a mapping with the
-desired action first. `PROMPT(...)`, `OSK(...)`, and semantic actions such as
-`ANY_KEY`, `TEXT_INPUT`, and `NUMERIC_INPUT` are accepted but remain inactive.
-No prompt detection, alternative selection menu, or RG1 keyboard-overlay
-sequence is implemented.
+The hard-disk builder in the TPK repository reads only the manually edited
+`tools/hard-disk/action-map.csv`. Empty and lowercase `x` cells are ignored;
+other cells assign a console control to the physical key/chord named by the
+column header. Uppercase `X` is the X button. The builder never rewrites the
+CSV. Rows without assignments transmit only zero and restore the defaults.
+Duplicate console chords are rejected; use one key-chord column to hold
+multiple TRS-80 keys with a control. Compact strings contain only physical key
+bindings and reject semantic operations and alternatives.
 
-An active mapping replaces all default gameplay controls, including A's
-default keyboard toggle. Recognized controls are consumed before the legacy
-joystick handling, including unbound controls. Menu keeps its reserved F7
+The receiver accepts only the compact format. Old `RG1;...` strings, alternative
+actions, prompt bindings, and keyboard-overlay sequences are rejected without
+replacing the active mapping. Custom mappings do not perform prompt detection
+or game-phase selection.
+
+Controls without a matching custom binding retain their default actions,
+including A's keyboard toggle. A custom A binding or a matching chord containing
+A overrides that toggle. Recognized controls are consumed before the legacy
+joystick handling while a custom map is active. Menu keeps its reserved F7
 behavior and menu navigation takes precedence over mappings. Focus loss,
 disconnect, reset/state-load cleanup, and exit release mapped keys. The active
 mapping survives lifecycle cleanup until replaced or cleared; mappings are

@@ -34,7 +34,7 @@ sdl2trs_SOURCES=src/debug.c \
 		src/PasteManager.c \
 		src/rg35xx/RG35XXControls.cpp \
 		src/rg35xx/KeyboardRG35XXControls.cpp \
-		src/rg35xx/RG1Mapping.cpp \
+		src/rg35xx/ControlMapping.cpp \
 		src/rg35xx/RG35XXInputRouter.cpp \
 		src/rg35xx/SDLRG35XXControls.cpp \
 		src/rg35xx/SystemVolume.cpp \
@@ -43,14 +43,14 @@ sdl2trs_SOURCES=src/debug.c \
 		src/rg35xx/TrsKeyboardAdapter.cpp \
 		src/rg35xx/rg35xx_bridge.cpp
 
-check_PROGRAMS=	rg35xx_tests rg1_keyboard_tests
+check_PROGRAMS=	rg35xx_tests control_mapping_keyboard_tests
 TESTS=		$(check_PROGRAMS)
 
 rg35xx_tests_SOURCES=tests/rg35xx_tests.cpp \
 		src/trs_sdl_keymap.c \
 		src/rg35xx/RG35XXControls.cpp \
 		src/rg35xx/KeyboardRG35XXControls.cpp \
-		src/rg35xx/RG1Mapping.cpp \
+		src/rg35xx/ControlMapping.cpp \
 		src/rg35xx/RG35XXInputRouter.cpp \
 		src/rg35xx/SDLRG35XXControls.cpp \
 		src/rg35xx/SystemVolume.cpp \
@@ -59,11 +59,11 @@ rg35xx_tests_SOURCES=tests/rg35xx_tests.cpp \
 		src/rg35xx/TrsKeyboardAdapter.cpp \
 		src/rg35xx/rg35xx_bridge.cpp
 
-rg1_keyboard_tests_SOURCES=tests/rg1_keyboard_tests.cpp src/trs_sdl_keyboard.c \
+control_mapping_keyboard_tests_SOURCES=tests/control_mapping_keyboard_tests.cpp src/trs_sdl_keyboard.c \
 		src/trs_sdl_keymap.c \
 		src/rg35xx/RG35XXControls.cpp \
 		src/rg35xx/KeyboardRG35XXControls.cpp \
-		src/rg35xx/RG1Mapping.cpp \
+		src/rg35xx/ControlMapping.cpp \
 		src/rg35xx/RG35XXInputRouter.cpp \
 		src/rg35xx/SDLRG35XXControls.cpp \
 		src/rg35xx/SystemVolume.cpp \

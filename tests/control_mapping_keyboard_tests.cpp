@@ -58,7 +58,22 @@ int main()
     EXPECT(rg35xx_bridge_init() == 1);
     for (trs_model = 1; trs_model <= 4; ++trs_model) {
         trs_kb_reset();
-        mapping("RG1;A=A;B=SHIFT+BREAK;R1=LEFT+RIGHT;R2=SPACE;L1=SPACE;X=@;Y=SEMICOLON");
+        mapping("");
+        const SDL_Scancode shoulders[] = {
+            SDL_SCANCODE_Q, SDL_SCANCODE_1, SDL_SCANCODE_E, SDL_SCANCODE_3
+        };
+        for (unsigned int i = 0; i < 4; ++i) {
+            button(shoulders[i], true);
+            flushHostKeys();
+            EXPECT(trs_kb_mem_read(0xFF) == 0);
+            button(shoulders[i], false);
+        }
+        mapping("L1:1,L2:2,R1:3,R2:4");
+        for (unsigned int i = 0; i < 4; ++i) button(shoulders[i], true);
+        EXPECT(trs_kb_mem_read(0x10) == 0x1e);
+        for (unsigned int i = 0; i < 4; ++i) button(shoulders[i], false);
+        EXPECT(trs_kb_mem_read(0xFF) == 0);
+        mapping("A:A,B:SHIFT+BREAK,R1:LEFT+RIGHT,R2:SPACE,L1:SPACE,X:@,Y:SEMICOLON");
         button(SDL_SCANCODE_F6, true); // Printed A.
         EXPECT(trs_kb_mem_read(0x01) == 0x02);
         EXPECT(trs_kb_mem_read(0x80) == 0); // A identifies a physical key.
@@ -67,7 +82,7 @@ int main()
         EXPECT(trs_kb_mem_read(0x40) == 0x04);
         EXPECT(trs_kb_mem_read(0x80) == 0x01);
 
-        // Host lowercase translation forces SHIFT off; RG1 SHIFT still asserts.
+        // Host lowercase translation forces SHIFT off; mapped SHIFT still asserts.
         const int host_owner = rg35xx_bridge_physical_owner(SDL_SCANCODE_Z);
         EXPECT(rg35xx_bridge_guest_key_event(host_owner, 'a', 1));
         flushHostKeys();
@@ -108,9 +123,66 @@ int main()
         mapping("");
         EXPECT(trs_kb_mem_read(0xFF) == 0);
         rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+        mapping("L1:1,L2:2,Y:D");
+        button(SDL_SCANCODE_Q, true);
+        EXPECT(trs_kb_mem_read(0x10) == 0x02);
+        button(SDL_SCANCODE_Q, false);
+        button(SDL_SCANCODE_1, true);
+        EXPECT(trs_kb_mem_read(0x10) == 0x04);
+        button(SDL_SCANCODE_1, false);
+        button(SDL_SCANCODE_BACKSPACE, true);
+        EXPECT(trs_kb_mem_read(0x01) == 0x10); // Printed Y holds physical D.
+        EXPECT(trs_kb_mem_read(0x80) == 0);
+        button(SDL_SCANCODE_BACKSPACE, false);
+        // Cosmic's custom bindings preserve default START, SELECT and movement.
+        button(SDL_SCANCODE_RETURN, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x01);
+        button(SDL_SCANCODE_RETURN, false);
+        button(SDL_SCANCODE_ESCAPE, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x02);
+        button(SDL_SCANCODE_ESCAPE, false);
+        button(SDL_SCANCODE_LEFT, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x20);
+        button(SDL_SCANCODE_LEFT, false);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0);
+
+        mapping("START:SPACE,L1:A,SELECT+R1:SHIFT+BREAK");
+        button(SDL_SCANCODE_RETURN, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x80); // SPACE overrides ENTER.
+        button(SDL_SCANCODE_V, true); // Default right-stick click also owns SPACE.
+        button(SDL_SCANCODE_RETURN, false);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x80);
+        button(SDL_SCANCODE_V, false);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0);
+        button(SDL_SCANCODE_Q, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x01) == 0x02);
+        EXPECT(trs_kb_mem_read(0x10) == 0); // Custom L1 sends only A.
+        button(SDL_SCANCODE_Q, false);
+        button(SDL_SCANCODE_ESCAPE, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x02);
+        button(SDL_SCANCODE_E, true); // SELECT+R1 suppresses default CLEAR.
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x04);
+        EXPECT(trs_kb_mem_read(0x80) == 0x01);
+        button(SDL_SCANCODE_E, false);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x02); // SELECT resumes CLEAR.
+        EXPECT(trs_kb_mem_read(0x80) == 0);
+        button(SDL_SCANCODE_ESCAPE, false);
+        flushHostKeys();
+        mapping("");
     }
     rg35xx_bridge_shutdown();
     if (failures) return EXIT_FAILURE;
-    std::puts("RG1 real keyboard matrix integration tests passed");
+    std::puts("Custom mapping real keyboard matrix integration tests passed");
     return EXIT_SUCCESS;
 }

@@ -241,11 +241,12 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
     }
 
     if (!visible_) {
-        if (mapping_active_) return;
         if (event.type == ControlEventType::ButtonDown &&
-            event.button == Button::A)
+            event.button == Button::A &&
+            (!mapping_active_ || !(mapping_.overriddenControls(mappedControls()) &
+                                   ControlMapping::buttonMask(Button::A))))
             openOverlay(now_ms);
-        else
+        else if (!mapping_active_)
             updateDefaultKeys();
         return;
     }
@@ -314,10 +315,6 @@ int RG35XXInputRouter::defaultButtonSymbol(Button button)
         case Button::DPadDown: return 0x112;
         case Button::DPadLeft: return 0x114;
         case Button::DPadRight: return 0x113;
-        case Button::L1: return '1';
-        case Button::L2: return '2';
-        case Button::R1:
-        case Button::R2:
         case Button::RightStick: return ' ';
         case Button::Start: return 0x0d;
         case Button::Select: return 0x116;
@@ -325,14 +322,15 @@ int RG35XXInputRouter::defaultButtonSymbol(Button button)
     }
 }
 
-void RG35XXInputRouter::updateDefaultKeys()
+void RG35XXInputRouter::updateDefaultKeys(std::uint32_t overridden)
 {
     const ControlState& state = controls_.state();
     for (std::size_t i = 0; i < static_cast<std::size_t>(Button::Count); ++i) {
         const int symbol = defaultButtonSymbol(static_cast<Button>(i));
         if (symbol < 0) continue;
         const int owner = GuestOwnerDefaultButtonBase + static_cast<int>(i);
-        if (state.buttons[i] && !gated_buttons_[i]) {
+        if (state.buttons[i] && !gated_buttons_[i] &&
+            !(overridden & ControlMapping::buttonMask(static_cast<Button>(i)))) {
             if (!keyboard_.ownerActive(owner)) keyboard_.press(owner, symbol);
         } else {
             keyboard_.release(owner);
@@ -350,7 +348,9 @@ void RG35XXInputRouter::updateDefaultKeys()
         // the same arrow held by both the D-pad and the analog stick.
         for (int side = 0; side < 2; ++side) {
             const int owner = GuestOwnerDefaultAxisBase + i * 2 + side;
-            if (*directions[i] == (side == 0 ? -1 : 1)) {
+            const int direction = side == 0 ? -1 : 1;
+            if (*directions[i] == direction &&
+                !(overridden & ControlMapping::axisMask(axes[i], direction))) {
                 if (!keyboard_.ownerActive(owner)) keyboard_.press(owner, symbols[i][side]);
             } else {
                 keyboard_.release(owner);
@@ -561,7 +561,7 @@ void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
 bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
 {
     if (value != 0) {
-        if (mapping_buffer_.size() == RG1Mapping::kMaxLength)
+        if (mapping_buffer_.size() == ControlMapping::kMaxLength)
             mapping_overflow_ = true;
         if (!mapping_overflow_) mapping_buffer_ += static_cast<char>(value);
         return true;
@@ -571,9 +571,9 @@ bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
     text.swap(mapping_buffer_);
     const bool overflow = mapping_overflow_;
     mapping_overflow_ = false;
-    RG1Mapping parsed;
+    ControlMapping parsed;
     std::string error;
-    if (overflow || (!text.empty() && !RG1Mapping::parse(text, parsed, error))) {
+    if (overflow || (!text.empty() && !ControlMapping::parse(text, parsed, error))) {
         std::fprintf(stderr, "SDLTRS RG35XX: rejected port 41 mapping: %s\n",
                      overflow ? "more than 4095 bytes" : error.c_str());
         return false;
@@ -586,17 +586,24 @@ bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
 
 void RG35XXInputRouter::updateMappedKeys()
 {
+    const std::uint32_t controls = mappedControls();
+    updateDefaultKeys(mapping_.overriddenControls(controls));
+    keyboard_.setMappedKeys(mapping_.resolve(controls));
+}
+
+std::uint32_t RG35XXInputRouter::mappedControls()
+{
     const ControlState& state = controls_.state();
     std::uint32_t controls = 0;
     for (std::size_t i = 0; i < static_cast<std::size_t>(Button::Count); ++i)
         if (state.buttons[i] && !gated_buttons_[i])
-            controls |= RG1Mapping::buttonMask(static_cast<Button>(i));
+            controls |= ControlMapping::buttonMask(static_cast<Button>(i));
     for (std::size_t i = 0; i < static_cast<std::size_t>(Axis::Count); ++i) {
         mapped_axis_directions_[i] = hysteresisDirection(
             gated_axes_[i] ? 0.0f : state.axes[i], mapped_axis_directions_[i]);
-        controls |= RG1Mapping::axisMask(static_cast<Axis>(i), mapped_axis_directions_[i]);
+        controls |= ControlMapping::axisMask(static_cast<Axis>(i), mapped_axis_directions_[i]);
     }
-    keyboard_.setMappedKeys(mapping_.resolve(controls));
+    return controls;
 }
 
 bool RG35XXInputRouter::guestKeyEvent(int owner, int symbol, bool down)
