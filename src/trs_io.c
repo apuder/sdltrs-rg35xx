@@ -57,6 +57,7 @@
 #include "trs_state_save.h"
 #include "trs_stringy.h"
 #include "trs_uart.h"
+#include "rg35xx/rg35xx_bridge.h"
 
 #ifdef ZBX
 int trs_io_debug_flags;
@@ -206,6 +207,8 @@ static int rtc_read(int port)
 
 void z80_out(int port, int value)
 {
+  if ((port & 0xFF) == 41 && rg35xx_bridge_mapping_out(value))
+    return;
 #ifdef ZBX
   if (trs_io_debug_flags & IODEBUG_OUT)
     debug("[PC=%04X] out (0x%02X), 0x%02X\n", Z80_PC, port, value);

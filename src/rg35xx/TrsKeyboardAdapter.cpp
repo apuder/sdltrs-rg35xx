@@ -56,6 +56,7 @@ bool TrsKeyboardAdapter::release(int owner)
 
 void TrsKeyboardAdapter::releaseWhere(bool synthetic_only)
 {
+    setMappedKeys(0);
     std::vector<int> owners;
     for (std::map<int, HeldKey>::const_iterator it = owner_keys_.begin();
          it != owner_keys_.end(); ++it) {
@@ -64,6 +65,11 @@ void TrsKeyboardAdapter::releaseWhere(bool synthetic_only)
     }
     for (std::size_t i = 0; i < owners.size(); ++i)
         release(owners[i]);
+}
+
+void TrsKeyboardAdapter::setMappedKeys(std::uint64_t keys)
+{
+    sink_.setMappedKeys(keys);
 }
 
 void TrsKeyboardAdapter::releaseSynthetic()

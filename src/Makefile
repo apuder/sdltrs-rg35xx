@@ -30,6 +30,7 @@ SRCS	+= PasteManager.c
 CPPSRCS += rg35xx/RG35XXControls.cpp
 CPPSRCS += rg35xx/KeyboardRG35XXControls.cpp
 CPPSRCS += rg35xx/RG35XXInputRouter.cpp
+CPPSRCS += rg35xx/RG1Mapping.cpp
 CPPSRCS += rg35xx/SDLRG35XXControls.cpp
 CPPSRCS += rg35xx/SystemVolume.cpp
 CPPSRCS += rg35xx/SoftKeyboard.cpp
@@ -50,7 +51,7 @@ bsd:
 	make -f BSDmakefile
 
 clean:
-	rm -f ${OBJS} ${PROG} ${TEST_OBJS} ${TEST_PROG}
+	rm -f ${OBJS} ${PROG} ${TEST_OBJS} ${TEST_PROG} rg1_keyboard_tests.o rg1_keyboard_tests
 
 depend:
 	makedepend -Y -- ${CFLAGS} -- ${SRCS} 2>&1 | \
@@ -70,8 +71,9 @@ sdl2:	${PROG}
 test-rg35xx: SDL_INC ?= $(shell sdl2-config --cflags)
 test-rg35xx: SDL_LIB ?= $(shell sdl2-config --libs)
 test-rg35xx: CXXFLAGS += ${SDL_INC}
-test-rg35xx: ${TEST_PROG}
+test-rg35xx: ${TEST_PROG} rg1_keyboard_tests
 	./${TEST_PROG}
+	./rg1_keyboard_tests
 
 win32:	MINGW	?= \MinGW
 win32:	CC	 = ${MINGW}\bin\gcc.exe
@@ -105,3 +107,9 @@ ${TEST_PROG}: ${TEST_OBJS}
 
 rg35xx_tests.o: ../tests/rg35xx_tests.cpp
 	${CXX} ${CXXFLAGS} -c -o $@ $<
+
+rg1_keyboard_tests.o: ../tests/rg1_keyboard_tests.cpp
+	${CXX} ${CXXFLAGS} -c -o $@ $<
+
+rg1_keyboard_tests: rg1_keyboard_tests.o trs_sdl_keyboard.o trs_sdl_keymap.o ${CPPSRCS:.cpp=.o}
+	${CXX} -o $@ $^ ${SDL_LIB} ${LDFLAGS}

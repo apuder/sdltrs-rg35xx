@@ -509,15 +509,24 @@ static int fkeys_addr;
 static int force_shift = TK_Neutral;
 static int joystate;
 static int keys_down;
+/* Physical RG1 outputs are independent of ASCII shift synthesis and queues. */
+static uint64_t rg35xx_keys;
 static int key_heartbeat;
 /* Avoid changing state too fast so keystrokes aren't lost. */
 static tstate_t key_stretch_timeout;
 
 void trs_kb_reset(void)
 {
+  trs_kb_set_rg35xx_keys(0);
   key_stretch_timeout = z80_state.t_count;
   /* Set address of function keys */
   fkeys_addr = (trs_clones.model & (EG3200 | GENIE3S)) ? 0xA0 : 0xFF;
+}
+
+void trs_kb_set_rg35xx_keys(uint64_t keys)
+{
+  rg35xx_keys = keys;
+  z80_state.keypress = (keys_down || rg35xx_keys) ? turbo_mode : 0;
 }
 
 void trs_kb_heartbeat(void)
@@ -765,7 +774,7 @@ static void change_keystate(int action)
 
       force_shift = TK_Neutral;
       keys_down = 0;
-      z80_state.keypress = 0;
+      z80_state.keypress = rg35xx_keys ? turbo_mode : 0;
       break;
 
     case TK_Neutral:
@@ -788,7 +797,7 @@ static void change_keystate(int action)
           keystate[TK_ADDR(action)] &= ~(1 << TK_DATA(action));
           keys_down--;
         }
-        z80_state.keypress = keys_down ? turbo_mode : 0;
+        z80_state.keypress = (keys_down || rg35xx_keys) ? turbo_mode : 0;
       }
     }
   }
@@ -835,7 +844,7 @@ int trs_kb_mem_read(int address)
 
     for (bit = 0; bit < 7; bit++) {
       if (address & (1 << bit)) {
-        data |= keystate[bit];
+        data |= keystate[bit] | (int)((rg35xx_keys >> (bit * 8)) & 0xFF);
       }
     }
 
@@ -860,7 +869,8 @@ int trs_kb_mem_read(int address)
             tmp |= 1;
         }
       }
-      data |= tmp;
+      /* Explicit physical SHIFT must survive a host ForceNoShift action. */
+      data |= tmp | (int)((rg35xx_keys >> 56) & 0xFF);
     }
     return data;
   }

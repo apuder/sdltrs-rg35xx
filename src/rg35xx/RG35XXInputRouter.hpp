@@ -4,6 +4,7 @@
 #include "RG35XXControls.hpp"
 #include "SoftKeyboard.hpp"
 #include "TrsKeyboardAdapter.hpp"
+#include "RG1Mapping.hpp"
 
 #include <cstdint>
 #include <deque>
@@ -25,6 +26,9 @@ public:
     void setSuspended(bool suspended, std::uint32_t now_ms);
     void lifecycleCleanup(std::uint32_t now_ms);
     bool guestKeyEvent(int owner, int symbol, bool down);
+    // Returns false for a rejected complete frame; the previous map survives.
+    bool mappingByte(unsigned char value, std::uint32_t now_ms);
+    bool mappingActive() const { return mapping_active_; }
 
     int popMenuKey();
     void setTextEntry(bool enabled, std::uint32_t now_ms);
@@ -45,6 +49,7 @@ private:
     void closeOverlay(bool release_all, std::uint32_t now_ms);
     void gateHeldControls();
     void updateDefaultKeys();
+    void updateMappedKeys();
     static int defaultButtonSymbol(Button button);
     void updateNavigation(std::uint32_t now_ms);
     NavigationDirection desiredDirection();
@@ -73,6 +78,11 @@ private:
     NavigationDirection navigation_direction_;
     std::uint32_t next_repeat_ms_;
     bool b_consumes_shift_;
+    RG1Mapping mapping_;
+    bool mapping_active_;
+    std::string mapping_buffer_;
+    bool mapping_overflow_;
+    int mapped_axis_directions_[static_cast<std::size_t>(Axis::Count)];
 };
 
 } // namespace rg35xx

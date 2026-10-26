@@ -30,6 +30,8 @@
 #ifndef _TRS_SDL_KEYBOARD_H
 #define _TRS_SDL_KEYBOARD_H
 
+#include <stdint.h>
+
 #define JOY_BOUNCE      (20000)
 #define JOY_BUTTONS     (20)
 #define KEY_QUEUE_SIZE  (32)
@@ -50,6 +52,7 @@ extern void trs_kb_bracket(int shifted);
 extern void trs_kb_heartbeat(void);
 extern int  trs_kb_mem_read(int address);
 extern void trs_kb_reset(void);
+extern void trs_kb_set_rg35xx_keys(uint64_t keys);
 extern void trs_keyboard_save(FILE *file);
 extern void trs_keyboard_load(FILE *file);
 extern void trs_open_joystick(void);

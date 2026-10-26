@@ -208,6 +208,46 @@ focus, disconnecting, or shutting down releases owned guest keys. Menu and
 text-entry controls take precedence over these defaults. The right joystick's
 axes keep their existing behavior; its click is the Space binding.
 
+## Runtime RG1 game mappings (port 41)
+
+With `SDLTRS_RG35XX_INPUT=sdl` (and the physical device map configured as
+above), or with the `keyboard` simulator, a guest program can replace the
+default gameplay bindings. Send the ASCII RG1 mapping one byte per Z80 `OUT`
+to decimal port **41** (`29h`), then send zero. For example,
+`RG1;B=SPACE;D_L=LEFT;SELECT+START=SHIFT+BREAK` followed by `00`.
+The port is claimed only while an RG35XX input backend is enabled.
+
+The receiver buffers up to 4095 bytes and commits only on zero. Invalid or
+oversized frames report a diagnostic and retain the previous mapping; an
+oversized frame is discarded through its terminating zero. Sending only zero
+clears the mapping and restores the defaults. Replacing or clearing a mapping
+releases its keys and gates currently held controls until they are released.
+
+All documented physical button, D-pad, and left/right stick direction tokens
+are supported. Stick directions use the same 0.55 engage / 0.35 release
+hysteresis as the default controls. Outputs identify physical TRS-80 matrix
+keys, so `A` does not synthesize SHIFT, `SHIFT+BREAK` holds both keys, and
+`LEFT+RIGHT` holds both arrows. Active outputs are combined with the host
+keyboard matrix; releasing one source cannot release a key held by another.
+Matching larger control chords replace their strict subsets, while independent
+bindings remain active.
+
+This implementation is limited to physical key bindings. `|` alternatives are
+validated and retained, and only the first listed action is used. Games whose
+alternatives depend on the current phase must provide a mapping with the
+desired action first. `PROMPT(...)`, `OSK(...)`, and semantic actions such as
+`ANY_KEY`, `TEXT_INPUT`, and `NUMERIC_INPUT` are accepted but remain inactive.
+No prompt detection, alternative selection menu, or RG1 keyboard-overlay
+sequence is implemented.
+
+An active mapping replaces all default gameplay controls, including A's
+default keyboard toggle. Recognized controls are consumed before the legacy
+joystick handling, including unbound controls. Menu keeps its reserved F7
+behavior and menu navigation takes precedence over mappings. Focus loss,
+disconnect, reset/state-load cleanup, and exit release mapped keys. The active
+mapping survives lifecycle cleanup until replaced or cleared; mappings are
+session state and are not included in saved emulator states.
+
 ## Emulator menu controls
 
 Menu opens the original F7 main menu, including from the soft keyboard.

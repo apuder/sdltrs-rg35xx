@@ -1,7 +1,7 @@
-project('sdl2trs', 'c',
+project('sdl2trs', 'c', 'cpp',
 	version: '1.2.35',
 	license: 'BSD',
-	default_options: [ 'buildtype=debugoptimized', 'c_std=gnu89', 'warning_level=2' ],
+	default_options: [ 'buildtype=debugoptimized', 'c_std=gnu89', 'cpp_std=c++11', 'warning_level=2' ],
 	meson_version: '>= 0.36.0'
 )
 
@@ -34,6 +34,20 @@ sources = files([
 	'src/trs_uart.c',
 	'src/z80.c',
 	'src/PasteManager.c'
+])
+
+rg35xx_sources = files([
+	'src/rg35xx/RG35XXControls.cpp',
+	'src/rg35xx/KeyboardRG35XXControls.cpp',
+	'src/rg35xx/RG35XXInputRouter.cpp',
+	'src/rg35xx/RG1Mapping.cpp',
+	'src/rg35xx/SDLRG35XXControls.cpp',
+	'src/rg35xx/SystemVolume.cpp',
+	'src/rg35xx/SoftKeyboard.cpp',
+	'src/rg35xx/SoftKeyboardRenderer.cpp',
+	'src/rg35xx/TrsKeyboardAdapter.cpp',
+	'src/rg35xx/rg35xx_bridge.cpp',
+	'src/trs_sdl_keymap.c'
 ])
 
 compiler = meson.get_compiler('c')
@@ -70,4 +84,12 @@ if get_option('ZBX')
 	endif
 endif
 
-executable('sdl2trs', sources, dependencies : [ readline, sdl ])
+executable('sdl2trs', sources + rg35xx_sources, dependencies : [ readline, sdl ])
+
+rg35xx_tests = executable('rg35xx_tests',
+    files('tests/rg35xx_tests.cpp') + rg35xx_sources, dependencies : sdl)
+test('rg35xx_tests', rg35xx_tests)
+rg1_keyboard_tests = executable('rg1_keyboard_tests',
+    files('tests/rg1_keyboard_tests.cpp', 'src/trs_sdl_keyboard.c') + rg35xx_sources,
+    dependencies : sdl)
+test('rg1_keyboard_tests', rg1_keyboard_tests)

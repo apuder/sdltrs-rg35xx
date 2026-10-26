@@ -2,6 +2,7 @@
 #define TRS_KEYBOARD_ADAPTER_HPP
 
 #include <map>
+#include <cstdint>
 
 namespace rg35xx {
 
@@ -20,6 +21,7 @@ public:
     virtual int keyIdentity(int symbol) const { return symbol; }
     virtual void keyDown(int symbol) = 0;
     virtual void keyUp(int symbol) = 0;
+    virtual void setMappedKeys(std::uint64_t keys) = 0;
 };
 
 class TrsKeyboardAdapter {
@@ -32,6 +34,7 @@ public:
     void releaseAll();
     bool ownerActive(int owner) const;
     int ownerSymbol(int owner) const;
+    void setMappedKeys(std::uint64_t keys);
 
     static bool validSymbol(int symbol);
 

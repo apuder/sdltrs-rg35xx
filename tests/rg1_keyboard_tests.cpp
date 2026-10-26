@@ -1,0 +1,116 @@
+// Exercise the real C keyboard matrix through the production C++ bridge.
+#include "../src/rg35xx/rg35xx_bridge.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+
+extern "C" {
+#include "../src/trs.h"
+#include "../src/trs_clones.h"
+#include "../src/trs_sdl_keyboard.h"
+
+int trs_model = 3;
+int turbo_mode = 1;
+struct z80_state_struct z80_state;
+struct trs_clones trs_clones;
+
+// Serialization is outside this test's keyboard/input boundary.
+void trs_save_int(FILE*, const int*, int) { std::abort(); }
+void trs_load_int(FILE*, int*, int) { std::abort(); }
+void trs_save_uint64(FILE*, const Uint64*) { std::abort(); }
+void trs_load_uint64(FILE*, Uint64*) { std::abort(); }
+}
+
+static int failures;
+#define EXPECT(condition) do { \
+    if (!(condition)) { \
+        std::fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, #condition); \
+        ++failures; \
+    } \
+} while (0)
+
+static void mapping(const char* text)
+{
+    while (*text) EXPECT(rg35xx_bridge_mapping_out(*text++) == 1);
+    EXPECT(rg35xx_bridge_mapping_out(0) == 1);
+}
+
+static void button(SDL_Scancode scancode, bool down)
+{
+    SDL_Event event = {};
+    event.type = down ? SDL_KEYDOWN : SDL_KEYUP;
+    event.key.keysym.scancode = scancode;
+    EXPECT(rg35xx_bridge_handle_event(&event, SDL_GetTicks()) == 1);
+}
+
+static void flushHostKeys()
+{
+    trs_kb_heartbeat();
+    trs_kb_heartbeat();
+    trs_kb_heartbeat();
+    trs_kb_mem_read(0xFF);
+}
+
+int main()
+{
+    SDL_setenv("SDLTRS_RG35XX_INPUT", "keyboard", 1);
+    EXPECT(rg35xx_bridge_init() == 1);
+    for (trs_model = 1; trs_model <= 4; ++trs_model) {
+        trs_kb_reset();
+        mapping("RG1;A=A;B=SHIFT+BREAK;R1=LEFT+RIGHT;R2=SPACE;L1=SPACE;X=@;Y=SEMICOLON");
+        button(SDL_SCANCODE_F6, true); // Printed A.
+        EXPECT(trs_kb_mem_read(0x01) == 0x02);
+        EXPECT(trs_kb_mem_read(0x80) == 0); // A identifies a physical key.
+        button(SDL_SCANCODE_F6, false);
+        button(SDL_SCANCODE_SPACE, true); // Printed B.
+        EXPECT(trs_kb_mem_read(0x40) == 0x04);
+        EXPECT(trs_kb_mem_read(0x80) == 0x01);
+
+        // Host lowercase translation forces SHIFT off; RG1 SHIFT still asserts.
+        const int host_owner = rg35xx_bridge_physical_owner(SDL_SCANCODE_Z);
+        EXPECT(rg35xx_bridge_guest_key_event(host_owner, 'a', 1));
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x01) == 0x02);
+        EXPECT(trs_kb_mem_read(0x80) == 0x01);
+        button(SDL_SCANCODE_SPACE, false);
+        EXPECT(trs_kb_mem_read(0x80) == 0);
+
+        // Releasing the mapping leaves the host's same physical key down.
+        button(SDL_SCANCODE_F6, true);
+        button(SDL_SCANCODE_F6, false);
+        EXPECT(trs_kb_mem_read(0x01) == 0x02);
+        EXPECT(rg35xx_bridge_guest_key_event(host_owner, 'a', 0));
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x01) == 0);
+
+        // Conversely, host key-up cannot release an active mapping.
+        button(SDL_SCANCODE_F6, true);
+        EXPECT(rg35xx_bridge_guest_key_event(host_owner, 'a', 1));
+        EXPECT(rg35xx_bridge_guest_key_event(host_owner, 'a', 0));
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x01) == 0x02);
+        button(SDL_SCANCODE_F6, false);
+        button(SDL_SCANCODE_E, true); // R1: physically opposing arrows.
+        EXPECT(trs_kb_mem_read(0x40) == 0x60);
+        button(SDL_SCANCODE_E, false);
+        button(SDL_SCANCODE_Q, true);
+        button(SDL_SCANCODE_3, true);
+        button(SDL_SCANCODE_Q, false);
+        EXPECT(trs_kb_mem_read(0x40) == 0x80);
+        button(SDL_SCANCODE_3, false);
+        EXPECT(trs_kb_mem_read(0x40) == 0);
+        button(SDL_SCANCODE_TAB, true);
+        button(SDL_SCANCODE_BACKSPACE, true);
+        EXPECT(trs_kb_mem_read(0x01) == 0x01); // @ without synthesized SHIFT.
+        EXPECT(trs_kb_mem_read(0x20) == 0x08); // Physical semicolon.
+        EXPECT(trs_kb_mem_read(0x80) == 0);
+        mapping("");
+        EXPECT(trs_kb_mem_read(0xFF) == 0);
+        rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+    }
+    rg35xx_bridge_shutdown();
+    if (failures) return EXIT_FAILURE;
+    std::puts("RG1 real keyboard matrix integration tests passed");
+    return EXIT_SUCCESS;
+}

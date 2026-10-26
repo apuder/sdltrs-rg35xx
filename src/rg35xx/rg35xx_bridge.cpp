@@ -37,6 +37,11 @@ public:
     {
         trs_xlate_keysym(0x10000 | symbol);
     }
+
+    void setMappedKeys(std::uint64_t keys) override
+    {
+        trs_kb_set_rg35xx_keys(keys);
+    }
 };
 
 std::unique_ptr<rg35xx::RG35XXControls> controls;
@@ -194,6 +199,18 @@ extern "C" int rg35xx_bridge_init(void)
 extern "C" int rg35xx_bridge_enabled(void)
 {
     return router.get() != NULL;
+}
+
+extern "C" int rg35xx_bridge_mapping_out(int value)
+{
+    if (!router) return 0;
+    try {
+        router->mappingByte(static_cast<unsigned char>(value), SDL_GetTicks());
+    } catch (...) {
+        reportException("mapping reception");
+        rg35xx_bridge_shutdown();
+    }
+    return 1;
 }
 
 extern "C" void rg35xx_bridge_shutdown(void)

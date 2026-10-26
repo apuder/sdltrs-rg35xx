@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 namespace rg35xx {
 
@@ -22,8 +23,12 @@ RG35XXInputRouter::RG35XXInputRouter(RG35XXControls& controls,
       analog_y_direction_(0),
       navigation_direction_(NavigationDirection::None),
       next_repeat_ms_(0),
-      b_consumes_shift_(false)
+      b_consumes_shift_(false),
+      mapping_active_(false),
+      mapping_overflow_(false)
 {
+    std::fill(mapped_axis_directions_, mapped_axis_directions_ +
+              static_cast<std::size_t>(Axis::Count), 0);
     std::fill(gated_buttons_,
               gated_buttons_ + static_cast<std::size_t>(Button::Count), false);
     std::fill(gated_axes_, gated_axes_ + static_cast<std::size_t>(Axis::Count),
@@ -52,7 +57,7 @@ bool RG35XXInputRouter::handleSDLEvent(const SDL_Event& event,
     const bool recognized = controls_.handleSDLEvent(event);
     if (!recognized)
         return false;
-    if (reserve_all_when_hidden_ || suspended_) {
+    if (reserve_all_when_hidden_ || suspended_ || mapping_active_) {
         drainControlEvents(now_ms, false);
         return true;
     }
@@ -88,6 +93,8 @@ bool RG35XXInputRouter::drainControlEvents(std::uint32_t now_ms,
             consumed = true;
         processControlEvent(event, now_ms);
     }
+    if (mapping_active_ && !visible_ && !suspended_)
+        updateMappedKeys();
     return route_consumption && !passthrough && consumed;
 }
 
@@ -234,6 +241,7 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
     }
 
     if (!visible_) {
+        if (mapping_active_) return;
         if (event.type == ControlEventType::ButtonDown &&
             event.button == Button::A)
             openOverlay(now_ms);
@@ -353,6 +361,8 @@ void RG35XXInputRouter::updateDefaultKeys()
 
 void RG35XXInputRouter::gateHeldControls()
 {
+    std::fill(mapped_axis_directions_, mapped_axis_directions_ +
+              static_cast<std::size_t>(Axis::Count), 0);
     const ControlState& state = controls_.state();
     for (std::size_t i = 0; i < static_cast<std::size_t>(Button::Count); ++i)
         gated_buttons_[i] = state.buttons[i];
@@ -528,6 +538,8 @@ void RG35XXInputRouter::setSuspended(bool suspended, std::uint32_t now_ms)
 
 void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
 {
+    mapping_buffer_.clear();
+    mapping_overflow_ = false;
     menu_keys_.clear();
     closeOverlay(true, now_ms);
     controls_.releaseAll(now_ms);
@@ -544,6 +556,47 @@ void RG35XXInputRouter::lifecycleCleanup(std::uint32_t now_ms)
         std::fill(captured_axes_,
                   captured_axes_ + static_cast<std::size_t>(Axis::Count), false);
     }
+}
+
+bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
+{
+    if (value != 0) {
+        if (mapping_buffer_.size() == RG1Mapping::kMaxLength)
+            mapping_overflow_ = true;
+        if (!mapping_overflow_) mapping_buffer_ += static_cast<char>(value);
+        return true;
+    }
+
+    std::string text;
+    text.swap(mapping_buffer_);
+    const bool overflow = mapping_overflow_;
+    mapping_overflow_ = false;
+    RG1Mapping parsed;
+    std::string error;
+    if (overflow || (!text.empty() && !RG1Mapping::parse(text, parsed, error))) {
+        std::fprintf(stderr, "SDLTRS RG35XX: rejected port 41 mapping: %s\n",
+                     overflow ? "more than 4095 bytes" : error.c_str());
+        return false;
+    }
+    closeOverlay(false, now_ms);
+    mapping_ = parsed;
+    mapping_active_ = !text.empty();
+    return true;
+}
+
+void RG35XXInputRouter::updateMappedKeys()
+{
+    const ControlState& state = controls_.state();
+    std::uint32_t controls = 0;
+    for (std::size_t i = 0; i < static_cast<std::size_t>(Button::Count); ++i)
+        if (state.buttons[i] && !gated_buttons_[i])
+            controls |= RG1Mapping::buttonMask(static_cast<Button>(i));
+    for (std::size_t i = 0; i < static_cast<std::size_t>(Axis::Count); ++i) {
+        mapped_axis_directions_[i] = hysteresisDirection(
+            gated_axes_[i] ? 0.0f : state.axes[i], mapped_axis_directions_[i]);
+        controls |= RG1Mapping::axisMask(static_cast<Axis>(i), mapped_axis_directions_[i]);
+    }
+    keyboard_.setMappedKeys(mapping_.resolve(controls));
 }
 
 bool RG35XXInputRouter::guestKeyEvent(int owner, int symbol, bool down)
