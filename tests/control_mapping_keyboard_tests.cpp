@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
+#include <string>
 
 extern "C" {
 #include "../src/trs.h"
@@ -50,6 +51,47 @@ static void flushHostKeys()
     trs_kb_heartbeat();
     trs_kb_heartbeat();
     trs_kb_mem_read(0xFF);
+}
+
+static void testMultiKeyActions()
+{
+    rg35xx_bridge_lifecycle_cleanup(SDL_GetTicks());
+    flushHostKeys();
+    mapping("R1:SPACE,R2:LEFT+RIGHT"); // Missile Defense's actual CSV binding.
+    button(SDL_SCANCODE_3, true);
+    EXPECT(trs_kb_mem_read(0x40) == 0x60); // Both arrows in the first matrix read.
+    rg35xx_bridge_update(SDL_GetTicks() + 1000);
+    EXPECT(trs_kb_mem_read(0x40) == 0x60);
+    button(SDL_SCANCODE_E, true);
+    EXPECT(trs_kb_mem_read(0x40) == 0xe0); // Independent R1 fire remains active.
+    button(SDL_SCANCODE_E, false);
+    button(SDL_SCANCODE_LEFT, true);
+    flushHostKeys();
+    button(SDL_SCANCODE_3, false);
+    EXPECT(trs_kb_mem_read(0x40) == 0x20); // Default D-pad still owns LEFT.
+    button(SDL_SCANCODE_LEFT, false);
+    flushHostKeys();
+    EXPECT(trs_kb_mem_read(0xFF) == 0);
+
+    // One control can hold every supported letter, digit, and named key.
+    std::string keys = "@";
+    for (char c = 'A'; c <= 'Z'; ++c) { keys += '+'; keys += c; }
+    for (char c = '0'; c <= '9'; ++c) { keys += '+'; keys += c; }
+    keys += "+ENTER+CLEAR+BREAK+SPACE+UP+DOWN+LEFT+RIGHT+COMMA+PERIOD+SEMICOLON+SHIFT";
+    mapping(("R2:" + keys).c_str());
+    button(SDL_SCANCODE_3, true);
+    const int rows[] = {0xff, 0xff, 0xff, 0x07, 0xff, 0x5b, 0xff, 0x01};
+    for (int row = 0; row < 8; ++row)
+        EXPECT(trs_kb_mem_read(1 << row) == rows[row]);
+    button(SDL_SCANCODE_F6, true); // A also owns ENTER through its default.
+    flushHostKeys();
+    button(SDL_SCANCODE_3, false);
+    for (int row = 0; row < 8; ++row)
+        EXPECT(trs_kb_mem_read(1 << row) == (row == 6 ? 1 : 0));
+    button(SDL_SCANCODE_F6, false);
+    flushHostKeys();
+    EXPECT(trs_kb_mem_read(0xFF) == 0);
+    mapping("");
 }
 
 int main()
@@ -210,6 +252,7 @@ int main()
         button(SDL_SCANCODE_ESCAPE, false);
         flushHostKeys();
         mapping("");
+        testMultiKeyActions();
     }
     rg35xx_bridge_shutdown();
     if (failures) return EXIT_FAILURE;

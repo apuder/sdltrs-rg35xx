@@ -59,19 +59,19 @@ characters before showing the guide. The builder and emulator validate token
 names. Invalid or oversized selected mappings report an error without sending
 any bytes.
 
-The game-list footer names RG35XX controls: `Left DPAD: Select game`,
-`A: Controls`, and `B: Exit`. A opens the two-column mapping overview.
+The game-list footer reads exactly `DPAD: Choose game     A: Select     B: Exit`.
+A opens the two-column mapping overview.
 Only Left DPAD to Arrow keys, A to ENTER, B to BREAK, and X to CLEAR are shown
 as default rows, followed by game-specific assignments. Direct custom assignments replace
 the corresponding default row, so `A:SPACE` shows A to SPACE, with no A to ENTER
-row. Custom chords and direction overrides remain explicit; the footer notes
-that custom bindings override defaults while they match. The grouped Left DPAD
+row. Custom chords and direction overrides remain explicit. Custom bindings
+override defaults while they match. The grouped Left DPAD
 row summarizes its base directions, with custom direction rows as exceptions.
 Other emulator defaults remain active but are omitted from the guide.
 
 For the example above, the overview is:
 
-| Control | TRS-80 key / action |
+| Control | TRS-80 KEY |
 | --- | --- |
 | Left DPAD | Arrow keys |
 | A | ENTER |
@@ -86,8 +86,8 @@ An empty mapping shows only the four default rows. Right-stick click advances
 through pages of eleven rows and wraps; B returns with the selection preserved
 and sends nothing. Long control/action columns are clipped independently with
 `...`, without changing the buffered mapping or overflowing the table borders.
-The final line uses RG35XX names: `A: Launch`, `B: Back`, and
-`Right stick click: More`.
+The penultimate line is blank. The final line reads exactly
+`A: Launch     B: Back`. Paging remains available through right-stick click.
 A on the overview sends the complete original mapping, one byte at a time,
 to **decimal port 41 (`29h`)**, followed by one zero byte. For Cosmic Fighter:
 
@@ -114,6 +114,16 @@ Tokens are case sensitive. `:` separates console controls from TRS-80 keys;
 `,` separates bindings. There is no trailing comma or escape syntax. `+` means
 simultaneous controls on the left and simultaneous physical keys on the right.
 Order within a chord does not change its meaning.
+
+A multi-key action has no fixed two- or three-key limit: any combination of the
+supported physical keys can be held together, within the 4095-byte mapping
+limit. For Missile Defense, assign `R2` in the `LEFT+RIGHT` column to encode
+`R2:LEFT+RIGHT`. Holding R2 asserts both arrow-key matrix bits together and
+releases both when R2 is released, except for keys still held by other inputs.
+For example, `R2:A+Z+0+9+LEFT+RIGHT+SHIFT+SPACE` mixes letters, digits, arrows,
+SHIFT, and SPACE in one simultaneous action. All 49 supported physical key
+identities can appear in a single chord; they are applied as one matrix state,
+without sequential key-down events or automatic SHIFT for letters.
 
 Console tokens are `A B X Y L1 L2 R1 R2 START SELECT`, `D_U D_D D_L D_R`,
 `LS_U LS_D LS_L LS_R`, and `RS_U RS_D RS_L RS_R`. These are printed hardware

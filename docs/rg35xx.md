@@ -19,6 +19,23 @@ path. `SDLTRS_RG35XX_INPUT=sdl` selects the physical backend described below.
 Any other nonempty value prints an error and leaves RG35XX input disabled. Do
 not set `SDL_VIDEODRIVER=mali` on a development host.
 
+## Saving emulator settings
+
+With RG35XX input enabled (`sdl` or `keyboard`), settings are saved automatically
+when returning from the emulator menu to the game and on a normal emulator exit.
+For example, changing **Display Settings → Emulator Foreground Color** and
+closing the menu preserves the color for the next launch. There is no separate
+save step. A save failure is reported in a dialog when closing the menu.
+
+The active configuration file is used: by default `$HOME/.sdltrs.t8c`, or
+`./sdltrs.t8c` when `HOME` is unset. Passing a `.t8c` filename on the command line
+selects a different profile. The configuration/state-files menu shows its path.
+The profile directory must be writable and persistent on the handheld.
+Command-line options still override saved values at startup. Custom game key
+mappings received on port 41 belong to the current game and are not saved in
+this profile. With RG35XX input disabled, use **Write Configuration (Alt-W)**
+to save settings manually.
+
 ## Physical SDL2 controls
 
 The physical backend consumes the `SDL_JOY*` events already delivered to
@@ -239,8 +256,12 @@ All documented physical button, D-pad, and left/right stick direction tokens
 are supported. Stick directions use the same 0.55 engage / 0.35 release
 hysteresis as the default controls. Outputs identify physical TRS-80 matrix
 keys, so `A` does not synthesize SHIFT, `SHIFT+BREAK` holds both keys, and
-`LEFT+RIGHT` holds both arrows. Active outputs are combined with the host
-keyboard matrix; releasing one source cannot release a key held by another.
+`LEFT+RIGHT` holds both arrows. Multi-key actions have no fixed key-count cap:
+any combination of the 49 supported physical keys can share one binding, within
+the 4095-byte mapping limit. For example, Missile Defense's `R2:LEFT+RIGHT`
+asserts both arrows together while R2 is held; `R2:A+Z+0+9+LEFT+RIGHT+SHIFT+SPACE`
+mixes letters, digits, and control keys. The full chord is applied as one matrix
+state. Active outputs are combined with the host keyboard matrix; releasing one source cannot release a key held by another.
 Matching larger control chords replace their strict subsets, while independent
 bindings remain active. A matching custom chord also suppresses the defaults
 of its constituent controls. For example, `SELECT+A:SHIFT+BREAK` sends

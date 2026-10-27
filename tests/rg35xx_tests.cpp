@@ -1025,6 +1025,7 @@ void testControlMappingParserAndResolution()
     const char* names[] = {"@", "ENTER", "CLEAR", "BREAK", "SPACE", "UP",
         "DOWN", "LEFT", "RIGHT", "COMMA", "PERIOD", "SEMICOLON", "SHIFT"};
     std::uint64_t seen = 0;
+    std::string all_keys;
     for (int i = 0; i < 49; ++i) {
         std::string key;
         if (i < 26) key += static_cast<char>('A' + i);
@@ -1034,7 +1035,12 @@ void testControlMappingParserAndResolution()
         const std::uint64_t output = mapping.resolve(b);
         EXPECT(output && !(output & (output - 1)) && !(seen & output));
         seen |= output;
+        if (!all_keys.empty()) all_keys += "+";
+        all_keys += key;
     }
+    EXPECT(ControlMapping::parse("R2:" + all_keys, mapping, error));
+    EXPECT(mapping.resolve(ControlMapping::buttonMask(Button::R2)) == seen);
+    EXPECT(seen == UINT64_C(0x01ff5bff07ffffff));
 }
 
 void testControlMappingRoutingAndReceiver()

@@ -190,6 +190,7 @@ extern char trs_state_file[];
 extern int  trs_load_config_file(void);
 extern int  trs_parse_command_line(int argc, char **argv);
 extern int  trs_write_config_file(const char *filename);
+extern int  trs_autosave_config(void);
 
 /* trs_printer.c: */
 extern int  trs_printer;

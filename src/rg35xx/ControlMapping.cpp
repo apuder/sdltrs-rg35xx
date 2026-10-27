@@ -69,6 +69,7 @@ int keyBit(const std::string& token)
 
 bool parseKeys(const std::string& text, std::uint64_t& keys)
 {
+    // Accumulate the complete physical-key chord; there is no fixed key-count limit.
     keys = 0;
     const std::vector<std::string> tokens = split(text, '+');
     for (std::size_t i = 0; i < tokens.size(); ++i) {

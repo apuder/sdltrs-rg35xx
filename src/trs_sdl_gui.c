@@ -2813,6 +2813,9 @@ void gui_function(int function)
       break;
   }
 
+  if (trs_autosave_config() != 0)
+    gui_error(trs_config_file);
+
   trs_screen_refresh();
   SDL_PauseAudio(0);
   rg35xx_bridge_modal_end(SDL_GetTicks());

@@ -67,5 +67,5 @@ int main(int argc, char *argv[])
 #endif
 
   puts("Quitting.");
-  exit(EXIT_SUCCESS);
+  trs_exit(0);
 }

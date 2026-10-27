@@ -525,6 +525,7 @@ void trs_kb_reset(void)
 
 void trs_kb_set_rg35xx_keys(uint64_t keys)
 {
+  /* Apply the whole chord together, including keys in different matrix rows. */
   rg35xx_keys = keys;
   z80_state.keypress = (keys_down || rg35xx_keys) ? turbo_mode : 0;
 }

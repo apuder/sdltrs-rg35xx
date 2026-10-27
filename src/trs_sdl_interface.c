@@ -1055,6 +1055,7 @@ void trs_exit(int confirm)
     SDL_Delay(7);
   }
 
+  trs_autosave_config();
   exit(EXIT_SUCCESS);
 }
 

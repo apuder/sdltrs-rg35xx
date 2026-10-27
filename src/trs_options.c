@@ -42,6 +42,7 @@
 #include "trs_state_save.h"
 #include "trs_stringy.h"
 #include "trs_uart.h"
+#include "rg35xx/rg35xx_bridge.h"
 
 #define MAX_SCALE   4
 #define OPTIONS     (int)(sizeof(options) / sizeof(options[0]))
@@ -1181,6 +1182,20 @@ int trs_write_config_file(const char *filename)
   fprintf(config_file, "%sxmem80\n", option(xmem80));
   fprintf(config_file, "year\t\t= %d\n", trs_year);
 
-  fclose(config_file);
+  i = ferror(config_file);
+  if (fclose(config_file) != 0 || i) {
+    file_error("write configuration: '%s'", filename);
+    return -1;
+  }
   return 0;
+}
+
+/* Handheld menus have no separate Apply/Save step. Keep the active profile
+   up to date when returning to emulation and on an orderly exit. */
+int trs_autosave_config(void)
+{
+  if (!rg35xx_bridge_enabled() || trs_config_file[0] == 0)
+    return 0;
+
+  return trs_write_config_file(trs_config_file);
 }
