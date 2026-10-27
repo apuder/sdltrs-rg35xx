@@ -58,7 +58,7 @@ remembers that GUID for reconnects. Events are filtered using the SDL joystick
 instance ID; removal releases held controls, and reconnect suppresses controls
 already held until they return to neutral.
 
-Physical A, Menu, and controls with default TRS-80 key bindings are reserved
+Physical SELECT, Menu, and controls with default TRS-80 key bindings are reserved
 while the overlay is hidden. Menu opens the same main menu as F7; include
 `menu=bN` in the device mapping to enable it. Other physical events continue
 into SDLTRS's existing joystick handling. While the overlay is visible, mapped
@@ -90,20 +90,22 @@ than translated text:
 | Menu | F5 |
 
 Simulator keys are reserved while this mode is enabled. While the overlay is
-hidden, logical A opens the keyboard and Menu (F5) opens the F7 menu.
+hidden, tap logical SELECT (Escape) to open or close the keyboard. A (F6)
+sends ENTER, B (Space) sends BREAK, and Menu (F5) opens the F7 menu. START
+(Return) has no default guest key.
 The default guest bindings below apply in both simulator and physical mode.
 
 While the overlay is open:
 
 | Control | Action |
 | --- | --- |
-| A | Close the overlay |
+| A down/up | Press/release TRS-80 ENTER |
 | D-pad or left stick | Move between keycaps |
 | B down/up | Press/release the selected TRS-80 key |
 | X | Toggle one-shot Shift |
 | Y down/up | Press/release the TRS-80 left-arrow editing key |
-| Start down/up | Press/release TRS-80 ENTER |
-| Select | Close without typing |
+| Start | No guest key |
+| Select | Tap to close without typing |
 
 Navigation moves immediately, repeats after 300 ms, then repeats every 90 ms.
 Shift applies to the next nonmodifier activation and clears when that key is
@@ -196,8 +198,11 @@ While the soft keyboard is closed and no menu/dialog is active:
 | D-pad / left joystick | Corresponding arrow keys (including diagonals) |
 | Right joystick click | Space |
 | L1, L2, R1, R2 | No default TRS-80 key |
-| Start | ENTER |
-| Select | CLEAR |
+| A | ENTER |
+| B | BREAK |
+| X | CLEAR |
+| Select | Tap to open/close the soft keyboard |
+| Start | No default TRS-80 key |
 
 Keys stay down while their controls are held and release on button-up or stick
 neutral. Shared keys remain down until every contributing control releases,
@@ -214,13 +219,13 @@ above), or with the `keyboard` simulator, a guest program can augment the
 default gameplay bindings. Send the ASCII mapping one byte per Z80 `OUT`
 to decimal port **41** (`29h`), then send zero. For example,
 `L1:1,L2:2,Y:D` followed by `00` maps L1 to physical 1, L2 to physical 2,
-and Y to physical D. START still sends ENTER, SELECT still sends CLEAR, and
-the D-pad/left stick still send arrow keys. A custom assignment overrides the
-same control's default: `START:SPACE` sends SPACE instead of ENTER. Shoulder
-buttons L1, L2, R1, and R2 send TRS-80 keys only when assigned by a custom map.
+and Y to physical D. A still sends ENTER, B still sends BREAK, X still sends
+CLEAR, SELECT toggles the soft keyboard, and the D-pad/left stick still send arrow keys. START has
+no default guest key. A custom assignment overrides the same control's default:
+`A:SPACE` sends SPACE instead of ENTER. Shoulder buttons L1, L2, R1, and R2
+send TRS-80 keys only when assigned by a custom map.
 Their emulator-menu and dialog actions remain available. Commas separate bindings,
-colons separate controls from
-keys, and `+` joins simultaneous controls or keys, e.g.
+colons separate controls from keys, and `+` joins simultaneous controls or keys, e.g.
 `B:SPACE,D_L:LEFT,SELECT+START:SHIFT+BREAK`. There is no version prefix.
 The port is claimed only while an RG35XX input backend is enabled.
 
@@ -238,9 +243,11 @@ keys, so `A` does not synthesize SHIFT, `SHIFT+BREAK` holds both keys, and
 keyboard matrix; releasing one source cannot release a key held by another.
 Matching larger control chords replace their strict subsets, while independent
 bindings remain active. A matching custom chord also suppresses the defaults
-of its constituent controls. For example, `SELECT+START:SHIFT+BREAK` sends
-SHIFT+BREAK while both controls are held, suppressing CLEAR and ENTER. When
-the chord stops matching, any still-held constituent resumes its default.
+of its constituent controls. For example, `SELECT+A:SHIFT+BREAK` sends
+SHIFT+BREAK while both controls are held, suppressing ENTER and the keyboard
+toggle. SELECT toggles on release; using it in a custom binding consumes that
+tap, so no keyboard appears afterward. When a chord stops matching, key
+bindings for still-held constituents resume their defaults.
 
 The hard-disk builder in the TPK repository reads only the manually edited
 `tools/hard-disk/action-map.csv`. Empty and lowercase `x` cells are ignored;
@@ -257,9 +264,9 @@ replacing the active mapping. Custom mappings do not perform prompt detection
 or game-phase selection.
 
 Controls without a matching custom binding retain their default actions,
-including A's keyboard toggle. A custom A binding or a matching chord containing
-A overrides that toggle. Recognized controls are consumed before the legacy
-joystick handling while a custom map is active. Menu keeps its reserved F7
+including SELECT's keyboard toggle. A custom SELECT binding or a matching
+chord containing SELECT overrides that toggle. Recognized controls are consumed
+before the legacy joystick handling while a custom map is active. Menu keeps its reserved F7
 behavior and menu navigation takes precedence over mappings. Focus loss,
 disconnect, reset/state-load cleanup, and exit release mapped keys. The active
 mapping survives lifecycle cleanup until replaced or cleared; mappings are
@@ -461,10 +468,10 @@ objects compiled with one route are not reused by the other.
 Use a user-owned Model I ROM and its normal startup options:
 
 1. Launch with `SDLTRS_RG35XX_INPUT=keyboard` as shown above.
-2. Press F6 and confirm the translucent keyboard appears while the guest keeps
-   running.
+2. Tap Escape (logical SELECT) and confirm the translucent keyboard appears
+   while the guest keeps running.
 3. Use both arrows and WASD to move. Use Space to select keys and enter
-   `PRINT "HELLO"`, then press Return (logical Start) for ENTER.
+   `PRINT "HELLO"`, then press F6 (logical A) for ENTER.
 4. Check one-shot Shift with Tab and shifted punctuation. Check Backspace as
    the TRS-80 left-arrow editing key, plus the CLEAR and BREAK keycaps.
 5. Hold Space on a normal key, close or change focus, then confirm no guest key
@@ -477,8 +484,8 @@ For the physical backend, repeat the same typing test with
 `SDLTRS_RG35XX_INPUT=sdl` and the verified `SDLTRS_RG35XX_MAP`. Confirm the
 startup diagnostic names the intended device and GUID. With the overlay
 hidden, verify the default TRS-80 bindings above and that unreserved controls
-such as B still reach the legacy joystick path. Verify that A opens the overlay
-and Menu opens the main menu. With it open, verify the printed A/B,
+such as R1 still reach the legacy joystick path. Verify that tapping SELECT
+opens the overlay and Menu opens the main menu. With it open, verify the printed A/B,
 D-pad, and left stick follow the documented overlay actions. Finally,
 disconnect and reconnect the controls and confirm that held buttons neither
 stick nor activate until released.

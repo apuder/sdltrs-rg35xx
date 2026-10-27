@@ -183,7 +183,7 @@ extern "C" int rg35xx_bridge_init(void)
         if (keyboard_mode) {
             std::fprintf(stderr,
                 "SDLTRS RG35XX: host-keyboard simulator enabled "
-                "(F6 toggles overlay)\n");
+                "(Escape/SELECT toggles overlay)\n");
         }
         return 1;
     } catch (...) {

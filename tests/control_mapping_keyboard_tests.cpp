@@ -119,6 +119,7 @@ int main()
         button(SDL_SCANCODE_BACKSPACE, true);
         EXPECT(trs_kb_mem_read(0x01) == 0x01); // @ without synthesized SHIFT.
         EXPECT(trs_kb_mem_read(0x20) == 0x08); // Physical semicolon.
+        EXPECT(trs_kb_mem_read(0x40) == 0); // Custom X replaces default CLEAR.
         EXPECT(trs_kb_mem_read(0x80) == 0);
         mapping("");
         EXPECT(trs_kb_mem_read(0xFF) == 0);
@@ -134,26 +135,55 @@ int main()
         EXPECT(trs_kb_mem_read(0x01) == 0x10); // Printed Y holds physical D.
         EXPECT(trs_kb_mem_read(0x80) == 0);
         button(SDL_SCANCODE_BACKSPACE, false);
-        // Cosmic's custom bindings preserve default START, SELECT and movement.
+        // Cosmic inherits A=ENTER, B=BREAK, SELECT=keyboard, no START key.
         button(SDL_SCANCODE_RETURN, true);
         flushHostKeys();
-        EXPECT(trs_kb_mem_read(0x40) == 0x01);
+        EXPECT(trs_kb_mem_read(0x40) == 0);
         button(SDL_SCANCODE_RETURN, false);
-        button(SDL_SCANCODE_ESCAPE, true);
+        button(SDL_SCANCODE_F6, true);
         flushHostKeys();
-        EXPECT(trs_kb_mem_read(0x40) == 0x02);
-        button(SDL_SCANCODE_ESCAPE, false);
+        EXPECT(trs_kb_mem_read(0x40) == 0x01);
+        button(SDL_SCANCODE_F6, false);
+        button(SDL_SCANCODE_SPACE, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x04);
+        button(SDL_SCANCODE_SPACE, false);
+        button(SDL_SCANCODE_TAB, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x02); // Inherited X holds CLEAR.
+        button(SDL_SCANCODE_TAB, false);
         button(SDL_SCANCODE_LEFT, true);
         flushHostKeys();
         EXPECT(trs_kb_mem_read(0x40) == 0x20);
         button(SDL_SCANCODE_LEFT, false);
         flushHostKeys();
         EXPECT(trs_kb_mem_read(0x40) == 0);
+        button(SDL_SCANCODE_ESCAPE, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0); // SELECT does not assert CLEAR.
+        button(SDL_SCANCODE_ESCAPE, false); // Tap opens the keyboard.
+        button(SDL_SCANCODE_RETURN, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0); // START stays unassigned in overlay.
+        button(SDL_SCANCODE_RETURN, false);
+        button(SDL_SCANCODE_F6, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x40) == 0x01); // A sends ENTER in overlay too.
+        button(SDL_SCANCODE_F6, false);
+        button(SDL_SCANCODE_SPACE, true);
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0x04) == 0x02); // B types selected Q in overlay.
+        EXPECT(trs_kb_mem_read(0x40) == 0);
+        button(SDL_SCANCODE_SPACE, false);
+        button(SDL_SCANCODE_ESCAPE, true);
+        button(SDL_SCANCODE_ESCAPE, false); // Close without typing or CLEAR.
+        flushHostKeys();
+        EXPECT(trs_kb_mem_read(0xFF) == 0);
 
         mapping("START:SPACE,L1:A,SELECT+R1:SHIFT+BREAK");
         button(SDL_SCANCODE_RETURN, true);
         flushHostKeys();
-        EXPECT(trs_kb_mem_read(0x40) == 0x80); // SPACE overrides ENTER.
+        EXPECT(trs_kb_mem_read(0x40) == 0x80); // Custom START assigns SPACE.
         button(SDL_SCANCODE_V, true); // Default right-stick click also owns SPACE.
         button(SDL_SCANCODE_RETURN, false);
         flushHostKeys();
@@ -168,14 +198,14 @@ int main()
         button(SDL_SCANCODE_Q, false);
         button(SDL_SCANCODE_ESCAPE, true);
         flushHostKeys();
-        EXPECT(trs_kb_mem_read(0x40) == 0x02);
-        button(SDL_SCANCODE_E, true); // SELECT+R1 suppresses default CLEAR.
+        EXPECT(trs_kb_mem_read(0x40) == 0);
+        button(SDL_SCANCODE_E, true); // SELECT+R1 consumes the keyboard toggle.
         flushHostKeys();
         EXPECT(trs_kb_mem_read(0x40) == 0x04);
         EXPECT(trs_kb_mem_read(0x80) == 0x01);
         button(SDL_SCANCODE_E, false);
         flushHostKeys();
-        EXPECT(trs_kb_mem_read(0x40) == 0x02); // SELECT resumes CLEAR.
+        EXPECT(trs_kb_mem_read(0x40) == 0); // SELECT remains a consumed modifier.
         EXPECT(trs_kb_mem_read(0x80) == 0);
         button(SDL_SCANCODE_ESCAPE, false);
         flushHostKeys();

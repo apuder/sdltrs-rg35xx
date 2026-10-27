@@ -9,7 +9,7 @@ namespace rg35xx {
 enum GuestKeyOwner {
     GuestOwnerOverlayB = 1,
     GuestOwnerOverlayY = 2,
-    GuestOwnerOverlayStart = 3,
+    GuestOwnerOverlayA = 3,
     GuestOwnerDefaultButtonBase = 100,
     GuestOwnerDefaultAxisBase = 200,
     GuestOwnerPhysicalBase = 1000

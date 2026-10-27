@@ -79,6 +79,7 @@ private:
     NavigationDirection navigation_direction_;
     std::uint32_t next_repeat_ms_;
     bool b_consumes_shift_;
+    bool select_tap_pending_;
     ControlMapping mapping_;
     bool mapping_active_;
     std::string mapping_buffer_;

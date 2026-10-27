@@ -202,7 +202,7 @@ void SoftKeyboardRenderer::draw(SDL_Renderer* renderer,
 
     SDL_SetRenderDrawColor(renderer, 225, 230, 238, 255);
     drawText(renderer, text_entry ? "B TYPE  Y ERASE  START OK  SELECT CANCEL" :
-             "A CLOSE  B TYPE  DPAD/STICK MOVE  X SHIFT",
+             "SELECT CLOSE  B TYPE  A ENTER  X SHIFT",
              padding, height - legend_height, width - padding * 2,
              legend_height - 2);
 

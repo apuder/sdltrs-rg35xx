@@ -20,10 +20,9 @@ R1:SPACE,L1:1,L2:2,Y:D
 ```
 
 Custom bindings augment the emulator's defaults. This mapping assigns R1 to
-SPACE, L1 to 1, L2 to 2, and Y to D, while preserving START to ENTER, SELECT to
-CLEAR, movement arrows, A's keyboard toggle,
-and other defaults. An explicit assignment overrides that control's default;
-for example, `START:SPACE` sends SPACE instead of ENTER. L1, L2, R1, and R2
+SPACE, L1 to 1, L2 to 2, and Y to D, while preserving A to ENTER, B to BREAK,
+X to CLEAR, movement arrows, SELECT's keyboard toggle, and other defaults. An explicit assignment overrides that control's default;
+for example, `A:SPACE` sends SPACE instead of ENTER. START, L1, L2, R1, and R2
 have no default TRS-80 key assignments; use custom cells to assign them.
 
 Bindings follow CSV column order. Unknown controls or physical keys, duplicate
@@ -60,37 +59,36 @@ characters before showing the guide. The builder and emulator validate token
 names. Invalid or oversized selected mappings report an error without sending
 any bytes.
 
-ENTER on the game menu opens a two-column control overview. It includes the
-inherited defaults and custom assignments. D-pad directions share one row
-(`Left DPAD` to `Arrow keys`), and the left stick has a similar grouped row.
-Direct custom assignments replace the corresponding default row, so an
-assignment such as `START:SPACE` shows START to SPACE, with no START to ENTER
+The game-list footer names RG35XX controls: `Left DPAD: Select game`,
+`A: Controls`, and `B: Exit`. A opens the two-column mapping overview.
+Only Left DPAD to Arrow keys, A to ENTER, B to BREAK, and X to CLEAR are shown
+as default rows, followed by game-specific assignments. Direct custom assignments replace
+the corresponding default row, so `A:SPACE` shows A to SPACE, with no A to ENTER
 row. Custom chords and direction overrides remain explicit; the footer notes
-that custom bindings override defaults while they match. Grouped arrow rows
-summarize the base directions, with explicit custom direction rows as exceptions.
-Unassigned shoulder buttons have no rows because they have no default keys.
+that custom bindings override defaults while they match. The grouped Left DPAD
+row summarizes its base directions, with custom direction rows as exceptions.
+Other emulator defaults remain active but are omitted from the guide.
 
 For the example above, the overview is:
 
 | Control | TRS-80 key / action |
 | --- | --- |
 | Left DPAD | Arrow keys |
-| Left stick | Arrow keys |
-| START | ENTER |
-| SELECT | CLEAR |
-| Right stick click | SPACE |
-| A | On-screen keyboard |
-| Menu | Emulator menu (F7) |
+| A | ENTER |
+| B | BREAK |
+| X | CLEAR |
 | R1 | SPACE |
 | L1 | 1 |
 | L2 | 2 |
 | Y | D |
 
-An empty mapping still shows the default table. SPACE advances through pages
-of eleven rows and wraps; BREAK returns with the selection preserved and sends
-nothing. Long control/action columns are clipped independently with `...`,
-without changing the buffered mapping or overflowing the table borders.
-ENTER on the guide sends the complete original mapping, one byte at a time,
+An empty mapping shows only the four default rows. Right-stick click advances
+through pages of eleven rows and wraps; B returns with the selection preserved
+and sends nothing. Long control/action columns are clipped independently with
+`...`, without changing the buffered mapping or overflowing the table borders.
+The final line uses RG35XX names: `A: Launch`, `B: Back`, and
+`Right stick click: More`.
+A on the overview sends the complete original mapping, one byte at a time,
 to **decimal port 41 (`29h`)**, followed by one zero byte. For Cosmic Fighter:
 
 ```text
@@ -136,11 +134,12 @@ The emulator keeps outputs down while their resolved controls are held. Shared
 keys remain down until every contributing source releases. Larger matching
 control chords suppress their strict subset bindings; independent bindings
 remain active. Matching custom chords also suppress the defaults of their
-constituent controls. For example, `SELECT+START:SHIFT+BREAK` suppresses CLEAR
-and ENTER while both controls are held; a constituent still held after the
-chord ends resumes its default. A retains its keyboard toggle unless overridden
-by a custom A binding or a matching chord containing A. Menu stays reserved.
-The guide shows inherited defaults and explicit custom assignments together.
+constituent controls. For example, `SELECT+A:SHIFT+BREAK` suppresses ENTER and
+the keyboard toggle while both controls are held; a key binding still held after
+the chord ends resumes its default. SELECT toggles the keyboard on release;
+using SELECT in a custom binding consumes that tap without opening the keyboard.
+A direct custom SELECT binding also overrides its keyboard toggle. Menu stays reserved.
+The guide shows the four selected default rows and explicit custom assignments.
 The builder, launcher, and emulator use only compact mappings.
 Old `RG1;...` strings and their alternative, prompt, and overlay syntax are
 rejected without replacing the emulator's active mapping.

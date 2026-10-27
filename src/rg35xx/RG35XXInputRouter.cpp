@@ -24,6 +24,7 @@ RG35XXInputRouter::RG35XXInputRouter(RG35XXControls& controls,
       navigation_direction_(NavigationDirection::None),
       next_repeat_ms_(0),
       b_consumes_shift_(false),
+      select_tap_pending_(false),
       mapping_active_(false),
       mapping_overflow_(false)
 {
@@ -127,7 +128,7 @@ bool RG35XXInputRouter::transitionConsumed(const ControlEvent& event,
     }
 
     const std::size_t button = static_cast<std::size_t>(event.button);
-    const bool reserved = event.button == Button::A || event.button == Button::Menu ||
+    const bool reserved = event.button == Button::Select || event.button == Button::Menu ||
                         defaultButtonSymbol(event.button) >= 0;
     if (passthrough_buttons_[button]) {
         passthrough = true;
@@ -240,23 +241,30 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
         return;
     }
 
+    // Defer SELECT until release so it can also modify custom control chords.
+    // A matching custom SELECT binding cancels the pending keyboard toggle.
+    if (event.type != ControlEventType::AxisChanged && event.button == Button::Select) {
+        if (event.type == ControlEventType::ButtonDown) {
+            select_tap_pending_ = true;
+        } else {
+            const bool toggle = select_tap_pending_;
+            select_tap_pending_ = false;
+            if (toggle) {
+                if (visible_) closeOverlay(false, now_ms);
+                else openOverlay(now_ms);
+            }
+        }
+        return;
+    }
+
     if (!visible_) {
-        if (event.type == ControlEventType::ButtonDown &&
-            event.button == Button::A &&
-            (!mapping_active_ || !(mapping_.overriddenControls(mappedControls()) &
-                                   ControlMapping::buttonMask(Button::A))))
-            openOverlay(now_ms);
-        else if (!mapping_active_)
+        if (!mapping_active_)
             updateDefaultKeys();
         return;
     }
 
     if (event.type == ControlEventType::ButtonDown) {
         switch (event.button) {
-            case Button::A:
-            case Button::Select:
-                closeOverlay(false, now_ms);
-                return;
             case Button::B:
                 if (soft_keyboard_.selectedIsShift()) {
                     soft_keyboard_.toggleShift();
@@ -276,8 +284,8 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
             case Button::Y:
                 keyboard_.press(GuestOwnerOverlayY, 0x114);
                 return;
-            case Button::Start:
-                keyboard_.press(GuestOwnerOverlayStart, 0x0d);
+            case Button::A:
+                keyboard_.press(GuestOwnerOverlayA, 0x0d);
                 return;
             default:
                 break;
@@ -294,8 +302,8 @@ void RG35XXInputRouter::processControlEvent(const ControlEvent& event,
             case Button::Y:
                 keyboard_.release(GuestOwnerOverlayY);
                 return;
-            case Button::Start:
-                keyboard_.release(GuestOwnerOverlayStart);
+            case Button::A:
+                keyboard_.release(GuestOwnerOverlayA);
                 return;
             default:
                 break;
@@ -316,8 +324,9 @@ int RG35XXInputRouter::defaultButtonSymbol(Button button)
         case Button::DPadLeft: return 0x114;
         case Button::DPadRight: return 0x113;
         case Button::RightStick: return ' ';
-        case Button::Start: return 0x0d;
-        case Button::Select: return 0x116;
+        case Button::A: return 0x0d;
+        case Button::B: return 0x1b;
+        case Button::X: return 0x116;
         default: return -1;
     }
 }
@@ -372,6 +381,7 @@ void RG35XXInputRouter::gateHeldControls()
 
 void RG35XXInputRouter::openOverlay(std::uint32_t)
 {
+    select_tap_pending_ = false;
     keyboard_.releaseSynthetic();
     soft_keyboard_.clearShift();
     b_consumes_shift_ = false;
@@ -385,6 +395,7 @@ void RG35XXInputRouter::openOverlay(std::uint32_t)
 
 void RG35XXInputRouter::closeOverlay(bool release_all, std::uint32_t now_ms)
 {
+    select_tap_pending_ = false;
     if (release_all)
         keyboard_.releaseAll();
     else
@@ -587,7 +598,10 @@ bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
 void RG35XXInputRouter::updateMappedKeys()
 {
     const std::uint32_t controls = mappedControls();
-    updateDefaultKeys(mapping_.overriddenControls(controls));
+    const std::uint32_t overridden = mapping_.overriddenControls(controls);
+    if (overridden & ControlMapping::buttonMask(Button::Select))
+        select_tap_pending_ = false;
+    updateDefaultKeys(overridden);
     keyboard_.setMappedKeys(mapping_.resolve(controls));
 }
 

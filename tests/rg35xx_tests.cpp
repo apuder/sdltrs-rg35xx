@@ -214,16 +214,16 @@ void tap(RG35XXInputRouter& router, SDL_Scancode scancode, std::uint32_t& now)
 
 void openOverlay(RG35XXInputRouter& router, std::uint32_t& now)
 {
-    tap(router, SDL_SCANCODE_F6, now);
+    tap(router, SDL_SCANCODE_ESCAPE, now);
     EXPECT(router.visible());
 }
 
 void openOverlay(FakeControls& controls, RG35XXInputRouter& router,
                  std::uint32_t now)
 {
-    controls.button(Button::A, true, now);
+    controls.button(Button::Select, true, now);
     router.update(now);
-    controls.button(Button::A, false, now + 1);
+    controls.button(Button::Select, false, now + 1);
     router.update(now + 1);
     EXPECT(router.visible());
 }
@@ -430,40 +430,28 @@ void testPhysicalPassthroughPolicy()
     TrsKeyboardAdapter keyboard(sink);
     RG35XXInputRouter router(controls, keyboard, false);
 
-    SDL_Event event = keyEvent(SDL_SCANCODE_SPACE, true, 1);
+    SDL_Event event = keyEvent(SDL_SCANCODE_E, true, 1); // R1 has no guest default.
     EXPECT(!router.handleSDLEvent(event, 1));
-    event = keyEvent(SDL_SCANCODE_F6, true, 2);
-    EXPECT(router.handleSDLEvent(event, 2));
-    EXPECT(router.visible());
-    event = keyEvent(SDL_SCANCODE_F6, false, 3);
-    EXPECT(router.handleSDLEvent(event, 3));
-    event = keyEvent(SDL_SCANCODE_SPACE, false, 4);
-    EXPECT(!router.handleSDLEvent(event, 4));
-    EXPECT(sink.events.empty());
-
-    event = keyEvent(SDL_SCANCODE_SPACE, true, 5);
-    EXPECT(router.handleSDLEvent(event, 5));
-    event = keyEvent(SDL_SCANCODE_F6, true, 6);
-    EXPECT(router.handleSDLEvent(event, 6));
+    send(router, SDL_SCANCODE_ESCAPE, true, 2);
     EXPECT(!router.visible());
-    event = keyEvent(SDL_SCANCODE_F6, false, 7);
-    EXPECT(router.handleSDLEvent(event, 7));
-    event = keyEvent(SDL_SCANCODE_SPACE, false, 8);
-    EXPECT(router.handleSDLEvent(event, 8));
-
-    event = keyEvent(SDL_SCANCODE_SPACE, true, 9);
+    send(router, SDL_SCANCODE_ESCAPE, false, 3);
+    EXPECT(router.visible());
+    event = keyEvent(SDL_SCANCODE_E, false, 4);
+    EXPECT(!router.handleSDLEvent(event, 4)); // Preserve a passthrough release.
+    EXPECT(sink.events.empty());
+    send(router, SDL_SCANCODE_E, true, 5);
+    send(router, SDL_SCANCODE_ESCAPE, true, 6);
+    send(router, SDL_SCANCODE_ESCAPE, false, 7);
+    EXPECT(!router.visible());
+    send(router, SDL_SCANCODE_E, false, 8); // Preserve a captured release.
+    event = keyEvent(SDL_SCANCODE_E, true, 9);
     EXPECT(!router.handleSDLEvent(event, 9));
-    event = keyEvent(SDL_SCANCODE_SPACE, false, 10);
+    event = keyEvent(SDL_SCANCODE_E, false, 10);
     EXPECT(!router.handleSDLEvent(event, 10));
-
-    event = keyEvent(SDL_SCANCODE_A, true, 11);
-    EXPECT(router.handleSDLEvent(event, 11));
-    event = keyEvent(SDL_SCANCODE_F6, true, 12);
-    EXPECT(router.handleSDLEvent(event, 12));
-    event = keyEvent(SDL_SCANCODE_F6, false, 13);
-    EXPECT(router.handleSDLEvent(event, 13));
-    event = keyEvent(SDL_SCANCODE_A, false, 14);
-    EXPECT(router.handleSDLEvent(event, 14));
+    send(router, SDL_SCANCODE_A, true, 11);
+    send(router, SDL_SCANCODE_ESCAPE, true, 12);
+    send(router, SDL_SCANCODE_ESCAPE, false, 13);
+    send(router, SDL_SCANCODE_A, false, 14);
 }
 
 void testPhysicalHatCaptureAndGating()
@@ -476,12 +464,13 @@ void testPhysicalHatCaptureAndGating()
     SDL_Event event = joyHatEvent(42, 0, SDL_HAT_UP, 1);
     EXPECT(router.handleSDLEvent(event, 1));
     EXPECT(sink.events.size() == 1 && sink.events[0].symbol == 0x111);
-    event = joyButtonEvent(42, 0, true, 2);
+    event = joyButtonEvent(42, 5, true, 2);
     EXPECT(router.handleSDLEvent(event, 2));
+    EXPECT(!router.visible());
+    event = joyButtonEvent(42, 5, false, 3);
+    EXPECT(router.handleSDLEvent(event, 3));
     EXPECT(router.visible());
     EXPECT(sink.events.size() == 2 && !sink.events[1].down);
-    event = joyButtonEvent(42, 0, false, 3);
-    EXPECT(router.handleSDLEvent(event, 3));
     const int initial = router.softKeyboard().selection();
 
     event = joyHatEvent(42, 0, SDL_HAT_RIGHTUP, 4);
@@ -517,8 +506,8 @@ void testDefaultGuestBindings()
         router.update(now++);
     };
     const Button buttons[] = {Button::DPadUp, Button::DPadDown,
-        Button::DPadLeft, Button::DPadRight, Button::RightStick, Button::Start, Button::Select};
-    const int symbols[] = {0x111, 0x112, 0x114, 0x113, ' ', 13, 0x116};
+        Button::DPadLeft, Button::DPadRight, Button::RightStick, Button::A, Button::B, Button::X};
+    const int symbols[] = {0x111, 0x112, 0x114, 0x113, ' ', 13, 0x1b, 0x116};
     for (std::size_t i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
         sink.events.clear();
         button(buttons[i], true);
@@ -529,7 +518,7 @@ void testDefaultGuestBindings()
         EXPECT(sink.events[0].down && sink.events[0].symbol == symbols[i]);
         EXPECT(!sink.events[1].down && sink.events[1].symbol == symbols[i]);
     }
-    const Button shoulders[] = {Button::L1, Button::L2, Button::R1, Button::R2};
+    const Button shoulders[] = {Button::L1, Button::L2, Button::R1, Button::R2, Button::Start};
     sink.events.clear();
     for (std::size_t i = 0; i < sizeof(shoulders) / sizeof(shoulders[0]); ++i) {
         button(shoulders[i], true);
@@ -571,30 +560,31 @@ void testDefaultGuestBindings()
     EXPECT(sink.events.size() == 6 && !sink.events.back().down);
 
     sink.events.clear();
-    button(Button::Start, true);
     button(Button::A, true);
+    button(Button::Select, true);
+    EXPECT(!router.visible());
+    button(Button::Select, false);
     EXPECT(router.visible());
     EXPECT(sink.events.size() == 2 && !sink.events.back().down);
-    button(Button::A, false);
-    button(Button::A, true);
-    EXPECT(!router.visible());
-    button(Button::A, false);
     button(Button::Select, true);
-    EXPECT(sink.events.size() == 3 && sink.events.back().symbol == 0x116);
-    button(Button::Start, false); // Held before keyboard entry remains gated.
+    button(Button::Select, false);
+    EXPECT(!router.visible());
+    button(Button::B, true);
+    EXPECT(sink.events.size() == 3 && sink.events.back().symbol == 0x1b);
+    button(Button::A, false); // Held before keyboard entry remains gated.
     EXPECT(sink.events.size() == 3);
-    button(Button::Start, true);
+    button(Button::A, true);
     EXPECT(sink.events.size() == 4 && sink.events.back().symbol == 0x0d);
     router.lifecycleCleanup(now++);
     EXPECT(sink.events.size() == 6);
-    button(Button::Start, false);
-    button(Button::Select, false);
+    button(Button::A, false);
+    button(Button::B, false);
     EXPECT(sink.events.size() == 6);
 
     JoystickTranslatorControls physical(testJoystickMapping(), 42);
     RG35XXInputRouter physical_router(physical, keyboard, false);
     sink.events.clear();
-    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 4, true, now), now));
+    EXPECT(physical_router.handleSDLEvent(joyButtonEvent(42, 0, true, now), now));
     EXPECT(physical_router.handleSDLEvent(joyAxisEvent(42, 0, 30000, now), now));
     EXPECT(sink.events.size() == 2);
     physical.releaseAll(++now); // Device removal must release the default keys.
@@ -612,18 +602,20 @@ void testToggleAndEntryGating()
     std::uint32_t now = 100;
 
     send(router, SDL_SCANCODE_SPACE, true, now++);
-    send(router, SDL_SCANCODE_F6, true, now++);
-    EXPECT(router.visible());
-    send(router, SDL_SCANCODE_F6, true, now++, true);
-    EXPECT(router.visible());
-    send(router, SDL_SCANCODE_F6, false, now++);
-    send(router, SDL_SCANCODE_SPACE, false, now++);
-    EXPECT(sink.events.empty());
-
-    send(router, SDL_SCANCODE_F6, true, now++);
+    send(router, SDL_SCANCODE_ESCAPE, true, now++);
     EXPECT(!router.visible());
-    send(router, SDL_SCANCODE_F6, false, now++);
-    EXPECT(sink.events.empty());
+    send(router, SDL_SCANCODE_ESCAPE, true, now++, true);
+    EXPECT(!router.visible());
+    send(router, SDL_SCANCODE_ESCAPE, false, now++);
+    EXPECT(router.visible());
+    send(router, SDL_SCANCODE_SPACE, false, now++);
+    EXPECT(sink.events.size() == 2);
+
+    send(router, SDL_SCANCODE_ESCAPE, true, now++);
+    EXPECT(router.visible());
+    send(router, SDL_SCANCODE_ESCAPE, false, now++);
+    EXPECT(!router.visible());
+    EXPECT(sink.events.size() == 2);
 
     SDL_Event quit = {};
     quit.type = SDL_QUIT;
@@ -773,8 +765,8 @@ void testGuestKeysShiftAndOwnership()
 
     send(router, SDL_SCANCODE_BACKSPACE, true, now++);
     send(router, SDL_SCANCODE_BACKSPACE, false, now++);
-    send(router, SDL_SCANCODE_RETURN, true, now++);
-    send(router, SDL_SCANCODE_RETURN, false, now++);
+    send(router, SDL_SCANCODE_F6, true, now++);
+    send(router, SDL_SCANCODE_F6, false, now++);
     EXPECT(sink.events.size() == 4);
     EXPECT(sink.events[0].symbol == 0x114 && sink.events[0].down);
     EXPECT(sink.events[1].symbol == 0x114 && !sink.events[1].down);
@@ -962,7 +954,7 @@ void testLifecycleCleanup()
     EXPECT(sink.events.size() == 2);
 
     openOverlay(router, now);
-    send(router, SDL_SCANCODE_RETURN, true, now++);
+    send(router, SDL_SCANCODE_F6, true, now++);
     router.setSuspended(true, now++);
     EXPECT(!router.visible());
     EXPECT(sink.events.back().symbol == 0x0d && !sink.events.back().down);
@@ -973,6 +965,13 @@ void testLifecycleCleanup()
     focus.window.event = SDL_WINDOWEVENT_FOCUS_LOST;
     EXPECT(!router.handleSDLEvent(focus, now++));
     EXPECT(!router.visible());
+
+    send(router, SDL_SCANCODE_ESCAPE, true, now++);
+    EXPECT(!router.visible()); // SELECT is pending until release.
+    router.lifecycleCleanup(now++);
+    send(router, SDL_SCANCODE_ESCAPE, false, now++);
+    EXPECT(!router.visible()); // Cleanup cancels the pending keyboard tap.
+    openOverlay(router, now);
 }
 
 void loadMapping(RG35XXInputRouter& router, const std::string& text,
@@ -1110,7 +1109,11 @@ void testControlMappingRoutingAndReceiver()
     EXPECT(!router.mappingActive() && sink.mapped_keys == 0);
     controls.button(Button::A, false, 27); router.update(27);
     controls.button(Button::A, true, 28); router.update(28);
-    EXPECT(router.visible()); // Empty frames restore the original controls.
+    EXPECT(!router.visible()); // Empty frames restore A to ENTER.
+    EXPECT(keyboard.ownerSymbol(GuestOwnerDefaultButtonBase + static_cast<int>(Button::A)) == 0x0d);
+    controls.button(Button::Select, true, 28); router.update(28);
+    controls.button(Button::Select, false, 28); router.update(28);
+    EXPECT(router.visible());
 
     // Maximum legal frame, then immediate recovery after oversized reception.
     std::string longest;
@@ -1228,9 +1231,13 @@ void testCustomMappingsAugmentDefaults()
 
     loadMapping(router, "L1:1,L2:2,Y:D", now++);
     button(Button::Start, true);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Start)) == 0x0d);
-    button(Button::Select, true);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
+    button(Button::A, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::A)) == 0x0d);
+    button(Button::B, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::B)) == 0x1b);
+    button(Button::X, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::X)) == 0x116);
     button(Button::DPadLeft, true);
     EXPECT(keyboard.ownerSymbol(owner(Button::DPadLeft)) == 0x114);
     button(Button::R1, true);
@@ -1246,10 +1253,12 @@ void testCustomMappingsAugmentDefaults()
     button(Button::L1, true);
     EXPECT(sink.mapped_keys == ((UINT64_C(1) << 4) | (UINT64_C(1) << 33)));
     EXPECT(!keyboard.ownerActive(owner(Button::L1)));
-    // A retains its keyboard toggle and opening it releases both key sources.
-    button(Button::A, true);
+    // SELECT retains its keyboard toggle and releases both key sources.
+    button(Button::Select, true);
+    EXPECT(!router.visible());
+    button(Button::Select, false);
     EXPECT(router.visible() && sink.mapped_keys == 0);
-    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
+    EXPECT(!keyboard.ownerActive(owner(Button::A)));
     router.lifecycleCleanup(now++);
 
     // Overrides replace an individual default, while unrelated controls survive.
@@ -1272,7 +1281,7 @@ void testCustomMappingsAugmentDefaults()
     // Modifier chords suppress defaults only while the complete chord matches.
     loadMapping(router, "SELECT+START:SHIFT+BREAK,SELECT+A:1", now++);
     button(Button::Select, true);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    EXPECT(!router.visible() && !keyboard.ownerActive(owner(Button::Select)));
     button(Button::Start, true);
     EXPECT(!keyboard.ownerActive(owner(Button::Select)));
     EXPECT(!keyboard.ownerActive(owner(Button::Start)));
@@ -1281,23 +1290,43 @@ void testCustomMappingsAugmentDefaults()
     EXPECT(keyboard.ownerSymbol(owner(Button::DPadUp)) == 0x111);
     button(Button::Start, false);
     EXPECT(sink.mapped_keys == 0);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    EXPECT(!router.visible() && !keyboard.ownerActive(owner(Button::Select)));
     button(Button::A, true);
     EXPECT(!router.visible() && sink.mapped_keys == (UINT64_C(1) << 33));
     EXPECT(!keyboard.ownerActive(owner(Button::Select)));
     button(Button::A, false);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Select)) == 0x116);
+    EXPECT(!router.visible() && !keyboard.ownerActive(owner(Button::Select)));
+    button(Button::Select, false);
+    EXPECT(!router.visible()); // Using SELECT in a chord consumes its tap.
+    button(Button::Select, true);
+    button(Button::Select, false);
+    EXPECT(router.visible());
     router.lifecycleCleanup(now++);
 
-    loadMapping(router, "A:D", now++);
-    button(Button::A, true);
+    loadMapping(router, "SELECT:D", now++);
+    button(Button::Select, true);
     EXPECT(!router.visible() && sink.mapped_keys == (UINT64_C(1) << 4));
-    button(Button::A, false);
+    button(Button::Select, false);
+    EXPECT(!router.visible());
     loadMapping(router, "", now++);
     button(Button::Start, true);
-    EXPECT(keyboard.ownerSymbol(owner(Button::Start)) == 0x0d);
+    EXPECT(!keyboard.ownerActive(owner(Button::Start)));
     button(Button::A, true);
+    EXPECT(keyboard.ownerSymbol(owner(Button::A)) == 0x0d);
+    button(Button::Select, true);
+    button(Button::Select, false);
     EXPECT(router.visible());
+
+    router.lifecycleCleanup(now++);
+    loadMapping(router, "X:F", now++);
+    button(Button::X, true);
+    EXPECT(sink.mapped_keys == (UINT64_C(1) << 6));
+    EXPECT(!keyboard.ownerActive(owner(Button::X)));
+    button(Button::X, false);
+    loadMapping(router, "", now++);
+    button(Button::X, true);
+    EXPECT(sink.mapped_keys == 0);
+    EXPECT(keyboard.ownerSymbol(owner(Button::X)) == 0x116);
 }
 
 #ifndef RG35XX_TEST_NO_BRIDGE
@@ -1342,8 +1371,9 @@ void testBridgeModesAndConsumption()
     EXPECT(rg35xx_bridge_handle_event(&mapped_event, 2) == 1);
     EXPECT(bridge_mapped_keys == 0);
     EXPECT(rg35xx_bridge_mapping_out(0) == 1);
+    event = keyEvent(SDL_SCANCODE_ESCAPE, true, 1);
     EXPECT(rg35xx_bridge_handle_event(&event, 1) == 1);
-    event = keyEvent(SDL_SCANCODE_F6, false, 2);
+    event = keyEvent(SDL_SCANCODE_ESCAPE, false, 2);
     EXPECT(rg35xx_bridge_handle_event(&event, 2) == 1);
     EXPECT(rg35xx_bridge_dirty() == 1);
 
