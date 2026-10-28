@@ -39,6 +39,10 @@ for `c++` in the Extensions view (`Ctrl+Shift+X`).
 To build with autotools:
 ------------------------
 
+For RG35XXPRO on-device build documentation (using the toolchain already on the
+device via SSH automation), see
+[`docs/rg35xx-buildchain.md`](docs/rg35xx-buildchain.md).
+
 Installation of `aclocal`, `autoconf` and `automake` is required:
 ```sh
 sudo apt install autoconf automake autotools-dev

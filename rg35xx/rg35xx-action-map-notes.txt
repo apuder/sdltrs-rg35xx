@@ -1,0 +1,28 @@
+RG35XXPRO CUSTOM CONTROL MAPPING
+
+Edit action-map.csv manually. It is the sole source for custom bindings.
+The separate proposed-mapping CSV has been removed. No proposed bindings are
+merged into, inferred from, or substituted for the cells you edit.
+
+The game column matches app.name. Each other column names a physical TRS-80
+key or key chord. Empty cells and lowercase x are ignored. Other cells name
+RG35XXPRO controls using their printed labels (uppercase X is a real button),
+D-pad/stick directions, or simultaneous chords joined by +.
+
+For example, assign Cosmic Fighter R1 under SPACE, L1 under 1, L2 under 2, and
+Y under D. The catalog and port-41 string will be R1:SPACE,L1:1,L2:2,Y:D, followed
+by a zero byte on the port.
+Custom assignments augment the emulator defaults. A sends ENTER, B sends BREAK, X sends CLEAR,
+and tapping SELECT opens/closes the soft keyboard. START has no default guest
+key. SELECT toggles on release; using it in a custom chord consumes that tap. An explicit custom control overrides that control's default;
+matching custom chords suppress their constituent defaults while held.
+A row containing only empty/x cells sends an empty string and restores the
+emulator's defaults. The source CSV is never rewritten by the builder.
+
+Use one key-chord column to assign several TRS-80 keys to one control, such as
+SELECT+START in the SHIFT+BREAK column. Multiple assignments to the same
+control are rejected. ANY_KEY, TEXT_INPUT and NUMERIC_INPUT are reference
+columns, not physical keys, and cannot receive custom bindings.
+
+See action-map-notes.txt for the original binary-analysis evidence and
+rg35xx-control-mapping.md for the current compact format and validation rules.

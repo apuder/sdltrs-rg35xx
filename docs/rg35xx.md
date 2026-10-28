@@ -270,8 +270,8 @@ toggle. SELECT toggles on release; using it in a custom binding consumes that
 tap, so no keyboard appears afterward. When a chord stops matching, key
 bindings for still-held constituents resume their defaults.
 
-The hard-disk builder in the TPK repository reads only the manually edited
-`tools/hard-disk/action-map.csv`. Empty and lowercase `x` cells are ignored;
+The hard-disk builder in this repository reads only the manually edited
+`rg35xx/action-map.csv`. Empty and lowercase `x` cells are ignored;
 other cells assign a console control to the physical key/chord named by the
 column header. Uppercase `X` is the X button. The builder never rewrites the
 CSV. Rows without assignments transmit only zero and restore the defaults.
@@ -387,6 +387,10 @@ suspended.
 A C++11 compiler is now required in addition to the existing C compiler. C
 files remain C, C++ files are built separately, and the final executable is
 linked with the C++ driver/runtime.
+
+For the RG35XXPRO on-device build flow (SSH into device, clone, configure, and
+compile), see
+[`docs/rg35xx-buildchain.md`](./rg35xx-buildchain.md).
 
 Direct Make route (also the console-oriented route):
 

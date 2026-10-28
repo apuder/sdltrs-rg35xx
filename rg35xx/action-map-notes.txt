@@ -1,0 +1,283 @@
+ACTION MAP - REPOSITORY BINARY ANALYSIS
+
+Scope and notation
+------------------
+One row per archived CMD/BAS program (27 rows), using app.name as its title.
+RetroStore Client and Dancing Demon are included for archive coverage, although
+one is a utility and the other a music/dance application. DOS/tutorial entries
+without a standalone CMD/BAS are excluded. Generated LAUNCH/CMD is not a game.
+
+The CSV is now also the manually edited custom-mapping source. The builder
+ignores empty and lowercase x cells; other cells assign RG35XXPRO controls.
+The analysis below describes the identified TRS-80 actions, independently of
+which controls are currently assigned. See rg35xx-control-mapping.md.
+
+An x means the input has an identified role in at least one game/menu phase.
+Columns are physical TRS-80 keys. UP/DOWN/LEFT/RIGHT mean the arrow keys, not
+ASCII bracket characters. SPACE is the spacebar. COMMA/PERIOD/SEMICOLON name
+unshifted physical keys; SHIFT is explicit where needed. A+B means press keys
+simultaneously, never a sequence. Context-dependent meanings are recorded below.
+
+ANY_KEY denotes a genuine any-key prompt rather than pretending that every
+letter has a separate game action. TEXT_INPUT denotes free-form name/password
+or editor input. NUMERIC_INPUT denotes variable-length numeric parameters.
+Dedicated letter/number columns cover named commands/options or code-entry
+buttons, not every character accepted in a name field. BASIC BREAK is interpreter
+stop, where indicated. Disk I/O retry prompts, debugger controls, joystick ports
+without keyboard equivalents and hardware RESET are not game action columns.
+
+Multi-key columns cover distinct gameplay movement/fire/modifier combinations
+using canonical arrow/SPACE controls, tank track chords, and explicit reset/
+pause chords. Equivalent single-key aliases are included, but their Cartesian
+products are not duplicated (e.g. COMMA+F is an alias of LEFT+SPACE in COSMIC).
+Likewise this is not an enumeration of arbitrary supersets such as start+fire,
+all menu commands held together, or every secondary command with every move.
+Opposing directions are not assumed to work merely because both bits can be set.
+Blank cells mean no independently identified action in this action vocabulary;
+they are not a proof that a key can never affect any hidden/error/cheat state.
+
+Evidence method
+---------------
+Parsed CMD load records into 64 KiB memory maps, disassembled Z80 code with
+z80dasm, followed direction/fire masks and branch precedence, and inspected
+embedded text and repository screenshots. Followed startup relocations where
+needed. Robot Attack's loader additionally complements its code/data: that
+transformation was applied before inspecting it. Runtime memory snapshots in
+sdltrs corroborated Robot Attack and Defense Command's relocated/decrypted
+input routines and several title screens. Tokenized BASIC was inspected for
+INKEY$, INPUT, PEEK and USR paths; bytes inside Dancing Demon's binary REM
+payload were not blindly counted as executable keyboard code.
+
+Keyboard matrix used to decode addresses (hex; bits increase left to right):
+  3801: @ A B C D E F G
+  3802: H I J K L M N O
+  3804: P Q R S T U V W
+  3808: X Y Z (remaining positions unused on standard keyboard)
+  3810: 0 1 2 3 4 5 6 7
+  3820: 8 9 : ; , - . /
+  3840: ENTER CLEAR BREAK UP DOWN LEFT RIGHT SPACE
+  3880: SHIFT (Model III also has a separate right-SHIFT bit)
+
+Addresses below are hexadecimal and refer to the CMD load map unless explicitly
+labeled runtime. Loader relocation can make an address in the file differ from
+the address where that instruction executes. Metadata is supporting evidence,
+not a substitute for the code: the Donkey Kong shortcut discrepancy is noted.
+This is a static/control-flow inventory with targeted emulator checks, not an
+end-to-end playtest of every action in every game phase.
+
+Armored Patrol [armored_patrol]
+==============
+Source: src/main/resources/apps/armored_patrol/ARMORED.CMD
+SHA-256: ec4c021439ad0906a91ea4dee40f9c9554acf4e4d0a0901ad483fe7e919bbe3b
+Evidence: CMD A56C-A592: SHIFT+BREAK reset and SHIFT+S pause/ENTER resume. AB39-AC34 reads 3801/02, 3808/04, 3820/08 and /40 for the two tracks; A9FB tests 3840/80 for fire. Embedded instruction panels and info.properties.
+Actions: I instructions; ENTER advance/start/resume; 1/2 players. A=left track forward, Z=left track backward, SEMICOLON=right track forward, PERIOD=right track backward. A+SEMICOLON forward; Z+PERIOD backward; A+PERIOD right turn; Z+SEMICOLON left turn. SPACE fire. High-score name entry.
+Marked inputs: ENTER, SPACE, TEXT_INPUT, 1, 2, A, I, Z, PERIOD, SEMICOLON, A+PERIOD, A+SEMICOLON, A+SPACE, PERIOD+SPACE, SEMICOLON+SPACE, SHIFT+BREAK, SHIFT+S, Z+PERIOD, Z+SEMICOLON, Z+SPACE, A+PERIOD+SPACE, A+SEMICOLON+SPACE, Z+PERIOD+SPACE, Z+SEMICOLON+SPACE
+
+Attack Force [attack_force]
+============
+Source: src/main/resources/apps/attack_force/ATTACK.CMD
+SHA-256: c18d69e3f8e85ab68e0403a5634a7563cc73e96883e93e875bb99c429b971a07
+Evidence: CMD 8500/8552 menu, 85CD players; 924A/9250 fire (3801/41 = @ or F, plus 3840/80 SPACE); 96E9-9748 direction scan and single-axis resolution; 9DE9 abort. Loader copies 7000-A4FF to 4300-77FF.
+Actions: ENTER instructions/name submit; CLEAR start; 1/2 players; four arrows steer. F/@/SPACE fire. BREAK+CLEAR abort. Direction combinations are resolved to ONE cardinal direction, not diagonal travel; no diagonal action columns are marked.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, 1, 2, F, @, BREAK+CLEAR, DOWN+SPACE, LEFT+SPACE, RIGHT+SPACE, UP+SPACE
+
+Battlestar Raven [battlestar_raven]
+================
+Source: src/main/resources/apps/battlestar_raven/RAVEN.BAS
+SHA-256: 28d6a2ea1b4124702bac91a123cd8e7fe32be58463526e556ead308cb6e71962
+Evidence: Tokenized BASIC lines 315-400 main key dispatch; 1840-1890 weapon power; 25020-25040 players; 27040-27070 difficulty; 16090-16120 and 20020-20040 Y/N; INPUT at 150. Uses INKEY$/INPUT, not a direct matrix scan.
+Actions: S status, C repair, E exploration, A attack, B blasters, Q torpedoes, N energy scoop, H hyperjump, D dimension jump, R return HQ, F escape burst, Z away mission, P pause/help, 0 self-destruct. Player 2: 7 attack, 8 blasters, 9 torpedoes, 1 self-destruct, 2 leave, 3 dimension jump. 1/2 players, 1-3 difficulty, 1-5 blaster power (P also selects power 500). Y/N confirmations; ANY_KEY dismisses reports. BREAK is the BASIC interpreter stop, not a game menu action.
+Marked inputs: ENTER, BREAK, ANY_KEY, TEXT_INPUT, 0, 1, 2, 3, 4, 5, 7, 8, 9, A, B, C, D, E, F, H, N, P, Q, R, S, Y, Z
+
+BEAST [beast]
+=====
+Source: src/main/resources/apps/beast/BEAST.CMD
+SHA-256: 53f2c13ad7ff5b6b75d066ced54941660a5a359ec32bbe895a1b044958be6dd0
+Evidence: CMD 5451-5489 any-key scan; 5493 BREAK, 54B7 M (3802/20), 54C0 T (3804/10); 5689-56E2 WASD/IJKL dispatcher; embedded WASD: MOVE / IJKL: PULL text.
+Actions: W/A/S/D move and push; I/J/K/L pull in the corresponding direction. M and T change machine/graphics mode on the title screen; ANY_KEY starts. BREAK resets to the title screen. Dispatcher returns after the first matching key, so diagonal movement and simultaneous move+pull are not distinct actions. The unused ENTER-test helper at 548A is not treated as a dedicated ENTER action.
+Marked inputs: BREAK, ANY_KEY, A, D, I, J, K, L, M, S, T, W
+
+Breakdown [breakdown]
+=========
+Source: src/main/resources/apps/breakdown/BREAKDWN.CMD
+SHA-256: 0eada4c36fbdb135ca14f390cdb3e01a3a3da121a1328a531fcc6c1e2e931ee6
+Evidence: CMD 5EB1-5F51 matrix-to-character scanner. 5577-55A3 maps CA/CB (LEFT/RIGHT) to paddle motion, 1B (BREAK) to abort, and other nonzero input to serve the ball. 5C84/5CD1/5D41 accept ENTER/SPACE between turns; title string PRESS <SPACE> TO START.
+Actions: SPACE starts/serves/continues; ENTER also continues between balls. LEFT/RIGHT move the paddle; BREAK aborts. The custom scanner returns CA/CB for unshifted arrows, which are not ASCII letters J/K. No diagonal or movement+fire action is needed.
+Marked inputs: ENTER, BREAK, SPACE, LEFT, RIGHT
+
+Cosmic Fighter [cosmic_fighter]
+==============
+Source: src/main/resources/apps/cosmic_fighter/COSMIC.CMD
+SHA-256: 4999f2d853dddc0ee58198a03b597fd848d5011068037b1ed8f2926d218190e7
+Evidence: CMD 6408/643A menu, 64B4 players; 74AB 3801/10 = D; 77E3-77ED F/SPACE fire; 78AE-78DC arrow/comma/period movement; 7BC9 abort. Embedded instruction text confirms docking.
+Actions: ENTER instructions/name submit; CLEAR start; 1/2 players. LEFT/COMMA move left; RIGHT/PERIOD move right. F/SPACE fire; D dock/refuel; BREAK+CLEAR abort. Opposing left/right input is resolved using the previous direction, not two independent movement actions.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 1, 2, D, F, COMMA, PERIOD, BREAK+CLEAR, LEFT+SPACE, RIGHT+SPACE
+
+Dancing Demon [dancing_demon]
+=============
+Source: src/main/resources/apps/dancing_demon/DEMON.BAS
+SHA-256: e7ebe94e139a1de9a54e42c2066f65e1508aefc270de4b871e686a60a1d05842
+Evidence: Tokenized BASIC lines 260-277 menus, 300-302 numeric INPUT, 405-410 music editor, 505-510 dance editor, 600-665 save/load, 2070 PEEK(14400)=128. Embedded REM instructions describe the editors; early REM records also contain executable machine code.
+Actions: This is a music/dance application rather than an arcade game. 1-7 choose editor/show/save/load. A-Z enter notes or dance instructions (Z is a rest in the music editor); SPACE previews or stops a show; LEFT is backspace; CLEAR clears editor contents; ENTER finishes entry. Y/N confirm save/load; numeric INPUT sets speed, repetitions and file number. BREAK is BASIC stop; the timed introductory animation is not counted as an ANY_KEY action. No gameplay direction controls or simultaneous-key actions are inferred from the machine code stored inside REM lines.
+Marked inputs: ENTER, CLEAR, BREAK, SPACE, TEXT_INPUT, NUMERIC_INPUT, LEFT, 1, 2, 3, 4, 5, 6, 7, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
+
+Defense Command [defense_command]
+===============
+Source: src/main/resources/apps/defense_command/DEFENSE.CMD
+SHA-256: 86dc27000f422a8cbc80aefd634f085885b59dc5871c226bcd257990213c2fe3
+Evidence: Runtime snapshot 4967 players; 4A09 ENTER instructions / 4A1A CLEAR high scores. 5785-5790 fire; 597F-59A5 movement. Equivalent CMD-loaded addresses 6CEE, 6D90/6DA1, 7B0C and 7D06. Runtime code confirmed after loader relocation.
+Actions: ENTER instructions/name submit; CLEAR high scores; 1/2 start/player count. LEFT/COMMA and RIGHT/PERIOD steer; F/SPACE fire. BREAK+CLEAR abort. Fire routine actually accepts the whole @..G row, not just F; these extra aliases are listed separately below. Digits 0-9 are also polled as a group in the running timer/input path (570F/5713), with the same effect rather than ten distinct menu choices.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F, G, @, COMMA, PERIOD, BREAK+CLEAR, LEFT+SPACE, RIGHT+SPACE
+
+Defuse [defuse]
+======
+Source: src/main/resources/apps/defuse/defuse.cmd
+SHA-256: 787f466fc6e1649fc7c3da23c7ac3693ef00d040e7a864eaf42293658fd7ca91
+Evidence: CMD 5B84-5BD4 title/options scan; 5E92 SPACE to reveal code; 5FEA-601F vertical/horizontal matrix masks are decoded independently; 6138-6140 constructs an 8-bit input mask from number keys 1-8 (3810 shifted right plus 3820 bit 0). screenshot0.png and info.properties.
+Actions: Arrows adjust options on the title screen and move crosshairs in play; ENTER starts. SPACE reveals the defuse code; 1-8 enter its pattern. Both axes are processed, so diagonal crosshair motion is included. 0 and 9 are NOT part of the defuse-code mask. No dedicated BREAK handling was found in this standalone binary.
+Marked inputs: ENTER, SPACE, UP, DOWN, LEFT, RIGHT, 1, 2, 3, 4, 5, 6, 7, 8, DOWN+LEFT, DOWN+RIGHT, UP+LEFT, UP+RIGHT
+
+Donkey Kong [donkey_kong]
+===========
+Source: src/main/resources/apps/donkey_kong/DONKKONG.CMD
+SHA-256: 5457c98d1cd90bee22678585a60b5cf15565ef83b19ec3a47afee7f63910b922
+Evidence: CMD 9132 UP / 91AA DOWN; 9231 RIGHT / 9273 LEFT; 92B7 SPACE edge detection. Entry 9000 initializes gameplay directly. info.properties supplies the arrow/jump meanings.
+Actions: Four arrows move/climb; SPACE jumps; LEFT+SPACE and RIGHT+SPACE are directional jumps. This particular small CMD starts gameplay directly. Metadata advertises SHIFT+S and SHIFT+BREAK, but the supplied CMD has no 3880 reads or matching keyboard-driver calls; those unconfirmed metadata-only shortcuts are intentionally not marked.
+Marked inputs: SPACE, UP, DOWN, LEFT, RIGHT, LEFT+SPACE, RIGHT+SPACE
+
+Eliminator [eliminator]
+==========
+Source: src/main/resources/apps/eliminator/ELIMINAT.CMD
+SHA-256: 93608f3749f46d3204ca26f43f5e764d8e2810863097b7b1cf42583d026a3cd6
+Evidence: CMD 7A27/7A2F start; loader 7000-A70A -> 4900-800A. Runtime 53F2-541C SHIFT+BREAK / SHIFT+S; 54C1 LEFT/RIGHT; 5674 SPACE; 5741 CLEAR; 6990 ENTER; 55CE A / 8000 Q adjust the vertical-position state at 7953/7954. info.properties identifies weapons and pause.
+Actions: ENTER starts, fires smart bomb, or resumes pause; CLEAR hyperspace; 1/2 players; LEFT/RIGHT move; SPACE fire. A moves down and Q moves up (the 7953 sub-row phase and 7954 vertical row); these are real vertical controls, not speed settings. No arrow-UP/DOWN matrix tests occur in this supplied CMD despite the generic metadata description. SHIFT+S pause; SHIFT+BREAK reset. Primary movement+fire chords and SPACE+ENTER (fire + smart bomb) are included; hyperspace is a discrete relocation rather than a movement direction.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 1, 2, A, Q, A+ENTER, A+LEFT, A+RIGHT, A+SPACE, LEFT+ENTER, LEFT+SPACE, Q+ENTER, Q+LEFT, Q+RIGHT, Q+SPACE, RIGHT+ENTER, RIGHT+SPACE, SHIFT+BREAK, SHIFT+S, SPACE+ENTER, A+LEFT+ENTER, A+LEFT+SPACE, A+RIGHT+ENTER, A+RIGHT+SPACE, A+SPACE+ENTER, LEFT+SPACE+ENTER, Q+LEFT+ENTER, Q+LEFT+SPACE, Q+RIGHT+ENTER, Q+RIGHT+SPACE, Q+SPACE+ENTER, RIGHT+SPACE+ENTER, A+LEFT+SPACE+ENTER, A+RIGHT+SPACE+ENTER, Q+LEFT+SPACE+ENTER, Q+RIGHT+SPACE+ENTER
+
+Galaxy Invasion [galaxy_invasion]
+===============
+Source: src/main/resources/apps/galaxy_invasion/GALAXY.CMD
+SHA-256: fb3e35f6ea6ac487ae20978586d85331edd1e856c6c85af75c15b2dad498a781
+Evidence: CMD 65E3/6612 menu, 669B players, 764D/7653 fire, 76C4-76D7 arrow/comma/period movement, 7A64 abort. Embedded normalized instruction panel explicitly identifies the controls.
+Actions: ENTER instructions/name submit; CLEAR start; 1/2 players; LEFT/COMMA and RIGHT/PERIOD movement; F/SPACE fire; BREAK+CLEAR abort. Fire aliases outside F/SPACE are not inferred from row reads alone.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 1, 2, F, COMMA, PERIOD, BREAK+CLEAR, LEFT+SPACE, RIGHT+SPACE
+
+Meteor Mission 2 [meteor_mission]
+================
+Source: src/main/resources/apps/meteor_mission/METMISS.CMD
+SHA-256: af0594e23ec499ac5957938f4d193de3aedf93e060b34560a12852898c05a6e4
+Evidence: CMD 70A9/70BA menu, 76F1 players, 7E7D-7E96 R (3804/04) OR SPACE, 88DD-890E arrow/comma/period movement, 7E63 abort. Loader 7000-9DFF -> 4500-72FF; embedded instructions explain stage-dependent R.
+Actions: ENTER instructions/name submit; CLEAR start; 1/2 players. LEFT/COMMA and RIGHT/PERIOD steer. R or SPACE begins descent, applies retro rockets while landing, and fires missiles in the combat stage. BREAK+CLEAR abort. Movement+SPACE is therefore steer+retro/fire according to the current stage.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 1, 2, R, COMMA, PERIOD, BREAK+CLEAR, LEFT+SPACE, RIGHT+SPACE
+
+Missile Defense [missile_defense]
+===============
+Source: src/main/resources/apps/missile_defense/DEFENSE.CMD
+SHA-256: 9b887e46223eb2ce9d2ada2a7588435a90be51f9e5326a592193faeafa322644
+Evidence: CMD 6F16/6CBB menu, AB70/ABB5/ABD6 number-row checks, 7684 abort. 8518-853B and A709-A72C explicitly compare masks 08/10/20/40 and 28/48/30/50 for cardinal/diagonal motion. 85B0 SPACE forward fire; 75AC-75D9 tests saved row mask 60h to fire BOTH side launchers, independent of SPACE.
+Actions: ENTER instructions/advance/name submit; CLEAR start; 1/2 players; eight-way arrow movement; SPACE forward missiles. LEFT+RIGHT fires simultaneously to both sides, NOT ordinary horizontal movement. LEFT+RIGHT+SPACE combines side and forward missiles. BREAK+CLEAR abort; The all-row AC2A helper also accepts ANY_KEY while its pause/reset flag is active. Diagonals and each movement+SPACE chord are explicitly supported by the masks.
+Marked inputs: ENTER, CLEAR, SPACE, ANY_KEY, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, 1, 2, BREAK+CLEAR, DOWN+LEFT, DOWN+RIGHT, DOWN+SPACE, LEFT+RIGHT, LEFT+SPACE, RIGHT+SPACE, UP+LEFT, UP+RIGHT, UP+SPACE, DOWN+LEFT+SPACE, DOWN+RIGHT+SPACE, LEFT+RIGHT+SPACE, UP+LEFT+SPACE, UP+RIGHT+SPACE
+
+Rear Guard [rear-guard]
+==========
+Source: src/main/resources/apps/rear-guard/REARGUARD.CMD
+SHA-256: f3d7f47f3b3327297202ff2297bb491780d01a2fa0dac9b6629d22ff5bafbd16
+Evidence: Loader 8000-C16D -> 4000-816D. Runtime 4C65 ENTER start; 4D2F players; 4D3D/4D45 SHIFT+CLEAR scores; 4E0C-4E2D SHIFT+BREAK and SHIFT+S; 50FF ENTER shield; 518A-51AA UP/DOWN; 531A SPACE fire. Title screenshot and embedded text corroborate start/player choices.
+Actions: ENTER starts, resumes, or activates the shield in play; 1/2 players. UP/DOWN control vertical motion; SPACE fire. SHIFT+S pause, SHIFT+BREAK reset, SHIFT+CLEAR erase high scores. ENTER and high-score text-entry screens. No LEFT/RIGHT flight movement is implemented in the keyboard scan.
+Marked inputs: ENTER, SPACE, TEXT_INPUT, UP, DOWN, 1, 2, DOWN+ENTER, DOWN+SPACE, SHIFT+BREAK, SHIFT+CLEAR, SHIFT+S, SPACE+ENTER, UP+ENTER, UP+SPACE, DOWN+SPACE+ENTER, UP+SPACE+ENTER
+
+RetroStore Client [rsclient]
+=================
+Source: src/main/resources/apps/rsclient/RSCLIENT.CMD
+SHA-256: 080259f8aba3d3128f200a2779c0d116cf75f4e61ba4ab8307609193a7ad5d43
+Evidence: CMD 544B calls ROM 0049; list dispatcher 6B43-6B5F checks 01/08/09/0A/0D/1F/5B. Form/search strings and existing local TRS-IO/TRS-LIB source corroborate text, boolean form and list handling.
+Actions: RetroStore Client is a utility, included so every archived CMD/BAS program has a row. Arrows navigate lists/forms, ENTER chooses/submits/downloads, LEFT/CLEAR/BREAK cancel/back as appropriate. SPACE and Y/N edit boolean fields; TEXT_INPUT supplies search/SSID/password; ANY_KEY dismisses help/status. No simultaneous arcade controls.
+Marked inputs: ENTER, CLEAR, BREAK, SPACE, ANY_KEY, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, N, Y
+
+Robot Attack [robot_attack]
+============
+Source: src/main/resources/apps/robot_attack/ROBOT.CMD
+SHA-256: a8a19410fe74d499d29caf6074fc4e49a6e1dea1ba926f62d515f331932ffcaf
+Evidence: Loader copies 6500-9CFF to 4800-7FFF, then complements bytes 48D8-7FAD. Decoded runtime 69A6 BREAK to start; 69B3 players; 6D93-6DBF merges I/M/J/K with arrows and F/SPACE; 6DC2 sends fire+direction to 6E21 and the 16-entry direction lookup at 7C06. 6FC6 BREAK+CLEAR abort.
+Actions: BREAK skips title animation into player selection; 1/2 choose players/start. Arrows or I(up), M(down), J(left), K(right) move. F/SPACE fire; direction+fire aims a shot, and does not also move the player on that poll. Eight-way aiming/movement are represented by the direction table. ENTER submits high-score text; BREAK+CLEAR aborts.
+Marked inputs: ENTER, BREAK, SPACE, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, 1, 2, F, I, J, K, M, BREAK+CLEAR, DOWN+LEFT, DOWN+RIGHT, DOWN+SPACE, LEFT+SPACE, RIGHT+SPACE, UP+LEFT, UP+RIGHT, UP+SPACE, DOWN+LEFT+SPACE, DOWN+RIGHT+SPACE, UP+LEFT+SPACE, UP+RIGHT+SPACE
+
+Sea Dragon [sea_dragon]
+==========
+Source: src/main/resources/apps/sea_dragon/SEADRAG.CMD
+SHA-256: dc9230f4cd0ff386b55cc886965708e97a45b99d0d5f7cc30bdf995046ae9fa3
+Evidence: CMD 91ED ENTER start; 92F7-9318 SHIFT+BREAK and SHIFT+S; 9794-97FC independent horizontal and vertical arrow processing; A078 SPACE fire and A08C ENTER vertical missile. Embedded player/skill prompts and info.properties.
+Actions: ENTER starts/resumes or launches vertical missiles; 1/2 player count; 0 novice / 1 expert. Arrows move the submarine; SPACE fires forward. The two axes and the two weapon routines are independent, so diagonals, moving+either weapon, and both weapons together are included. SHIFT+S pauses; SHIFT+BREAK resets; high-score name input.
+Marked inputs: ENTER, SPACE, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, 0, 1, 2, DOWN+ENTER, DOWN+LEFT, DOWN+RIGHT, DOWN+SPACE, LEFT+ENTER, LEFT+SPACE, RIGHT+ENTER, RIGHT+SPACE, SHIFT+BREAK, SHIFT+S, SPACE+ENTER, UP+ENTER, UP+LEFT, UP+RIGHT, UP+SPACE, DOWN+LEFT+ENTER, DOWN+LEFT+SPACE, DOWN+RIGHT+ENTER, DOWN+RIGHT+SPACE, DOWN+SPACE+ENTER, LEFT+SPACE+ENTER, RIGHT+SPACE+ENTER, UP+LEFT+ENTER, UP+LEFT+SPACE, UP+RIGHT+ENTER, UP+RIGHT+SPACE, UP+SPACE+ENTER, DOWN+LEFT+SPACE+ENTER, DOWN+RIGHT+SPACE+ENTER, UP+LEFT+SPACE+ENTER, UP+RIGHT+SPACE+ENTER
+
+Space Invaders (Model I Edition) [space_invaders_model1]
+================================
+Source: src/main/resources/apps/space_invaders_model1/SPACEINV.CMD
+SHA-256: 312f570af4c76ed5f3ba50a0e68ba02a9188ebc0f49f459f6ffd751812d1f6d3
+Evidence: CMD 55A7 SPACE start / BREAK exit; 560A BREAK returns to title; 594D-5992 independent LEFT/RIGHT movement then SPACE fire; 6038 SPACE restart. The two repository CMDs have identical hashes.
+Actions: SPACE starts/restarts/fires; LEFT/RIGHT move; BREAK leaves play for the title and leaves the title for DOS. LEFT+SPACE/RIGHT+SPACE move and shoot. Both model-specific archive entries are retained even though their program bytes match.
+Marked inputs: BREAK, SPACE, LEFT, RIGHT, LEFT+SPACE, RIGHT+SPACE
+
+Space Invaders (Model III Edition) [space_invaders_model3]
+==================================
+Source: src/main/resources/apps/space_invaders_model3/SPACEINV.CMD
+SHA-256: 312f570af4c76ed5f3ba50a0e68ba02a9188ebc0f49f459f6ffd751812d1f6d3
+Evidence: CMD 55A7 SPACE start / BREAK exit; 560A BREAK returns to title; 594D-5992 independent LEFT/RIGHT movement then SPACE fire; 6038 SPACE restart. The two repository CMDs have identical hashes.
+Actions: SPACE starts/restarts/fires; LEFT/RIGHT move; BREAK leaves play for the title and leaves the title for DOS. LEFT+SPACE/RIGHT+SPACE move and shoot. Both model-specific archive entries are retained even though their program bytes match.
+Marked inputs: BREAK, SPACE, LEFT, RIGHT, LEFT+SPACE, RIGHT+SPACE
+
+Stellar Escort [stellar_escort]
+==============
+Source: src/main/resources/apps/stellar_escort/STELLAR.CMD
+SHA-256: afe38a6d13fe39c0d230f5388f8b4a624b922e5eedce5eb1a57bb8152a7fce93
+Evidence: CMD 5A4D I / 5A5C G / 5A6B H / 5A7A A+CLEAR dispatch; 7EE3-7F04 I instructions, G starts/player selection, H hall of fame. 6B12-6B6C reads arrows plus COMMA/PERIOD and Q/A vertical aliases; 6DC2 SPACE or @ firing; 7F04 players. Embedded disk/high-score dialogs provide ENTER/CLEAR and Y/N.
+Actions: I instructions, G starts game/player selection, H high scores; 1/2 players. Arrows or COMMA/PERIOD (horizontal) and Q/A (vertical) steer; SPACE/@ fire. A+CLEAR abort/reset. ENTER/CLEAR acknowledge score-save dialogs and name entry; Y/N erase-score confirmation. Diagonals are explicitly combined through a direction table. No BREAK+CLEAR abort is inferred from the banner alone.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, UP, DOWN, LEFT, RIGHT, 1, 2, A, G, H, I, N, Q, Y, @, COMMA, PERIOD, A+CLEAR, DOWN+LEFT, DOWN+RIGHT, DOWN+SPACE, LEFT+SPACE, RIGHT+SPACE, UP+LEFT, UP+RIGHT, UP+SPACE, DOWN+LEFT+SPACE, DOWN+RIGHT+SPACE, UP+LEFT+SPACE, UP+RIGHT+SPACE
+
+Super Nova [super_nova]
+==========
+Source: src/main/resources/apps/super_nova/SUPNOVA.CMD
+SHA-256: cf6c132a9eb9cbe9464216f37a7de60da5a3fcc129c212acfbdeb28f4b5e900c
+Evidence: CMD 6473/648C menu, 691B players; 7094 P fire, 75D7 T / 7606 R rotation, 764B O thrust, 6FE3 SPACE hyperspace, 7063 abort. Normalized embedded instruction panel explicitly says R=rotate left, T=rotate right, O=thrust, P=fire.
+Actions: ENTER instructions/name submit; CLEAR start; 1/2 players. R rotate left, T rotate right, O thrust, P fire, SPACE hyperspace. Rotation, thrust and fire are processed separately, so their non-opposing combinations are included. BREAK+CLEAR abort.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, 1, 2, O, P, R, T, BREAK+CLEAR, O+P, R+O, R+P, T+O, T+P, R+O+P, T+O+P
+
+Tank Zone [tankzone]
+=========
+Source: src/main/resources/apps/tankzone/TANKZONE.CMD
+SHA-256: 82e94d3d84adcc95b657b037dab3b135c3dd43c99fd65cee24564db8f164a90b
+Evidence: CMD 8432-852D track scan, 8332 SPACE, C023 BREAK+CLEAR reset patch; C02B/7E3C SHIFT+BREAK reset, with shared SHIFT+S/ENTER pause path. Embedded instruction panels.
+Actions: Same dual-track keys as Armored Patrol. I instructions; ENTER start; 1/2 players; ANY_KEY advances instructions. SPACE fire. SHIFT+BREAK reset; supplied binary also checks BREAK+CLEAR. High-score name entry.
+Marked inputs: ENTER, SPACE, ANY_KEY, TEXT_INPUT, 1, 2, A, I, Z, PERIOD, SEMICOLON, A+PERIOD, A+SEMICOLON, A+SPACE, BREAK+CLEAR, PERIOD+SPACE, SEMICOLON+SPACE, SHIFT+BREAK, SHIFT+S, Z+PERIOD, Z+SEMICOLON, Z+SPACE, A+PERIOD+SPACE, A+SEMICOLON+SPACE, Z+PERIOD+SPACE, Z+SEMICOLON+SPACE
+
+Trek14 [trek14]
+======
+Source: src/main/resources/apps/trek14/trek14.cmd
+SHA-256: 187906245206b2e19a7076944dc3b078858417d1791f9897bd6398a72f8e4115
+Evidence: CMD 5B9C-5BB7 main dispatch C/D/L/P/S/T/W; 5AB6-5AE9 computer submenu B/K/P/R; 9E7D ROM 002B and 9F25 ROM 0040 character/line input. Embedded menu, coordinate/energy prompts and Play Again (Y/N).
+Actions: S short-range scan, L long-range scan, W warp, P phasers, T torpedoes, C computer, D damage report. Computer: K Klingons, B bases, P planets, R return. ENTER starts/confirms coordinates or energy; NUMERIC_INPUT means variable-length numeric parameters, including separators; LEFT edits input. Y/N replay confirmation; ANY_KEY report acknowledgement. Turn-based command processing does not define simultaneous-key actions.
+Marked inputs: ENTER, ANY_KEY, NUMERIC_INPUT, LEFT, B, C, D, K, L, N, P, R, S, T, W, Y
+
+Vicious Vipers [vicious-vipers]
+==============
+Source: src/main/resources/apps/vicious-vipers/VIPERS.CMD
+SHA-256: ad673a9252f771cdf9156f9d582c0c024c83dabb2dbef3ea60f3b62d53923d77
+Evidence: CMD 8A80-8AD4 direction dispatcher: arrows, WASD, IJKL and 4/5/6/8; branches immediately on first match. 8CD1-8D07 SPACE pause/release/resume. 8D33 H help / 8D3F S start; screenshot vv_3_help.jpg explicitly identifies SPACE pause and any-key return.
+Actions: S starts/restarts (also down in play), H help, ANY_KEY returns from help/messages. Arrows, WASD, IJKL or numeric 4(left)/5(down)/6(right)/8(up) turn the snake. SPACE pauses/resumes. Direction dispatcher gives one key priority, so diagonal chords are not additional actions.
+Marked inputs: SPACE, ANY_KEY, UP, DOWN, LEFT, RIGHT, 4, 5, 6, 8, A, D, H, I, J, K, L, S, W
+
+Weerd [weerd]
+=====
+Source: src/main/resources/apps/weerd/WEERD.CMD
+SHA-256: c7c11730104d05afa4e74a1afd6a4d8e6837f2652fd8f02f58d786a2d13cb3f2
+Evidence: instructions.gif; CMD 5E48/5E54/5E62 menu S and 1/2; 60B6 R reverse; 61E9 S shield; 62F8-6355 movement plus 3880 SHIFT speed; 6376 F/SPACE fire; 60D6 abort; 60ED-6103 SHIFT+@ waits for ENTER (pause).
+Actions: ENTER instructions/name submit; S high scores on title and emergency shield in play; 1/2 starts/player count. LEFT/COMMA and RIGHT/PERIOD move, SHIFT increases movement speed, F/SPACE fire, R reverses screen. BREAK+CLEAR abort. SHIFT+@ pause and ENTER resume are an additional binary-only path. Movement+fire and movement+SHIFT combinations (including all three) are included.
+Marked inputs: ENTER, CLEAR, SPACE, TEXT_INPUT, LEFT, RIGHT, 1, 2, F, R, S, COMMA, PERIOD, SHIFT, BREAK+CLEAR, LEFT+SPACE, RIGHT+SPACE, SHIFT+@, SHIFT+LEFT, SHIFT+RIGHT, SHIFT+LEFT+SPACE, SHIFT+RIGHT+SPACE
+
+Zaxxon [zaxxon]
+======
+Source: src/main/resources/apps/zaxxon/ZAXXON.CMD
+SHA-256: da15fb270fd0c51ebc82e6882bf3deca268ca5650029c87722f4e4d4b67eb3e6
+Evidence: Loader 7000-ABBC -> 4443-7FFF. Runtime 4462 difficulty 1-4; 44EC-4505 SHIFT+BREAK and SHIFT+S / ENTER resume; 4ED9-4F83 horizontal and vertical input; 51A0 SPACE fire. screenshot1.png ENTER to start and info.properties.
+Actions: ENTER starts/resumes; 1-4 choose difficulty. Four arrows steer/change height; SPACE fires. Independent axes and fire support diagonals and eight-way movement+SPACE. SHIFT+S pauses; SHIFT+BREAK aborts.
+Marked inputs: ENTER, SPACE, UP, DOWN, LEFT, RIGHT, 1, 2, 3, 4, DOWN+LEFT, DOWN+RIGHT, DOWN+SPACE, LEFT+SPACE, RIGHT+SPACE, SHIFT+BREAK, SHIFT+S, UP+LEFT, UP+RIGHT, UP+SPACE, DOWN+LEFT+SPACE, DOWN+RIGHT+SPACE, UP+LEFT+SPACE, UP+RIGHT+SPACE
+

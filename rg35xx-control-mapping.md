@@ -1,6 +1,6 @@
 # RG35XXPRO custom control mappings
 
-`tools/hard-disk/action-map.csv` is the sole source for custom mappings. Edit it
+`rg35xx/action-map.csv` is the sole source for custom mappings. Edit it
 manually; the builder never generates or rewrites this file. Its `game` column
 matches each program's `app.name`. Other column headers identify physical
 TRS-80 keys or simultaneous key chords.
@@ -156,8 +156,8 @@ rejected without replacing the emulator's active mapping.
 
 ## Checks
 
-Run `python3 -B -m unittest discover -s tools/hard-disk -p 'test_*.py'` for CSV,
-encoding and catalog checks. Run `python3 tools/hard-disk/build.py` to assemble
+Run `python3 -B -m unittest discover -s rg35xx -p 'test_*.py'` for CSV,
+encoding and catalog checks. Run `python3 rg35xx/build.py` to assemble
 the launcher and rebuild the catalog and hard disk. Both commands operate on
 the manually edited `action-map.csv`.
 
