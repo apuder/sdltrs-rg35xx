@@ -1,0 +1,127 @@
+[
+   {
+      "keymap" : "",
+      "name" : "Armored Patrol",
+      "path" : "tpk/src/main/resources/apps/armored_patrol/ARMORED.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Attack Force",
+      "path" : "tpk/src/main/resources/apps/attack_force/ATTACK.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Battlestar Raven",
+      "path" : "tpk/src/main/resources/apps/battlestar_raven/RAVEN.BAS"
+   },
+   {
+      "keymap" : "",
+      "name" : "BEAST",
+      "path" : "tpk/src/main/resources/apps/beast/BEAST.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Breakdown",
+      "path" : "tpk/src/main/resources/apps/breakdown/BREAKDWN.CMD"
+   },
+   {
+      "keymap" : "R1:SPACE,L1:1,L2:2,Y:D",
+      "name" : "Cosmic Fighter",
+      "path" : "tpk/src/main/resources/apps/cosmic_fighter/COSMIC.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Dancing Demon",
+      "path" : "tpk/src/main/resources/apps/dancing_demon/DEMON.BAS"
+   },
+   {
+      "keymap" : "",
+      "name" : "Defense Command",
+      "path" : "tpk/src/main/resources/apps/defense_command/DEFENSE.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Defuse",
+      "path" : "tpk/src/main/resources/apps/defuse/defuse.cmd"
+   },
+   {
+      "keymap" : "",
+      "name" : "Donkey Kong",
+      "path" : "tpk/src/main/resources/apps/donkey_kong/DONKKONG.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Eliminator",
+      "path" : "tpk/src/main/resources/apps/eliminator/ELIMINAT.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Galaxy Invasion",
+      "path" : "tpk/src/main/resources/apps/galaxy_invasion/GALAXY.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Meteor Mission 2",
+      "path" : "tpk/src/main/resources/apps/meteor_mission/METMISS.CMD"
+   },
+   {
+      "keymap" : "R1:SPACE,L1:1,L2:2,R2:LEFT+RIGHT",
+      "name" : "Missile Defense",
+      "path" : "tpk/src/main/resources/apps/missile_defense/DEFENSE.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Rear Guard",
+      "path" : "tpk/src/main/resources/apps/rear-guard/REARGUARD.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Robot Attack",
+      "path" : "tpk/src/main/resources/apps/robot_attack/ROBOT.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Sea Dragon",
+      "path" : "tpk/src/main/resources/apps/sea_dragon/SEADRAG.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Space Invaders",
+      "path" : "tpk/src/main/resources/apps/space_invaders_model3/SPACEINV.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Stellar Escort",
+      "path" : "tpk/src/main/resources/apps/stellar_escort/STELLAR.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Super Nova",
+      "path" : "tpk/src/main/resources/apps/super_nova/SUPNOVA.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Tank Zone",
+      "path" : "tpk/src/main/resources/apps/tankzone/TANKZONE.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Trek14",
+      "path" : "tpk/src/main/resources/apps/trek14/trek14.cmd"
+   },
+   {
+      "keymap" : "",
+      "name" : "Vicious Vipers",
+      "path" : "tpk/src/main/resources/apps/vicious-vipers/VIPERS.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Weerd",
+      "path" : "tpk/src/main/resources/apps/weerd/WEERD.CMD"
+   },
+   {
+      "keymap" : "",
+      "name" : "Zaxxon",
+      "path" : "tpk/src/main/resources/apps/zaxxon/ZAXXON.CMD"
+   }
+]

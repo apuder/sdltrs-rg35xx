@@ -2,9 +2,11 @@
 """Build an LDOS 5.3.1 data hard disk using only Python's standard library."""
 
 import argparse
+from collections import Counter
 import csv
 import gzip
 import hashlib
+import json
 from pathlib import Path
 import re
 import subprocess
@@ -13,6 +15,7 @@ import tempfile
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 TPK_ROOT = ROOT / "tpk"
+APPS_JSON = HERE / "apps.json"
 DISKIMAGE_ROOT = ROOT / "diskimages"
 TEMPLATE_EMPTY_HDV = DISKIMAGE_ROOT / "empty.hdv.gz"
 TEMPLATE_BOOT_DSK = DISKIMAGE_ROOT / "ldos531-model3-boot.dsk.gz"
@@ -23,14 +26,6 @@ GRANULE = 32 * SECTOR
 DIRECTORY = SECTOR + SECTOR * SECTORS_PER_CYLINDER
 IMAGE_SIZE = SECTOR + CYLINDERS * SECTORS_PER_CYLINDER * SECTOR
 MAX_MAPPING_BYTES = 4095  # B000h..BFFFh holds this payload plus its final NUL.
-
-# LDOS has a flat 8.3 namespace. Keep the two pairs of games distinguishable.
-ALIASES = {
-    "defense_command/DEFENSE.CMD": "DEFCOM.CMD",
-    "missile_defense/DEFENSE.CMD": "MISSDEF.CMD",
-    "space_invaders_model1/SPACEINV.CMD": "SPACEIN1.CMD",
-    "space_invaders_model3/SPACEINV.CMD": "SPACEIN3.CMD",
-}
 
 # Control tokens are independent of a frontend's SDL/Linux button numbering.
 CONTROL_TOKENS = {name: name for name in
@@ -101,13 +96,72 @@ def source_files():
     return sorted(paths)
 
 
-def dos_name(path, used):
-    alias = ALIASES.get("/".join(path.parts[-2:]))
-    original = Path(alias) if alias else path
-    stem = re.sub("[^A-Z0-9]", "", original.stem.upper())
+def load_apps(path=None):
+    path = path if path is not None else APPS_JSON
+    if not path.is_file():
+        raise ValueError(f"Missing apps index: {path}")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise ValueError(f"{path}: expected a JSON array")
+    apps = []
+    seen_paths = set()
+    for index, entry in enumerate(data, start=1):
+        if not isinstance(entry, dict):
+            raise ValueError(f"{path}:{index}: expected an object")
+
+        name = entry.get("name")
+        source = entry.get("path")
+        keymap = entry.get("keymap", "")
+
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(f"{path}:{index}: 'name' must be a non-empty string")
+        if not isinstance(source, str) or not source.strip():
+            raise ValueError(f"{path}:{index}: 'path' must be a non-empty string")
+        if not isinstance(keymap, str):
+            raise ValueError(f"{path}:{index}: 'keymap' must be a string")
+        if any(c in name for c in "\t\r\n"):
+            raise ValueError(f"{path}:{index}: 'name' may not contain tab/newline characters")
+        if any(c in keymap for c in "\t\r\n"):
+            raise ValueError(f"{path}:{index}: 'keymap' may not contain tab/newline characters")
+
+        relative = Path(source.strip())
+        if relative.is_absolute():
+            raise ValueError(f"{path}:{index}: 'path' must be relative to repository root")
+        if relative.suffix.lower() not in {".cmd", ".bas"}:
+            raise ValueError(f"{path}:{index}: unsupported source extension: {relative.suffix}")
+
+        resolved = (ROOT / relative).resolve()
+        try:
+            normalized = resolved.relative_to(ROOT).as_posix()
+        except ValueError as error:
+            raise ValueError(f"{path}:{index}: source path escapes repository root") from error
+        if normalized in seen_paths:
+            raise ValueError(f"{path}:{index}: duplicate source path: {normalized}")
+        seen_paths.add(normalized)
+        if not resolved.is_file():
+            raise ValueError(f"{path}:{index}: source file does not exist: {normalized}")
+
+        apps.append({"name": name.strip(), "path": normalized, "keymap": keymap.strip()})
+
+    counts = Counter(app["name"] for app in apps)
+    seen = Counter()
+    result = []
+    for app in apps:
+        name = app["name"]
+        if counts[name] > 1:
+            seen[name] += 1
+            name = f"{name} ({seen[name]})"
+        result.append({"name": name, "path": app["path"], "keymap": app["keymap"]})
+    return result
+
+
+def dos_name(title, path, used):
+    stem = re.sub("[^A-Z0-9]", "", title.upper())
+    if not stem:
+        stem = re.sub("[^A-Z0-9]", "", path.stem.upper())
     if not stem or not stem[0].isalpha():
         stem = "G" + stem
-    ext = original.suffix[1:].upper()
+    ext = path.suffix[1:].upper()
     candidate = stem[:8]
     sequence = 1
     while f"{candidate}.{ext}" in used:
@@ -127,15 +181,6 @@ def name_hash(name):
         value ^= char
         value = ((value << 1) | (value >> 7)) & 255
     return value or 1
-
-
-def game_title(path):
-    properties = ROOT / path.parent / "info.properties"
-    for line in properties.read_text(encoding="utf-8").splitlines():
-        key, separator, value = line.partition("=")
-        if separator and key.strip() == "app.name" and value.strip():
-            return value.strip()
-    raise ValueError(f"{properties}: missing app.name")
 
 
 def game_list(games):
@@ -240,23 +285,20 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=ROOT / "out/hard-disk")
     parser.add_argument("--assembler", default="pasmo", help="Pasmo executable (default: pasmo)")
     args = parser.parse_args()
-    controls = load_control_mappings()
-    paths = source_files()
-    if not paths:
-        raise ValueError("No .CMD or .BAS source files found")
+    apps = load_apps()
+    if not apps:
+        raise ValueError(f"No .CMD or .BAS entries found in {APPS_JSON}")
     image = empty_image()
     launcher = assemble_launcher(args.assembler)
     used = {"LAUNCH.CMD"}
     rows = []
     games = []
-    for path in paths:
+    for app in apps:
+        path = Path(app["path"])
         data = (ROOT / path).read_bytes()
-        name = dos_name(path, used)
+        name = dos_name(app["name"], path, used)
         add_file(image, name, data)
-        title = game_title(path)
-        if title not in controls:
-            raise ValueError(f"Missing action-map.csv row for {title!r}")
-        games.append((title, name.replace(".", "/"), controls[title]))
+        games.append((app["name"], name.replace(".", "/"), app["keymap"]))
         rows.append({"dos_name": name.replace(".", "/"), "source": path.as_posix(),
                      "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
 
