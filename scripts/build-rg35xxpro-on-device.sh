@@ -200,11 +200,10 @@ else
   echo "RG35XXPRO clock is current (skew ${clock_skew}s)."
 fi
 
-if [[ -d "$REPO_DIR" ]]; then
-  echo "Error: directory '$REPO_DIR' already exists on the RG35XXPRO."
-  echo "Remove or rename it, then run this script again."
-  exit 1
-fi
+echo "Removing any prior TRS-80 installation artifacts..."
+rm -rf "$REPO_DIR"
+rm -rf "${APPS_ROOT}/${APP_NAME}"
+rm -f "${APPS_ROOT}/TRS-80.sh"
 
 echo "Cloning repository (including submodules)..."
 git clone --recursive "$REPO_URL"
