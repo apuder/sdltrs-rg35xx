@@ -204,6 +204,7 @@ echo "Removing any prior TRS-80 installation artifacts..."
 rm -rf "$REPO_DIR"
 rm -rf "${APPS_ROOT}/${APP_NAME}"
 rm -f "${APPS_ROOT}/TRS-80.sh"
+rm -f "${APPS_ROOT}/Imgs/TRS-80.png"
 
 echo "Cloning repository (including submodules)..."
 git clone --recursive "$REPO_URL"
@@ -232,12 +233,14 @@ python3 rg35xx/build.py
 INSTALL_ROOT="${APPS_ROOT}/${APP_NAME}"
 INSTALL_DISKS_DIR="${INSTALL_ROOT}/disks"
 INSTALL_ROMS_DIR="${INSTALL_ROOT}/roms"
+APPS_IMGS_DIR="${APPS_ROOT}/Imgs"
 
 echo "Installing files under ${APPS_ROOT}..."
-mkdir -p "$INSTALL_DISKS_DIR" "$INSTALL_ROMS_DIR"
+mkdir -p "$INSTALL_DISKS_DIR" "$INSTALL_ROMS_DIR" "$APPS_IMGS_DIR"
 
 install -m 0755 "sdl2trs" "${INSTALL_ROOT}/sdl2trs"
 install -m 0755 "rg35xx/TRS-80.sh" "${APPS_ROOT}/TRS-80.sh"
+install -m 0644 "rg35xx/TRS-80.png" "${APPS_IMGS_DIR}/TRS-80.png"
 install -m 0644 "rg35xx/XTRSHARD-LICENSE.txt" "${INSTALL_ROOT}/XTRSHARD-LICENSE.txt"
 
 install -m 0644 "out/hard-disk/games.hdv" "${INSTALL_DISKS_DIR}/games.hdv"
