@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent.parent
+ROOT = HERE.parent
 TPK_ROOT = ROOT / "tpk"
 DISKIMAGE_ROOT = ROOT / "diskimages"
 TEMPLATE_EMPTY_HDV = DISKIMAGE_ROOT / "empty.hdv.gz"
