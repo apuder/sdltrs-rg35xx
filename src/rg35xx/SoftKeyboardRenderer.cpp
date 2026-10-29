@@ -8,6 +8,14 @@
 namespace rg35xx {
 namespace {
 
+enum class ArrowGlyph {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+};
+
 /* Original compact 5x7 bitmap glyphs, distributed under this project's
  * BSD-2-Clause license. Each low five bits describe one scanline. */
 void glyphRows(char input, unsigned char rows[7])
@@ -99,14 +107,71 @@ std::string trimLabel(const char* label)
     return value;
 }
 
+ArrowGlyph arrowForLabel(const std::string& label)
+{
+    if (label == "UP") return ArrowGlyph::Up;
+    if (label == "DWN") return ArrowGlyph::Down;
+    if (label == "LFT") return ArrowGlyph::Left;
+    if (label == "RGT") return ArrowGlyph::Right;
+    return ArrowGlyph::None;
+}
+
+void drawBitmapGlyph(SDL_Renderer* renderer, const unsigned char rows[7],
+                     int x, int y, int max_width, int max_height,
+                     int max_scale = 3)
+{
+    int scale = std::min(max_width / 5, max_height / 7);
+    scale = std::max(1, std::min(scale, max_scale));
+    const int width = 5 * scale;
+    const int height = 7 * scale;
+    const int start_x = x + (max_width - width) / 2;
+    const int start_y = y + (max_height - height) / 2;
+    for (int row = 0; row < 7; ++row) {
+        for (int col = 0; col < 5; ++col) {
+            if ((rows[row] & (1u << (4 - col))) != 0) {
+                SDL_Rect pixel = {start_x + col * scale,
+                                  start_y + row * scale,
+                                  scale,
+                                  scale};
+                SDL_RenderFillRect(renderer, &pixel);
+            }
+        }
+    }
+}
+
+void drawArrowGlyph(SDL_Renderer* renderer, ArrowGlyph glyph, int x, int y,
+                    int max_width, int max_height, int max_scale = 2)
+{
+    static const unsigned char up_rows[7] = {4, 14, 21, 4, 4, 4, 0};
+    static const unsigned char down_rows[7] = {0, 4, 4, 4, 21, 14, 4};
+    static const unsigned char left_rows[7] = {2, 4, 31, 4, 2, 0, 0};
+    static const unsigned char right_rows[7] = {8, 4, 31, 4, 8, 0, 0};
+    switch (glyph) {
+        case ArrowGlyph::Up:
+            drawBitmapGlyph(renderer, up_rows, x, y, max_width, max_height, max_scale);
+            break;
+        case ArrowGlyph::Down:
+            drawBitmapGlyph(renderer, down_rows, x, y, max_width, max_height, max_scale);
+            break;
+        case ArrowGlyph::Left:
+            drawBitmapGlyph(renderer, left_rows, x, y, max_width, max_height, max_scale);
+            break;
+        case ArrowGlyph::Right:
+            drawBitmapGlyph(renderer, right_rows, x, y, max_width, max_height, max_scale);
+            break;
+        case ArrowGlyph::None:
+            break;
+    }
+}
+
 void drawText(SDL_Renderer* renderer, const std::string& text, int x, int y,
-              int max_width, int max_height)
+              int max_width, int max_height, int max_scale = 3)
 {
     if (text.empty())
         return;
     int scale = std::min(max_width / static_cast<int>(text.size() * 6),
                          max_height / 7);
-    scale = std::max(1, std::min(scale, 3));
+    scale = std::max(1, std::min(scale, max_scale));
     const int width = static_cast<int>(text.size()) * 6 * scale - scale;
     const int height = 7 * scale;
     int cursor_x = x + (max_width - width) / 2;
@@ -125,6 +190,16 @@ void drawText(SDL_Renderer* renderer, const std::string& text, int x, int y,
         }
         cursor_x += 6 * scale;
     }
+}
+
+int textScale(const std::string& text, int max_width, int max_height,
+              int max_scale = 3)
+{
+    if (text.empty())
+        return 1;
+    int scale = std::min(max_width / static_cast<int>(text.size() * 6),
+                         max_height / 7);
+    return std::max(1, std::min(scale, max_scale));
 }
 
 } // namespace
@@ -150,21 +225,28 @@ void SoftKeyboardRenderer::draw(SDL_Renderer* renderer,
         return;
     }
 
-    const int panel_height = std::max(180, height * 58 / 100);
+    const int panel_width = std::min(width, std::max(240, width * 2 / 3));
+    const int panel_x = (width - panel_width) / 2;
+    const int panel_height = std::min(height, std::max(150, height * 50 / 100));
     const int panel_y = std::max(0, height - panel_height);
-    const int padding = std::max(5, width / 100);
+    const int padding = std::max(4, panel_width / 100);
     const int header_height = std::max(14, panel_height / 11);
     const int legend_height = std::max(14, panel_height / 10);
     const int gap = std::max(2, panel_height / 110);
     const int keyboard_y = panel_y + header_height;
     const int keyboard_height = std::max(4,
-        panel_height - header_height - legend_height - padding);
+        panel_height - header_height - legend_height - padding * 2);
     const int row_height = (keyboard_height - gap * 3) / 4;
-    const int keyboard_width = width - padding * 2;
+    const int keyboard_width = panel_width - padding * 2;
+    const std::string legend_text =
+        text_entry ? "B TYPE  Y ERASE  START OK  SELECT CANCEL"
+                   : "SELECT CLOSE  B TYPE  A ENTER  X SHIFT";
+    const int legend_text_scale =
+        textScale(legend_text, panel_width - padding * 2, legend_height - 2);
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 8, 12, 18, 180);
-    SDL_Rect panel = {0, panel_y, width, panel_height};
+    SDL_SetRenderDrawColor(renderer, 8, 12, 18, 78);
+    SDL_Rect panel = {panel_x, panel_y, panel_width, panel_height};
     SDL_RenderFillRect(renderer, &panel);
 
     SDL_SetRenderDrawColor(renderer,
@@ -172,38 +254,49 @@ void SoftKeyboardRenderer::draw(SDL_Renderer* renderer,
         keyboard.shiftLatched() ? 176 : 190,
         keyboard.shiftLatched() ? 38 : 190, 255);
     drawText(renderer, keyboard.shiftLatched() ? "SHIFT ON" : "SHIFT OFF",
-             padding, panel_y + 1, width - 2 * padding, header_height - 2);
+             panel_x + padding, panel_y + 1, panel_width - 2 * padding,
+             header_height - 2, legend_text_scale);
 
     for (int index = 0; index < SoftKeyboard::keyCount(); ++index) {
         const int row = SoftKeyboard::rowFor(index);
         const KeyGeometry& geometry = keyboard.geometry(index);
-        int x = padding + static_cast<int>(geometry.x * keyboard_width);
-        const int next_x = padding + static_cast<int>(
+        int x = panel_x + padding + static_cast<int>(geometry.x * keyboard_width);
+        const int next_x = panel_x + padding + static_cast<int>(
             (geometry.x + geometry.width) * keyboard_width);
         SDL_Rect key = {x + gap / 2,
                         keyboard_y + row * (row_height + gap),
                         std::max(2, next_x - x - gap), row_height};
         const bool selected = index == keyboard.selection();
         if (selected)
-            SDL_SetRenderDrawColor(renderer, 238, 128, 30, 225);
+            SDL_SetRenderDrawColor(renderer, 238, 128, 30, 132);
         else
-            SDL_SetRenderDrawColor(renderer, 18, 24, 32, 150);
+            SDL_SetRenderDrawColor(renderer, 18, 24, 32, 58);
         SDL_RenderFillRect(renderer, &key);
 
         SDL_SetRenderDrawColor(renderer,
             selected ? 255 : 186, selected ? 240 : 196,
             selected ? 170 : 210, 255);
         SDL_RenderDrawRect(renderer, &key);
-        drawText(renderer,
-                 trimLabel(keyboard.labelAt(index, keyboard.shiftLatched())),
-                 key.x + 2, key.y + 2, std::max(1, key.w - 4),
-                 std::max(1, key.h - 4));
+        std::string label = trimLabel(keyboard.labelAt(index, keyboard.shiftLatched()));
+        const ArrowGlyph arrow = arrowForLabel(label);
+        if (arrow != ArrowGlyph::None) {
+            drawArrowGlyph(renderer, arrow,
+                           key.x + 2, key.y + 2,
+                           std::max(1, key.w - 4),
+                           std::max(1, key.h - 4), 2);
+        } else {
+            if (label == "SPC")
+                label = "SPACE";
+            drawText(renderer, label,
+                     key.x + 2, key.y + 2, std::max(1, key.w - 4),
+                     std::max(1, key.h - 4), 2);
+        }
     }
 
     SDL_SetRenderDrawColor(renderer, 225, 230, 238, 255);
-    drawText(renderer, text_entry ? "B TYPE  Y ERASE  START OK  SELECT CANCEL" :
-             "SELECT CLOSE  B TYPE  A ENTER  X SHIFT",
-             padding, height - legend_height, width - padding * 2,
+    drawText(renderer, legend_text,
+             panel_x + padding, panel_y + panel_height - legend_height,
+             panel_width - padding * 2,
              legend_height - 2);
 
     SDL_SetRenderDrawBlendMode(renderer, saved_blend);
