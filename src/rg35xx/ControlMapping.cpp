@@ -174,4 +174,14 @@ std::uint32_t ControlMapping::overriddenControls(std::uint32_t controls) const
     return overridden;
 }
 
+bool ControlMapping::hasBindingWithControl(std::uint32_t control_mask) const
+{
+    if (control_mask == 0) return false;
+    for (std::size_t i = 0; i < bindings_.size(); ++i) {
+        if (bindings_[i].controls & control_mask)
+            return true;
+    }
+    return false;
+}
+
 } // namespace rg35xx

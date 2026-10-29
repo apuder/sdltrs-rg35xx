@@ -1323,6 +1323,23 @@ void testCustomMappingsAugmentDefaults()
     button(Button::Select, false);
     EXPECT(router.visible());
 
+    // Some SDL mappings report D-pad motion through left-stick axes only.
+    // D_* custom bindings should still trigger from that source.
+    router.lifecycleCleanup(now++);
+    loadMapping(router, "D_U:A+SEMICOLON", now++);
+    axis(Axis::LeftY, -1.0f);
+    EXPECT((sink.mapped_keys & (UINT64_C(1) << 1)) != 0);
+    EXPECT((sink.mapped_keys & (UINT64_C(1) << 43)) != 0);
+    EXPECT(!keyboard.ownerActive(GuestOwnerDefaultAxisBase + 2));
+
+    // If LS_* is explicitly bound, do not mirror that direction into D_*.
+    router.lifecycleCleanup(now++);
+    loadMapping(router, "D_U:A+SEMICOLON,LS_U:UP", now++);
+    axis(Axis::LeftY, -1.0f);
+    EXPECT((sink.mapped_keys & (UINT64_C(1) << 51)) != 0);
+    EXPECT((sink.mapped_keys & (UINT64_C(1) << 1)) == 0);
+    EXPECT((sink.mapped_keys & (UINT64_C(1) << 43)) == 0);
+
     router.lifecycleCleanup(now++);
     loadMapping(router, "X:F", now++);
     button(Button::X, true);

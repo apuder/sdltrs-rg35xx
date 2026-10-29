@@ -598,7 +598,33 @@ bool RG35XXInputRouter::mappingByte(unsigned char value, std::uint32_t now_ms)
 void RG35XXInputRouter::updateMappedKeys()
 {
     const std::uint32_t controls = mappedControls();
-    const std::uint32_t overridden = mapping_.overriddenControls(controls);
+    std::uint32_t overridden = mapping_.overriddenControls(controls);
+    const struct {
+        Button dpad;
+        Axis axis;
+        int direction;
+    } aliases[] = {
+        {Button::DPadUp, Axis::LeftY, -1},
+        {Button::DPadDown, Axis::LeftY, 1},
+        {Button::DPadLeft, Axis::LeftX, -1},
+        {Button::DPadRight, Axis::LeftX, 1},
+    };
+    const ControlState& state = controls_.state();
+    for (std::size_t i = 0; i < sizeof(aliases) / sizeof(aliases[0]); ++i) {
+        const std::uint32_t dpad_mask =
+            ControlMapping::buttonMask(aliases[i].dpad);
+        const std::uint32_t axis_mask =
+            ControlMapping::axisMask(aliases[i].axis, aliases[i].direction);
+        const std::size_t dpad_index =
+            static_cast<std::size_t>(aliases[i].dpad);
+        const bool dpad_pressed =
+            state.buttons[dpad_index] && !gated_buttons_[dpad_index];
+        if ((overridden & dpad_mask) && (controls & axis_mask) && !dpad_pressed &&
+            mapping_.hasBindingWithControl(dpad_mask) &&
+            !mapping_.hasBindingWithControl(axis_mask)) {
+            overridden |= axis_mask;
+        }
+    }
     if (overridden & ControlMapping::buttonMask(Button::Select))
         select_tap_pending_ = false;
     updateDefaultKeys(overridden);
@@ -617,6 +643,38 @@ std::uint32_t RG35XXInputRouter::mappedControls()
             gated_axes_[i] ? 0.0f : state.axes[i], mapped_axis_directions_[i]);
         controls |= ControlMapping::axisMask(static_cast<Axis>(i), mapped_axis_directions_[i]);
     }
+
+    // Some RG35XX SDL mappings expose the physical D-pad only via left-stick
+    // axes. Mirror those directions into D_* custom triggers when the mapping
+    // uses D_* and does not provide an explicit LS_* binding for that side.
+    const struct {
+        Button dpad;
+        Axis axis;
+        int direction;
+    } aliases[] = {
+        {Button::DPadUp, Axis::LeftY, -1},
+        {Button::DPadDown, Axis::LeftY, 1},
+        {Button::DPadLeft, Axis::LeftX, -1},
+        {Button::DPadRight, Axis::LeftX, 1},
+    };
+    for (std::size_t i = 0; i < sizeof(aliases) / sizeof(aliases[0]); ++i) {
+        const std::size_t dpad_index = static_cast<std::size_t>(aliases[i].dpad);
+        if (state.buttons[dpad_index] && !gated_buttons_[dpad_index])
+            continue;
+        const std::size_t axis_index = static_cast<std::size_t>(aliases[i].axis);
+        if (mapped_axis_directions_[axis_index] != aliases[i].direction)
+            continue;
+        const std::uint32_t dpad_mask =
+            ControlMapping::buttonMask(aliases[i].dpad);
+        const std::uint32_t axis_mask =
+            ControlMapping::axisMask(aliases[i].axis, aliases[i].direction);
+        if (!mapping_.hasBindingWithControl(dpad_mask) ||
+            mapping_.hasBindingWithControl(axis_mask)) {
+            continue;
+        }
+        controls |= dpad_mask;
+    }
+
     return controls;
 }
 

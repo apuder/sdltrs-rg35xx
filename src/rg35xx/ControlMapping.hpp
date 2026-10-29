@@ -20,6 +20,8 @@ public:
     std::uint64_t resolve(std::uint32_t controls) const;
     // Defaults for controls in a matching custom chord must be suppressed.
     std::uint32_t overriddenControls(std::uint32_t controls) const;
+    // True when any binding references at least one bit from control_mask.
+    bool hasBindingWithControl(std::uint32_t control_mask) const;
 
 private:
     struct Binding {
