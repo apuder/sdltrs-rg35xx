@@ -127,9 +127,21 @@ class LauncherTests(unittest.TestCase):
         return rows
 
     @staticmethod
+    def display_control(control):
+        return {
+            "D_U": "Left DPAD Up",
+            "D_D": "Left DPAD Down",
+            "D_L": "Left DPAD Left",
+            "D_R": "Left DPAD Right",
+        }.get(control, control)
+
+    @staticmethod
     def expected_rows(mapping):
         defaults = [("Left DPAD", "Arrow keys"), ("A", "ENTER"), ("B", "BREAK"), ("X", "CLEAR")]
         custom = [tuple(binding.split(":")) for binding in mapping.split(",")] if mapping else []
+        if any(control in {"D_U", "D_D", "D_L", "D_R"} for control, _ in custom):
+            defaults = [row for row in defaults if row[0] != "Left DPAD"]
+        custom = [(LauncherTests.display_control(control), action) for control, action in custom]
         assigned = {control for control, _ in custom}
         return [(control, action) for control, action in defaults if control not in assigned] + custom
 
@@ -227,8 +239,8 @@ class LauncherTests(unittest.TestCase):
         self.assertIn(("X", "F"), rows)
         self.assertNotIn(("SELECT", "On-screen keyboard"), rows)
         self.assertIn(("SELECT", "CLEAR"), rows)
-        self.assertIn(("Left DPAD", "Arrow keys"), rows)
-        self.assertIn(("D_L", "A"), rows)
+        self.assertNotIn(("Left DPAD", "Arrow keys"), rows)
+        self.assertIn(("Left DPAD Left", "A"), rows)
         self.assertEqual(e.screen()[14 * 64:15 * 64], " " * 64)
         e.trace_output()
         self.assertEqual(e.transmitted(e.key(13, "guide_keyboard")), mapping.encode() + b"\0")

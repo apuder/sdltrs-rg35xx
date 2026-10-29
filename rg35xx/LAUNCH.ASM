@@ -837,12 +837,24 @@ next_binding:
         inc hl
         ld (guide_default_next),hl
         pop hl                  ; HL=default trigger token
+        ld a,(hl)
+        or a
+        jr nz,default_direct_check
+        push de                 ; preserve row pointer
+        push bc                 ; preserve hint-token pointer
+        call has_custom_dpad_trigger
+        pop bc
+        pop de
+        jr c,next_binding       ; Direction overrides replace grouped default.
+        jr show_default_row
+default_direct_check:
         push de                 ; preserve row pointer
         push bc                 ; preserve hint-token pointer
         call has_custom_trigger
         pop bc
         pop de
         jr c,next_binding       ; The exact control has a custom assignment.
+show_default_row:
         push bc                 ; preserve hint token pointer
         ld h,d
         ld l,e                  ; HL=row pointer
@@ -888,6 +900,50 @@ match_skip:
         jr nz,match_skip
         jr match_binding
 match_found:
+        scf
+        ret
+
+; carry if any direct D-pad direction binding is present.
+has_custom_dpad_trigger:
+        ld de,MAPPING
+dpad_binding:
+        ld a,(de)
+        or a
+        ret z
+        ld h,d
+        ld l,e
+        ld a,(hl)
+        cp 'D'
+        jr nz,dpad_skip_binding
+        inc hl
+        ld a,(hl)
+        cp '_'
+        jr nz,dpad_skip_binding
+        inc hl
+        ld a,(hl)
+        cp 'U'
+        jr z,dpad_check_end
+        cp 'D'
+        jr z,dpad_check_end
+        cp 'L'
+        jr z,dpad_check_end
+        cp 'R'
+        jr z,dpad_check_end
+        jr dpad_skip_binding
+dpad_check_end:
+        inc hl
+        ld a,(hl)
+        cp ':'
+        jr z,dpad_found
+dpad_skip_binding:
+        ld a,(de)
+        or a
+        ret z
+        inc de
+        cp ','
+        jr nz,dpad_skip_binding
+        jr dpad_binding
+dpad_found:
         scf
         ret
 
@@ -1001,29 +1057,7 @@ custom_binding:
         ld bc,64
         ldir
         pop hl
-        ld de,guide_line+2
-        ld b,22
-custom_control:
-        ld a,(hl)
-        cp ':'
-        jr z,custom_action_start
-        ld c,a
-        ld a,b
-        or a
-        jr z,custom_control_clip
-        ld a,c
-        ld (de),a
-        inc de
-        dec b
-        jr custom_control_advance
-custom_control_clip:
-        ld a,'.'
-        ld (guide_line+21),a
-        ld (guide_line+22),a
-        ld (guide_line+23),a
-custom_control_advance:
-        inc hl
-        jr custom_control
+        call copy_control_label
 custom_action_start:
         inc hl
         push hl
@@ -1051,6 +1085,118 @@ custom_end:
         ld (guide_next),hl
         scf
         ret
+
+; Copy control token into the first guide column and leave HL at ':' delimiter.
+; Known D-pad tokens use friendly labels.
+copy_control_label:
+        ld de,guide_line+2
+        ld b,22
+        push hl
+        ld a,(hl)
+        cp 'D'
+        jr nz,copy_control_raw_restore
+        inc hl
+        ld a,(hl)
+        cp '_'
+        jr nz,copy_control_raw_restore
+        inc hl
+        ld a,(hl)
+        ld c,a
+        cp 'U'
+        jr z,copy_control_alias_match
+        cp 'D'
+        jr z,copy_control_alias_match
+        cp 'L'
+        jr z,copy_control_alias_match
+        cp 'R'
+        jr z,copy_control_alias_match
+        jr copy_control_raw_restore
+copy_control_alias_match:
+        inc hl
+        ld a,(hl)
+        cp ':'
+        jr nz,copy_control_raw_restore
+        pop hl
+        ld a,c
+        cp 'U'
+        jr z,copy_control_alias_up
+        cp 'D'
+        jr z,copy_control_alias_down
+        cp 'L'
+        jr z,copy_control_alias_left
+        ld hl,label_dpad_right
+        jr copy_control_alias_apply
+copy_control_alias_up:
+        ld hl,label_dpad_up
+        jr copy_control_alias_apply
+copy_control_alias_down:
+        ld hl,label_dpad_down
+        jr copy_control_alias_apply
+copy_control_alias_left:
+        ld hl,label_dpad_left
+copy_control_alias_apply:
+        call copy_control_text
+        ld hl,(custom_token)
+copy_control_seek_colon:
+        ld a,(hl)
+        cp ':'
+        ret z
+        inc hl
+        jr copy_control_seek_colon
+copy_control_raw_restore:
+        pop hl
+copy_control_raw:
+        ld a,(hl)
+        cp ':'
+        ret z
+        ld c,a
+        ld a,b
+        or a
+        jr z,copy_control_raw_clip
+        ld a,c
+        ld (de),a
+        inc de
+        dec b
+        inc hl
+        jr copy_control_raw
+copy_control_raw_clip:
+        ld a,'.'
+        ld (guide_line+21),a
+        ld (guide_line+22),a
+        ld (guide_line+23),a
+copy_control_raw_skip:
+        ld a,(hl)
+        cp ':'
+        ret z
+        inc hl
+        jr copy_control_raw_skip
+
+; Copy zero-terminated text into the control column (22 chars, with ellipsis).
+copy_control_text:
+        ld a,(hl)
+        or a
+        ret z
+        ld c,a
+        ld a,b
+        or a
+        jr z,copy_control_text_clip
+        ld a,c
+        ld (de),a
+        inc de
+        dec b
+        inc hl
+        jr copy_control_text
+copy_control_text_clip:
+        ld a,'.'
+        ld (guide_line+21),a
+        ld (guide_line+22),a
+        ld (guide_line+23),a
+copy_control_text_skip:
+        ld a,(hl)
+        or a
+        ret z
+        inc hl
+        jr copy_control_text_skip
 
 wipe_video:
         ld hl,3c00h
@@ -1191,6 +1337,10 @@ guide_dpad: db '| Left DPAD              | Arrow keys                         |'
 guide_a: db '| A                      | ENTER                              |',0
 guide_b: db '| B                      | BREAK                              |',0
 guide_x: db '| X                      | CLEAR                              |',0
+label_dpad_up: db 'Left DPAD Up',0
+label_dpad_down: db 'Left DPAD Down',0
+label_dpad_left: db 'Left DPAD Left',0
+label_dpad_right: db 'Left DPAD Right',0
 above_text:     db '   ^^^',0
 below_text:     db '   vvv',0
 basic_prefix:   db 'BASIC/CMD:0 RUN"',0

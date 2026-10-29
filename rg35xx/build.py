@@ -84,6 +84,7 @@ def encode_hints(hints):
         try:
             parts = [CONTROL_TOKENS[c.strip()] for c in control.split("+")]
         except KeyError as error:
+            print(CONTROL_TOKENS)
             raise ValueError(f"Unknown RG35XXPRO control in hint key {control!r}") from error
         trigger = frozenset(parts)
         if len(trigger) != len(parts):
