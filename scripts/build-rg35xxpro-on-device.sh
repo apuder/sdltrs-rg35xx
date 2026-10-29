@@ -21,6 +21,9 @@ APPS_ROOT="/mnt/mmc/Roms/APPS"
 APP_NAME="TRS-80"
 MAX_CLOCK_SKEW_SECONDS=3600
 HOST_EPOCH="$(date +%s)"
+HOST_LOCAL_ISO="$(date '+%Y-%m-%d %H:%M:%S')"
+HOST_LOCAL_BUSYBOX="$(date '+%Y.%m.%d-%H:%M:%S')"
+HOST_LOCAL_NAIVE_EPOCH="$(TZ=UTC date -d "${HOST_LOCAL_ISO}" +%s)"
 HOST_UTC_ISO="$(date -u '+%Y-%m-%d %H:%M:%S')"
 HOST_UTC_BUSYBOX="$(date -u '+%Y.%m.%d-%H:%M:%S')"
 
@@ -40,7 +43,7 @@ SSH_OPTS=(
 echo "Connecting to ${DEVICE_USER}@${DEVICE_IP}..."
 
 sshpass -p "$DEVICE_PASSWORD" ssh "${SSH_OPTS[@]}" "${DEVICE_USER}@${DEVICE_IP}" \
-  "HOST_EPOCH='${HOST_EPOCH}' HOST_UTC_ISO='${HOST_UTC_ISO}' HOST_UTC_BUSYBOX='${HOST_UTC_BUSYBOX}' MAX_CLOCK_SKEW_SECONDS='${MAX_CLOCK_SKEW_SECONDS}' ROM_URL='${ROM_URL}' APPS_ROOT='${APPS_ROOT}' APP_NAME='${APP_NAME}' bash -s" <<'REMOTE_EOF'
+  "HOST_EPOCH='${HOST_EPOCH}' HOST_LOCAL_ISO='${HOST_LOCAL_ISO}' HOST_LOCAL_BUSYBOX='${HOST_LOCAL_BUSYBOX}' HOST_LOCAL_NAIVE_EPOCH='${HOST_LOCAL_NAIVE_EPOCH}' HOST_UTC_ISO='${HOST_UTC_ISO}' HOST_UTC_BUSYBOX='${HOST_UTC_BUSYBOX}' MAX_CLOCK_SKEW_SECONDS='${MAX_CLOCK_SKEW_SECONDS}' ROM_URL='${ROM_URL}' APPS_ROOT='${APPS_ROOT}' APP_NAME='${APP_NAME}' bash -s" <<'REMOTE_EOF'
 set -euo pipefail
 
 REPO_URL="https://github.com/apuder/sdltrs-rg35xx.git"
@@ -52,11 +55,18 @@ read_remote_epoch() {
 
 clock_skew_seconds() {
   local remote_epoch="$1"
-  if (( remote_epoch >= HOST_EPOCH )); then
-    echo $((remote_epoch - HOST_EPOCH))
+  local target_epoch="$2"
+  if (( remote_epoch >= target_epoch )); then
+    echo $((remote_epoch - target_epoch))
   else
-    echo $((HOST_EPOCH - remote_epoch))
+    echo $((target_epoch - remote_epoch))
   fi
+}
+
+clock_delta_seconds() {
+  local remote_epoch="$1"
+  local target_epoch="$2"
+  echo $((remote_epoch - target_epoch))
 }
 
 sync_clock_with_ntp() {
@@ -81,6 +91,9 @@ sync_clock_with_ntp() {
 }
 
 sync_clock_from_host() {
+  date -s "@${HOST_LOCAL_NAIVE_EPOCH}" >/dev/null 2>&1 && return 0
+  date -s "${HOST_LOCAL_ISO}" >/dev/null 2>&1 && return 0
+  date -s "${HOST_LOCAL_BUSYBOX}" >/dev/null 2>&1 && return 0
   date -u -s "@${HOST_EPOCH}" >/dev/null 2>&1 && return 0
   date -u -s "${HOST_UTC_ISO}" >/dev/null 2>&1 && return 0
   date -u -s "${HOST_UTC_BUSYBOX}" >/dev/null 2>&1 && return 0
@@ -166,18 +179,19 @@ if [[ ! "$remote_epoch" =~ ^[0-9]+$ ]]; then
 fi
 
 echo "Device UTC time before sync check: $(date -u '+%Y-%m-%d %H:%M:%S')"
-clock_skew="$(clock_skew_seconds "$remote_epoch")"
+echo "Device local time before sync check: $(date '+%Y-%m-%d %H:%M:%S')"
+clock_skew_local="$(clock_skew_seconds "$remote_epoch" "$HOST_LOCAL_NAIVE_EPOCH")"
+clock_delta_local="$(clock_delta_seconds "$remote_epoch" "$HOST_LOCAL_NAIVE_EPOCH")"
 
-if (( clock_skew > MAX_CLOCK_SKEW_SECONDS )); then
-  echo "RG35XXPRO clock skew (${clock_skew}s) exceeds ${MAX_CLOCK_SKEW_SECONDS}s."
-  echo "Attempting automatic clock synchronization..."
+if (( clock_skew_local > MAX_CLOCK_SKEW_SECONDS )); then
+  echo "RG35XXPRO local clock skew (${clock_skew_local}s, delta ${clock_delta_local}s) exceeds ${MAX_CLOCK_SKEW_SECONDS}s."
+  echo "Synchronizing RG35XXPRO wall-clock time from host local time..."
 
-  if sync_clock_with_ntp; then
-    echo "Clock synchronized using NTP."
-  elif sync_clock_from_host; then
+  if sync_clock_from_host; then
     echo "Clock synchronized from host time over SSH."
   else
-    echo "Error: unable to set a current date/time on RG35XXPRO automatically."
+    echo "Error: unable to set RG35XXPRO wall-clock time from host local time."
+    echo "NTP fallback is intentionally skipped because RG35XXPRO UI does not manage timezone."
     echo "Please set the correct date/time on the device and rerun this script."
     exit 1
   fi
@@ -188,16 +202,18 @@ if (( clock_skew > MAX_CLOCK_SKEW_SECONDS )); then
     exit 1
   fi
 
-  clock_skew="$(clock_skew_seconds "$remote_epoch")"
+  clock_skew_local="$(clock_skew_seconds "$remote_epoch" "$HOST_LOCAL_NAIVE_EPOCH")"
+  clock_delta_local="$(clock_delta_seconds "$remote_epoch" "$HOST_LOCAL_NAIVE_EPOCH")"
   echo "Device UTC time after sync check: $(date -u '+%Y-%m-%d %H:%M:%S')"
+  echo "Device local time after sync check: $(date '+%Y-%m-%d %H:%M:%S')"
 
-  if (( clock_skew > MAX_CLOCK_SKEW_SECONDS )); then
-    echo "Error: RG35XXPRO clock is still not current (skew ${clock_skew}s)."
+  if (( clock_skew_local > MAX_CLOCK_SKEW_SECONDS )); then
+    echo "Error: RG35XXPRO local clock is still not current (skew ${clock_skew_local}s, delta ${clock_delta_local}s)."
     echo "Please set the correct date/time on the device and rerun this script."
     exit 1
   fi
 else
-  echo "RG35XXPRO clock is current (skew ${clock_skew}s)."
+  echo "RG35XXPRO local clock is current (skew ${clock_skew_local}s, delta ${clock_delta_local}s)."
 fi
 
 echo "Removing any prior TRS-80 installation artifacts..."
