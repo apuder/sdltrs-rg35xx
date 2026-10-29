@@ -1,6 +1,16 @@
 [
    {
-      "keymap" : "",
+      "keymap" : "D_U:A+SEMICOLON,D_D:Z+PERIOD,D_L:Z+SEMICOLON,D_R:A+PERIOD,R1:SPACE,L1:1,L2:2,Y:I",
+      "hint" : {
+                  "D_U": "Forward",
+                  "D_D": "Backward",
+                  "D_L": "Left",
+                  "D_R": "Right",
+                  "Y": "Instructions",
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "R1": "Fire"
+      },
       "name" : "Armored Patrol",
       "path" : "tpk/src/main/resources/apps/armored_patrol/ARMORED.CMD"
    },
@@ -26,6 +36,11 @@
    },
    {
       "keymap" : "R1:SPACE,L1:1,L2:2,Y:D",
+      "hint" : {
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "Y": "Dock"
+      },
       "name" : "Cosmic Fighter",
       "path" : "tpk/src/main/resources/apps/cosmic_fighter/COSMIC.CMD"
    },
@@ -36,6 +51,11 @@
    },
    {
       "keymap" : "R1:SPACE,L1:1,L2:2,Y:3",
+      "hint": {
+                  "L1": "One player",
+                  "L2": "Two players",
+                 "Y": "Anti-Matter Bomb"
+      },
       "name" : "Defense Command",
       "path" : "tpk/src/main/resources/apps/defense_command/DEFENSE.CMD"
    },
