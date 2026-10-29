@@ -97,17 +97,21 @@ original game bytes; it does not convert Model I programs for Model III.
 Keep the flat-namespace aliases for Defense Command/Missile Defense and the
 two Space Invaders versions.
 
-`LIST.TXT` uses ASCII CR line endings, two header lines, then title/filespec
-and a TAB-separated mapping. Mappings use `CONTROL:KEY[,CONTROL:KEY...]` with
-`+` for simultaneous chords on either side. Blank cells and lowercase `x`
-are ignored; uppercase `X` denotes the physical X button. A blank mapping
-restores defaults. Do not generate substitute assignments or rewrite the CSV.
+`LIST.TXT` uses ASCII CR line endings, two header lines, then title/filespec,
+TAB-separated mapping, and optional TAB-separated hints.
+Mappings use `CONTROL:KEY[,CONTROL:KEY...]` with `+` for simultaneous chords
+on either side. Hints use `CONTROL:DESCRIPTION[,CONTROL:DESCRIPTION...]`.
+Blank cells and lowercase `x` are ignored; uppercase `X` denotes the physical
+X button. A blank mapping restores defaults. Do not generate substitute
+assignments or rewrite the CSV.
 
 The launcher sends the selected mapping followed by NUL to decimal I/O port
 41 (`0x29`, full address `0x0029`) only when launching from the guide.
-Cancel/paging sends nothing. Maximum payload is 4095 ASCII bytes, with the
-terminating NUL in a 4096-byte buffer at `B000h..BFFFh`. A raw Pasmo `.BIN`
-is not a runnable TRS-80 `/CMD`; `build.py` wraps it in load/transfer records.
+Cancel/paging sends nothing. Maximum mapping payload is 4095 ASCII bytes,
+with the terminating NUL in a 4096-byte buffer at `B000h..BFFFh`.
+Selected hints are loaded separately (up to 1023 ASCII bytes). A raw Pasmo
+`.BIN` is not a runnable TRS-80 `/CMD`; `build.py` wraps it in load/transfer
+records.
 
 This repository already implements the receiver in `src/trs_io.c` and
 `src/rg35xx/rg35xx_bridge.cpp`, with mapping/input code under `src/rg35xx/`.

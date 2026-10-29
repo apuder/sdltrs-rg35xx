@@ -3,10 +3,11 @@
 ; build.py wraps LAUNCH.BIN in TRS-80 /CMD load and transfer records.
 ;
 ; Reads the generated LIST/TXT:4 (two header lines, then title + spaces
-; + NAME/CMD or NAME/BAS + TAB + control mapping).
+; + NAME/CMD or NAME/BAS + TAB + control mapping + optional TAB + hints).
 ; CR, LF and CRLF are accepted. Titles are clipped
 ; to 47 display columns; filenames are kept intact. Limit: 250 games,
-; 127 bytes before TAB per input line; selected mapping up to 4095 bytes.
+; 127 bytes before TAB per input line; selected mapping up to 4095 bytes,
+; selected hint payload up to 1023 bytes.
 ; Records live at 7000h..AE7Fh, below XTRSHARD.
 ; Selected mapping lives at B000h..BFFFh; all other mappings are skipped.
 ; Files are closed before the keyboard loop and before handing off to DOS.
@@ -20,6 +21,7 @@ MAXGAME equ 250
 TABLE   equ 7000h
 MAPPING equ 0b000h
 MAPEND  equ 0bfffh              ; Last byte reserved for terminating zero.
+HINTMAX equ 1023
 MAPPORT equ 41                 ; Decimal 41 (29h), full I/O address 0029h.
 GUIDEROWS equ 11
 
@@ -49,9 +51,9 @@ read_loop:
         call 0013h
         jp nz,read_end
         cp 10
-        jr z,end_line            ; CRLF produces an ignored empty line.
+        jp z,end_line            ; CRLF produces an ignored empty line.
         cp 13
-        jr z,end_line
+        jp z,end_line
         ld c,a
         ld a,(skip_mapping)
         or a
@@ -66,6 +68,16 @@ read_loop:
         ld (skip_mapping),a
         jr read_loop
 mapping_char:
+        ld a,(skip_mapping)
+        cp 2
+        jr z,hint_char
+        ld a,c
+        cp 9
+        jr nz,mapping_payload
+        ld a,2
+        ld (skip_mapping),a
+        jr read_loop
+mapping_payload:
         ld a,(find_mode)
         or a
         jr z,read_loop
@@ -86,6 +98,28 @@ mapping_char:
         ld (hl),c
         inc hl
         ld (map_write),hl
+        jp read_loop
+hint_char:
+        ld a,(find_mode)
+        or a
+        jr z,read_loop
+        ld a,(found_game)
+        or a
+        jr z,read_loop
+        ld a,c
+        cp 32
+        jp c,mapping_error
+        cp 127
+        jp nc,mapping_error
+        ld hl,(hint_write)
+        ld de,hint_buffer + HINTMAX
+        or a
+        sbc hl,de
+        jp nc,mapping_error
+        ld hl,(hint_write)
+        ld (hl),c
+        inc hl
+        ld (hint_write),hl
         jp read_loop
 buffer_char:
         ld a,(line_len)
@@ -134,8 +168,9 @@ read_close:
         jp redraw
 
 ; Parse a complete line. Blank lines and unsupported file extensions are
-; ignored. The reader handles the optional TAB and mapping. Search from
-; the right so spaces inside a title are retained. Old two-field lists work.
+; ignored. The reader handles optional TAB-delimited mapping and hints. Search
+; from the right so spaces inside a title are retained. Old two-field lists
+; still work.
 parse_line:
         ld a,(line_len)
         or a
@@ -521,6 +556,9 @@ show_controls:
         ld hl,MAPPING
         ld (map_write),hl
         ld (hl),0
+        ld hl,hint_buffer
+        ld (hint_write),hl
+        ld (hl),0
         ld hl,list_name
         ld de,fcb
         call 441ch
@@ -537,7 +575,10 @@ mapping_ready:
         jp z,missing_game_error
         ld hl,(map_write)
         ld (hl),0
+        ld hl,(hint_write)
+        ld (hl),0
         call validate_mapping
+        call validate_hints
 guide_first:
         ld hl,default_guide
         ld (guide_default_next),hl
@@ -683,6 +724,96 @@ validate_pair_end:
         jp z,mapping_format_error
         ret
 
+; Validate compact CONTROL:DESCRIPTION pairs.
+; Control tokens share mapping grammar. Descriptions are printable ASCII and
+; may contain spaces/punctuation except commas (pair delimiters).
+validate_hints:
+        ld hl,hint_buffer
+        ld a,(hl)
+        or a
+        ret z
+        xor a
+        ld (hint_in_desc),a
+        ld (hint_token_used),a
+        ld (hint_desc_used),a
+validate_hint_char:
+        ld a,(hl)
+        or a
+        jr z,validate_hint_end
+        cp ','
+        jr z,validate_hint_comma
+        ld a,(hint_in_desc)
+        or a
+        jr nz,validate_hint_desc
+        ld a,(hl)
+        cp ':'
+        jr z,validate_hint_colon
+        cp '+'
+        jr z,validate_hint_plus
+        cp '@'
+        jr z,validate_hint_token
+        cp '_'
+        jr z,validate_hint_token
+        cp '0'
+        jp c,hint_format_error
+        cp '9'+1
+        jr c,validate_hint_token
+        cp 'A'
+        jp c,hint_format_error
+        cp 'Z'+1
+        jp nc,hint_format_error
+validate_hint_token:
+        ld a,1
+        ld (hint_token_used),a
+        jr validate_hint_advance
+validate_hint_plus:
+        ld a,(hint_token_used)
+        or a
+        jp z,hint_format_error
+        xor a
+        ld (hint_token_used),a
+        jr validate_hint_advance
+validate_hint_colon:
+        ld a,(hint_token_used)
+        or a
+        jp z,hint_format_error
+        ld a,(hint_in_desc)
+        or a
+        jp nz,hint_format_error
+        inc a
+        ld (hint_in_desc),a
+        xor a
+        ld (hint_desc_used),a
+        jr validate_hint_advance
+validate_hint_desc:
+        ld a,(hl)
+        cp 32
+        jp c,hint_format_error
+        cp 127
+        jp nc,hint_format_error
+        ld a,1
+        ld (hint_desc_used),a
+validate_hint_advance:
+        inc hl
+        jr validate_hint_char
+validate_hint_comma:
+        call validate_hint_pair_end
+        xor a
+        ld (hint_in_desc),a
+        ld (hint_token_used),a
+        ld (hint_desc_used),a
+        jr validate_hint_advance
+validate_hint_end:
+        ; Also rejects a trailing comma, colon or plus.
+validate_hint_pair_end:
+        ld a,(hint_in_desc)
+        or a
+        jp z,hint_format_error
+        ld a,(hint_desc_used)
+        or a
+        jp z,hint_format_error
+        ret
+
 ; Produce table rows: Left DPAD, A, B and X defaults, then custom bindings.
 ; A direct custom binding replaces its default row. Chords leave the ordinary
 ; defaults visible; the footer explains their precedence while held.
@@ -693,21 +824,33 @@ next_binding:
         ld d,(hl)
         ld a,d
         or e
-        jr z,custom_binding
+        jp z,custom_binding
+        push de                 ; default trigger token pointer
+        inc hl
+        ld e,(hl)
+        inc hl
+        ld d,(hl)               ; row pointer
         inc hl
         ld c,(hl)
         inc hl
-        ld b,(hl)
+        ld b,(hl)               ; hint-token pointer
         inc hl
         ld (guide_default_next),hl
-        push bc
-        ex de,hl
+        pop hl                  ; HL=default trigger token
+        push de                 ; preserve row pointer
+        push bc                 ; preserve hint-token pointer
         call has_custom_trigger
-        pop hl
+        pop bc
+        pop de
         jr c,next_binding       ; The exact control has a custom assignment.
+        push bc                 ; preserve hint token pointer
+        ld h,d
+        ld l,e                  ; HL=row pointer
         ld de,guide_line
         ld bc,64
         ldir
+        pop hl                  ; HL=hint token pointer
+        call apply_hint_for_token
         scf
         ret
 
@@ -748,6 +891,102 @@ match_found:
         scf
         ret
 
+; HL -> hint token; carry set and HL -> description if found.
+lookup_hint:
+        ld (match_token),hl
+        ld a,(hl)
+        or a
+        ret z
+        ld de,hint_buffer
+lookup_binding:
+        ld hl,(match_token)
+lookup_match_char:
+        ld a,(hl)
+        cp ':'
+        jr z,lookup_match_end
+        or a
+        jr z,lookup_match_end
+        ld c,a
+        ld a,(de)
+        cp c
+        jr nz,lookup_skip
+        inc de
+        inc hl
+        jr lookup_match_char
+lookup_match_end:
+        ld a,(de)
+        cp ':'
+        jr z,lookup_found
+lookup_skip:
+        ld a,(de)
+        or a
+        ret z
+        inc de
+        cp ','
+        jr nz,lookup_skip
+        jr lookup_binding
+lookup_found:
+        inc de
+        ex de,hl
+        scf
+        ret
+
+; Clear the TRS-80 KEY/DESCRIPTION column (34 characters).
+clear_desc_column:
+        ld hl,guide_line+27
+        ld b,34
+clear_desc_char:
+        ld (hl),' '
+        inc hl
+        djnz clear_desc_char
+        ret
+
+; Copy HL text into TRS-80 KEY/DESCRIPTION (up to comma/NUL, clipped).
+; Leaves HL at the comma or NUL terminator.
+copy_desc_column:
+        ld de,guide_line+27
+        ld b,34
+copy_desc_loop:
+        ld a,(hl)
+        or a
+        ret z
+        cp ','
+        ret z
+        ld c,a
+        ld a,b
+        or a
+        jr z,copy_desc_clip
+        ld a,c
+        ld (de),a
+        inc de
+        dec b
+        inc hl
+        jr copy_desc_loop
+copy_desc_clip:
+        ld a,'.'
+        ld (guide_line+58),a
+        ld (guide_line+59),a
+        ld (guide_line+60),a
+copy_desc_skip:
+        ld a,(hl)
+        or a
+        ret z
+        cp ','
+        ret z
+        inc hl
+        jr copy_desc_skip
+
+; If token HL has a hint override, replace the description column.
+apply_hint_for_token:
+        call lookup_hint
+        ret nc
+        push hl
+        call clear_desc_column
+        pop hl
+        call copy_desc_column
+        scf
+        ret
+
 ; Format CONTROL:KEY into fixed columns without modifying the payload.
 ; Clip each column independently and mark long values with an ellipsis.
 custom_binding:
@@ -755,6 +994,7 @@ custom_binding:
         ld a,(hl)
         or a
         ret z
+        ld (custom_token),hl
         push hl
         ld hl,table_empty
         ld de,guide_line
@@ -786,32 +1026,26 @@ custom_control_advance:
         jr custom_control
 custom_action_start:
         inc hl
-        ld de,guide_line+27
-        ld b,34
-custom_action:
+        push hl
+        ld hl,(custom_token)
+        call apply_hint_for_token
+        jr nc,custom_action_default
+        pop hl
+custom_action_skip:
         ld a,(hl)
         or a
-        jr z,custom_end
+        jr z,custom_finish
         cp ','
-        jr z,custom_separator
-        ld c,a
-        ld a,b
-        or a
-        jr z,custom_action_clip
-        ld a,c
-        ld (de),a
-        inc de
-        dec b
-        jr custom_action_advance
-custom_action_clip:
-        ld a,'.'
-        ld (guide_line+58),a
-        ld (guide_line+59),a
-        ld (guide_line+60),a
-custom_action_advance:
+        jr z,custom_finish
         inc hl
-        jr custom_action
-custom_separator:
+        jr custom_action_skip
+custom_action_default:
+        pop hl
+        call copy_desc_column
+custom_finish:
+        ld a,(hl)
+        cp ','
+        jr nz,custom_end
         inc hl
 custom_end:
         ld (guide_next),hl
@@ -923,6 +1157,9 @@ missing_game_error:
         jr show_error
 mapping_format_error:
         ld hl,format_message
+        jr show_error
+hint_format_error:
+        ld hl,hint_format_message
 show_error:
         call 4467h
         ld sp,(saved_sp)
@@ -931,20 +1168,22 @@ show_error:
 list_name:      db 'LIST/TXT:4',13
 banner:         db 'TRS-80 GAME LAUNCHER',0
 help_text:      db 'DPAD: Choose game     A: Select     B: Exit',0
-guide_heading: db '| CONTROL                | TRS-80 KEY                         |',0
+guide_heading: db '| CONTROL                | TRS-80 KEY/DESCRIPTION             |',0
 guide_divider: db '+------------------------+------------------------------------+',0
 guide_help:    db 'A: Launch     B: Back',0
 table_empty:   db '|                        |                                    |',0
 
-; Four-byte records: trigger token pointer and complete table-row pointer.
+; Six-byte records: trigger token pointer, complete table-row pointer, and
+; hint token pointer used for description overrides.
 ; Grouped direction rows summarize defaults; custom directions are exceptions.
 default_guide:
-        dw empty_trigger,guide_dpad
-        dw trigger_a,guide_a
-        dw trigger_b,guide_b
-        dw trigger_x,guide_x
+        dw empty_trigger,guide_dpad,trigger_d_l
+        dw trigger_a,guide_a,trigger_a
+        dw trigger_b,guide_b,trigger_b
+        dw trigger_x,guide_x,trigger_x
         dw 0
 empty_trigger: db 0
+trigger_d_l: db 'D_L',0
 trigger_a: db 'A',0
 trigger_b: db 'B',0
 trigger_x: db 'X',0
@@ -963,6 +1202,7 @@ full_message:   db 'LIST/TXT exceeds 250 games',13,3
 mapping_message: db 'Invalid mapping or mapping exceeds 4095 bytes',13,3
 missing_message: db 'Selected game missing from LIST/TXT:4',13,3
 format_message: db 'Invalid control mapping (expected CONTROL:KEY pairs)',13,3
+hint_format_message: db 'Invalid control hints (expected CONTROL:DESCRIPTION pairs)',13,3
 saved_sp:       dw 0
 filename:       dw 0
 record:         dw 0
@@ -981,10 +1221,15 @@ map_write:      dw 0
 guide_next:     dw 0
 guide_default_next: dw 0
 match_token:    dw 0
+custom_token:   dw 0
 guide_screen:   dw 0
 guide_rows:     db 0
 in_action:     db 0
 token_used:    db 0
+hint_write:    dw 0
+hint_in_desc:  db 0
+hint_token_used: db 0
+hint_desc_used: db 0
 kind:           db 0
 drawing:        db 0
 visible_rows:   db 0
@@ -993,5 +1238,6 @@ command:        ds 64,0
 fcb:            ds 32,0
 sector_buffer:  ds 256,0
 line_buffer:    ds 128,0
+hint_buffer:    ds HINTMAX+1,0
 guide_line:     ds 64,0
         end start

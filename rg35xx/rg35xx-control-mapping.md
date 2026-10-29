@@ -71,7 +71,7 @@ Other emulator defaults remain active but are omitted from the guide.
 
 For the example above, the overview is:
 
-| Control | TRS-80 KEY |
+| Control | TRS-80 KEY/DESCRIPTION |
 | --- | --- |
 | Left DPAD | Arrow keys |
 | A | ENTER |
@@ -81,6 +81,11 @@ For the example above, the overview is:
 | L1 | 1 |
 | L2 | 2 |
 | Y | D |
+
+When the selected game has hint overrides in the third tab-delimited catalog
+field (`CONTROL:DESCRIPTION[,CONTROL:DESCRIPTION...]`), matching controls show
+their hint text instead of the mapped TRS-80 key sequence. If a control has no
+hint, the guide keeps the usual `CONTROL -> TRS-80 key` display.
 
 An empty mapping shows only the four default rows. Right-stick click advances
 through pages of eleven rows and wraps; B returns with the selection preserved

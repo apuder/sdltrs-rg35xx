@@ -161,12 +161,13 @@ class LauncherTests(unittest.TestCase):
                 rows = [row for page in pages for row in self.table_rows(page)]
                 self.assertEqual(rows, self.expected_rows(mapping))
                 self.assertIn("CONTROL", guide)
-                self.assertIn("TRS-80 KEY", guide)
+                self.assertIn("TRS-80 KEY/DESCRIPTION", guide)
                 for page in pages:
                     self.assertEqual(page[15 * 64:].strip(),
                                      "A: Launch     B: Back")
                     self.assertEqual(page[14 * 64:15 * 64], " " * 64)
-                    self.assertEqual(page[64:128].split("|")[2].strip(), "TRS-80 KEY")
+                    self.assertEqual(page[64:128].split("|")[2].strip(),
+                                     "TRS-80 KEY/DESCRIPTION")
                 # Cancellation sends nothing and preserves the selection.
                 self.assertEqual(e.transmitted(e.key(1, "guide_keyboard")), b"")
                 self.assertEqual(e.memory(self.symbols["selected"], 1), bytes([index]))
@@ -207,7 +208,8 @@ class LauncherTests(unittest.TestCase):
         self.assertEqual(e.screen()[15 * 64:].strip(),
                          "A: Launch     B: Back")
         self.assertEqual(e.screen()[14 * 64:15 * 64], " " * 64)
-        self.assertEqual(e.screen()[64:128].split("|")[2].strip(), "TRS-80 KEY")
+        self.assertEqual(e.screen()[64:128].split("|")[2].strip(),
+                         "TRS-80 KEY/DESCRIPTION")
         e.trace_output()
         self.assertEqual(e.transmitted(e.key(32, "guide_keyboard")), b"")
         self.assertEqual(e.transmitted(e.key(13, "guide_keyboard")), b"\0")
@@ -230,6 +232,23 @@ class LauncherTests(unittest.TestCase):
         self.assertEqual(e.screen()[14 * 64:15 * 64], " " * 64)
         e.trace_output()
         self.assertEqual(e.transmitted(e.key(13, "guide_keyboard")), mapping.encode() + b"\0")
+
+    def test_hints_override_custom_control_descriptions(self):
+        mapping = "R1:SPACE,L1:1,L2:2,X:1,Y:0"
+        hints = "R1:Fire,L1:One player,L2:Two players,X:Expert,Y:Novice"
+        e = self.boot(build.game_list([("Hints", "GAME/CMD", mapping, hints)]))
+        e.key(13)
+        rows = self.table_rows(e.screen())
+        self.assertIn(("R1", "Fire"), rows)
+        self.assertIn(("L1", "One player"), rows)
+        self.assertIn(("L2", "Two players"), rows)
+        self.assertIn(("X", "Expert"), rows)
+        self.assertIn(("Y", "Novice"), rows)
+        self.assertNotIn(("R1", "SPACE"), rows)
+        self.assertNotIn(("L1", "1"), rows)
+        self.assertNotIn(("L2", "2"), rows)
+        self.assertNotIn(("X", "1"), rows)
+        self.assertNotIn(("Y", "0"), rows)
 
     def test_long_columns_are_clipped_without_modifying_payload(self):
         control = "SELECT+START+LS_U+RS_D+L1+R1"

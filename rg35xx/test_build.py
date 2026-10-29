@@ -1,6 +1,7 @@
 """Run with python3 -B -m unittest discover -s rg35xx -p 'test_*.py'."""
 
 import csv
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -67,6 +68,22 @@ class ControlMappingTests(unittest.TestCase):
             with self.subTest(actions=actions), self.assertRaises(ValueError):
                 build.encode_controls(actions)
 
+    def test_hint_encoding_supports_control_aliases(self):
+        self.assertEqual(build.encode_hints({"R1": "Fire", "D-pad Left": "Move"}),
+                         "R1:Fire,D_L:Move")
+
+    def test_hint_encoding_rejects_invalid_values(self):
+        bad_hints = [
+            {"Power": "Oops"},
+            {"R1": ""},
+            {"R1": "Line\nBreak"},
+            {"R1": "No,comma"},
+            {"R1": "ASCII ok", "Right stick Down": "Also ok", "RS_D": "Duplicate"},
+        ]
+        for hints in bad_hints:
+            with self.subTest(hints=hints), self.assertRaises(ValueError):
+                build.encode_hints(hints)
+
     def test_uppercase_x_assigns_console_button(self):
         self.assertEqual(build.encode_controls({"SPACE": "X"}), "X:SPACE")
 
@@ -88,18 +105,47 @@ class ControlMappingTests(unittest.TestCase):
 
     def test_catalog_keeps_mapping_in_third_field(self):
         mapping = ",".join(f"SELECT+{c}:{c}" for c in "ABXY")
-        catalog = build.game_list([("Zulu", "Z/BAS", mapping),
-                                   ("A title with spaces", "FIRST/CMD", "L1:1,L2:2,Y:D"),
-                                   ("Empty", "EMPTY/CMD", "")])
+        hints = "R1:Fire,L1:One player,L2:Two players"
+        catalog = build.game_list([("Zulu", "Z/BAS", mapping, hints),
+                                   ("A title with spaces", "FIRST/CMD", "L1:1,L2:2,Y:D", ""),
+                                   ("Empty", "EMPTY/CMD", "", "")])
         self.assertNotIn(b"\n", catalog)
         lines = catalog.decode("ascii").split("\r")
         self.assertEqual(len(lines), 6)
         first, empty, last = [line.split("\t") for line in lines[2:5]]
         self.assertEqual(first[0].split()[-1], "FIRST/CMD")
         self.assertEqual(first[1], "L1:1,L2:2,Y:D")
+        self.assertEqual(first[2], "")
         self.assertEqual(empty[1], "")
+        self.assertEqual(empty[2], "")
         self.assertEqual(last[0].split()[-1], "Z/BAS")
         self.assertEqual(last[1], mapping)
+        self.assertEqual(last[2], hints)
+
+    def test_apps_loader_encodes_hint_overrides(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            apps_json = root / "apps.json"
+            source = root / "tpk/src/main/resources/apps/example/EXAMPLE.CMD"
+            source.parent.mkdir(parents=True)
+            source.write_bytes(b"cmd")
+            apps_json.write_text(json.dumps([{
+                "name": "Example",
+                "path": "tpk/src/main/resources/apps/example/EXAMPLE.CMD",
+                "keymap": "R1:SPACE",
+                "hint": {
+                    "R1": "Fire",
+                    "L1": "One player",
+                    "L2": "Two players",
+                },
+            }]))
+            old_root = build.ROOT
+            try:
+                build.ROOT = root
+                apps = build.load_apps(apps_json)
+            finally:
+                build.ROOT = old_root
+        self.assertEqual(apps[0]["hint"], "R1:Fire,L1:One player,L2:Two players")
 
     def test_catalog_rejects_oversized_or_multiline_prefix(self):
         for title in ("X" * 125, "A\tB", "A\rB", "A\nB"):

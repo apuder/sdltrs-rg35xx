@@ -26,6 +26,7 @@ GRANULE = 32 * SECTOR
 DIRECTORY = SECTOR + SECTOR * SECTORS_PER_CYLINDER
 IMAGE_SIZE = SECTOR + CYLINDERS * SECTORS_PER_CYLINDER * SECTOR
 MAX_MAPPING_BYTES = 4095  # B000h..BFFFh holds this payload plus its final NUL.
+MAX_HINT_BYTES = 1023
 
 # Control tokens are independent of a frontend's SDL/Linux button numbering.
 CONTROL_TOKENS = {name: name for name in
@@ -62,6 +63,43 @@ def encode_controls(actions):
         used.add(trigger)
         bindings.append(f"{'+'.join(parts)}:{keys}")
     return ",".join(bindings)
+
+
+def encode_hints(hints):
+    """Encode hint-map cells as CONTROL:DESCRIPTION[,CONTROL:DESCRIPTION...]."""
+    bindings = []
+    used = set()
+    for control, description in hints.items():
+        if not isinstance(control, str):
+            raise ValueError("hint control names must be strings")
+        if not isinstance(description, str):
+            raise ValueError(f"Hint for {control!r} must be a string")
+        description = description.strip()
+        if not description:
+            raise ValueError(f"Hint for {control!r} must not be empty")
+        if any(c in description for c in "\t\r\n"):
+            raise ValueError(f"Hint for {control!r} may not contain tab/newline characters")
+        if "," in description:
+            raise ValueError(f"Hint for {control!r} may not contain commas")
+        try:
+            parts = [CONTROL_TOKENS[c.strip()] for c in control.split("+")]
+        except KeyError as error:
+            raise ValueError(f"Unknown RG35XXPRO control in hint key {control!r}") from error
+        trigger = frozenset(parts)
+        if len(trigger) != len(parts):
+            raise ValueError(f"Repeated RG35XXPRO control/chord in hint key {control!r}")
+        if trigger in used:
+            raise ValueError(f"Repeated RG35XXPRO control/chord hint: {control!r}")
+        try:
+            description.encode("ascii")
+        except UnicodeEncodeError as error:
+            raise ValueError(f"Hint for {control!r} must be ASCII") from error
+        used.add(trigger)
+        bindings.append(f"{'+'.join(parts)}:{description}")
+    encoded = ",".join(bindings)
+    if len(encoded.encode("ascii")) > MAX_HINT_BYTES:
+        raise ValueError(f"Control hint payload exceeds {MAX_HINT_BYTES} bytes")
+    return encoded
 
 
 def load_control_mappings(path=None):
@@ -112,6 +150,7 @@ def load_apps(path=None):
         name = entry.get("name")
         source = entry.get("path")
         keymap = entry.get("keymap", "")
+        hint = entry.get("hint", {})
 
         if not isinstance(name, str) or not name.strip():
             raise ValueError(f"{path}:{index}: 'name' must be a non-empty string")
@@ -119,6 +158,10 @@ def load_apps(path=None):
             raise ValueError(f"{path}:{index}: 'path' must be a non-empty string")
         if not isinstance(keymap, str):
             raise ValueError(f"{path}:{index}: 'keymap' must be a string")
+        if hint is None:
+            hint = {}
+        if not isinstance(hint, dict):
+            raise ValueError(f"{path}:{index}: 'hint' must be an object")
         if any(c in name for c in "\t\r\n"):
             raise ValueError(f"{path}:{index}: 'name' may not contain tab/newline characters")
         if any(c in keymap for c in "\t\r\n"):
@@ -141,7 +184,13 @@ def load_apps(path=None):
         if not resolved.is_file():
             raise ValueError(f"{path}:{index}: source file does not exist: {normalized}")
 
-        apps.append({"name": name.strip(), "path": normalized, "keymap": keymap.strip()})
+        encoded_hint = encode_hints(hint)
+        apps.append({
+            "name": name.strip(),
+            "path": normalized,
+            "keymap": keymap.strip(),
+            "hint": encoded_hint,
+        })
 
     counts = Counter(app["name"] for app in apps)
     seen = Counter()
@@ -151,7 +200,12 @@ def load_apps(path=None):
         if counts[name] > 1:
             seen[name] += 1
             name = f"{name} ({seen[name]})"
-        result.append({"name": name, "path": app["path"], "keymap": app["keymap"]})
+        result.append({
+            "name": name,
+            "path": app["path"],
+            "keymap": app["keymap"],
+            "hint": app["hint"],
+        })
     return result
 
 
@@ -184,15 +238,28 @@ def name_hash(name):
 
 
 def game_list(games):
-    width = max(len("Game"), *(len(title) for title, _, _ in games))
-    lines = [f"{'Game':<{width}}  LDOS filename\tRG35XXPRO controls", "-" * (width + 15)]
-    for title, name, mapping in sorted(games, key=lambda game: game[0].casefold()):
+    width = max(len("Game"), *(len(game[0]) for game in games))
+    lines = [f"{'Game':<{width}}  LDOS filename\tRG35XXPRO controls\tRG35XXPRO hints",
+             "-" * (width + 15)]
+    normalized = []
+    for game in games:
+        if len(game) == 3:
+            title, name, mapping = game
+            hints = ""
+        elif len(game) == 4:
+            title, name, mapping, hints = game
+        else:
+            raise ValueError(f"Invalid game tuple: {game!r}")
+        normalized.append((title, name, mapping, hints))
+    for title, name, mapping, hints in sorted(normalized, key=lambda game: game[0].casefold()):
         prefix = f"{title:<{width}}  {name}"
         if any(c in title for c in "\t\r\n") or len(prefix) > 127:
             raise ValueError(f"Title/filename exceeds launcher format: {title!r}")
         if len(mapping.encode("ascii")) > MAX_MAPPING_BYTES:
             raise ValueError(f"Control mapping exceeds {MAX_MAPPING_BYTES} bytes: {title!r}")
-        lines.append(f"{prefix}\t{mapping}")
+        if len(hints.encode("ascii")) > MAX_HINT_BYTES:
+            raise ValueError(f"Control hints exceed {MAX_HINT_BYTES} bytes: {title!r}")
+        lines.append(f"{prefix}\t{mapping}\t{hints}")
     # Native TRS-80 text uses carriage returns, without line feeds.
     return ("\r".join(lines) + "\r").encode("ascii")
 
@@ -298,7 +365,7 @@ def main():
         data = (ROOT / path).read_bytes()
         name = dos_name(app["name"], path, used)
         add_file(image, name, data)
-        games.append((app["name"], name.replace(".", "/"), app["keymap"]))
+        games.append((app["name"], name.replace(".", "/"), app["keymap"], app["hint"]))
         rows.append({"dos_name": name.replace(".", "/"), "source": path.as_posix(),
                      "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
 

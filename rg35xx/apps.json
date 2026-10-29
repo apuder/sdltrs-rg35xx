@@ -5,7 +5,7 @@
       "path" : "tpk/src/main/resources/apps/armored_patrol/ARMORED.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:SPACE,L1:1,L2:2",
       "name" : "Attack Force",
       "path" : "tpk/src/main/resources/apps/attack_force/ATTACK.CMD"
    },
@@ -35,14 +35,9 @@
       "path" : "tpk/src/main/resources/apps/dancing_demon/DEMON.BAS"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:SPACE,L1:1,L2:2,Y:3",
       "name" : "Defense Command",
       "path" : "tpk/src/main/resources/apps/defense_command/DEFENSE.CMD"
-   },
-   {
-      "keymap" : "",
-      "name" : "Defuse",
-      "path" : "tpk/src/main/resources/apps/defuse/defuse.cmd"
    },
    {
       "keymap" : "",
@@ -55,12 +50,12 @@
       "path" : "tpk/src/main/resources/apps/eliminator/ELIMINAT.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:F,L1:1,L2:2",
       "name" : "Galaxy Invasion",
       "path" : "tpk/src/main/resources/apps/galaxy_invasion/GALAXY.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:R,L1:1,L2:2",
       "name" : "Meteor Mission 2",
       "path" : "tpk/src/main/resources/apps/meteor_mission/METMISS.CMD"
    },
@@ -75,17 +70,24 @@
       "path" : "tpk/src/main/resources/apps/rear-guard/REARGUARD.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:SPACE,L1:1,L2:2",
       "name" : "Robot Attack",
       "path" : "tpk/src/main/resources/apps/robot_attack/ROBOT.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:SPACE,L1:1,L2:2,X:1,Y:0",
+      "hint" : {
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "Y": "Novice",
+                  "X": "Expert",
+                  "R1": "Fire"
+      },
       "name" : "Sea Dragon",
       "path" : "tpk/src/main/resources/apps/sea_dragon/SEADRAG.CMD"
    },
    {
-      "keymap" : "",
+      "keymap" : "R1:SPACE",
       "name" : "Space Invaders",
       "path" : "tpk/src/main/resources/apps/space_invaders_model3/SPACEINV.CMD"
    },

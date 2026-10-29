@@ -11,7 +11,7 @@ This creates `out/hard-disk/` containing:
 | File | Contents |
 | --- | --- |
 | `games.hdv` | LDOS-formatted hard disk containing all discovered `.CMD` and `.BAS` game source files under `tpk/`, plus `LIST/TXT` and `LAUNCH/CMD` |
-| `LIST.TXT` | Alphabetical game titles (`app.name`), LDOS filenames, and RG35XXPRO control mappings; also stored on the disk as `LIST/TXT` |
+| `LIST.TXT` | Alphabetical game titles (`app.name`), LDOS filenames, RG35XXPRO control mappings, and optional RG35XXPRO control hints; also stored on the disk as `LIST/TXT` |
 | `LAUNCH.CMD` | Z80 scrolling game launcher; also stored on the disk as `LAUNCH/CMD` |
 | `empty.hdv` | The same formatted hard disk without the games or catalog |
 | `ldos531-model3-boot.dsk` | LDOS 5.3.1 boot floppy with the hard disk driver already configured |
@@ -65,7 +65,7 @@ Launching sends the complete zero-terminated compact mapping to decimal I/O
 port 41 (`29h`) before handing off to the game. The emulator/frontend must
 implement the port receiver to apply it.
 
-The table headings are `CONTROL` and `TRS-80 KEY`. The overview shows four default entries: `Left DPAD | Arrow keys`,
+The table headings are `CONTROL` and `TRS-80 KEY/DESCRIPTION`. The overview shows four default entries: `Left DPAD | Arrow keys`,
 `A | ENTER`, `B | BREAK`, and `X | CLEAR`, followed by game-specific custom assignments.
 Multi-key action columns are simultaneous: Missile Defense's `R2:LEFT+RIGHT`
 holds both arrow keys together. `+` can join any combination of supported
@@ -156,16 +156,17 @@ Use `build.py` to assemble and package the runnable `LAUNCH.CMD` and install it
 on the image. A raw `.BIN` is not a TRS-80 `/CMD` file.
 
 The launcher reads `LIST/TXT:4` on startup, skips its two header lines, and
-skips each record's optional tab and control mapping, then separates the
+skips each record's optional tab-delimited control mapping and hints, then separates the
 title from the filename at the final space. It accepts CR, LF
 or CRLF text, including a final line without a newline. Supported entries
 end in `/CMD` or `/BAS`; unsupported lines are skipped. Missing, empty or
 unreadable catalogs report an error and return to LDOS. Limits are 250 games
 and 127 bytes before the tab per line; exceeding either reports an error. Mapping
-bytes are skipped without a buffer during the initial scan. Selecting a game
-reopens the catalog and loads only its mapping, up to 4095 printable ASCII bytes,
-at `B000h..BFFFh`, including a final zero. The builder rejects mappings beyond
-that limit. Invalid/oversized selected mappings return an error to LDOS.
+bytes and hint bytes are skipped without a buffer during the initial scan.
+Selecting a game reopens the catalog and loads only its mapping and hints,
+up to 4095 mapping bytes plus 1023 hint bytes, each printable ASCII,
+with final zeros in RAM. The builder rejects payloads beyond those limits.
+Invalid/oversized selected mappings or hints return an error to LDOS.
 Titles longer than
 47 characters are clipped on screen while their filenames remain intact.
 The table uses RAM from `7000h` through `AE7Fh`.
