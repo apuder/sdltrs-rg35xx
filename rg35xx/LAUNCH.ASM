@@ -1087,18 +1087,21 @@ custom_end:
         ret
 
 ; Copy control token into the first guide column and leave HL at ':' delimiter.
-; Known D-pad tokens use friendly labels.
+; Known D-pad/right-pad tokens use friendly labels.
 copy_control_label:
         ld de,guide_line+2
         ld b,22
         push hl
         ld a,(hl)
+        cp 'R'
+        jr z,copy_control_right_prefix
         cp 'D'
-        jr nz,copy_control_raw_restore
+        jp nz,copy_control_raw_restore
+copy_control_left_prefix:
         inc hl
         ld a,(hl)
         cp '_'
-        jr nz,copy_control_raw_restore
+        jp nz,copy_control_raw_restore
         inc hl
         ld a,(hl)
         ld c,a
@@ -1110,6 +1113,27 @@ copy_control_label:
         jr z,copy_control_alias_match
         cp 'R'
         jr z,copy_control_alias_match
+        jr copy_control_raw_restore
+copy_control_right_prefix:
+        inc hl
+        ld a,(hl)
+        cp 'S'
+        jr nz,copy_control_raw_restore
+        inc hl
+        ld a,(hl)
+        cp '_'
+        jr nz,copy_control_raw_restore
+        inc hl
+        ld a,(hl)
+        ld c,a
+        cp 'U'
+        jr z,copy_control_right_alias_match
+        cp 'D'
+        jr z,copy_control_right_alias_match
+        cp 'L'
+        jr z,copy_control_right_alias_match
+        cp 'R'
+        jr z,copy_control_right_alias_match
         jr copy_control_raw_restore
 copy_control_alias_match:
         inc hl
@@ -1136,6 +1160,32 @@ copy_control_alias_left:
         ld hl,label_dpad_left
 copy_control_alias_apply:
         call copy_control_text
+        jr copy_control_seek_colon_start
+copy_control_right_alias_match:
+        inc hl
+        ld a,(hl)
+        cp ':'
+        jr nz,copy_control_raw_restore
+        pop hl
+        ld a,c
+        cp 'U'
+        jr z,copy_control_right_alias_up
+        cp 'D'
+        jr z,copy_control_right_alias_down
+        cp 'L'
+        jr z,copy_control_right_alias_left
+        ld hl,label_rpad_right
+        jr copy_control_alias_apply
+copy_control_right_alias_up:
+        ld hl,label_rpad_up
+        jr copy_control_alias_apply
+copy_control_right_alias_down:
+        ld hl,label_rpad_down
+        jr copy_control_alias_apply
+copy_control_right_alias_left:
+        ld hl,label_rpad_left
+        jr copy_control_alias_apply
+copy_control_seek_colon_start:
         ld hl,(custom_token)
 copy_control_seek_colon:
         ld a,(hl)
@@ -1341,6 +1391,10 @@ label_dpad_up: db 'Left DPAD Up',0
 label_dpad_down: db 'Left DPAD Down',0
 label_dpad_left: db 'Left DPAD Left',0
 label_dpad_right: db 'Left DPAD Right',0
+label_rpad_up: db 'Right DPAD Up',0
+label_rpad_down: db 'Right DPAD Down',0
+label_rpad_left: db 'Right DPAD Left',0
+label_rpad_right: db 'Right DPAD Right',0
 above_text:     db '   ^^^',0
 below_text:     db '   vvv',0
 basic_prefix:   db 'BASIC/CMD:0 RUN"',0

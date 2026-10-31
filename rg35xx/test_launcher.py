@@ -133,6 +133,10 @@ class LauncherTests(unittest.TestCase):
             "D_D": "Left DPAD Down",
             "D_L": "Left DPAD Left",
             "D_R": "Left DPAD Right",
+            "RS_U": "Right DPAD Up",
+            "RS_D": "Right DPAD Down",
+            "RS_L": "Right DPAD Left",
+            "RS_R": "Right DPAD Right",
         }.get(control, control)
 
     @staticmethod
