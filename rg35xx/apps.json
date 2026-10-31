@@ -1,5 +1,6 @@
 [
    {
+      "name" : "Armored Patrol",
       "keymap" : "D_U:A+SEMICOLON,D_D:Z+PERIOD,D_L:Z+SEMICOLON,D_R:A+PERIOD,R1:SPACE,L1:1,L2:2,Y:I",
       "hint" : {
                   "D_U": "Forward",
@@ -11,90 +12,100 @@
                   "L2": "Two players",
                   "R1": "Fire"
       },
-      "name" : "Armored Patrol",
       "path" : "tpk/src/main/resources/apps/armored_patrol/ARMORED.CMD"
    },
    {
-      "keymap" : "R1:SPACE,L1:1,L2:2",
       "name" : "Attack Force",
+      "keymap" : "R1:SPACE,L1:1,L2:2",
       "path" : "tpk/src/main/resources/apps/attack_force/ATTACK.CMD"
    },
    {
-      "keymap" : "",
-      "name" : "Battlestar Raven",
-      "path" : "tpk/src/main/resources/apps/battlestar_raven/RAVEN.BAS"
-   },
-   {
-      "keymap" : "",
       "name" : "BEAST",
+      "keymap" : "RS_U:I,RS_L:J,RS_R:L,RS_D:K,D_U:W,D_R:D,D_D:S,D_L:A",
+      "hint" : {
+                  "RS_U": "Pull Up",
+                  "RS_L": "Pull Left",
+                  "RS_R": "Pull Right",
+                  "RS_D": "Pull Down",
+                  "D_U": "Push Up",
+                  "D_R": "Push Right",
+                  "D_D": "Push Down",
+                  "D_L": "Push Left"
+      },
       "path" : "tpk/src/main/resources/apps/beast/BEAST.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Breakdown",
+      "keymap" : "",
       "path" : "tpk/src/main/resources/apps/breakdown/BREAKDWN.CMD"
    },
    {
+      "name" : "Cosmic Fighter",
       "keymap" : "R1:SPACE,L1:1,L2:2,Y:D",
       "hint" : {
                   "L1": "One player",
                   "L2": "Two players",
                   "Y": "Dock"
       },
-      "name" : "Cosmic Fighter",
       "path" : "tpk/src/main/resources/apps/cosmic_fighter/COSMIC.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Dancing Demon",
+      "keymap" : "",
       "path" : "tpk/src/main/resources/apps/dancing_demon/DEMON.BAS"
    },
    {
+      "name" : "Defense Command",
       "keymap" : "R1:SPACE,L1:1,L2:2,Y:3",
       "hint": {
                   "L1": "One player",
                   "L2": "Two players",
-                 "Y": "Anti-Matter Bomb"
+                  "Y": "Anti-Matter Bomb"
       },
-      "name" : "Defense Command",
       "path" : "tpk/src/main/resources/apps/defense_command/DEFENSE.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Donkey Kong",
+      "keymap" : "R1:SPACE",
+      "hint": {
+                  "R1": "Jump"
+      },
       "path" : "tpk/src/main/resources/apps/donkey_kong/DONKKONG.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Eliminator",
+      "keymap" : "R1:SPACE,L1:1,L2:2,X:S,Y:D",
+      "hint": {
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "Y": "Hyperspace",
+                  "X": "Smart Bomb",
+                  "R1": "Fire"
+      },
       "path" : "tpk/src/main/resources/apps/eliminator/ELIMINAT.CMD"
    },
    {
-      "keymap" : "R1:F,L1:1,L2:2",
       "name" : "Galaxy Invasion",
+      "keymap" : "R1:F,L1:1,L2:2",
       "path" : "tpk/src/main/resources/apps/galaxy_invasion/GALAXY.CMD"
    },
    {
-      "keymap" : "R1:R,L1:1,L2:2",
       "name" : "Meteor Mission 2",
+      "keymap" : "R1:R,L1:1,L2:2",
       "path" : "tpk/src/main/resources/apps/meteor_mission/METMISS.CMD"
    },
    {
-      "keymap" : "R1:SPACE,L1:1,L2:2,R2:LEFT+RIGHT",
       "name" : "Missile Defense",
+      "keymap" : "R1:SPACE,L1:1,L2:2,R2:LEFT+RIGHT",
       "path" : "tpk/src/main/resources/apps/missile_defense/DEFENSE.CMD"
    },
    {
-      "keymap" : "",
-      "name" : "Rear Guard",
-      "path" : "tpk/src/main/resources/apps/rear-guard/REARGUARD.CMD"
-   },
-   {
-      "keymap" : "R1:SPACE,L1:1,L2:2",
       "name" : "Robot Attack",
+      "keymap" : "R1:SPACE,L1:1,L2:2",
       "path" : "tpk/src/main/resources/apps/robot_attack/ROBOT.CMD"
    },
    {
+      "name" : "Sea Dragon",
       "keymap" : "R1:SPACE,L1:1,L2:2,X:1,Y:0",
       "hint" : {
                   "L1": "One player",
@@ -103,47 +114,77 @@
                   "X": "Expert",
                   "R1": "Fire"
       },
-      "name" : "Sea Dragon",
       "path" : "tpk/src/main/resources/apps/sea_dragon/SEADRAG.CMD"
    },
    {
-      "keymap" : "R1:SPACE",
       "name" : "Space Invaders",
+      "keymap" : "R1:SPACE",
       "path" : "tpk/src/main/resources/apps/space_invaders_model3/SPACEINV.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Stellar Escort",
+      "keymap" : "R1:SPACE,L1:1,L2:2,Y:I,A:G",
+      "hint" : {
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "Y": "Instructions",
+                  "A": "Start Game",
+                  "R1": "Fire"
+      },
       "path" : "tpk/src/main/resources/apps/stellar_escort/STELLAR.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Super Nova",
+      "keymap" : "D_L:R,D_R:T,D_U:O,D_D:SPACE,R1:P,L1:1,L2:2",
+      "hint" : {
+                  "D_U": "Thurst",
+                  "D_D": "Hyerspace",
+                  "D_L": "Rotate left",
+                  "D_R": "Rotate right",
+                  "L1": "One player",
+                  "L2": "Two players",
+                  "R1": "Fire"
+      },
       "path" : "tpk/src/main/resources/apps/super_nova/SUPNOVA.CMD"
    },
    {
-      "keymap" : "",
-      "name" : "Tank Zone",
-      "path" : "tpk/src/main/resources/apps/tankzone/TANKZONE.CMD"
-   },
-   {
-      "keymap" : "",
       "name" : "Trek14",
+      "keymap" : "",
       "path" : "tpk/src/main/resources/apps/trek14/trek14.cmd"
    },
    {
-      "keymap" : "",
       "name" : "Vicious Vipers",
+      "keymap" : "R1:SPACE,A:S,Y:H",
+      "hint" : {
+                  "R1": "Pause",
+                  "A": "Start",
+                  "Y": "Help"
+      },
       "path" : "tpk/src/main/resources/apps/vicious-vipers/VIPERS.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Weerd",
+      "keymap" : "R1:F,R2:S,B:SHIFT,Y:R,L1:1,L2:2",
+      "hint" : {
+                  "R1": "Fire",
+                  "R2": "Shield",
+                  "B": "High speed",
+                  "Y": "Reverse",
+                  "L1": "One player",
+                  "L2": "Two players"
+      },
       "path" : "tpk/src/main/resources/apps/weerd/WEERD.CMD"
    },
    {
-      "keymap" : "",
       "name" : "Zaxxon",
+      "keymap" : "R1:SPACE,A:1,B:2,Y:3,X:4",
+      "hint" : {
+                  "A": "Easy",
+                  "B": "Medium",
+                  "Y": "Hard",
+                  "X": "Difficult",
+                  "R1": "Fire"
+      },
       "path" : "tpk/src/main/resources/apps/zaxxon/ZAXXON.CMD"
    }
 ]
