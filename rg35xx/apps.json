@@ -36,7 +36,10 @@
    },
    {
       "name" : "Breakdown",
-      "keymap" : "",
+      "keymap" : "R1:SPACE",
+      "hint" : {
+                  "R1": "Start Game"
+      },
       "path" : "tpk/src/main/resources/apps/breakdown/BREAKDWN.CMD"
    },
    {
