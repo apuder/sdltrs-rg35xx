@@ -23,14 +23,23 @@ MAX_CLOCK_SKEW_SECONDS=3600
 HOST_EPOCH="$(date +%s)"
 HOST_LOCAL_ISO="$(date '+%Y-%m-%d %H:%M:%S')"
 HOST_LOCAL_BUSYBOX="$(date '+%Y.%m.%d-%H:%M:%S')"
-HOST_LOCAL_NAIVE_EPOCH="$(TZ=UTC date -d "${HOST_LOCAL_ISO}" +%s)"
+# Host local wall-clock time interpreted as UTC (epoch + UTC offset).
+# Derived from `date +%z` so it works with both GNU and BSD (macOS) date.
+HOST_UTC_OFFSET="$(date +%z)"
+HOST_UTC_OFFSET_SECONDS=$(( 10#${HOST_UTC_OFFSET:1:2} * 3600 + 10#${HOST_UTC_OFFSET:3:2} * 60 ))
+if [[ ${HOST_UTC_OFFSET:0:1} == "-" ]]; then
+  HOST_UTC_OFFSET_SECONDS=$(( -HOST_UTC_OFFSET_SECONDS ))
+fi
+HOST_LOCAL_NAIVE_EPOCH=$(( HOST_EPOCH + HOST_UTC_OFFSET_SECONDS ))
 HOST_UTC_ISO="$(date -u '+%Y-%m-%d %H:%M:%S')"
 HOST_UTC_BUSYBOX="$(date -u '+%Y.%m.%d-%H:%M:%S')"
 
-if ! command -v sshpass >/dev/null 2>&1; then
-  echo "Error: sshpass is required but not installed."
-  echo "Install it on Debian/Ubuntu with: sudo apt install sshpass"
-  exit 1
+SSH_CMD=(ssh)
+if command -v sshpass >/dev/null 2>&1; then
+  SSH_CMD=(sshpass -p "$DEVICE_PASSWORD" ssh)
+else
+  echo "Note: sshpass not found; ssh will prompt for the password (default: ${DEVICE_PASSWORD})."
+  echo "To avoid the prompt, install sshpass (Debian/Ubuntu: sudo apt install sshpass, macOS: brew install sshpass)."
 fi
 
 SSH_OPTS=(
@@ -42,7 +51,7 @@ SSH_OPTS=(
 
 echo "Connecting to ${DEVICE_USER}@${DEVICE_IP}..."
 
-sshpass -p "$DEVICE_PASSWORD" ssh "${SSH_OPTS[@]}" "${DEVICE_USER}@${DEVICE_IP}" \
+"${SSH_CMD[@]}" "${SSH_OPTS[@]}" "${DEVICE_USER}@${DEVICE_IP}" \
   "HOST_EPOCH='${HOST_EPOCH}' HOST_LOCAL_ISO='${HOST_LOCAL_ISO}' HOST_LOCAL_BUSYBOX='${HOST_LOCAL_BUSYBOX}' HOST_LOCAL_NAIVE_EPOCH='${HOST_LOCAL_NAIVE_EPOCH}' HOST_UTC_ISO='${HOST_UTC_ISO}' HOST_UTC_BUSYBOX='${HOST_UTC_BUSYBOX}' MAX_CLOCK_SKEW_SECONDS='${MAX_CLOCK_SKEW_SECONDS}' ROM_URL='${ROM_URL}' APPS_ROOT='${APPS_ROOT}' APP_NAME='${APP_NAME}' bash -s" <<'REMOTE_EOF'
 set -euo pipefail
 
